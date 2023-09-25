@@ -1,0 +1,11 @@
+[package]
+name = "klick-backend"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = "1.0.75"
+axum = "0.6.20"
+log = "0.4.20"
+mime_guess = "2.0.4"
+rust-embed = { version = "8.0.0", features = ["axum"] }

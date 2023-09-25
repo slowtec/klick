@@ -1,0 +1,36 @@
+[workspace]
+members = ["backend", "boundary"]
+exclude = ["frontend"]
+resolver = "2"
+
+[workspace.package]
+authors = ["slowtec GmbH <post@slowtec.de>"]
+version = "0.0.0"
+edition = "2021"
+rust-version = "1.72.1"
+
+[patch.crates-io]
+# Local paths to library crates in workspace
+klick-backend  = { path = "backend"  }
+klick-boundary = { path = "boundary" }
+
+[package]
+name = "klick"
+version = "0.0.0"
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+# Project dependencies
+klick-backend = "=0.0.0"
+klick-boundary = "=0.0.0"
+
+# External dependencies
+anyhow = "1.0.75"
+env_logger = "0.10.0"
+log = "0.4.20"
+
+[dependencies.tokio]
+version = "1.32.0"
+features = ["macros", "rt-multi-thread"]
