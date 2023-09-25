@@ -208,6 +208,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "186dce98367766de751c42c4f03970fc60fc012296e706ccbb9d5df9b6c1e271"
 
 [[package]]
+name = "common_macros"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3f6d59c71e7dc3af60f0af9db32364d96a16e9310f3f5db2b55ed642162dd35"
+
+[[package]]
 name = "config"
 version = "0.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -709,6 +715,7 @@ dependencies = [
 name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
+ "serde",
  "serde_json",
 ]
 
@@ -720,6 +727,8 @@ dependencies = [
  "console_log",
  "klick-boundary",
  "leptos",
+ "leptos_meta",
+ "leptos_router",
  "log",
 ]
 
@@ -834,6 +843,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "leptos_meta"
+version = "0.5.0-rc3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75c723352b5beed21eee9442e5b01fe177fecd195baa7beed2a4d619d6e4368f"
+dependencies = [
+ "cfg-if",
+ "indexmap 2.0.0",
+ "leptos",
+ "tracing",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "leptos_reactive"
 version = "0.5.0-rc3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -850,6 +873,31 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "slotmap",
+ "thiserror",
+ "tracing",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
+name = "leptos_router"
+version = "0.5.0-rc3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f139e1b32813fbac87e4f9e4f4cd06ba86b3776ccad8f5315704e1b7f7e7d40e"
+dependencies = [
+ "cfg-if",
+ "common_macros",
+ "gloo-net",
+ "js-sys",
+ "lazy_static",
+ "leptos",
+ "linear-map",
+ "once_cell",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "serde_qs",
  "thiserror",
  "tracing",
  "wasm-bindgen",
@@ -878,6 +926,16 @@ name = "libc"
 version = "0.2.148"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9cdc71e17332e86d2e1d38c1f99edcb6288ee11b815fb1a4b049eaa2114d369b"
+
+[[package]]
+name = "linear-map"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfae20f6b19ad527b550c223fddc3077a547fc70cda94b9b566575423fd303ee"
+dependencies = [
+ "serde",
+ "serde_test",
+]
 
 [[package]]
 name = "linked-hash-map"
@@ -1394,6 +1452,15 @@ dependencies = [
  "percent-encoding",
  "serde",
  "thiserror",
+]
+
+[[package]]
+name = "serde_test"
+version = "1.0.176"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a2f49ace1498612d14f7e0b8245519584db8299541dfe31a06374a828d620ab"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
