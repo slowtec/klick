@@ -394,10 +394,13 @@ dependencies = [
  "anyhow",
  "env_logger",
  "klick-backend",
- "klick-boundary",
  "log",
  "tokio",
 ]
+
+[[package]]
+name = "klick-application"
+version = "0.0.0"
 
 [[package]]
 name = "klick-backend"
@@ -406,6 +409,7 @@ dependencies = [
  "anyhow",
  "axum",
  "charming",
+ "klick-application",
  "klick-boundary",
  "log",
  "mime_guess",
