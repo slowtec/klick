@@ -1,3 +1,6 @@
 module.exports = {
-  content: ['./src/**/*.rs']
+  content: ['./src/**/*.rs'],
+  plugins: [
+    require('@tailwindcss/forms')
+  ]
 }

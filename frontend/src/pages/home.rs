@@ -60,280 +60,377 @@ pub fn Home() -> impl IntoView {
         n2o_szenario,
     } = example_data();
 
-    // Allgemeine Infos zur Kläranlage
     view! {
-    <form action="/submit" method="post" class="ui form">
-      <h3 class="ui dividing header">Angaben zur Kläranlage</h3>
-        <div class="fields">
+
+    <form action="/submit" method="post" class="space-y-12">
+
+      // Allgemeine Infos zur Kläranlage
+
+      <div class="border-b border-gray-900/10 pb-12">
+        <h3 class="text-lg font-semibold leading-7 text-gray-900">Angaben zur Kläranlage</h3>
+
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
           // Name der Kläranlage
-          <div class="field">
-            <label>Name oder Ort</label>
-            <input type="text" name="name" id = "name" placeholder="Name der Kläranlage" value = name />
-          </div>
+          <TextInput
+            label= "Name oder Ort"
+            name="name"
+            placeholder="Name der Kläranlage"
+            value = name
+          />
+
           // EW-Werte
-          <div class="field">
-            <label>Ausbaugröße</label>
-            <div class="ui right labeled input">
-              <input type="text" name="ew" id = "ew" maxlength="8" placeholder="Ausbaugröße [EW]" value = ew />
-              <div class="ui basic label">
-                EW
-              </div>
-            </div>
-          </div>
+          <NumberInput
+            label= "Ausbaugröße"
+            name="ew"
+            placeholder="Ausbaugröße [EW]"
+            value = ew
+            unit = "EW"
+          />
+
           // Abwassermenge
-          <div class="field">
-            <label>Abwassermenge</label>
-            <div class="ui right labeled input">
-              <input type="text" name="flow" id = "flow" placeholder="Abwassermenge" value = flow />
-              <div class="ui basic label">
-                m<sup>3</sup>/a
-              </div>
-            </div>
-          </div>
+          <NumberInput
+            label= "Abwassermenge"
+            name="flow"
+            placeholder="Abwassermenge"
+            value = flow
+            unit = "m³/a"
+          />
+
         </div>
+      </div>
 
       // Zulauf-Parameter
-      <h3 class="ui dividing header">Zulauf-Parameter (Jahresmittelwerte)</h3>
-      <div class="fields">
-        // CSB
-        <div class="field">
-          <label>Chemischer Sauerstoffbedarf</label>
-          <div class="ui right labeled input">
-            <input type="text" name="csb_zu" maxlength="8" placeholder="CSB" value = csb_zu />
-            <div class="ui basic label">
-              mg/L
-            </div>
-          </div>
-        </div>
-        // TKN
-        <div class="field">
-          <label>Gesamtstickstoff</label>
-          <div class="ui right labeled input">
-            <input type="text" name="tkn_zu" maxlength="8" placeholder="TKN" value = tkn_zu />
-            <div class="ui basic label">
-              mg/L
-            </div>
-          </div>
-        </div>
-        // P
-        <div class="field">
-          <label>Phosphor</label>
-          <div class="ui right labeled input">
-            <input type="text" name="p_zu" maxlength="8" placeholder="P" value = p_zu />
-            <div class="ui basic label">
-              mg/L
-            </div>
-          </div>
+      <div class="border-b border-gray-900/10 pb-12">
+        <h3 class="text-lg font-semibold leading-7 text-gray-900">"Zulauf-Parameter (Jahresmittelwerte)"</h3>
+
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+          // CSB
+          <NumberInput
+            label = "Chemischer Sauerstoffbedarf"
+            name="csb_zu"
+            placeholder="CSB"
+            value = csb_zu
+            unit = "mg/L"
+          />
+
+          // TKN
+          <NumberInput
+            label="Gesamtstickstoff"
+            name="tkn_zu" placeholder="TKN"
+            value = tkn_zu
+            unit = "mg/L"
+          />
+
+          // P
+          <NumberInput
+            label="Phosphor"
+            name="p_zu"
+            placeholder="P"
+            value = p_zu
+            unit = "mg/L"
+          />
+
         </div>
       </div>
 
       // Ablauf-Parameter
-      <h3 class="ui dividing header">Ablauf-Parameter (Jahresmittelwerte)</h3>
-      <div class="fields">
-        // CSB
-        <div class="field">
-          <label>Chemischer Sauerstoffbedarf</label>
-          <div class="ui right labeled input">
-            <input type="text" name="csb_ab" maxlength="8" placeholder="CSB" value = csb_ab />
-            <div class="ui basic label">
-              mg/L
-            </div>
-          </div>
-        </div>
-        // TKN
-        <div class="field">
-          <label>Gesamtstickstoff</label>
-          <div class="ui right labeled input">
-            <input type="text" name="tkn_ab" maxlength="8" placeholder="TKN" value = tkn_ab />
-            <div class="ui basic label">
-              mg/L
-            </div>
-          </div>
-        </div>
-        // P
-        <div class="field">
-          <label>Phosphor</label>
-          <div class="ui right labeled input">
-            <input type="text" name="p_ab" maxlength="8" placeholder="P" value = p_ab />
-            <div class="ui basic label">
-              mg/L
-            </div>
-          </div>
+      <div class="border-b border-gray-900/10 pb-12">
+        <h3 class="text-lg font-semibold leading-7 text-gray-900">"Ablauf-Parameter (Jahresmittelwerte)"</h3>
+
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+          // CSB
+          <NumberInput
+            label = "Chemischer Sauerstoffbedarf"
+            name="csb_ab"
+            placeholder="CSB"
+            value = csb_ab
+            unit = "mg/L"
+          />
+
+          // TKN
+          <NumberInput
+            label = "Gesamtstickstoff"
+            name="tkn_ab"
+            placeholder="TKN"
+            value = tkn_ab
+            unit = "mg/L"
+          />
+
+          // P
+          <NumberInput
+            label="Phosphor"
+            name="p_ab"
+            placeholder="P"
+            value = p_ab
+            unit = "mg/L"
+          />
+
         </div>
       </div>
 
       // Energiebedarf
-      <h3 class="ui dividing header">Energiebedarf</h3>
-      <div class="fields">
-        // Klärgas erzeugt
-        <div class="field">
-          <label>Erzeugtes Klärgas</label>
-          <div class="ui right labeled input">
-            <input type="text" name="klaergas" maxlength="8" placeholder="Klärgas" value = klaergas />
-            <div class="ui basic label">
-              m<sup>3</sup>/a
-            </div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Methangehalt</label>
-          <div class="ui right labeled input">
-            <input type="text" name="methangehalt" maxlength="8" placeholder="65" value = methangehalt />
-            <div class="ui basic label">
-              %
-            </div>
-          </div>
-        </div>
-      </div>
 
-      // Erdgas zugekauft
-      <div class="fields">
-        <div class="field">
-          <label>Gasbezug (Versorger)</label>
-          <div class="ui right labeled input">
-            <input type="text" name="gas_zusatz" maxlength="8" placeholder="Gasbezug" value = gas_zusatz />
-            <div class="ui basic label">
-              kWh/a
-            </div>
-          </div>
-        </div>
-        // Biogas ja/nein
-        <div class="ui checkbox">
-          <input type="checkbox" name="biogas" id="biogas" checked = (biogas.as_deref()== Some("yes")) value = biogas />
-          <label>Bezug von Biogas</label>
-        </div>
-      </div>
-      <div class="fields">
-        // Strombedarf gesamt
-        <div class="field">
-          <label>Strombedarf gesamt</label>
-          <div class="ui right labeled input">
-            <input type="text" name="strombedarf" maxlength="8" placeholder="Gesamtstrombedarf" value = strombedarf />
-            <div class="ui basic label">
-              kWh/a
-            </div>
-          </div>
-        </div>
-        // Eigenstromerzeugung
-        <div class="field">
-          <label>Eigenstromerzeugung</label>
-          <div class="ui right labeled input">
-            <input type="text" name="eigenstrom" maxlength="8" placeholder="Eigenstrom" value = eigenstrom />
-            <div class="ui basic label">
-              kWh/a
-            </div>
-          </div>
-        </div>
-        // Emissionsfaktor Strom-Mix
-        <div class="field">
-          <label>Emissionsfaktor Strommix (Versorger)</label>
-          <div class="ui right labeled input">
-            <input type="text" name="ef_strommix" maxlength="8" defaultValue = 485 placeholder="485" value = ef_strommix />
-            <div class="ui basic label">
-              g CO<sub>2</sub>/kWh
-            </div>
-          </div>
+      <div class="border-b border-gray-900/10 pb-12">
+        <h3 class="text-lg font-semibold leading-7 text-gray-900">Energiebedarf</h3>
+
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+          // Klärgas erzeugt
+          <NumberInput
+            label="Erzeugtes Klärgas"
+            name="klaergas"
+            placeholder="Klärgas"
+            value = klaergas
+            unit = "m³"
+          />
+          <NumberInput
+            label="Methangehalt"
+            unit = "%"
+            name="methangehalt"
+            placeholder="65" value = methangehalt
+          />
+
+          // Erdgas zugekauft
+          <NumberInput
+            label= "Gasbezug (Versorger)"
+            name="gas_zusatz"
+            placeholder="Gasbezug"
+            value = gas_zusatz
+            unit = "kWh/a"
+          />
+
+          // Biogas ja/nein
+          <BoolInput label = "Bezug von Biogas" name="biogas" value = biogas.as_deref()== Some("yes") comment = None />
+
+          // Strombedarf gesamt
+          <NumberInput
+            label = "Strombedarf gesamt"
+            name="strombedarf"
+            placeholder="Gesamtstrombedarf"
+            value = strombedarf
+            unit = "kWh/a"
+          />
+
+          // Eigenstromerzeugung
+          <NumberInput
+            label = "Eigenstromerzeugung"
+            name="eigenstrom"
+            placeholder="Eigenstrom"
+            value = eigenstrom
+            unit = "kWh/a"
+          />
+
+          // Emissionsfaktor Strom-Mix
+          <NumberInput
+            label = "Emissionsfaktor Strommix (Versorger)"
+            name="ef_strommix"
+            //defaultValue = 485
+            placeholder="485"
+            value = ef_strommix
+            unit = "g CO₂/kWh"
+          />
+
         </div>
       </div>
 
       // Klärschlammbehandlung
-      <h3 class="ui dividing header">Klärschlammbehandlung</h3>
-      <div class="fields">
-        // Offene Schlammtaschen ja/nein
-        <div class="ui checkbox">
-          <input type="checkbox" name="schlammtaschen" id="schlammtaschen" checked = (schlammtaschen.as_deref() == Some("yes")) />
-          <label>Offene Schlammtaschen</label>
-        </div>
-      </div>
-      <div class="fields">
-        // Offene Schlammstapelbehälter ja/nein
-        <div class="ui checkbox">
-          <input type="checkbox" name="schlammstapel" id="schlammstapel" checked = (schlammstapel.as_deref() == Some("yes")) />
-          <label>Offene Schlammstapelbehälter</label>
-        </div>
-      </div>
-      <div class="fields">
-        <div class="field">
-          <label>Kläraschlamm zur Entsorgung</label>
-          <div class="ui right labeled input">
-            <input type="text" name="klaerschlamm_enstorgung" maxlength="8" placeholder="Masse entwässert" value = klaerschlamm_enstorgung />
-            <div class="ui basic label">
-              t
-            </div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Transportdistanz</label>
-          <div class="ui right labeled input">
-            <input type="text" name="klaerschlamm_transport" maxlength="8" placeholder="Entfernung" value = klaerschlamm_transport />
-            <div class="ui basic label">
-              km
-            </div>
-          </div>
+      <div class="border-b border-gray-900/10 pb-12">
+        <h3 class="text-lg font-semibold leading-7 text-gray-900">Klärschlammbehandlung</h3>
+
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+          <BoolInput
+            name="schlammtaschen"
+            label = "Offene Schlammtaschen"
+            value = schlammtaschen.as_deref() == Some("yes")
+            comment = Some("ja/nein")
+          />
+
+          <BoolInput
+            name="schlammstapel"
+            label = "Offene Schlammstapelbehälter"
+            value = schlammstapel.as_deref() == Some("yes")
+            comment = Some("ja/nein")
+          />
+
+          <NumberInput
+            label = "Kläraschlamm zur Entsorgung"
+            unit = "t"
+            name = "klaerschlamm_enstorgung"
+            placeholder = "Masse entwässert"
+            value = klaerschlamm_enstorgung
+          />
+
+          <NumberInput
+            label = "Transportdistanz"
+            unit = "km"
+            name="klaerschlamm_transport"
+            placeholder="Entfernung"
+            value = klaerschlamm_transport
+          />
+
         </div>
       </div>
 
       // Betriebsstoffe
-      <h3 class="ui dividing header">Eingesetzte Betriebsstoffe</h3>
-      <div class="fields">
+      <div class="border-b border-gray-900/10 pb-12">
+        <h3 class="text-lg font-semibold leading-7 text-gray-900">Eingesetzte Betriebsstoffe</h3>
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
-        // Eisen(III)Chlorid
-        <div class="field">
-          <label>Eisen(III)-chlorid-Lösung</label>
-          <div class="ui right labeled input">
-            <input type="text" name="betriebsstoffe_fe3" maxlength="8" placeholder="kg Lösung" value = betriebsstoffe_fe3 />
-            <div class="ui basic label">
-              kg
-            </div>
-          </div>
-        </div>
-        // Eisen(III)Chlorid
-        <div class="field">
-          <label>Eisenchloridsulfat-Lösung</label>
-          <div class="ui right labeled input">
-            <input type="text" name="betriebsstoffe_feso4" maxlength="8" placeholder="kg Lösung" value = betriebsstoffe_feso4 />
-            <div class="ui basic label">
-              kg
-            </div>
-          </div>
-        </div>
+          // Eisen(III)Chlorid
+          <NumberInput
+            label = "Eisen(III)-chlorid-Lösung"
+            unit = "kg"
+            name = "betriebsstoffe_fe3"
+            placeholder = "kg Lösung"
+            value = betriebsstoffe_fe3
+          />
 
-        // Kalkhydrat
-        <div class="field">
-          <label>Kalkhydrat</label>
-          <div class="ui right labeled input">
-            <input type="text" name="betriebsstoffe_kalk" maxlength="8" placeholder="kg Branntkalk" value = betriebsstoffe_kalk />
-            <div class="ui basic label">
-              kg
-            </div>
-          </div>
-        </div>
+          // Eisen(III)Chlorid
+          <NumberInput
+            label = "Eisenchloridsulfat-Lösung"
+            unit = "kg"
+            name = "betriebsstoffe_feso4"
+            placeholder = "kg Lösung"
+            value = betriebsstoffe_feso4
+          />
 
-        // Polymere
-        <div class="field">
-          <label>Synthetische Polymere</label>
-          <div class="ui right labeled input">
-            <input type="text" name="betriebsstoffe_poly" maxlength="8" placeholder="kg Polymere" value = betriebsstoffe_poly  />
-            <div class="ui basic label">
-              kg
-            </div>
-          </div>
+          // Kalkhydrat
+          <NumberInput
+            label = "Kalkhydrat"
+            unit = "kg"
+            name = "betriebsstoffe_kalk"
+            placeholder = "kg Branntkalk"
+            value = betriebsstoffe_kalk
+          />
+
+          // Polymere
+          <NumberInput
+            label = "Synthetische Polymere"
+            placeholder = "kg Polymere"
+            name = "betriebsstoffe_poly"
+            unit = "kg"
+            value = betriebsstoffe_poly
+          />
+
         </div>
       </div>
 
       // Szenario
-      <h3 class="ui dividing header">Schätzung des N<sub>2</sub>O-Emissionsfaktors</h3>
-      <div class="fields">
-        <div class="field">
-          <select class="ui dropdown" name="n2o_szenario">
-            <option value="0" selected = (n2o_szenario == "0")>Extrapoliert nach Parravicini et al. 2016</option>
-            <option value="1" selected = (n2o_szenario == "1")>Optimistisch</option>
-            <option value="2" selected = (n2o_szenario == "2")>Pessimistisch</option>
-            <option value="3" selected = (n2o_szenario == "3")>Nach IPCC 2019</option>
-          </select>
+      <div class="border-b border-gray-900/10 pb-12">
+        <h3 class="text-lg font-semibold leading-7 text-gray-900">Schätzung des N<sub>2</sub>O-Emissionsfaktors</h3>
+        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+
+          <div>
+            <label for="n2o_szenario" class="block text-sm font-bold leading-6 text-gray-900">Szenario</label>
+            <select name="n2o_szenario" class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              <option value="0" selected = (n2o_szenario == "0")>Extrapoliert nach Parravicini et al. 2016</option>
+              <option value="1" selected = (n2o_szenario == "1")>Optimistisch</option>
+              <option value="2" selected = (n2o_szenario == "2")>Pessimistisch</option>
+              <option value="3" selected = (n2o_szenario == "3")>Nach IPCC 2019</option>
+            </select>
+          </div>
+
         </div>
       </div>
-      <input class="ui button primary" type="submit" value="Start" />
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <input
+          type="submit"
+          class="rounded-md bg-indigo-600 px-3 py-2 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          value = "Start" />
+      </div>
+
     </form>
+    }
+}
+
+#[component]
+fn NumberInput(
+    label: &'static str,
+    unit: &'static str,
+    placeholder: &'static str,
+    name: &'static str,
+    value: String,
+) -> impl IntoView {
+    let id = format!("form-input-{name}");
+
+    view! {
+      <div>
+        <label for={ id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+        <div class="relative mt-2 rounded-md shadow-sm">
+          <input
+            id
+            type="text"
+            name = { name }
+            maxlength = 8
+            class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder= { placeholder }
+            // TODO: aria-describedby
+            value = { value }
+          />
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <span class="text-gray-500 sm:text-sm">{ unit }</span>
+          </div>
+        </div>
+      </div>
+    }
+}
+
+#[component]
+fn BoolInput(
+    label: &'static str,
+    name: &'static str,
+    value: bool,
+    comment: Option<&'static str>,
+) -> impl IntoView {
+    let id = format!("form-input-{name}");
+
+    view! {
+      <div class="relative flex items-start">
+        <div class="flex h-6 items-center">
+          <input
+            id
+            name
+            type="checkbox"
+            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+            // TODO: aria-describedby
+            checked = value
+          />
+        </div>
+        <div class="ml-3 text-sm leading-6">
+          <label for={ id } class="font-bold text-gray-900">{ label }</label>
+          <p class="text-gray-500">{ comment }</p>
+        </div>
+      </div>
+    }
+}
+
+#[component]
+fn TextInput(
+    label: &'static str,
+    name: &'static str,
+    placeholder: &'static str,
+    value: String,
+) -> impl IntoView {
+    let id = format!("form-input-{name}");
+
+    view! {
+      <div>
+        <label for={ id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+        <div class="relative mt-2 rounded-md shadow-sm">
+          <input
+            id
+            type="text"
+            name = { name }
+            maxlength = 8
+            class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder= { placeholder }
+            // TODO: aria-describedby
+            value = { value }
+          />
+        </div>
+      </div>
     }
 }

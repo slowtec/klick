@@ -18,6 +18,7 @@ in
       just                     # task runner
       trunk                    # frontend build tool
       nodePackages.tailwindcss # build CSS files
+      nodejs                   # required to install tailwind plugins
     ];
     SQLITE3_DIR = "${sqlite.dev}";
     SQLITE3_LIB_DIR = "${sqlite.out}/lib";
