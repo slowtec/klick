@@ -175,6 +175,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "charming"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "88eed6984a7997f34a474ee7bc9f3006d1a4b4598b11e81193984d49bf667b0b"
+dependencies = [
+ "handlebars",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "ciborium"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -547,6 +561,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eabb4a44450da02c90444cf74558da904edde8fb4e9035a9a6a4e15445af0bd7"
 
 [[package]]
+name = "handlebars"
+version = "4.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c39b3bc2a8f715298032cf5087e58573809374b08160aa7d750582bdb82d2683"
+dependencies = [
+ "log",
+ "pest",
+ "pest_derive",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -712,6 +740,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-application"
+version = "0.0.0"
+
+[[package]]
 name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
@@ -723,8 +755,10 @@ dependencies = [
 name = "klick-frontend"
 version = "0.0.0"
 dependencies = [
+ "charming",
  "console_error_panic_hook",
  "console_log",
+ "klick-application",
  "klick-boundary",
  "leptos",
  "leptos_meta",

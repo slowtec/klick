@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct InputData {
     pub ew: f64,
     pub abwasser: f64,
@@ -21,7 +21,7 @@ pub struct InputData {
     pub n2o_szenario: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OutputData {
     pub co2eq_n2o_anlage: f64,
     pub co2eq_n2o_gewaesser: f64,

@@ -13,7 +13,6 @@ klick-boundary = "=0.0.0"
 # External dependencies
 anyhow = "1.0.75"
 axum = "0.6.20"
-charming = "0.2.4"
 log = "0.4.20"
 mime_guess = "2.0.4"
 rust-embed = { version = "8.0.0", features = ["axum"] }

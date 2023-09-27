@@ -1,3 +1,5 @@
+use std::{collections::HashMap, hash::Hash};
+
 use leptos::*;
 
 #[derive(Debug)]
@@ -22,7 +24,7 @@ pub enum Field<ID> {
     },
     Selection {
         base: FieldBase<ID>,
-        initial_value: Option<i32>,
+        initial_value: Option<usize>,
         options: Vec<SelectOption>,
     },
 }
@@ -55,23 +57,51 @@ pub struct FieldSet<ID> {
 #[derive(Debug, Clone, Copy)]
 pub struct SelectOption {
     pub label: &'static str,
-    pub value: i32,
+    pub value: usize,
 }
 
+#[derive(Clone, Copy)]
 pub enum FieldSignal {
-    Float((ReadSignal<Option<f64>>, WriteSignal<Option<f64>>)),
-    Text((ReadSignal<Option<String>>, WriteSignal<Option<String>>)),
-    Bool((ReadSignal<Option<bool>>, WriteSignal<Option<bool>>)),
-    Selection((ReadSignal<Option<i32>>, WriteSignal<Option<i32>>)),
+    Float(RwSignal<Option<f64>>),
+    Text(RwSignal<Option<String>>),
+    Bool(RwSignal<bool>),
+    Selection(RwSignal<Option<usize>>),
+}
+
+impl FieldSignal {
+    pub fn get_float(&self) -> Option<f64> {
+        match self {
+            Self::Float(s) => s.get(),
+            _ => None,
+        }
+    }
+    pub fn get_text(&self) -> Option<String> {
+        match self {
+            Self::Text(s) => s.get(),
+            _ => None,
+        }
+    }
+    pub fn get_bool(&self) -> Option<bool> {
+        match self {
+            Self::Bool(s) => Some(s.get()),
+            _ => None,
+        }
+    }
+    pub fn get_selection(&self) -> Option<usize> {
+        match self {
+            Self::Selection(s) => s.get(),
+            _ => None,
+        }
+    }
 }
 
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
-) -> (Vec<(ID, FieldSignal)>, Vec<impl IntoView>)
+) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>)
 where
-    ID: Into<&'static str> + Copy,
+    ID: Into<&'static str> + Copy + Hash + Eq,
 {
-    let mut signals = vec![];
+    let mut signals = HashMap::new();
     let mut set_views = vec![];
 
     for set in field_sets {
@@ -81,7 +111,7 @@ where
             let id = field.id();
             let (field_signal, view) = render_field(field);
             field_views.push(view);
-            signals.push((id, field_signal));
+            signals.insert(id, field_signal);
         }
 
         set_views.push(
@@ -111,14 +141,14 @@ where
             max_len,
             ..
         } => {
-            let signal = create_signal(initial_value);
+            let signal = create_rw_signal(initial_value);
             let field_signal = FieldSignal::Text(signal);
             let view = view! {
               <TextInput
                 label = base.label
                 name = base.id.into()
                 placeholder = placeholder.unwrap()
-                value = signal.0.get().unwrap_or_default()
+                value = signal
                 max_len
               />
             }
@@ -132,7 +162,7 @@ where
             initial_value,
             ..
         } => {
-            let signal = create_signal(initial_value);
+            let signal = create_rw_signal(initial_value);
             let field_signal = FieldSignal::Float(signal);
 
             let view = view! {
@@ -140,7 +170,7 @@ where
                 label = base.label
                 name = base.id.into()
                 placeholder = placeholder.unwrap()
-                value = signal.0.get().unwrap_or_default().to_string().replace('.',",")
+                value = signal
                 unit
               />
             }
@@ -152,13 +182,13 @@ where
             initial_value,
             ..
         } => {
-            let signal = create_signal(initial_value);
+            let signal = create_rw_signal(initial_value.unwrap_or_default());
             let field_signal = FieldSignal::Bool(signal);
             let view = view! {
               <BoolInput
                 label = base.label
                 name = base.id.into()
-                value = signal.0.get().unwrap_or_default()
+                value = signal
                 comment = base.description
               />
             }
@@ -170,13 +200,13 @@ where
             initial_value,
             options,
         } => {
-            let signal = create_signal(initial_value);
+            let signal = create_rw_signal(initial_value);
             let field_signal = FieldSignal::Selection(signal);
             let view = view! {
               <SelectInput
                 label = base.label
                 name = base.id.into()
-                value = signal.0.get().unwrap_or_default()
+                value = signal
                 options
               />
             }
@@ -191,7 +221,7 @@ fn TextInput(
     label: &'static str,
     name: &'static str,
     placeholder: &'static str,
-    value: String,
+    value: RwSignal<Option<String>>,
     max_len: Option<usize>,
 ) -> impl IntoView {
     let input_id = format!("form-input-{name}");
@@ -208,7 +238,15 @@ fn TextInput(
             class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             placeholder= { placeholder }
             // TODO: aria-describedby
-            value = { value }
+            prop:value = move || value.get().unwrap_or_default()
+            on:input = move |ev| {
+              let target_value = event_target_value(&ev);
+              if target_value.is_empty() {
+                value.set(None);
+              } else  {
+                value.set(Some(target_value));
+              }
+            }
           />
         </div>
       </div>
@@ -221,7 +259,7 @@ fn NumberInput(
     unit: &'static str,
     placeholder: &'static str,
     name: &'static str,
-    value: String,
+    value: RwSignal<Option<f64>>,
 ) -> impl IntoView {
     let input_id = format!("form-number-input-{name}");
 
@@ -236,7 +274,15 @@ fn NumberInput(
             class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             placeholder= { placeholder }
             // TODO: aria-describedby
-            value = { value }
+            prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
+            on:input = move |ev| {
+              let target_value = event_target_value(&ev);
+              if target_value.is_empty() {
+                value.set(None);
+              } else if let Ok(target_value) = target_value.replace(',',".").parse() {
+                value.set(Some(target_value));
+              }
+            }
           />
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <span class="text-gray-500 sm:text-sm">{ unit }</span>
@@ -250,7 +296,7 @@ fn NumberInput(
 fn BoolInput(
     label: &'static str,
     name: &'static str,
-    value: bool,
+    value: RwSignal<bool>,
     comment: Option<&'static str>,
 ) -> impl IntoView {
     let input_id = format!("form-bool-input-{name}");
@@ -264,7 +310,8 @@ fn BoolInput(
             type="checkbox"
             class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
             // TODO: aria-describedby
-            checked = value
+            prop:checked = move || value.get()
+            on:input = move |_| { value.update(|v| *v = !*v); }
           />
         </div>
         <div class="ml-3 text-sm leading-6">
@@ -279,24 +326,45 @@ fn BoolInput(
 fn SelectInput(
     label: &'static str,
     name: &'static str,
-    value: i32,
+    value: RwSignal<Option<usize>>,
     options: Vec<SelectOption>,
 ) -> impl IntoView {
     let id = format!("form-select-input-{name}");
 
     view! {
       <div>
-        <label for={ id.clone() } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+        <label
+          for={ id.clone() }
+          class="block text-sm font-bold leading-6 text-gray-900"
+        >
+          { label }
+        </label>
         <select
           name = { name }
           id = { id }
           class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          on:change = move |ev| {
+              let target_value = event_target_value(&ev);
+              if target_value.is_empty() {
+                value.set(None);
+              } else {
+                 match target_value.parse() {
+                    Ok(v) => { value.set(Some(v)) },
+                    Err(_) => { log::error!("Unexpected option value {target_value}"); },
+                 }
+              }
+          }
         >
           <For
             each = move || options.clone()
             key = |option| option.value
             view = move |option| view! {
-              <option value=option.value selected = (value == option.value) >{ option.label }</option>
+              <option
+                value = option.value
+                selected = (value.get() == Some(option.value))
+              >
+                { option.label }
+              </option>
             }
           />
         </select>

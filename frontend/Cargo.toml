@@ -7,9 +7,11 @@ rust-version = "1.72.1"
 
 [dependencies]
 # Project dependencies
-klick-boundary = "=0.0.0"
+klick-application = "=0.0.0"
+klick-boundary    = "=0.0.0"
 
 # External dependencies
+charming = { version = "0.2.4", features = ["wasm"] }
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
 leptos = { version = "0.5.0-rc3", features = ["csr"] }
@@ -19,4 +21,5 @@ log = "0.4.20"
 
 [patch.crates-io]
 # Local paths to library crates in workspace
-klick-boundary = { path = "../boundary" }
+klick-application = { path = "../application" }
+klick-boundary    = { path = "../boundary"    }
