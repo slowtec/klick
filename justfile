@@ -26,11 +26,11 @@ frontend-watch:
 
 # Build CSS file
 css:
-  cd frontend && tailwind -i src/style.css -o target/style.css
+  cd frontend && tailwindcss -i src/style.css -o target/style.css
 
 # Build and minify CSS file
 css-release:
-  cd frontend && tailwind -i src/style.css -o target/style.css --minify
+  cd frontend && tailwindcss -i src/style.css -o target/style.css --minify
 
 # Build the server in debug mode
 build: frontend
