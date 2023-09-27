@@ -1,5 +1,7 @@
 use leptos::*;
 
+use crate::forms;
+
 fn example_data() -> klick_boundary::FormData {
     klick_boundary::FormData {
         name: "Lingen".to_string(),
@@ -27,6 +29,77 @@ fn example_data() -> klick_boundary::FormData {
         betriebsstoffe_kalk: "326260".to_string(),
         betriebsstoffe_poly: "23620".to_string(),
         n2o_szenario: "3".to_string(),
+    }
+}
+
+type Field = forms::Field<Id>;
+type FieldBase = forms::FieldBase<Id>;
+type FieldSet = forms::FieldSet<Id>;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+enum Id {
+    Name,
+    Ew,
+    Flow,
+    CsbZu,
+    TknZu,
+    PZu,
+    CsbAb,
+    TknAb,
+    PAb,
+    Klaergas,
+    Methangehalt,
+    GasZusatz,
+    Biogas,
+    Strombedarf,
+    Eigenstrom,
+    EfStrommix,
+    Schlammtaschen,
+    Schlammstapel,
+    KlaerschlammEnstorgung,
+    KlaerschlammTransport,
+    BetriebsstoffeFe3,
+    BetriebsstoffeFeso4,
+    BetriebsstoffeKalk,
+    BetriebsstoffePoly,
+    N2oSzenario,
+}
+
+impl Id {
+    const fn as_str(&self) -> &'static str {
+        match self {
+            Self::Name => "name",
+            Self::Ew => "ew",
+            Self::Flow => "flow",
+            Self::CsbZu => "csb_zu",
+            Self::TknZu => "tkn_zu",
+            Self::PZu => "p_zu",
+            Self::CsbAb => "csb_ab",
+            Self::TknAb => "tkn_ab",
+            Self::PAb => "p_ab",
+            Self::Klaergas => "klaergas",
+            Self::Methangehalt => "methangehalt",
+            Self::GasZusatz => "gas_zusatz",
+            Self::Biogas => "biogas",
+            Self::Strombedarf => "strombedarf",
+            Self::Eigenstrom => "eigenstrom",
+            Self::EfStrommix => "ef_strommix",
+            Self::Schlammtaschen => "schlammtaschen",
+            Self::Schlammstapel => "schlammstapel",
+            Self::KlaerschlammEnstorgung => "klaerschlamm_enstorgung",
+            Self::KlaerschlammTransport => "klaerschlamm_transport",
+            Self::BetriebsstoffeFe3 => "betriebsstoffe_fe3",
+            Self::BetriebsstoffeFeso4 => "betriebsstoffe_feso4",
+            Self::BetriebsstoffeKalk => "betriebsstoffe_kalk",
+            Self::BetriebsstoffePoly => "betriebsstoffe_poly",
+            Self::N2oSzenario => "n2o_szenario",
+        }
+    }
+}
+
+impl From<Id> for &'static str {
+    fn from(from: Id) -> Self {
+        from.as_str()
     }
 }
 
@@ -60,281 +133,405 @@ pub fn Home() -> impl IntoView {
         n2o_szenario,
     } = example_data();
 
+    let field_sets = vec![
+        // Allgemeine Infos zur Kläranlage
+        FieldSet {
+            title: "Angaben zur Kläranlage",
+            fields: vec![
+                // Name der Kläranlage
+                Field::Text {
+                    base: FieldBase {
+                        id: Id::Name,
+                        label: "Name oder Ort",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(name),
+                    max_len: None,
+                    placeholder: Some("Name der Kläranlage"),
+                },
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::Ew,
+                        label: "Ausbaugröße",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(ew.parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Ausbaugröße [EW]"),
+                    unit: "EW",
+                },
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::Flow,
+                        label: "Abwassermenge",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(flow.parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Abwassermenge"),
+                    unit: "m³/a",
+                },
+            ],
+        },
+        // Zulauf-Parameter
+        FieldSet {
+            title: "Zulauf-Parameter (Jahresmittelwerte)",
+            fields: vec![
+                // CSB
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::CsbZu,
+                        label: "Chemischer Sauerstoffbedarf",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(csb_zu.parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("CSB"),
+                    unit: "mg/L",
+                },
+                // TKN
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::TknZu,
+                        label: "Gesamtstickstoff",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(tkn_zu.parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("TKN"),
+                    unit: "mg/L",
+                },
+                // P
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::PZu,
+                        label: "Phosphor",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(p_zu.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("P"),
+                    unit: "mg/L",
+                },
+            ],
+        },
+        // Ablauf-Parameter
+        FieldSet {
+            title: "Ablauf-Parameter (Jahresmittelwerte)",
+            fields: vec![
+                // CSB
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::CsbAb,
+                        label: "Chemischer Sauerstoffbedarf",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(csb_ab.parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("CSB"),
+                    unit: "mg/L",
+                },
+                // TKN
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::TknAb,
+                        label: "Gesamtstickstoff",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(tkn_ab.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("TKN"),
+                    unit: "mg/L",
+                },
+                // P
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::PAb,
+                        label: "Phosphor",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(p_ab.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("P"),
+                    unit: "mg/L",
+                },
+            ],
+        },
+        // Energiebedarf
+        FieldSet {
+            title: "Energiebedarf",
+            fields: vec![
+                // Klärgas erzeugt
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::Klaergas,
+                        label: "Erzeugtes Klärgas",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(klaergas.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Klärgas"),
+                    unit: "m³",
+                },
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::Methangehalt,
+                        label: "Methangehalt",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(methangehalt.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("65"),
+                    unit: "%",
+                },
+                // Erdgas zugekauft
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::GasZusatz,
+                        label: "Gasbezug (Versorger)",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(gas_zusatz.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Gasbezug"),
+                    unit: "kWh/a",
+                },
+                // Biogas ja/nein
+                Field::Bool {
+                    base: FieldBase {
+                        label: "Bezug von Biogas",
+                        id: Id::Biogas,
+                        description: Some("ja/nein"),
+                        required: false,
+                    },
+                    initial_value: Some(biogas.as_deref() == Some("yes")),
+                },
+                // Strombedarf gesamt
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::Strombedarf,
+                        label: "Strombedarf gesamt",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(strombedarf.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Gesamtstrombedarf"),
+                    unit: "kWh/a",
+                },
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::Eigenstrom,
+                        label: "Eigenstromerzeugung",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(eigenstrom.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Eigenstrom"),
+                    unit: "kWh/a",
+                },
+                // Emissionsfaktor Strom-Mix
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::EfStrommix,
+                        label: "Emissionsfaktor Strommix (Versorger)",
+                        description: None,
+                        required: true,
+                    },
+                    // defaultValue = 485
+                    initial_value: Some(ef_strommix.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("485"),
+                    unit: "g CO₂/kWh",
+                },
+            ],
+        },
+        // Klärschlammbehandlung
+        FieldSet {
+            title: "Klärschlammbehandlung",
+            fields: vec![
+                Field::Bool {
+                    base: FieldBase {
+                        label: "Offene Schlammtaschen",
+                        id: Id::Schlammtaschen,
+                        description: Some("ja/nein"),
+                        required: false,
+                    },
+                    initial_value: Some(schlammtaschen.as_deref() == Some("yes")),
+                },
+                Field::Bool {
+                    base: FieldBase {
+                        label: "Offene Schlammstapelbehälter",
+                        id: Id::Schlammstapel,
+                        description: Some("ja/nein"),
+                        required: false,
+                    },
+                    initial_value: Some(schlammstapel.as_deref() == Some("yes")),
+                },
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::KlaerschlammEnstorgung,
+                        label: "Kläraschlamm zur Entsorgung",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(klaerschlamm_enstorgung.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Masse entwässert"),
+                    unit: "t",
+                },
+                Field::Float {
+                    base: FieldBase {
+                        id: Id::KlaerschlammTransport,
+                        label: "Transportdistanz",
+                        description: None,
+                        required: true,
+                    },
+                    initial_value: Some(klaerschlamm_transport.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                    placeholder: Some("Entfernung"),
+                    unit: "km",
+                },
+            ],
+        },
+        // Betriebsstoffe
+        FieldSet {
+            title: "Eingesetzte Betriebsstoffe",
+            fields: vec![
+                // Eisen(III)Chlorid
+                Field::Float {
+                    base: FieldBase {
+                        label: "Eisen(III)-chlorid-Lösung",
+                        description: None,
+                        id: Id::BetriebsstoffeFe3,
+                        required: true,
+                    },
+                    unit: "kg",
+                    placeholder: Some("kg Lösung"),
+                    initial_value: Some(betriebsstoffe_fe3.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                },
+                // Eisen(III)Chlorid
+                Field::Float {
+                    base: FieldBase {
+                        label: "Eisenchloridsulfat-Lösung",
+                        description: None,
+                        id: Id::BetriebsstoffeFeso4,
+                        required: true,
+                    },
+                    unit: "kg",
+                    placeholder: Some("kg Lösung"),
+                    initial_value: Some(betriebsstoffe_feso4.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                },
+                // Kalkhydrat
+                Field::Float {
+                    base: FieldBase {
+                        label: "Kalkhydrat",
+                        description: None,
+                        id: Id::BetriebsstoffeKalk,
+                        required: true,
+                    },
+                    unit: "kg",
+                    placeholder: Some("kg Branntkalk"),
+                    initial_value: Some(betriebsstoffe_kalk.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                },
+                // Polymere
+                Field::Float {
+                    base: FieldBase {
+                        label: "Synthetische Polymere",
+                        description: None,
+                        id: Id::BetriebsstoffePoly,
+                        required: true,
+                    },
+                    placeholder: Some("kg Polymere"),
+                    unit: "kg",
+                    initial_value: Some(betriebsstoffe_poly.replace(',', ".").parse().unwrap()),
+                    min_value: None,
+                    max_value: None,
+                },
+            ],
+        },
+        // Szenario
+        FieldSet {
+            title: "Schätzung des N₂O-Emissionsfaktors",
+            fields: vec![Field::Selection {
+                base: FieldBase {
+                    description: None,
+                    label: "Szenario",
+                    id: Id::N2oSzenario,
+                    required: true,
+                },
+                initial_value: Some(n2o_szenario.parse().unwrap()),
+                options: vec![
+                    forms::SelectOption {
+                        value: 0,
+                        label: "Extrapoliert nach Parravicini et al. 2016",
+                    },
+                    forms::SelectOption {
+                        value: 1,
+                        label: "Optimistisch",
+                    },
+                    forms::SelectOption {
+                        value: 2,
+                        label: "Pessimistisch",
+                    },
+                    forms::SelectOption {
+                        value: 3,
+                        label: "Nach IPCC 2019",
+                    },
+                ],
+            }],
+        },
+    ];
+
+    let (signals, set_views) = forms::render_field_sets(field_sets);
+    debug_assert!({
+        let mut ids = signals.iter().map(|(id, _)| id).collect::<Vec<_>>();
+        let n = ids.len();
+        ids.sort();
+        ids.dedup();
+        n == ids.len()
+    });
+
     view! {
 
     <form action="/submit" method="post" class="space-y-12">
+      { set_views }
 
-      // Allgemeine Infos zur Kläranlage
-
-      <div class="border-b border-gray-900/10 pb-12">
-        <h3 class="text-lg font-semibold leading-7 text-gray-900">Angaben zur Kläranlage</h3>
-
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-          // Name der Kläranlage
-          <TextInput
-            label= "Name oder Ort"
-            name="name"
-            placeholder="Name der Kläranlage"
-            value = name
-          />
-
-          // EW-Werte
-          <NumberInput
-            label= "Ausbaugröße"
-            name="ew"
-            placeholder="Ausbaugröße [EW]"
-            value = ew
-            unit = "EW"
-          />
-
-          // Abwassermenge
-          <NumberInput
-            label= "Abwassermenge"
-            name="flow"
-            placeholder="Abwassermenge"
-            value = flow
-            unit = "m³/a"
-          />
-
-        </div>
-      </div>
-
-      // Zulauf-Parameter
-      <div class="border-b border-gray-900/10 pb-12">
-        <h3 class="text-lg font-semibold leading-7 text-gray-900">"Zulauf-Parameter (Jahresmittelwerte)"</h3>
-
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-          // CSB
-          <NumberInput
-            label = "Chemischer Sauerstoffbedarf"
-            name="csb_zu"
-            placeholder="CSB"
-            value = csb_zu
-            unit = "mg/L"
-          />
-
-          // TKN
-          <NumberInput
-            label="Gesamtstickstoff"
-            name="tkn_zu" placeholder="TKN"
-            value = tkn_zu
-            unit = "mg/L"
-          />
-
-          // P
-          <NumberInput
-            label="Phosphor"
-            name="p_zu"
-            placeholder="P"
-            value = p_zu
-            unit = "mg/L"
-          />
-
-        </div>
-      </div>
-
-      // Ablauf-Parameter
-      <div class="border-b border-gray-900/10 pb-12">
-        <h3 class="text-lg font-semibold leading-7 text-gray-900">"Ablauf-Parameter (Jahresmittelwerte)"</h3>
-
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-          // CSB
-          <NumberInput
-            label = "Chemischer Sauerstoffbedarf"
-            name="csb_ab"
-            placeholder="CSB"
-            value = csb_ab
-            unit = "mg/L"
-          />
-
-          // TKN
-          <NumberInput
-            label = "Gesamtstickstoff"
-            name="tkn_ab"
-            placeholder="TKN"
-            value = tkn_ab
-            unit = "mg/L"
-          />
-
-          // P
-          <NumberInput
-            label="Phosphor"
-            name="p_ab"
-            placeholder="P"
-            value = p_ab
-            unit = "mg/L"
-          />
-
-        </div>
-      </div>
-
-      // Energiebedarf
-
-      <div class="border-b border-gray-900/10 pb-12">
-        <h3 class="text-lg font-semibold leading-7 text-gray-900">Energiebedarf</h3>
-
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-          // Klärgas erzeugt
-          <NumberInput
-            label="Erzeugtes Klärgas"
-            name="klaergas"
-            placeholder="Klärgas"
-            value = klaergas
-            unit = "m³"
-          />
-          <NumberInput
-            label="Methangehalt"
-            unit = "%"
-            name="methangehalt"
-            placeholder="65" value = methangehalt
-          />
-
-          // Erdgas zugekauft
-          <NumberInput
-            label= "Gasbezug (Versorger)"
-            name="gas_zusatz"
-            placeholder="Gasbezug"
-            value = gas_zusatz
-            unit = "kWh/a"
-          />
-
-          // Biogas ja/nein
-          <BoolInput label = "Bezug von Biogas" name="biogas" value = biogas.as_deref()== Some("yes") comment = None />
-
-          // Strombedarf gesamt
-          <NumberInput
-            label = "Strombedarf gesamt"
-            name="strombedarf"
-            placeholder="Gesamtstrombedarf"
-            value = strombedarf
-            unit = "kWh/a"
-          />
-
-          // Eigenstromerzeugung
-          <NumberInput
-            label = "Eigenstromerzeugung"
-            name="eigenstrom"
-            placeholder="Eigenstrom"
-            value = eigenstrom
-            unit = "kWh/a"
-          />
-
-          // Emissionsfaktor Strom-Mix
-          <NumberInput
-            label = "Emissionsfaktor Strommix (Versorger)"
-            name="ef_strommix"
-            //defaultValue = 485
-            placeholder="485"
-            value = ef_strommix
-            unit = "g CO₂/kWh"
-          />
-
-        </div>
-      </div>
-
-      // Klärschlammbehandlung
-      <div class="border-b border-gray-900/10 pb-12">
-        <h3 class="text-lg font-semibold leading-7 text-gray-900">Klärschlammbehandlung</h3>
-
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-          <BoolInput
-            name="schlammtaschen"
-            label = "Offene Schlammtaschen"
-            value = schlammtaschen.as_deref() == Some("yes")
-            comment = Some("ja/nein")
-          />
-
-          <BoolInput
-            name="schlammstapel"
-            label = "Offene Schlammstapelbehälter"
-            value = schlammstapel.as_deref() == Some("yes")
-            comment = Some("ja/nein")
-          />
-
-          <NumberInput
-            label = "Kläraschlamm zur Entsorgung"
-            unit = "t"
-            name = "klaerschlamm_enstorgung"
-            placeholder = "Masse entwässert"
-            value = klaerschlamm_enstorgung
-          />
-
-          <NumberInput
-            label = "Transportdistanz"
-            unit = "km"
-            name="klaerschlamm_transport"
-            placeholder="Entfernung"
-            value = klaerschlamm_transport
-          />
-
-        </div>
-      </div>
-
-      // Betriebsstoffe
-      <div class="border-b border-gray-900/10 pb-12">
-        <h3 class="text-lg font-semibold leading-7 text-gray-900">Eingesetzte Betriebsstoffe</h3>
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-          // Eisen(III)Chlorid
-          <NumberInput
-            label = "Eisen(III)-chlorid-Lösung"
-            unit = "kg"
-            name = "betriebsstoffe_fe3"
-            placeholder = "kg Lösung"
-            value = betriebsstoffe_fe3
-          />
-
-          // Eisen(III)Chlorid
-          <NumberInput
-            label = "Eisenchloridsulfat-Lösung"
-            unit = "kg"
-            name = "betriebsstoffe_feso4"
-            placeholder = "kg Lösung"
-            value = betriebsstoffe_feso4
-          />
-
-          // Kalkhydrat
-          <NumberInput
-            label = "Kalkhydrat"
-            unit = "kg"
-            name = "betriebsstoffe_kalk"
-            placeholder = "kg Branntkalk"
-            value = betriebsstoffe_kalk
-          />
-
-          // Polymere
-          <NumberInput
-            label = "Synthetische Polymere"
-            placeholder = "kg Polymere"
-            name = "betriebsstoffe_poly"
-            unit = "kg"
-            value = betriebsstoffe_poly
-          />
-
-        </div>
-      </div>
-
-      // Szenario
-      <div class="border-b border-gray-900/10 pb-12">
-        <h3 class="text-lg font-semibold leading-7 text-gray-900">Schätzung des N<sub>2</sub>O-Emissionsfaktors</h3>
-        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-          <div>
-            <label for="n2o_szenario" class="block text-sm font-bold leading-6 text-gray-900">Szenario</label>
-            <select name="n2o_szenario" class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-              <option value="0" selected = (n2o_szenario == "0")>Extrapoliert nach Parravicini et al. 2016</option>
-              <option value="1" selected = (n2o_szenario == "1")>Optimistisch</option>
-              <option value="2" selected = (n2o_szenario == "2")>Pessimistisch</option>
-              <option value="3" selected = (n2o_szenario == "3")>Nach IPCC 2019</option>
-            </select>
-          </div>
-
-        </div>
-      </div>
       <div class="mt-6 flex items-center justify-end gap-x-6">
         <input
           type="submit"
@@ -343,94 +540,5 @@ pub fn Home() -> impl IntoView {
       </div>
 
     </form>
-    }
-}
-
-#[component]
-fn NumberInput(
-    label: &'static str,
-    unit: &'static str,
-    placeholder: &'static str,
-    name: &'static str,
-    value: String,
-) -> impl IntoView {
-    let id = format!("form-input-{name}");
-
-    view! {
-      <div>
-        <label for={ id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
-        <div class="relative mt-2 rounded-md shadow-sm">
-          <input
-            id
-            type="text"
-            name = { name }
-            maxlength = 8
-            class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            placeholder= { placeholder }
-            // TODO: aria-describedby
-            value = { value }
-          />
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <span class="text-gray-500 sm:text-sm">{ unit }</span>
-          </div>
-        </div>
-      </div>
-    }
-}
-
-#[component]
-fn BoolInput(
-    label: &'static str,
-    name: &'static str,
-    value: bool,
-    comment: Option<&'static str>,
-) -> impl IntoView {
-    let id = format!("form-input-{name}");
-
-    view! {
-      <div class="relative flex items-start">
-        <div class="flex h-6 items-center">
-          <input
-            id
-            name
-            type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-            // TODO: aria-describedby
-            checked = value
-          />
-        </div>
-        <div class="ml-3 text-sm leading-6">
-          <label for={ id } class="font-bold text-gray-900">{ label }</label>
-          <p class="text-gray-500">{ comment }</p>
-        </div>
-      </div>
-    }
-}
-
-#[component]
-fn TextInput(
-    label: &'static str,
-    name: &'static str,
-    placeholder: &'static str,
-    value: String,
-) -> impl IntoView {
-    let id = format!("form-input-{name}");
-
-    view! {
-      <div>
-        <label for={ id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
-        <div class="relative mt-2 rounded-md shadow-sm">
-          <input
-            id
-            type="text"
-            name = { name }
-            maxlength = 8
-            class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            placeholder= { placeholder }
-            // TODO: aria-describedby
-            value = { value }
-          />
-        </div>
-      </div>
     }
 }

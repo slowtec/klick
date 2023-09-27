@@ -2,6 +2,7 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 
+mod forms;
 mod pages;
 
 use self::pages::{Documentation, Home};

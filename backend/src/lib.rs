@@ -67,7 +67,7 @@ async fn not_found() -> Response {
 }
 
 async fn create_sankey(Form(data): Form<klick_boundary::FormData>) -> Html<String> {
-    log::debug!("{data:?}");
+    log::debug!("Received {data:#?}");
 
     let klick_boundary::FormData {
         name,
@@ -126,8 +126,10 @@ async fn create_sankey(Form(data): Form<klick_boundary::FormData>) -> Html<Strin
     let klaerschlamm_transport_km = float(klaerschlamm_transport); // [t co2eq/a]
     let klaerschlamm_entsorgung_m = float(klaerschlamm_enstorgung); // [t co2eq/a]
 
-    let schlammtaschen = schlammtaschen.as_deref() == Some("yes");
-    let schlammstapel = schlammstapel.as_deref() == Some("yes");
+    let schlammtaschen =
+        schlammtaschen.as_deref() == Some("yes") || schlammtaschen.as_deref() == Some("on");
+    let schlammstapel =
+        schlammstapel.as_deref() == Some("yes") || schlammstapel.as_deref() == Some("on");
 
     let ef_co2_strommix = float(ef_strommix); // [g co2/kwh]
 
@@ -153,7 +155,10 @@ async fn create_sankey(Form(data): Form<klick_boundary::FormData>) -> Html<Strin
         n2o_szenario,
     };
 
+    log::debug!("Calculating with {input_data:#?}");
     let output_data = klick_application::calc(&input_data);
+
+    log::debug!("Result is {output_data:#?}");
 
     let klick_application::OutputData {
         co2eq_n2o_anlage,
@@ -247,6 +252,7 @@ async fn create_sankey(Form(data): Form<klick_boundary::FormData>) -> Html<Strin
             .data(sankey_data)
             .links(sankey_links),
     );
+    log::debug!("Render Sankey chart");
     let renderer = charming::HtmlRenderer::new(title, 1200, 800);
     let html_string = renderer.render(&chart).unwrap();
     Html(html_string)
