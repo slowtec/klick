@@ -24,8 +24,12 @@ frontend-release: css-release
 frontend-watch:
   cd frontend && trunk serve
 
+# Install NPM packages (required for tailwind)
+frontend-install-npm-packages:
+  cd frontend && npm install
+
 # Build CSS file
-css:
+css: frontend-install-npm-packages
   cd frontend && tailwindcss -i src/style.css -o target/style.css
 
 # Build and minify CSS file
