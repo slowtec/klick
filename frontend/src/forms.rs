@@ -358,15 +358,15 @@ fn SelectInput(
           <For
             each = move || options.clone()
             key = |option| option.value
-            view = move |option| view! {
-              <option
-                value = option.value
-                selected = (value.get() == Some(option.value))
-              >
-                { option.label }
-              </option>
-            }
-          />
+            let:option
+          >
+            <option
+              value = option.value
+              selected = (value.get() == Some(option.value))
+            >
+              { option.label }
+            </option>
+          </For>
         </select>
       </div>
     }
