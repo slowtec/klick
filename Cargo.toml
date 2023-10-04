@@ -5,6 +5,7 @@ resolver = "2"
 
 [workspace.package]
 authors = ["slowtec GmbH <post@slowtec.de>"]
+license = "AGPL-3.0-or-later"
 version = "0.0.0"
 edition = "2021"
 rust-version = "1.72.1"

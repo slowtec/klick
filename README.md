@@ -1,5 +1,9 @@
 # KlicK
 
+KlicK – Klimabilanzen an Kläranlagen mit einem Klick
+
+[![License](https://img.shields.io/badge/license-AGPLv3-blue.svg?style=flat)](https://codeberg.org/slowtec/klick/raw/branch/master/LICENSE)
+
 ## Getting started
 
 ### Install Rust
@@ -25,6 +29,4 @@ just
 
 Copyright (c) 2023 [slowtec GmbH](https://slowtec.de)
 
-The license of this project is not yet fixed.\
-Probably it will be an open source license like the AGPLv3,
-but until this is clarified, the code is proprietary property of slowtec GmbH.
+This project is licensed unter the [AGPLv3 license](https://www.gnu.org/licenses/agpl-3.0.html).
