@@ -310,7 +310,7 @@ fn BoolInput(
           <input
             id = { &field_id }
             type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+            class="h-4 w-4 rounded border-gray-300 text-highlight focus:ring-highlight"
             // TODO: aria-describedby
             prop:checked = move || value.get()
             on:input = move |_| { value.update(|v| *v = !*v); }
