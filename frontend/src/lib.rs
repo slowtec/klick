@@ -7,6 +7,7 @@ mod forms;
 mod imprint;
 mod nav;
 mod pages;
+mod sankey;
 
 use self::{
     footer::Footer,

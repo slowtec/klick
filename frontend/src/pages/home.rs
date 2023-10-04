@@ -1,14 +1,11 @@
-use charming::{
-    component::Title,
-    element::{Emphasis, EmphasisFocus},
-    series::Sankey,
-    Chart,
-};
 use leptos::*;
 
 use klick_application::ValueId;
 
-use crate::forms::{self, FieldSignal, FieldType};
+use crate::{
+    forms::{self, FieldSignal, FieldType},
+    sankey,
+};
 
 type Field = forms::Field<ValueId>;
 type FieldSet = forms::FieldSet<ValueId>;
@@ -409,108 +406,12 @@ pub fn Home() -> impl IntoView {
 
     let render = create_action(move |output_data: &klick_application::OutputData| {
         let output_data = output_data.clone();
-
+        let name_ka = name_ka
+            .get_text()
+            .unwrap_or_else(|| "Kläranlage".to_string());
+        let ew = ew.get_float().unwrap_or_default();
         async move {
-            let klick_application::OutputData {
-                co2eq_n2o_anlage,
-                co2eq_n2o_gewaesser,
-                co2eq_ch4_klaerprozes,
-                co2eq_ch4_schlammstapel,
-                co2eq_ch4_schlammtasche,
-                co2eq_ch4_gewaesser,
-                co2eq_ch4_bhkw,
-                co2eq_betriebsstoffe_fe3,
-                co2eq_betriebsstoffe_feso4,
-                co2eq_betriebsstoffe_kalk,
-                co2eq_betriebsstoffe_poly,
-                co2eq_strommix,
-                co2eq_betriebsstoffe,
-                co2eq_klaerschlamm_transport,
-                direkte_emissionen_co2_eq,
-                indirekte_emissionen_co2_eq,
-                weitere_indirekte_emissionen_co2_eq,
-                emissionen_co2_eq,
-            } = output_data;
-
-            let dir_em = "Direkte Emissionen";
-            let indir_em = "Indirekte Emissionen";
-            let wei_indir_em = "Weitere Indirekte Emissionen";
-            let nu = "Nutzung";
-            let em = "Emission";
-
-            let streams: Vec<(_, _, _)> = vec![
-                ("N<sub>2</sub>O Anlage", dir_em, co2eq_n2o_anlage),
-                ("N<sub>2</sub>O Gewaesser", dir_em, co2eq_n2o_gewaesser),
-                ("CH<sub>4</sub> Klärprozess", dir_em, co2eq_ch4_klaerprozes),
-                (
-                    "CH<sub>4</sub> Schlupf Schlammstapel",
-                    dir_em,
-                    co2eq_ch4_schlammstapel,
-                ),
-                (
-                    "CH<sub>4</sub> Schlupf Schlammtasche",
-                    dir_em,
-                    co2eq_ch4_schlammtasche,
-                ),
-                ("CH<sub>4</sub> Gewaesser", dir_em, co2eq_ch4_gewaesser),
-                ("CH<sub>4</sub> BHKW", dir_em, co2eq_ch4_bhkw),
-                (
-                    "Eisen(III)-chlorid-Lösung",
-                    "Betriebsstoffe",
-                    co2eq_betriebsstoffe_fe3,
-                ),
-                (
-                    "Eisenchloridsulfat-Lösung",
-                    "Betriebsstoffe",
-                    co2eq_betriebsstoffe_feso4,
-                ),
-                ("Kalkhydrat", "Betriebsstoffe", co2eq_betriebsstoffe_kalk),
-                (
-                    "Synthetische Polymere",
-                    "Betriebsstoffe",
-                    co2eq_betriebsstoffe_poly,
-                ),
-                ("Strommix", indir_em, co2eq_strommix),
-                ("Betriebsstoffe", wei_indir_em, co2eq_betriebsstoffe),
-                (
-                    "Klaerschlamm Transport",
-                    wei_indir_em,
-                    co2eq_klaerschlamm_transport,
-                ),
-                (dir_em, nu, direkte_emissionen_co2_eq),
-                (indir_em, nu, indirekte_emissionen_co2_eq),
-                (wei_indir_em, nu, weitere_indirekte_emissionen_co2_eq),
-                (nu, em, emissionen_co2_eq),
-            ];
-
-            let mut labels: Vec<_> = vec![];
-
-            for (src, target, _) in &streams {
-                labels.push(src.to_string());
-                labels.push(target.to_string());
-            }
-
-            let einheit = "t co2-eq/Jahr"; // Ebenfalls in Anführungszeichen, Einheitliche - Gesamt KA oder Bezug auf EW
-            let name_ka = name_ka
-                .get_text()
-                .unwrap_or_else(|| "Kläranlage".to_string());
-            let ew = ew.get_float().unwrap_or_default();
-            let title = format!("{name_ka} ({ew} EW)<br />Treibhausgasemissionen [{einheit}]");
-
-            labels.sort();
-            labels.dedup();
-            let sankey_data: Vec<_> = labels;
-            let sankey_links: Vec<(_, _, f64)> = streams;
-
-            let chart = Chart::new().title(Title::new().text(title)).series(
-                Sankey::new()
-                    .emphasis(Emphasis::new().focus(EmphasisFocus::Adjacency))
-                    .data(sankey_data)
-                    .links(sankey_links),
-            );
-            log::debug!("Render Sankey chart");
-            let renderer = charming::WasmRenderer::new(1200, 800);
-            renderer.render("chart", &chart).unwrap();
+            sankey::render(&name_ka, ew, output_data, "chart");
         }
     });
 
