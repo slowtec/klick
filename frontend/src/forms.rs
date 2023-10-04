@@ -1,11 +1,24 @@
-use std::{collections::HashMap, hash::Hash};
+use std::{
+    collections::HashMap,
+    hash::Hash,
+    sync::atomic::{AtomicUsize, Ordering},
+};
 
+use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
 
 #[derive(Debug)]
-pub enum Field<ID> {
+pub struct Field<ID> {
+    pub id: ID,
+    pub label: &'static str,
+    pub description: Option<&'static str>,
+    pub required: bool,
+    pub field_type: FieldType,
+}
+
+#[derive(Debug)]
+pub enum FieldType {
     Float {
-        base: FieldBase<ID>,
         initial_value: Option<f64>,
         placeholder: Option<&'static str>,
         min_value: Option<f64>,
@@ -13,39 +26,39 @@ pub enum Field<ID> {
         unit: &'static str,
     },
     Text {
-        base: FieldBase<ID>,
         initial_value: Option<String>,
         placeholder: Option<&'static str>,
         max_len: Option<usize>,
     },
     Bool {
-        base: FieldBase<ID>,
         initial_value: Option<bool>,
     },
     Selection {
-        base: FieldBase<ID>,
         initial_value: Option<usize>,
         options: Vec<SelectOption>,
     },
 }
 
-impl<ID: Copy> Field<ID> {
-    const fn id(&self) -> ID {
-        match self {
-            Self::Float { base, .. } => base.id,
-            Self::Text { base, .. } => base.id,
-            Self::Bool { base, .. } => base.id,
-            Self::Selection { base, .. } => base.id,
-        }
-    }
+static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
+
+fn unique_id() -> usize {
+    return ID_COUNTER.fetch_add(1, Ordering::SeqCst);
 }
 
-#[derive(Debug)]
-pub struct FieldBase<ID> {
-    pub id: ID,
-    pub label: &'static str,
-    pub description: Option<&'static str>,
-    pub required: bool,
+impl<ID> Field<ID>
+where
+    ID: Copy + AsRef<str>,
+{
+    fn form_field_id(&self) -> String {
+        // DOM element IDs needs to be locally unique
+        // within the HTML document.
+        let id = unique_id();
+
+        // The name is only for humans for better readability.
+        let name = to_kebab_case(self.id.as_ref());
+
+        format!("{name}-{id}")
+    }
 }
 
 #[derive(Debug)]
@@ -99,7 +112,7 @@ pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
 ) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>)
 where
-    ID: Into<&'static str> + Copy + Hash + Eq,
+    ID: AsRef<str> + Copy + Hash + Eq,
 {
     let mut signals = HashMap::new();
     let mut set_views = vec![];
@@ -108,7 +121,7 @@ where
         let mut field_views = vec![];
 
         for field in set.fields {
-            let id = field.id();
+            let id = field.id;
             let (field_signal, view) = render_field(field);
             field_views.push(view);
             signals.insert(id, field_signal);
@@ -131,22 +144,26 @@ where
 
 fn render_field<ID>(field: Field<ID>) -> (FieldSignal, impl IntoView)
 where
-    ID: Into<&'static str> + Copy,
+    ID: AsRef<str> + Copy,
 {
-    match field {
-        Field::Text {
-            base,
+    let Field {
+        description, label, ..
+    } = field;
+
+    let field_id = field.form_field_id();
+
+    match field.field_type {
+        FieldType::Text {
             placeholder,
             initial_value,
             max_len,
-            ..
         } => {
             let signal = create_rw_signal(initial_value);
             let field_signal = FieldSignal::Text(signal);
             let view = view! {
               <TextInput
-                label = base.label
-                name = base.id.into()
+                label
+                field_id
                 placeholder = placeholder.unwrap()
                 value = signal
                 max_len
@@ -155,8 +172,7 @@ where
             .into_view();
             (field_signal, view)
         }
-        Field::Float {
-            base,
+        FieldType::Float {
             placeholder,
             unit,
             initial_value,
@@ -167,8 +183,8 @@ where
 
             let view = view! {
               <NumberInput
-                label = base.label
-                name = base.id.into()
+                label
+                field_id
                 placeholder = placeholder.unwrap()
                 value = signal
                 unit
@@ -177,26 +193,21 @@ where
             .into_view();
             (field_signal, view)
         }
-        Field::Bool {
-            base,
-            initial_value,
-            ..
-        } => {
+        FieldType::Bool { initial_value } => {
             let signal = create_rw_signal(initial_value.unwrap_or_default());
             let field_signal = FieldSignal::Bool(signal);
             let view = view! {
               <BoolInput
-                label = base.label
-                name = base.id.into()
+                label
+                field_id
                 value = signal
-                comment = base.description
+                comment = description
               />
             }
             .into_view();
             (field_signal, view)
         }
-        Field::Selection {
-            base,
+        FieldType::Selection {
             initial_value,
             options,
         } => {
@@ -204,8 +215,8 @@ where
             let field_signal = FieldSignal::Selection(signal);
             let view = view! {
               <SelectInput
-                label = base.label
-                name = base.id.into()
+                label
+                field_id
                 value = signal
                 options
               />
@@ -219,21 +230,18 @@ where
 #[component]
 fn TextInput(
     label: &'static str,
-    name: &'static str,
+    field_id: String,
     placeholder: &'static str,
     value: RwSignal<Option<String>>,
     max_len: Option<usize>,
 ) -> impl IntoView {
-    let input_id = format!("form-input-{name}");
-
     view! {
       <div>
-        <label for={ &input_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+        <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             type = "text"
-            id = { input_id }
-            name = { name }
+            id = { field_id }
             maxlength = { max_len }
             class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             placeholder= { placeholder }
@@ -258,19 +266,16 @@ fn NumberInput(
     label: &'static str,
     unit: &'static str,
     placeholder: &'static str,
-    name: &'static str,
+    field_id: String,
     value: RwSignal<Option<f64>>,
 ) -> impl IntoView {
-    let input_id = format!("form-number-input-{name}");
-
     view! {
       <div>
-        <label for={ &input_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+        <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
-            id = { input_id }
+            id = { field_id }
             type="text"
-            name = { name }
             class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             placeholder= { placeholder }
             // TODO: aria-describedby
@@ -295,18 +300,15 @@ fn NumberInput(
 #[component]
 fn BoolInput(
     label: &'static str,
-    name: &'static str,
+    field_id: String,
     value: RwSignal<bool>,
     comment: Option<&'static str>,
 ) -> impl IntoView {
-    let input_id = format!("form-bool-input-{name}");
-
     view! {
       <div class="relative flex items-start">
         <div class="flex h-6 items-center">
           <input
-            id  = { &input_id }
-            name = { name }
+            id = { &field_id }
             type="checkbox"
             class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
             // TODO: aria-describedby
@@ -315,7 +317,7 @@ fn BoolInput(
           />
         </div>
         <div class="ml-3 text-sm leading-6">
-          <label for={ input_id } class="font-bold text-gray-900">{ label }</label>
+          <label for={ field_id } class="font-bold text-gray-900">{ label }</label>
           <p class="text-gray-500">{ comment }</p>
         </div>
       </div>
@@ -325,23 +327,20 @@ fn BoolInput(
 #[component]
 fn SelectInput(
     label: &'static str,
-    name: &'static str,
+    field_id: String,
     value: RwSignal<Option<usize>>,
     options: Vec<SelectOption>,
 ) -> impl IntoView {
-    let id = format!("form-select-input-{name}");
-
     view! {
       <div>
         <label
-          for={ id.clone() }
+          for={ &field_id }
           class="block text-sm font-bold leading-6 text-gray-900"
         >
           { label }
         </label>
         <select
-          name = { name }
-          id = { id }
+          id = { field_id }
           class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
           on:change = move |ev| {
               let target_value = event_target_value(&ev);
@@ -350,7 +349,9 @@ fn SelectInput(
               } else {
                  match target_value.parse() {
                     Ok(v) => { value.set(Some(v)) },
-                    Err(_) => { log::error!("Unexpected option value {target_value}"); },
+                    Err(_) => {
+                      log::error!("Unexpected option value {target_value}");
+                    },
                  }
               }
           }

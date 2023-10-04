@@ -1,3 +1,34 @@
+use strum_macros::AsRefStr;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, AsRefStr)]
+pub enum ValueId {
+    Name,
+    Ew,
+    Flow,
+    CsbZu,
+    TknZu,
+    PZu,
+    CsbAb,
+    TknAb,
+    PAb,
+    Klaergas,
+    Methangehalt,
+    GasZusatz,
+    Biogas,
+    Strombedarf,
+    Eigenstrom,
+    EfStrommix,
+    Schlammtaschen,
+    Schlammstapel,
+    KlaerschlammEnstorgung,
+    KlaerschlammTransport,
+    BetriebsstoffeFe3,
+    BetriebsstoffeFeso4,
+    BetriebsstoffeKalk,
+    BetriebsstoffePoly,
+    N2oSzenario,
+}
+
 #[derive(Debug, Clone)]
 pub struct InputData {
     pub ew: f64,

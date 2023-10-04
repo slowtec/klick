@@ -6,78 +6,12 @@ use charming::{
 };
 use leptos::*;
 
-use crate::forms::{self, FieldSignal};
+use klick_application::ValueId;
 
-type Field = forms::Field<Id>;
-type FieldBase = forms::FieldBase<Id>;
-type FieldSet = forms::FieldSet<Id>;
+use crate::forms::{self, FieldSignal, FieldType};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-enum Id {
-    Name,
-    Ew,
-    Flow,
-    CsbZu,
-    TknZu,
-    PZu,
-    CsbAb,
-    TknAb,
-    PAb,
-    Klaergas,
-    Methangehalt,
-    GasZusatz,
-    Biogas,
-    Strombedarf,
-    Eigenstrom,
-    EfStrommix,
-    Schlammtaschen,
-    Schlammstapel,
-    KlaerschlammEnstorgung,
-    KlaerschlammTransport,
-    BetriebsstoffeFe3,
-    BetriebsstoffeFeso4,
-    BetriebsstoffeKalk,
-    BetriebsstoffePoly,
-    N2oSzenario,
-}
-
-impl Id {
-    const fn as_str(&self) -> &'static str {
-        match self {
-            Self::Name => "name",
-            Self::Ew => "ew",
-            Self::Flow => "flow",
-            Self::CsbZu => "csb_zu",
-            Self::TknZu => "tkn_zu",
-            Self::PZu => "p_zu",
-            Self::CsbAb => "csb_ab",
-            Self::TknAb => "tkn_ab",
-            Self::PAb => "p_ab",
-            Self::Klaergas => "klaergas",
-            Self::Methangehalt => "methangehalt",
-            Self::GasZusatz => "gas_zusatz",
-            Self::Biogas => "biogas",
-            Self::Strombedarf => "strombedarf",
-            Self::Eigenstrom => "eigenstrom",
-            Self::EfStrommix => "ef_strommix",
-            Self::Schlammtaschen => "schlammtaschen",
-            Self::Schlammstapel => "schlammstapel",
-            Self::KlaerschlammEnstorgung => "klaerschlamm_enstorgung",
-            Self::KlaerschlammTransport => "klaerschlamm_transport",
-            Self::BetriebsstoffeFe3 => "betriebsstoffe_fe3",
-            Self::BetriebsstoffeFeso4 => "betriebsstoffe_feso4",
-            Self::BetriebsstoffeKalk => "betriebsstoffe_kalk",
-            Self::BetriebsstoffePoly => "betriebsstoffe_poly",
-            Self::N2oSzenario => "n2o_szenario",
-        }
-    }
-}
-
-impl From<Id> for &'static str {
-    fn from(from: Id) -> Self {
-        from.as_str()
-    }
-}
+type Field = forms::Field<ValueId>;
+type FieldSet = forms::FieldSet<ValueId>;
 
 #[component]
 pub fn Home() -> impl IntoView {
@@ -108,394 +42,370 @@ pub fn Home() -> impl IntoView {
     let n2o_szenario = 3;
 
     let field_sets = vec![
-        // Allgemeine Infos zur Kläranlage
         FieldSet {
             title: "Angaben zur Kläranlage",
             fields: vec![
-                // Name der Kläranlage
-                Field::Text {
-                    base: FieldBase {
-                        id: Id::Name,
-                        label: "Name oder Ort",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::Name,
+                    label: "Name oder Ort",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Text {
+                        initial_value: Some(name),
+                        max_len: None,
+                        placeholder: Some("Name der Kläranlage"),
                     },
-                    initial_value: Some(name),
-                    max_len: None,
-                    placeholder: Some("Name der Kläranlage"),
                 },
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::Ew,
-                        label: "Ausbaugröße",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::Ew,
+                    label: "Ausbaugröße",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(ew),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Ausbaugröße [EW]"),
+                        unit: "EW",
                     },
-                    initial_value: Some(ew),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Ausbaugröße [EW]"),
-                    unit: "EW",
                 },
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::Flow,
-                        label: "Abwassermenge",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::Flow,
+                    label: "Abwassermenge",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(flow),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Abwassermenge"),
+                        unit: "m³/a",
                     },
-                    initial_value: Some(flow),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Abwassermenge"),
-                    unit: "m³/a",
                 },
             ],
         },
-        // Zulauf-Parameter
         FieldSet {
             title: "Zulauf-Parameter (Jahresmittelwerte)",
             fields: vec![
-                // CSB
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::CsbZu,
-                        label: "Chemischer Sauerstoffbedarf",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::CsbZu,
+                    label: "Chemischer Sauerstoffbedarf",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(csb_zu),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("CSB"),
+                        unit: "mg/L",
                     },
-                    initial_value: Some(csb_zu),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("CSB"),
-                    unit: "mg/L",
                 },
-                // TKN
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::TknZu,
-                        label: "Gesamtstickstoff",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::TknZu,
+                    label: "Gesamtstickstoff",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(tkn_zu),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("TKN"),
+                        unit: "mg/L",
                     },
-                    initial_value: Some(tkn_zu),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("TKN"),
-                    unit: "mg/L",
                 },
-                // P
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::PZu,
-                        label: "Phosphor",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::PZu,
+                    label: "Phosphor",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(p_zu),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("P"),
+                        unit: "mg/L",
                     },
-                    initial_value: Some(p_zu),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("P"),
-                    unit: "mg/L",
                 },
             ],
         },
-        // Ablauf-Parameter
         FieldSet {
             title: "Ablauf-Parameter (Jahresmittelwerte)",
             fields: vec![
-                // CSB
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::CsbAb,
-                        label: "Chemischer Sauerstoffbedarf",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::CsbAb,
+                    label: "Chemischer Sauerstoffbedarf",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(csb_ab),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("CSB"),
+                        unit: "mg/L",
                     },
-                    initial_value: Some(csb_ab),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("CSB"),
-                    unit: "mg/L",
                 },
-                // TKN
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::TknAb,
-                        label: "Gesamtstickstoff",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::TknAb,
+                    label: "Gesamtstickstoff",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(tkn_ab),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("TKN"),
+                        unit: "mg/L",
                     },
-                    initial_value: Some(tkn_ab),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("TKN"),
-                    unit: "mg/L",
                 },
-                // P
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::PAb,
-                        label: "Phosphor",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::PAb,
+                    label: "Phosphor",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(p_ab),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("P"),
+                        unit: "mg/L",
                     },
-                    initial_value: Some(p_ab),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("P"),
-                    unit: "mg/L",
                 },
             ],
         },
-        // Energiebedarf
         FieldSet {
             title: "Energiebedarf",
             fields: vec![
-                // Klärgas erzeugt
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::Klaergas,
-                        label: "Erzeugtes Klärgas",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::Klaergas,
+                    label: "Erzeugtes Klärgas",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(klaergas),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Klärgas"),
+                        unit: "m³",
                     },
-                    initial_value: Some(klaergas),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Klärgas"),
-                    unit: "m³",
                 },
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::Methangehalt,
-                        label: "Methangehalt",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::Methangehalt,
+                    label: "Methangehalt",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(methangehalt),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("65"),
+                        unit: "%",
                     },
-                    initial_value: Some(methangehalt),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("65"),
-                    unit: "%",
                 },
-                // Erdgas zugekauft
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::GasZusatz,
-                        label: "Gasbezug (Versorger)",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::GasZusatz,
+                    label: "Gasbezug (Versorger)",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(gas_zusatz),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Gasbezug"),
+                        unit: "kWh/a",
                     },
-                    initial_value: Some(gas_zusatz),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Gasbezug"),
-                    unit: "kWh/a",
                 },
-                // Biogas ja/nein
-                Field::Bool {
-                    base: FieldBase {
-                        label: "Bezug von Biogas",
-                        id: Id::Biogas,
-                        description: Some("ja/nein"),
-                        required: false,
+                Field {
+                    label: "Bezug von Biogas",
+                    id: ValueId::Biogas,
+                    description: Some("ja/nein"),
+                    required: false,
+                    field_type: FieldType::Bool {
+                        initial_value: Some(biogas),
                     },
-                    initial_value: Some(biogas),
                 },
-                // Strombedarf gesamt
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::Strombedarf,
-                        label: "Strombedarf gesamt",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::Strombedarf,
+                    label: "Strombedarf gesamt",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(strombedarf),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Gesamtstrombedarf"),
+                        unit: "kWh/a",
                     },
-                    initial_value: Some(strombedarf),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Gesamtstrombedarf"),
-                    unit: "kWh/a",
                 },
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::Eigenstrom,
-                        label: "Eigenstromerzeugung",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::Eigenstrom,
+                    label: "Eigenstromerzeugung",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(eigenstrom),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Eigenstrom"),
+                        unit: "kWh/a",
                     },
-                    initial_value: Some(eigenstrom),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Eigenstrom"),
-                    unit: "kWh/a",
                 },
-                // Emissionsfaktor Strom-Mix
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::EfStrommix,
-                        label: "Emissionsfaktor Strommix (Versorger)",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::EfStrommix,
+                    label: "Emissionsfaktor Strommix (Versorger)",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(ef_strommix),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("485"),
+                        unit: "g CO₂/kWh",
                     },
-                    // defaultValue = 485
-                    initial_value: Some(ef_strommix),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("485"),
-                    unit: "g CO₂/kWh",
                 },
             ],
         },
-        // Klärschlammbehandlung
         FieldSet {
             title: "Klärschlammbehandlung",
             fields: vec![
-                Field::Bool {
-                    base: FieldBase {
-                        label: "Offene Schlammtaschen",
-                        id: Id::Schlammtaschen,
-                        description: Some("ja/nein"),
-                        required: false,
+                Field {
+                    label: "Offene Schlammtaschen",
+                    id: ValueId::Schlammtaschen,
+                    description: Some("ja/nein"),
+                    required: false,
+                    field_type: FieldType::Bool {
+                        initial_value: Some(schlammtaschen),
                     },
-                    initial_value: Some(schlammtaschen),
                 },
-                Field::Bool {
-                    base: FieldBase {
-                        label: "Offene Schlammstapelbehälter",
-                        id: Id::Schlammstapel,
-                        description: Some("ja/nein"),
-                        required: false,
+                Field {
+                    label: "Offene Schlammstapelbehälter",
+                    id: ValueId::Schlammstapel,
+                    description: Some("ja/nein"),
+                    required: false,
+                    field_type: FieldType::Bool {
+                        initial_value: Some(schlammstapel),
                     },
-                    initial_value: Some(schlammstapel),
                 },
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::KlaerschlammEnstorgung,
-                        label: "Kläraschlamm zur Entsorgung",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::KlaerschlammEnstorgung,
+                    label: "Kläraschlamm zur Entsorgung",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(klaerschlamm_enstorgung),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Masse entwässert"),
+                        unit: "t",
                     },
-                    initial_value: Some(klaerschlamm_enstorgung),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Masse entwässert"),
-                    unit: "t",
                 },
-                Field::Float {
-                    base: FieldBase {
-                        id: Id::KlaerschlammTransport,
-                        label: "Transportdistanz",
-                        description: None,
-                        required: true,
+                Field {
+                    id: ValueId::KlaerschlammTransport,
+                    label: "Transportdistanz",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: Some(klaerschlamm_transport),
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Entfernung"),
+                        unit: "km",
                     },
-                    initial_value: Some(klaerschlamm_transport),
-                    min_value: None,
-                    max_value: None,
-                    placeholder: Some("Entfernung"),
-                    unit: "km",
                 },
             ],
         },
-        // Betriebsstoffe
         FieldSet {
             title: "Eingesetzte Betriebsstoffe",
             fields: vec![
-                // Eisen(III)Chlorid
-                Field::Float {
-                    base: FieldBase {
-                        label: "Eisen(III)-chlorid-Lösung",
-                        description: None,
-                        id: Id::BetriebsstoffeFe3,
-                        required: true,
+                Field {
+                    label: "Eisen(III)-chlorid-Lösung",
+                    description: None,
+                    id: ValueId::BetriebsstoffeFe3,
+                    required: true,
+                    field_type: FieldType::Float {
+                        unit: "kg",
+                        placeholder: Some("kg Lösung"),
+                        initial_value: Some(betriebsstoffe_fe3),
+                        min_value: None,
+                        max_value: None,
                     },
-                    unit: "kg",
-                    placeholder: Some("kg Lösung"),
-                    initial_value: Some(betriebsstoffe_fe3),
-                    min_value: None,
-                    max_value: None,
                 },
-                // Eisen(III)Chlorid
-                Field::Float {
-                    base: FieldBase {
-                        label: "Eisenchloridsulfat-Lösung",
-                        description: None,
-                        id: Id::BetriebsstoffeFeso4,
-                        required: true,
+                Field {
+                    label: "Eisenchloridsulfat-Lösung",
+                    description: None,
+                    id: ValueId::BetriebsstoffeFeso4,
+                    required: true,
+                    field_type: FieldType::Float {
+                        unit: "kg",
+                        placeholder: Some("kg Lösung"),
+                        initial_value: Some(betriebsstoffe_feso4),
+                        min_value: None,
+                        max_value: None,
                     },
-                    unit: "kg",
-                    placeholder: Some("kg Lösung"),
-                    initial_value: Some(betriebsstoffe_feso4),
-                    min_value: None,
-                    max_value: None,
                 },
-                // Kalkhydrat
-                Field::Float {
-                    base: FieldBase {
-                        label: "Kalkhydrat",
-                        description: None,
-                        id: Id::BetriebsstoffeKalk,
-                        required: true,
+                Field {
+                    label: "Kalkhydrat",
+                    description: None,
+                    id: ValueId::BetriebsstoffeKalk,
+                    required: true,
+                    field_type: FieldType::Float {
+                        unit: "kg",
+                        placeholder: Some("kg Branntkalk"),
+                        initial_value: Some(betriebsstoffe_kalk),
+                        min_value: None,
+                        max_value: None,
                     },
-                    unit: "kg",
-                    placeholder: Some("kg Branntkalk"),
-                    initial_value: Some(betriebsstoffe_kalk),
-                    min_value: None,
-                    max_value: None,
                 },
-                // Polymere
-                Field::Float {
-                    base: FieldBase {
-                        label: "Synthetische Polymere",
-                        description: None,
-                        id: Id::BetriebsstoffePoly,
-                        required: true,
+                Field {
+                    label: "Synthetische Polymere",
+                    description: None,
+                    id: ValueId::BetriebsstoffePoly,
+                    required: true,
+                    field_type: FieldType::Float {
+                        placeholder: Some("kg Polymere"),
+                        unit: "kg",
+                        initial_value: Some(betriebsstoffe_poly),
+                        min_value: None,
+                        max_value: None,
                     },
-                    placeholder: Some("kg Polymere"),
-                    unit: "kg",
-                    initial_value: Some(betriebsstoffe_poly),
-                    min_value: None,
-                    max_value: None,
                 },
             ],
         },
-        // Szenario
         FieldSet {
             title: "Schätzung des N₂O-Emissionsfaktors",
-            fields: vec![Field::Selection {
-                base: FieldBase {
-                    description: None,
-                    label: "Szenario",
-                    id: Id::N2oSzenario,
-                    required: true,
+            fields: vec![Field {
+                description: None,
+                label: "Szenario",
+                id: ValueId::N2oSzenario,
+                required: true,
+                field_type: FieldType::Selection {
+                    initial_value: Some(n2o_szenario),
+                    options: vec![
+                        forms::SelectOption {
+                            value: 0,
+                            label: "Extrapoliert nach Parravicini et al. 2016",
+                        },
+                        forms::SelectOption {
+                            value: 1,
+                            label: "Optimistisch",
+                        },
+                        forms::SelectOption {
+                            value: 2,
+                            label: "Pessimistisch",
+                        },
+                        forms::SelectOption {
+                            value: 3,
+                            label: "Nach IPCC 2019",
+                        },
+                    ],
                 },
-                initial_value: Some(n2o_szenario),
-                options: vec![
-                    forms::SelectOption {
-                        value: 0,
-                        label: "Extrapoliert nach Parravicini et al. 2016",
-                    },
-                    forms::SelectOption {
-                        value: 1,
-                        label: "Optimistisch",
-                    },
-                    forms::SelectOption {
-                        value: 2,
-                        label: "Pessimistisch",
-                    },
-                    forms::SelectOption {
-                        value: 3,
-                        label: "Nach IPCC 2019",
-                    },
-                ],
             }],
         },
     ];
 
     let (signals, set_views) = forms::render_field_sets(field_sets);
 
-    let name_ka = *signals.get(&Id::Name).unwrap();
-    let ew = *signals.get(&Id::Ew).unwrap();
+    let name_ka = *signals.get(&ValueId::Name).unwrap();
+    let ew = *signals.get(&ValueId::Ew).unwrap();
 
     let render = create_action(move |output_data: &klick_application::OutputData| {
         let output_data = output_data.clone();
@@ -606,80 +516,96 @@ pub fn Home() -> impl IntoView {
 
     let s = signals.clone();
     create_effect(move |_| {
-        let Some(ew) = s.get(&Id::Ew).and_then(FieldSignal::get_float) else {
+        let Some(ew) = s.get(&ValueId::Ew).and_then(FieldSignal::get_float) else {
             return;
         };
-        let Some(abwasser) = s.get(&Id::Flow).and_then(FieldSignal::get_float) else {
+        let Some(abwasser) = s.get(&ValueId::Flow).and_then(FieldSignal::get_float) else {
             return;
         };
-        let Some(n_ges_zu) = s.get(&Id::TknZu).and_then(FieldSignal::get_float) else {
+        let Some(n_ges_zu) = s.get(&ValueId::TknZu).and_then(FieldSignal::get_float) else {
             return;
         };
-        let Some(csb_ab) = s.get(&Id::CsbAb).and_then(FieldSignal::get_float) else {
+        let Some(csb_ab) = s.get(&ValueId::CsbAb).and_then(FieldSignal::get_float) else {
             return;
         };
-        let Some(n_ges_ab) = s.get(&Id::TknAb).and_then(FieldSignal::get_float) else {
+        let Some(n_ges_ab) = s.get(&ValueId::TknAb).and_then(FieldSignal::get_float) else {
             return;
         };
-        let Some(klaergas_gesamt) = s.get(&Id::Klaergas).and_then(FieldSignal::get_float) else {
-            return;
-        };
-        let Some(methangehalt) = s.get(&Id::Methangehalt).and_then(FieldSignal::get_float) else {
-            return;
-        };
-        let Some(strombedarf) = s.get(&Id::Strombedarf).and_then(FieldSignal::get_float) else {
-            return;
-        };
-        let Some(energie_eigen) = s.get(&Id::Eigenstrom).and_then(FieldSignal::get_float) else {
-            return;
-        };
-        let Some(ef_co2_strommix) = s.get(&Id::EfStrommix).and_then(FieldSignal::get_float) else {
-            return;
-        };
-        let Some(schlammtaschen) = s.get(&Id::Schlammtaschen).and_then(FieldSignal::get_bool)
+        let Some(klaergas_gesamt) = s.get(&ValueId::Klaergas).and_then(FieldSignal::get_float)
         else {
             return;
         };
-        let Some(schlammstapel) = s.get(&Id::Schlammstapel).and_then(FieldSignal::get_bool) else {
+        let Some(methangehalt) = s
+            .get(&ValueId::Methangehalt)
+            .and_then(FieldSignal::get_float)
+        else {
+            return;
+        };
+        let Some(strombedarf) = s
+            .get(&ValueId::Strombedarf)
+            .and_then(FieldSignal::get_float)
+        else {
+            return;
+        };
+        let Some(energie_eigen) = s.get(&ValueId::Eigenstrom).and_then(FieldSignal::get_float)
+        else {
+            return;
+        };
+        let Some(ef_co2_strommix) = s.get(&ValueId::EfStrommix).and_then(FieldSignal::get_float)
+        else {
+            return;
+        };
+        let Some(schlammtaschen) = s
+            .get(&ValueId::Schlammtaschen)
+            .and_then(FieldSignal::get_bool)
+        else {
+            return;
+        };
+        let Some(schlammstapel) = s
+            .get(&ValueId::Schlammstapel)
+            .and_then(FieldSignal::get_bool)
+        else {
             return;
         };
         let Some(klaerschlamm_transport_km) = s
-            .get(&Id::KlaerschlammTransport)
+            .get(&ValueId::KlaerschlammTransport)
             .and_then(FieldSignal::get_float)
         else {
             return;
         };
         let Some(klaerschlamm_entsorgung_m) = s
-            .get(&Id::KlaerschlammEnstorgung)
+            .get(&ValueId::KlaerschlammEnstorgung)
             .and_then(FieldSignal::get_float)
         else {
             return;
         };
         let Some(betriebsstoffe_fe3) = s
-            .get(&Id::BetriebsstoffeFe3)
+            .get(&ValueId::BetriebsstoffeFe3)
             .and_then(FieldSignal::get_float)
         else {
             return;
         };
         let Some(betriebsstoffe_feso4) = s
-            .get(&Id::BetriebsstoffeFeso4)
+            .get(&ValueId::BetriebsstoffeFeso4)
             .and_then(FieldSignal::get_float)
         else {
             return;
         };
         let Some(betriebsstoffe_kalk) = s
-            .get(&Id::BetriebsstoffeKalk)
+            .get(&ValueId::BetriebsstoffeKalk)
             .and_then(FieldSignal::get_float)
         else {
             return;
         };
         let Some(betriebsstoffe_poly) = s
-            .get(&Id::BetriebsstoffePoly)
+            .get(&ValueId::BetriebsstoffePoly)
             .and_then(FieldSignal::get_float)
         else {
             return;
         };
-        let Some(n2o_szenario) = s.get(&Id::N2oSzenario).and_then(FieldSignal::get_selection)
+        let Some(n2o_szenario) = s
+            .get(&ValueId::N2oSzenario)
+            .and_then(FieldSignal::get_selection)
         else {
             return;
         };
