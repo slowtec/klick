@@ -9,6 +9,7 @@ publish = false
 # Project dependencies
 klick-application = "=0.0.0"
 klick-boundary = "=0.0.0"
+klick-svg-charts = "=0.0.0"
 
 # External dependencies
 anyhow = "1.0.75"
