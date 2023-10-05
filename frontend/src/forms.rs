@@ -42,7 +42,7 @@ pub enum FieldType {
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 fn unique_id() -> usize {
-    return ID_COUNTER.fetch_add(1, Ordering::SeqCst);
+    ID_COUNTER.fetch_add(1, Ordering::SeqCst)
 }
 
 impl<ID> Field<ID>

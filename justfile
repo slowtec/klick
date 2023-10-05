@@ -43,3 +43,31 @@ build: frontend
 # Build the server in release mode (musl)
 build-release: frontend-release
   cargo build --release --target x86_64-unknown-linux-musl
+
+# Set up (and update) tooling
+setup:
+  # Ignore rustup failures, because not everyone might use it
+  rustup self update || true
+  cargo install \
+    wasm-pack \
+    cargo-edit \
+    trunk
+
+# Upgrade (and update) dependencies and tools
+upgrade: setup
+  cargo upgrade --incompatible
+  cargo update
+  cd frontend && cargo upgrade --incompatible
+  cd frontend && cargo update
+
+# Run code checks
+clippy:
+  cargo clippy --locked --all-targets --all-features
+  cd frontend && cargo clippy --locked --all-targets --all-features
+
+# Fix lint warnings
+fix:
+  cargo fix --workspace --all-targets
+  cargo clippy --workspace --all-targets --fix
+  cd frontend && cargo fix --all-targets
+  cd frontend && cargo clippy --all-targets --fix

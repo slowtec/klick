@@ -16,7 +16,6 @@ in
       git
       pkg-config
       just                     # task runner
-      trunk                    # frontend build tool
       nodePackages.tailwindcss # build CSS files
       nodejs                   # required to install tailwind plugins
     ];

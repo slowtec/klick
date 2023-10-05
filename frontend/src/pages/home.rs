@@ -1,6 +1,6 @@
 use leptos::*;
-use thiserror::Error;
 use strum::IntoEnumIterator;
+use thiserror::Error;
 
 use klick_application::{N2OSzenario, ValueId};
 
@@ -543,11 +543,13 @@ pub fn Home() -> impl IntoView {
         render.dispatch(output_data);
 
         // Also calculate the other szenarios
-        let _szenario_calculations = N2OSzenario::iter().map(|szenario| {
-            input_data.n2o_szenario = szenario;
-            let output_data = klick_application::calc(&input_data);
-            (szenario, output_data)
-        }).collect::<Vec<_>>();
+        let _szenario_calculations = N2OSzenario::iter()
+            .map(|szenario| {
+                input_data.n2o_szenario = szenario;
+                let output_data = klick_application::calc(&input_data);
+                (szenario, output_data)
+            })
+            .collect::<Vec<_>>();
 
         // TODO: visualize
     });
