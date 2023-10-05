@@ -19,6 +19,8 @@ leptos = { version = "0.5.0", features = ["csr"] }
 leptos_meta = { version = "0.5.0", features = ["csr"] }
 leptos_router = { version = "0.5.0", features = ["csr"] }
 log = "0.4.20"
+strum = "0.25.0"
+thiserror = "1.0.49"
 
 [patch.crates-io]
 # Local paths to library crates in workspace

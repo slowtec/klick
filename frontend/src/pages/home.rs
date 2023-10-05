@@ -1,6 +1,8 @@
 use leptos::*;
+use thiserror::Error;
+use strum::IntoEnumIterator;
 
-use klick_application::ValueId;
+use klick_application::{N2OSzenario, ValueId};
 
 use crate::{
     forms::{self, FieldSignal, FieldType},
@@ -13,29 +15,29 @@ type FieldSet = forms::FieldSet<ValueId>;
 #[component]
 pub fn Home() -> impl IntoView {
     let name = "Lingen".to_string();
-    let ew = 120000.0;
-    let flow = 5000000.0;
+    let ew = 120_000.0;
+    let flow = 5_000_000.0;
     let csb_zu = 1045.0;
     let tkn_zu = 122.0;
     let p_zu = 9.9;
     let csb_ab = 129.0;
     let tkn_ab = 11.76;
     let p_ab = 0.4;
-    let klaergas = 1260000.0;
+    let klaergas = 1_260_000.0;
     let methangehalt = 23.0;
-    let gas_zusatz = 1300000.0;
+    let gas_zusatz = 1_300_000.0;
     let biogas = false;
-    let strombedarf = 2683259.0;
-    let eigenstrom = 2250897.0;
+    let strombedarf = 2_683_259.0;
+    let eigenstrom = 2_250_897.0;
     let ef_strommix = 468.0;
     let schlammtaschen = true;
     let schlammstapel = true;
     let klaerschlamm_enstorgung = 3687.6;
     let klaerschlamm_transport = 47.0;
     let betriebsstoffe_fe3 = 0.0;
-    let betriebsstoffe_feso4 = 326000.0;
-    let betriebsstoffe_kalk = 326260.0;
-    let betriebsstoffe_poly = 23620.0;
+    let betriebsstoffe_feso4 = 326_000.0;
+    let betriebsstoffe_kalk = 326_260.0;
+    let betriebsstoffe_poly = 23_620.0;
     let n2o_szenario = 3;
 
     let field_sets = vec![
@@ -378,19 +380,19 @@ pub fn Home() -> impl IntoView {
                     initial_value: Some(n2o_szenario),
                     options: vec![
                         forms::SelectOption {
-                            value: 0,
+                            value: n2o_szenario_to_usize(N2OSzenario::ExtrapolatedParravicini),
                             label: "Extrapoliert nach Parravicini et al. 2016",
                         },
                         forms::SelectOption {
-                            value: 1,
+                            value: n2o_szenario_to_usize(N2OSzenario::Optimistic),
                             label: "Optimistisch",
                         },
                         forms::SelectOption {
-                            value: 2,
+                            value: n2o_szenario_to_usize(N2OSzenario::Pesimistic),
                             label: "Pessimistisch",
                         },
                         forms::SelectOption {
-                            value: 3,
+                            value: n2o_szenario_to_usize(N2OSzenario::Ipcc2019),
                             label: "Nach IPCC 2019",
                         },
                     ],
@@ -511,7 +513,9 @@ pub fn Home() -> impl IntoView {
             return;
         };
 
-        let input_data = klick_application::InputData {
+        let n2o_szenario = try_n2o_szenario_from_usize(n2o_szenario).unwrap();
+
+        let mut input_data = klick_application::InputData {
             ew,
             abwasser,
             n_ges_zu,
@@ -537,6 +541,15 @@ pub fn Home() -> impl IntoView {
         let output_data = klick_application::calc(&input_data);
         log::debug!("Result is {output_data:#?}");
         render.dispatch(output_data);
+
+        // Also calculate the other szenarios
+        let _szenario_calculations = N2OSzenario::iter().map(|szenario| {
+            input_data.n2o_szenario = szenario;
+            let output_data = klick_application::calc(&input_data);
+            (szenario, output_data)
+        }).collect::<Vec<_>>();
+
+        // TODO: visualize
     });
 
     view! {
@@ -545,4 +558,28 @@ pub fn Home() -> impl IntoView {
       </div>
       <div id="chart" class="mt-8"></div>
     }
+}
+
+fn n2o_szenario_to_usize(szenario: N2OSzenario) -> usize {
+    match szenario {
+        N2OSzenario::ExtrapolatedParravicini => 0,
+        N2OSzenario::Optimistic => 1,
+        N2OSzenario::Pesimistic => 2,
+        N2OSzenario::Ipcc2019 => 3,
+    }
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid N2O szenario")]
+struct InvalidN2OSzenario;
+
+fn try_n2o_szenario_from_usize(szenario: usize) -> Result<N2OSzenario, InvalidN2OSzenario> {
+    let szenario = match szenario {
+        0 => N2OSzenario::ExtrapolatedParravicini,
+        1 => N2OSzenario::Optimistic,
+        2 => N2OSzenario::Pesimistic,
+        3 => N2OSzenario::Ipcc2019,
+        _ => return Err(InvalidN2OSzenario),
+    };
+    Ok(szenario)
 }
