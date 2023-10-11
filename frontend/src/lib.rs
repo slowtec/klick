@@ -13,7 +13,7 @@ use self::{
     footer::Footer,
     imprint::Imprint,
     nav::Nav,
-    pages::{Documentation, Home, Page},
+    pages::{Faq, Home, Page, Tool},
 };
 
 #[component]
@@ -24,60 +24,71 @@ pub fn App() -> impl IntoView {
 
     view! {
       <Nav current_page = current_page.into() />
-      <div class="py-10">
-        <Router>
-          <Routes>
-            <Route
-              path="/"
-              view= move ||{
-                set_current_page.update(|p|*p = Page::Home);
-                view! {
-                  <Main title = "Sankey-Tool">
-                    <Home />
-                  </Main>
-                }
+      <Router>
+        <Routes>
+          <Route
+            path=Page::Home.path()
+            view= move ||{
+              set_current_page.update(|p|*p = Page::Home);
+              view! {
+                <Main title = "Über KlicK">
+                  <Home />
+                </Main>
               }
-            />
-            <Route
-              path=Page::Faq.path()
-              view= move || {
-                set_current_page.update(|p|*p = Page::Faq);
-                view! {
-                  <Main title = "FAQ">
-                    <Documentation />
-                  </Main>
-                }
+            }
+          />
+          <Route
+            path=Page::Tool.path()
+            view= move ||{
+              set_current_page.update(|p|*p = Page::Tool);
+              view! {
+                <Main title = "KlicK-Tool (Betaversion)">
+                  <Tool />
+                </Main>
               }
-            />
-            <Route
-              path=Page::Imprint.path()
-              view= move || {
-                set_current_page.update(|p|*p = Page::Imprint);
-                view! {
-                  <Main title = "Impressum">
-                    <Imprint />
-                  </Main>
-                }
+            }
+          />
+          <Route
+            path=Page::Faq.path()
+            view= move || {
+              set_current_page.update(|p|*p = Page::Faq);
+              view! {
+                <Main title = "FAQs">
+                  <Faq />
+                </Main>
               }
-            />
-          </Routes>
-        </Router>
-        <Footer />
-      </div>
+            }
+          />
+          <Route
+            path=Page::Imprint.path()
+            view= move || {
+              set_current_page.update(|p|*p = Page::Imprint);
+              view! {
+                <Main title = "Impressum">
+                  <Imprint />
+                </Main>
+              }
+            }
+          />
+        </Routes>
+      </Router>
+      <Footer />
     }
 }
 
 #[component]
 fn Main(title: &'static str, children: Children) -> impl IntoView {
     view! {
-      <Header title />
-      <main>
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div class="px-4 py-8 sm:px-0">
-            { children() }
+      <div class="py-10">
+        <Header title />
+        <main>
+          <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="px-4 py-8 sm:px-0">
+              { children() }
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     }
 }
 

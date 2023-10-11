@@ -1,7 +1,7 @@
 use leptos::*;
 
 #[component]
-pub fn Documentation() -> impl IntoView {
+pub fn Faq() -> impl IntoView {
     view! {
       <div class="bg-white">
         <div class="mx-auto max-w-7xl px-6 py-24 sm:pt-32 lg:px-8 lg:py-40">
