@@ -3,7 +3,7 @@ name = "klick-frontend"
 version = "0.0.0"
 edition = "2021"
 publish = false
-rust-version = "1.72.1"
+rust-version = "1.73.0"
 
 [dependencies]
 # Project dependencies
@@ -11,13 +11,13 @@ klick-application = "=0.0.0"
 klick-boundary    = "=0.0.0"
 
 # External dependencies
-charming = { version = "0.2.4", features = ["wasm"] }
+charming = { version = "0.2.5", features = ["wasm"] }
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
 Inflector = "0.11.4"
-leptos = { version = "0.5.0", features = ["csr"] }
-leptos_meta = { version = "0.5.0", features = ["csr"] }
-leptos_router = { version = "0.5.0", features = ["csr"] }
+leptos = { version = "0.5.1", features = ["csr"] }
+leptos_meta = { version = "0.5.1", features = ["csr"] }
+leptos_router = { version = "0.5.1", features = ["csr"] }
 log = "0.4.20"
 strum = "0.25.0"
 thiserror = "1.0.49"
