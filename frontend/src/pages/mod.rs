@@ -1,8 +1,7 @@
 mod faq;
-mod home;
 mod tool;
 
-pub use self::{faq::*, home::*, tool::*};
+pub use self::{faq::*, tool::*};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Page {

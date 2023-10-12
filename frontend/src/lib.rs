@@ -4,17 +4,18 @@ use leptos_router::*;
 
 mod footer;
 mod forms;
-mod imprint;
 mod nav;
 mod pages;
 mod sankey;
 
 use self::{
     footer::Footer,
-    imprint::Imprint,
     nav::Nav,
-    pages::{Faq, Home, Page, Tool},
+    pages::{Faq, Page, Tool},
 };
+
+const IMPRINT_MD: &str = include_str!("../content/imprint.md");
+const ABOUT_MD: &str = include_str!("../content/about.md");
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -31,8 +32,8 @@ pub fn App() -> impl IntoView {
             view= move ||{
               set_current_page.update(|p|*p = Page::Home);
               view! {
-                <Main title = "Über KlicK">
-                  <Home />
+                <Main>
+                  <Markdown content = ABOUT_MD />
                 </Main>
               }
             }
@@ -42,7 +43,10 @@ pub fn App() -> impl IntoView {
             view= move ||{
               set_current_page.update(|p|*p = Page::Tool);
               view! {
-                <Main title = "KlicK-Tool (Betaversion)">
+                <Main>
+                  <header class="prose">
+                    <h1 class="mb-8">"KlicK-Tool "<span class="font-light text-gray-600">"(Betaversion)"</span></h1>
+                  </header>
                   <Tool />
                 </Main>
               }
@@ -53,7 +57,10 @@ pub fn App() -> impl IntoView {
             view= move || {
               set_current_page.update(|p|*p = Page::Faq);
               view! {
-                <Main title = "FAQs">
+                <Main>
+                  <header class="prose">
+                    <h1>"FAQs"</h1>
+                  </header>
                   <Faq />
                 </Main>
               }
@@ -64,8 +71,8 @@ pub fn App() -> impl IntoView {
             view= move || {
               set_current_page.update(|p|*p = Page::Imprint);
               view! {
-                <Main title = "Impressum">
-                  <Imprint />
+                <Main>
+                  <Markdown content = IMPRINT_MD />
                 </Main>
               }
             }
@@ -77,10 +84,9 @@ pub fn App() -> impl IntoView {
 }
 
 #[component]
-fn Main(title: &'static str, children: Children) -> impl IntoView {
+fn Main(children: Children) -> impl IntoView {
     view! {
       <div class="py-10">
-        <Header title />
         <main>
           <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="px-4 py-8 sm:px-0">
@@ -93,12 +99,16 @@ fn Main(title: &'static str, children: Children) -> impl IntoView {
 }
 
 #[component]
-fn Header(title: &'static str) -> impl IntoView {
+fn Markdown(content: &'static str) -> impl IntoView {
+    use pulldown_cmark::{html, Options, Parser};
+
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_STRIKETHROUGH);
+    let parser = Parser::new_ext(content, options);
+    let mut html_output = String::new();
+    html::push_html(&mut html_output, parser);
+
     view! {
-      <header>
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">{ title }</h1>
-        </div>
-      </header>
+      <div class="prose" inner_html = html_output></div>
     }
 }

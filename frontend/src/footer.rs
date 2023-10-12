@@ -1,20 +1,20 @@
 use leptos::*;
 
-use crate::Page;
+const LOGO: &str = include_str!("../assets/logo_BMWK_NKI.svg");
+const FOOTER_MD: &str = include_str!("../content/footer.md");
+
+use crate::{Markdown, Page};
 
 #[component]
 pub fn Footer() -> impl IntoView {
     view! {
       <footer class="bg-gray-100">
         <div class="mx-auto max-w-7xl overflow-hidden px-6 py-16 sm:py-20 lg:px-8">
-          <div class="mb-14 lg:flex lg:items-center lg:justify-between">
-            <p class="text-gray-600 text-center">
-              "Das Webtool “KlicK” ist Teil des Projekts “Klimaschutz an Kläranlagen mit einem Klick”
-              und wird im Rahmen der
-              Nationale Klimaschutzinitiative (NKI) vom
-              Bundesministerium für Wirtschaft und Klimaschutz (BMWK)
-              aufgrund eines Beschlusses des Deutschen Bundestages gefördert."
-            </p>
+          <div class="mb-14">
+            <div class="text-gray-600 text-center grid place-content-center">
+              <div class="grid place-content-center mb-8" inner_html = LOGO></div>
+              <Markdown content = FOOTER_MD />
+            </div>
           </div>
           <div>
             <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
