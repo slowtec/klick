@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{ev::MouseEvent, *};
 use strum::IntoEnumIterator;
 use thiserror::Error;
 
@@ -556,9 +556,32 @@ pub fn Tool() -> impl IntoView {
 
     view! {
       <div class="space-y-12">
+        <div class="flex items-center justify-end gap-x-6">
+          <Button
+            label = "alle Werte löschen"
+            on_click= move |_| {
+              for s in signals.values() { s.clear(); }
+            }
+          />
+        </div>
         { set_views }
       </div>
       <div id="chart" class="mt-8"></div>
+    }
+}
+
+#[component]
+fn Button<F>(label: &'static str, on_click: F) -> impl IntoView
+where
+    F: Fn(MouseEvent) + 'static,
+{
+    view! {
+      <button
+        type="button"
+        on:click = on_click
+        class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        { label }
+      </button>
     }
 }
 

@@ -106,6 +106,15 @@ impl FieldSignal {
             _ => None,
         }
     }
+
+    pub fn clear(&self) {
+        match self {
+            Self::Float(s) => s.set(None),
+            Self::Text(s) => s.set(None),
+            Self::Bool(s) => s.set(false),
+            Self::Selection(s) => s.set(None),
+        }
+    }
 }
 
 pub fn render_field_sets<ID>(
@@ -356,19 +365,29 @@ fn SelectInput(
               }
           }
         >
-          <For
-            each = move || options.clone()
-            key = |option| option.value
-            let:option
-          >
-            <option
-              value = option.value
-              selected = (value.get() == Some(option.value))
-            >
-              { option.label }
-            </option>
-          </For>
+          <Options value options />
         </select>
       </div>
+    }
+}
+
+#[component]
+fn Options(value: RwSignal<Option<usize>>, options: Vec<SelectOption>) -> impl IntoView {
+    view! {
+      <option prop:selected = move || value.get().is_none()>
+        " - Bitte wählen - "
+      </option>
+      <For
+        each = move || options.clone()
+        key = |option| option.value
+        let:option
+      >
+        <option
+          value = option.value
+          prop:selected = move || value.get() == Some(option.value)
+        >
+          { option.label }
+        </option>
+      </For>
     }
 }

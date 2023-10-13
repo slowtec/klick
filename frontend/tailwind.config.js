@@ -3,7 +3,7 @@ const colors = require('tailwindcss/colors');
 // Umwelt Technik BW
 const utbw = {
   colors: {
-    highlight: '#dabc83',
+    highlight: '#ffed00',
     black: '#000000',
     white: '#ffffff',
     gray: {
@@ -28,6 +28,7 @@ module.exports = {
     colors: {
       // Aliases to configure the current theme
       transparent: 'transparent',
+      current: 'currentColor',
       primary: utbw.colors.highlight,
       highlight: utbw.colors.highlight,
       black: utbw.colors.black,
