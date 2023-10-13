@@ -88,21 +88,52 @@ impl FieldSignal {
             _ => None,
         }
     }
+
     pub fn get_text(&self) -> Option<String> {
         match self {
             Self::Text(s) => s.get(),
             _ => None,
         }
     }
+
     pub fn get_bool(&self) -> Option<bool> {
         match self {
             Self::Bool(s) => Some(s.get()),
             _ => None,
         }
     }
+
     pub fn get_selection(&self) -> Option<usize> {
         match self {
             Self::Selection(s) => s.get(),
+            _ => None,
+        }
+    }
+
+    pub fn get_float_signal(&self) -> Option<RwSignal<Option<f64>>> {
+        match self {
+            Self::Float(s) => Some(*s),
+            _ => None,
+        }
+    }
+
+    pub fn get_text_signal(&self) -> Option<RwSignal<Option<String>>> {
+        match self {
+            Self::Text(s) => Some(*s),
+            _ => None,
+        }
+    }
+
+    pub fn get_bool_signal(&self) -> Option<RwSignal<bool>> {
+        match self {
+            Self::Bool(s) => Some(*s),
+            _ => None,
+        }
+    }
+
+    pub fn get_selection_signal(&self) -> Option<RwSignal<Option<usize>>> {
+        match self {
+            Self::Selection(s) => Some(*s),
             _ => None,
         }
     }
