@@ -390,6 +390,7 @@ fn SelectInput(
                  match target_value.parse() {
                     Ok(v) => { value.set(Some(v)) },
                     Err(_) => {
+                      value.set(None);
                       log::error!("Unexpected option value {target_value}");
                     },
                  }

@@ -95,3 +95,9 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
     let renderer = charming::WasmRenderer::new(1200, 800);
     renderer.render(element_id, &chart).unwrap();
 }
+
+pub fn clear(element_id: &str) {
+    let el = leptos::document().get_element_by_id(element_id).unwrap();
+    el.set_inner_html("");
+    el.remove_attribute("_echarts_instance_").unwrap();
+}
