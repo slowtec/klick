@@ -1,20 +1,30 @@
 use leptos::*;
 
 #[component]
-pub fn Barchart(width: f64, height: f64, data: Signal<Vec<f64>>) -> impl IntoView {
+pub fn Barchart(
+    width: f64,
+    height: f64,
+    labels: Vec<&'static str>,
+    data: Signal<Vec<f64>>,
+) -> impl IntoView {
     let margin = 10.0;
 
     let inner_width = width - 2.0 * margin;
     let inner_height = height - 2.0 * margin;
 
     view! {
-      <svg with=format!("{width}px") height=format!("{height}px") viewBox = format!("0 0 {width} {height}") xmlns="http://www.w3.org/2000/svg">
+      <svg
+        with=format!("{width}px")
+        height=format!("{height}px")
+        viewBox=format!("0 0 {width} {height}")
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <g transform=format!("translate({margin},{margin})")>
           <g transform=format!("translate(0,{inner_height})")>
             <XAxis width={ inner_width } />
           </g>
           <YAxis height={ inner_height } />
-         <Bars width={ inner_width } height={ inner_height } data />
+          <Bars width={ inner_width } height={ inner_height } labels data />
         </g>
       </svg>
     }
@@ -35,7 +45,12 @@ fn YAxis(height: f64) -> impl IntoView {
 }
 
 #[component]
-fn Bars(width: f64, height: f64, data: Signal<Vec<f64>>) -> impl IntoView {
+fn Bars(
+    width: f64,
+    height: f64,
+    labels: Vec<&'static str>,
+    data: Signal<Vec<f64>>,
+) -> impl IntoView {
     let data_count: usize = data.with(|d| d.len());
     let value_max = data.with(|d| d.iter().cloned().fold(0.0, f64::max));
     let gap = width * 0.01;
@@ -43,15 +58,19 @@ fn Bars(width: f64, height: f64, data: Signal<Vec<f64>>) -> impl IntoView {
 
     view! {
       <For
-        each = move || { data.get().into_iter().enumerate().collect::<Vec<_>>() }
-        key=|(i,_)| *i
-        children = move |(i,value)| {
+        each = move || {
+          data.get().into_iter().enumerate().map(|(i,value)|
+            (i, labels.get(i).cloned(), value)
+          ).collect::<Vec<_>>()
+        }
+        key=|(i,_,_)| *i
+        children = move |(i,label,value)| {
           let bar_height = (height - 4.0 * gap) * value/value_max;
           let dx = gap + (bar_width + gap) * i as f64;
           let dy = (height - gap) - bar_height;
           view! {
             <g transform=format!("translate({dx},{dy})")>
-              <Bar value width={ bar_width } height={ bar_height } />
+              <Bar label value width={ bar_width } height={ bar_height } />
             </g>
           }
         }
@@ -60,7 +79,7 @@ fn Bars(width: f64, height: f64, data: Signal<Vec<f64>>) -> impl IntoView {
 }
 
 #[component]
-fn Bar(value: f64, width: f64, height: f64) -> impl IntoView {
+fn Bar(label: Option<&'static str>, value: f64, width: f64, height: f64) -> impl IntoView {
     let fill = create_rw_signal("#0af");
     let font_weight = create_rw_signal("normal");
     let font_size = create_rw_signal(20.0);
@@ -77,16 +96,9 @@ fn Bar(value: f64, width: f64, height: f64) -> impl IntoView {
         font_size.set(20.0);
     };
 
+    let value_label = format_with_thousands_seperator(value, ".");
+
     view! {
-      <text
-        x = { width/2.0 }
-        y = { -10.0 }
-        text-anchor = "middle"
-        font-size = move || font_size.get()
-        font-weight = move || font_weight.get()
-      >
-        { value }
-      </text>
       <rect
         width={ width }
         height={ height }
@@ -94,5 +106,40 @@ fn Bar(value: f64, width: f64, height: f64) -> impl IntoView {
         on:mouseenter = on_mouse_enter
         on:mouseleave = on_mouse_leave
       />
+      <text
+        x = { width/2.0 }
+        y = { -10.0 }
+        text-anchor = "middle"
+        font-size = move || font_size.get()
+        font-weight = move || font_weight.get()
+      >
+        { value_label }
+      </text>
+      {
+        label.and_then(|label| {
+          view! {
+            <text
+              x = { width/2.0 }
+              y = { height - 25.0 }
+              text-anchor = "middle"
+              font-size = move || font_size.get()
+              font-weight = "bold"
+            >
+              { label }
+            </text>
+          }.into()
+        })
+      }
     }
+}
+
+fn format_with_thousands_seperator(value: f64, seperator: &str) -> String {
+    format!("{value:.0}")
+        .as_bytes()
+        .rchunks(3)
+        .rev()
+        .map(std::str::from_utf8)
+        .collect::<Result<Vec<&str>, _>>()
+        .unwrap()
+        .join(seperator)
 }

@@ -4,6 +4,7 @@ use leptos::{ev::MouseEvent, *};
 use strum::IntoEnumIterator;
 
 use klick_application::{N2OSzenario, ValueId};
+use klick_svg_charts::Barchart;
 
 use crate::{
     forms::{self, FieldSignal},
@@ -23,7 +24,8 @@ pub fn Tool() -> impl IntoView {
     let (signals, set_views) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
 
-    let input_data = create_rw_signal(Option::<klick_application::InputData>::None);
+    let input_data = RwSignal::new(Option::<klick_application::InputData>::None);
+    let szenario_comparison = RwSignal::new(vec![]);
 
     let s = Rc::clone(&signals);
     create_effect(move |_| {
@@ -52,7 +54,7 @@ pub fn Tool() -> impl IntoView {
                 sankey::render(&name_ka, ew, output_data, CHART_ELEMENT_ID);
 
                 // Also calculate the other szenarios
-                let _szenario_calculations = N2OSzenario::iter()
+                let szenario_calculations = N2OSzenario::iter()
                     .map(|szenario| {
                         input_data.n2o_szenario = szenario;
                         let output_data = klick_application::calc(&input_data);
@@ -60,13 +62,27 @@ pub fn Tool() -> impl IntoView {
                     })
                     .collect::<Vec<_>>();
 
-                // TODO: visualize
+                let data = szenario_calculations
+                    .iter()
+                    .map(|(_, d)| d.emissionen_co2_eq)
+                    .collect();
+                szenario_comparison.set(data);
             }
             None => {
+                szenario_comparison.update(|data| data.clear());
                 sankey::clear(CHART_ELEMENT_ID);
             }
         }
     });
+
+    let barchart_labels = N2OSzenario::iter()
+        .map(|s| match s {
+            N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
+            N2OSzenario::Optimistic => "Optimistisch",
+            N2OSzenario::Pesimistic => "Pessimistisch",
+            N2OSzenario::Ipcc2019 => "IPCC 2019",
+        })
+        .collect::<Vec<_>>();
 
     view! {
       <div class="space-y-12">
@@ -93,6 +109,26 @@ pub fn Tool() -> impl IntoView {
         { set_views }
       </div>
       <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
+      { move ||
+        {
+          let data = szenario_comparison.get();
+          if !data.is_empty() {
+            Some(view! {
+              <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich"</h3>
+              <div class="">
+                <Barchart
+                  width = 1200.0
+                  height = 400.0
+                  labels = barchart_labels.clone()
+                  data = szenario_comparison.into()
+                />
+              </div>
+            })
+          } else {
+            None
+          }
+        }
+      }
     }
 }
 

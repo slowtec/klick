@@ -772,6 +772,7 @@ dependencies = [
  "console_log",
  "klick-application",
  "klick-boundary",
+ "klick-svg-charts",
  "leptos",
  "leptos_meta",
  "leptos_router",
@@ -779,6 +780,13 @@ dependencies = [
  "pulldown-cmark",
  "strum",
  "thiserror",
+]
+
+[[package]]
+name = "klick-svg-charts"
+version = "0.0.0"
+dependencies = [
+ "leptos",
 ]
 
 [[package]]

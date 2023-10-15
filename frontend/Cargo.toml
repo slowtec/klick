@@ -9,6 +9,7 @@ rust-version = "1.73.0"
 # Project dependencies
 klick-application = "=0.0.0"
 klick-boundary    = "=0.0.0"
+klick-svg-charts  = "=0.0.0"
 
 # External dependencies
 charming = { version = "0.2.5", features = ["wasm"] }
@@ -27,3 +28,4 @@ thiserror = "1.0.49"
 # Local paths to library crates in workspace
 klick-application = { path = "../application" }
 klick-boundary    = { path = "../boundary"    }
+klick-svg-charts  = { path = "../svg-charts"  }
