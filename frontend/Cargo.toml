@@ -29,3 +29,8 @@ thiserror = "1.0.49"
 klick-application = { path = "../application" }
 klick-boundary    = { path = "../boundary"    }
 klick-svg-charts  = { path = "../svg-charts"  }
+
+[profile.release]
+lto = true
+opt-level = 'z'
+codegen-units = 1
