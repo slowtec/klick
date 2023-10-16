@@ -1,6 +1,7 @@
 let
   rust_overlay = import (fetchTarball "https://github.com/oxalica/rust-overlay/archive/master.tar.gz");
   pkgs = import <nixpkgs> { overlays = [ rust_overlay ]; };
+
   rust = pkgs.rust-bin.stable.latest.default.override {
     extensions = [ "rustfmt" "clippy" ];
     targets = [
@@ -8,10 +9,16 @@ let
       "wasm32-unknown-unknown"
     ];
   };
+  myRustPlatform = pkgs.makeRustPlatform {
+    cargo = pkgs.rust-bin.stable.latest.minimal;
+    rustc = pkgs.rust-bin.stable.latest.minimal;
+  };
+  mytrunk = pkgs.callPackage ./trunk/default.nix { rustPlatform=myRustPlatform; };
 in
   with pkgs;
   mkShell {
     buildInputs = [
+      mytrunk
       rust
       git
       pkg-config
