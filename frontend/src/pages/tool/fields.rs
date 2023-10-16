@@ -54,20 +54,19 @@ pub fn field_sets() -> Vec<FieldSet> {
         FieldSet {
             title: "Zulauf-Parameter (Jahresmittelwerte)",
             fields: vec![
-                // TODO:
-                // Field {
-                //     id: ValueId::CsbZu,
-                //     label: "Chemischer Sauerstoffbedarf",
-                //     description: None,
-                //     required: true,
-                //     field_type: FieldType::Float {
-                //         initial_value: None,
-                //         min_value: None,
-                //         max_value: None,
-                //         placeholder: Some("CSB"),
-                //         unit: "mg/L",
-                //     },
-                // },
+                Field {
+                    id: ValueId::CsbZu,
+                    label: "Chemischer Sauerstoffbedarf",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: None,
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("CSB"),
+                        unit: "mg/L",
+                    },
+                },
                 Field {
                     id: ValueId::TknZu,
                     label: "Gesamtstickstoff",
@@ -81,20 +80,19 @@ pub fn field_sets() -> Vec<FieldSet> {
                         unit: "mg/L",
                     },
                 },
-                // TODO:
-                // Field {
-                //     id: ValueId::PZu,
-                //     label: "Phosphor",
-                //     description: None,
-                //     required: true,
-                //     field_type: FieldType::Float {
-                //         initial_value: None,
-                //         min_value: None,
-                //         max_value: None,
-                //         placeholder: Some("P"),
-                //         unit: "mg/L",
-                //     },
-                // },
+                Field {
+                    id: ValueId::PZu,
+                    label: "Phosphor",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: None,
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("P"),
+                        unit: "mg/L",
+                    },
+                },
             ],
         },
         FieldSet {
@@ -126,20 +124,19 @@ pub fn field_sets() -> Vec<FieldSet> {
                         unit: "mg/L",
                     },
                 },
-                // TODO:
-                // Field {
-                //     id: ValueId::PAb,
-                //     label: "Phosphor",
-                //     description: None,
-                //     required: true,
-                //     field_type: FieldType::Float {
-                //         initial_value: None,
-                //         min_value: None,
-                //         max_value: None,
-                //         placeholder: Some("P"),
-                //         unit: "mg/L",
-                //     },
-                // },
+                Field {
+                    id: ValueId::PAb,
+                    label: "Phosphor",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: None,
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("P"),
+                        unit: "mg/L",
+                    },
+                },
             ],
         },
         FieldSet {
@@ -171,31 +168,28 @@ pub fn field_sets() -> Vec<FieldSet> {
                         unit: "%",
                     },
                 },
-                // TODO:
-                // Field {
-                //     id: ValueId::GasZusatz,
-                //     label: "Gasbezug (Versorger)",
-                //     description: None,
-                //     required: true,
-                //     field_type: FieldType::Float {
-                //         initial_value: None,
-                //         min_value: None,
-                //         max_value: None,
-                //         placeholder: Some("Gasbezug"),
-                //         unit: "kWh/a",
-                //     },
-                // },
-
-                // TODO:
-                // Field {
-                //     label: "Bezug von Biogas",
-                //     id: ValueId::Biogas,
-                //     description: Some("ja/nein"),
-                //     required: false,
-                //     field_type: FieldType::Bool {
-                //         initial_value: None,
-                //     },
-                // },
+                Field {
+                    id: ValueId::GasZusatz,
+                    label: "Gasbezug (Versorger)",
+                    description: None,
+                    required: true,
+                    field_type: FieldType::Float {
+                        initial_value: None,
+                        min_value: None,
+                        max_value: None,
+                        placeholder: Some("Gasbezug"),
+                        unit: "kWh/a",
+                    },
+                },
+                Field {
+                    label: "Bezug von Biogas",
+                    id: ValueId::Biogas,
+                    description: Some("ja/nein"),
+                    required: false,
+                    field_type: FieldType::Bool {
+                        initial_value: None,
+                    },
+                },
                 Field {
                     id: ValueId::Strombedarf,
                     label: "Strombedarf gesamt",
