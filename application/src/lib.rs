@@ -102,7 +102,7 @@ const EF_KALK: f64 = 1055.3; // [g co2/kg Lösung]
 const EF_POLY: f64 = 2200.0; // [g co2/kg Lösung]
 
 // Umrechnungsfaktoren
-const GWP_N2O: f64 = 265.0;
+const GWP_N2O: f64 = 273.0;
 const GWP_CH4: f64 = 28.0;
 const UF_N_ZU_N2O: f64 = 44.0 / 28.0;
 const UF_CH4_M3_ZU_KG: f64 = 0.7175; // [kg/m^3] für Normkubikmeter (GESTIS Stoffdatenbank)
