@@ -6,6 +6,13 @@ KlicK – Klimabilanzen an Kläranlagen mit einem Klick
 
 ## Getting started
 
+This tool is used at https://klimabilanzklaeranlage.de/
+
+### Cloning the repository
+
+    git clone https://codeberg.org/slowtec/klick
+    cd klick
+
 ### Install Rust
 
 Install Rust by following the instructions on the
