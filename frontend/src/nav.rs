@@ -10,7 +10,7 @@ pub fn Nav(current_page: Signal<Page>) -> impl IntoView {
           <div class="flex h-16 justify-between">
             <div class="flex">
               <div class="flex flex-shrink-0 items-center">
-                <img class="h-8 w-auto" src="logo-utbw-solo.svg" alt="Umwelt Technik BW" />
+                <img class="h-16 w-auto" src="logo-utbw-solo.svg" alt="Umwelt Technik BW" />
               </div>
               <div class="sm:ml-6 sm:flex sm:space-x-8">
                 <NavLink page=Page::Home current_page label="KlicK" />
