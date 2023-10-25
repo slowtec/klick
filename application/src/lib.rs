@@ -87,7 +87,7 @@ pub struct OutputData {
 // Emissionsfaktoren
 const EF_CH4_ANLAGE: f64 = 230.0; // [g ch4/(ew*a)]
 const EF_CH4_GEWAESSER: f64 = 0.009; // [0,9 % des csb-ablauf]
-const EF_CH4_BHKW: f64 = 1.124; // [1,124 g ch4/kwh]
+const EF_CH4_BHKW: f64 = 1.164; // [1,164 g ch4/kwh]
 
 const EF_N2O_GEWAESSER: f64 = 0.005; // [0,5 % des Ges-N Ablauf]
 
