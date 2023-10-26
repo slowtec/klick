@@ -325,7 +325,18 @@ fn NumberInput(
               if target_value.is_empty() {
                 value.set(None);
               } else if let Ok(target_value) = target_value.replace(',',".").parse() {
-                value.set(Some(target_value));
+                match value.get() {
+                  Some(v) => {
+                    if target_value != v {
+                      // fixes issue with signal-loop and incomplete numbers which
+                      // get converted from "1," into "1" and prevent entering "," or "." separator
+                      value.set(Some(target_value));
+                    }
+                  },
+                  None => {
+                    value.set(Some(target_value));
+                  }
+                }
               }
             }
           />
