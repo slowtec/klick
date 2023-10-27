@@ -767,6 +767,7 @@ name = "klick-frontend"
 version = "0.0.0"
 dependencies = [
  "Inflector",
+ "anyhow",
  "charming",
  "console_error_panic_hook",
  "console_log",

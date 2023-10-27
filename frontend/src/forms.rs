@@ -309,6 +309,13 @@ fn NumberInput(
     field_id: String,
     value: RwSignal<Option<f64>>,
 ) -> impl IntoView {
+
+    let l10n = L10n::De;
+    let initial_output = format_number_input(value.get(), l10n);
+    let input = RwSignal::new(initial_output);
+    let error = RwSignal::new(Option::<String>::None);
+    let is_editing = RwSignal::new(false);
+
     view! {
       <div>
         <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
@@ -316,28 +323,47 @@ fn NumberInput(
           <input
             id = { field_id }
             type="text"
-            class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            class = move || {
+              let bg = if error.get().is_some() { "bg-red-100" } else { "" };
+              format!("{bg} block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
+            }
             placeholder= { placeholder }
             // TODO: aria-describedby
-            prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
+            prop:value = move ||
+              if is_editing.get() {
+                input.get()
+              } else {
+                format_number_input(value.get(), l10n)
+            }
+            on:focus = move |_| {
+              log::debug!("start editing");
+              is_editing.set(true);
+            }
+            on:keyup = move |ev| {
+              if ev.key() == "Enter" {
+                // TODO: emit blur event
+                input.set(format_number_input(value.get(), l10n));
+                is_editing.set(false);
+              }
+            }
             on:input = move |ev| {
               let target_value = event_target_value(&ev);
-              if target_value.is_empty() {
-                value.set(None);
-              } else if let Ok(target_value) = target_value.replace(',',".").parse() {
-                match value.get() {
-                  Some(v) => {
-                    if target_value != v {
-                      // fixes issue with signal-loop and incomplete numbers which
-                      // get converted from "1," into "1" and prevent entering "," or "." separator
-                      value.set(Some(target_value));
-                    }
-                  },
-                  None => {
-                    value.set(Some(target_value));
-                  }
+              match parse_number_input_as_float(&target_value, l10n) {
+                Ok(v) => {
+                  value.set(v);
+                  error.set(None);
+                  input.set(target_value);
+                }
+                Err(err) => {
+                  let error_message = format!("{err}"); // TODO
+                  error.set(Some(error_message));
                 }
               }
+            }
+            on:blur = move |_| {
+              log::debug!("Stop editing");
+              input.set(format_number_input(value.get(), l10n));
+              is_editing.set(false);
             }
           />
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -346,6 +372,67 @@ fn NumberInput(
         </div>
       </div>
     }
+}
+
+#[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
+enum L10n {
+  Us,
+  De
+}
+
+impl L10n {
+  const fn thousands_separator(&self) -> &str {
+      match self {
+          Self::Us => ",",
+          Self::De => "."
+      }
+  }
+  const fn decimal_point(&self) -> &str {
+      match self {
+          Self::Us => ".",
+          Self::De => ","
+      }
+  }
+}
+
+fn parse_number_input_as_float(input: &str, l10n: L10n) -> anyhow::Result<Option<f64>> {
+   let input = input.trim();
+   if input.trim().is_empty() {
+     return Ok(None);
+   }
+
+   let input = if let Some(',') = input.chars().last() {
+      &input[..input.len()-1]
+   } else {
+      input
+   };
+
+   let input = input
+      .replace(l10n.thousands_separator(),"")
+      .replace(',',".");
+
+   Ok(Some(input.parse()?))
+}
+
+fn format_number_input(value: Option<f64>, l10n: L10n) -> String {
+  match value {
+    Some(v) => {
+      v.to_string().replace(".",l10n.decimal_point()) // TODO: add thousands separator
+    }
+    None => String::new()
+  }
+}
+
+#[test]
+fn test_parse_number_input_as_float() {
+  assert_eq!(parse_number_input_as_float("", L10n::De).unwrap(), None);
+  assert_eq!(parse_number_input_as_float("1", L10n::De).unwrap(), Some(1.0));
+  assert_eq!(parse_number_input_as_float("1,", L10n::De).unwrap(), Some(1.0));
+  assert_eq!(parse_number_input_as_float("1,2", L10n::De).unwrap(), Some(1.2));
+  assert_eq!(parse_number_input_as_float("1.000,", L10n::De).unwrap(), Some(1000.0));
+  assert_eq!(parse_number_input_as_float("1.00,", L10n::De).unwrap(), Some(100.0));
+  assert_eq!(parse_number_input_as_float("1.0", L10n::De).unwrap(), Some(10.0));
 }
 
 #[component]
