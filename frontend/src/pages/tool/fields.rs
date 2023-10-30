@@ -254,7 +254,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
                 Field {
                     id: ValueId::KlaerschlammEnstorgung,
-                    label: "Kläraschlamm zur Entsorgung",
+                    label: "Klärschlamm zur Entsorgung",
                     description: None,
                     required: true,
                     field_type: FieldType::Float {
