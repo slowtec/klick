@@ -231,6 +231,7 @@ where
                 placeholder = placeholder.unwrap()
                 value = signal
                 unit
+                description = field.description
               />
             }
             .into_view();
@@ -244,7 +245,7 @@ where
                 label
                 field_id
                 value = signal
-                comment = description
+                description = field.description
               />
             }
             .into_view();
@@ -262,6 +263,7 @@ where
                 field_id
                 value = signal
                 options
+                //description = field.description
               />
             }
             .into_view();
@@ -365,10 +367,14 @@ fn NumberInput(
     placeholder: &'static str,
     field_id: String,
     value: RwSignal<Option<f64>>,
+    description: Option<&'static str>,
 ) -> impl IntoView {
     view! {
       <div>
-        <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+        <div class="block columns-2 sm:flex sm:justify-start sm:space-x-12">
+          <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+          {create_tooltip(label, description)}
+        </div>
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             id = { field_id }
@@ -410,7 +416,7 @@ fn BoolInput(
     label: &'static str,
     field_id: String,
     value: RwSignal<bool>,
-    comment: Option<&'static str>,
+    description: Option<&'static str>,
 ) -> impl IntoView {
     view! {
       <div class="relative flex items-start">
@@ -426,7 +432,7 @@ fn BoolInput(
         </div>
         <div class="ml-3 text-sm leading-6">
           <label for={ field_id } class="font-bold text-gray-900">{ label }</label>
-          <p class="text-gray-500">{ comment }</p>
+          <p class="text-gray-500">{ description }</p>
         </div>
       </div>
     }
@@ -438,6 +444,7 @@ fn SelectInput(
     field_id: String,
     value: RwSignal<Option<usize>>,
     options: Vec<SelectOption>,
+    //description: Option<&'static str>,
 ) -> impl IntoView {
     view! {
       <div>
