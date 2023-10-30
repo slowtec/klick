@@ -39,7 +39,7 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
         ("CH₄ Klärprozess", dir_em, co2eq_ch4_klaerprozes),
         ("CH₄ Schlupf Schlammstapel", dir_em, co2eq_ch4_schlammstapel),
         ("CH₄ Schlupf Schlammtasche", dir_em, co2eq_ch4_schlammtasche),
-        ("CH₄ Gewaesser", dir_em, co2eq_ch4_gewaesser),
+        ("CH₄ Gewässer", dir_em, co2eq_ch4_gewaesser),
         ("CH₄ BHKW", dir_em, co2eq_ch4_bhkw),
         (
             "Eisen(III)-chlorid-Lösung",
