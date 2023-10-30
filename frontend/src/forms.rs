@@ -270,23 +270,14 @@ where
     }
 }
 
-#[component]
-fn TextInput(
+fn create_tooltip(
     label: &'static str,
-    field_id: String,
-    placeholder: &'static str,
-    value: RwSignal<Option<String>>,
-    max_len: Option<usize>,
     description: Option<&'static str>,
 ) -> impl IntoView {
     let
         show_tooltip: RwSignal<String> = create_rw_signal("none".to_string());
 
     view! {
-      <div>
-
-      <div class="block columns-2 sm:flex sm:justify-start sm:space-x-12">
-        <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
         <div class="flex-col md:flex-row flex items-center md:justify-center">
           <a tabindex="0" role="link" aria-label="tooltip 1" class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
           on:focus = move |_| {
@@ -323,6 +314,24 @@ fn TextInput(
               </div>
           </a>
         </div>
+    }
+}
+
+#[component]
+fn TextInput(
+    label: &'static str,
+    field_id: String,
+    placeholder: &'static str,
+    value: RwSignal<Option<String>>,
+    max_len: Option<usize>,
+    description: Option<&'static str>,
+) -> impl IntoView {
+    view! {
+      <div>
+
+      <div class="block columns-2 sm:flex sm:justify-start sm:space-x-12">
+        <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
+        {create_tooltip(label, description)}
       </div>
 
         <div class="relative mt-2 rounded-md shadow-sm group">
@@ -344,7 +353,6 @@ fn TextInput(
               }
             }
           />
-
         </div>
       </div>
     }
