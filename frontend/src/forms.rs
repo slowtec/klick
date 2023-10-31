@@ -209,7 +209,7 @@ where
                 placeholder = placeholder.unwrap()
                 value = signal
                 max_len
-                description = field.description
+                description
               />
             }
             .into_view();
@@ -231,7 +231,7 @@ where
                 placeholder = placeholder.unwrap()
                 value = signal
                 unit
-                description = field.description
+                description
               />
             }
             .into_view();
@@ -245,7 +245,7 @@ where
                 label
                 field_id
                 value = signal
-                description = field.description
+                description
               />
             }
             .into_view();
@@ -263,7 +263,7 @@ where
                 field_id
                 value = signal
                 options
-                //description = field.description
+                //description
               />
             }
             .into_view();

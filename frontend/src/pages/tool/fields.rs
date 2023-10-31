@@ -145,7 +145,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 Field {
                     id: ValueId::Klaergas,
                     label: "Erzeugtes Klärgas",
-                    description: Some("Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m3) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen oder Null eintragen."),
+                    description: Some("Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m3) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen."),
                     required: true,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -158,7 +158,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 Field {
                     id: ValueId::Methangehalt,
                     label: "Methangehalt",
-                    description: Some("Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen oder Null eintragen."),
+                    description: Some("Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen."),
                     required: true,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -171,7 +171,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 Field {
                     id: ValueId::GasZusatz,
                     label: "Gasbezug (Versorger)",
-                    description: Some("Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen oder Null eintragen."),
+                    description: Some("Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen."),
                     required: true,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -206,7 +206,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 Field {
                     id: ValueId::Eigenstrom,
                     label: "Eigenstromerzeugung",
-                    description: Some("Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen oder Null eintragen."),
+                    description: Some("Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen."),
                     required: true,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -268,7 +268,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 Field {
                     id: ValueId::KlaerschlammTransport,
                     label: "Transportdistanz",
-                    description: Some("Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen oder Null eintragen."),
+                    description: Some("Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen."),
                     required: true,
                     field_type: FieldType::Float {
                         initial_value: None,
