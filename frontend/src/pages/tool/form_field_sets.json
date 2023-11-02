@@ -1,0 +1,412 @@
+[
+  {
+    "title": "Angaben zur Kläranlage",
+    "fields": [
+      {
+        "id": "Name",
+        "label": "Name oder Ort",
+        "description": "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
+        "required": true,
+        "field_type": {
+          "Text": {
+            "initial_value": null,
+            "placeholder": "Name der Kläranlage",
+            "max_len": null
+          }
+        }
+      },
+      {
+        "id": "Ew",
+        "label": "Ausbaugröße",
+        "description": "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Ausbaugröße [EW]",
+            "min_value": null,
+            "max_value": null,
+            "unit": "EW"
+          }
+        }
+      },
+      {
+        "id": "Flow",
+        "label": "Abwassermenge",
+        "description": "Die jährliche (a) Abwassermenge in Kubikmeter (m3) im Zulauf Ihrer Kläranlage.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Abwassermenge",
+            "min_value": null,
+            "max_value": null,
+            "unit": "m³/a"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "title": "Zulauf-Parameter (Jahresmittelwerte)",
+    "fields": [
+      {
+        "id": "CsbZu",
+        "label": "Chemischer Sauerstoffbedarf",
+        "description": "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "CSB",
+            "min_value": null,
+            "max_value": null,
+            "unit": "mg/L"
+          }
+        }
+      },
+      {
+        "id": "TknZu",
+        "label": "Gesamtstickstoff",
+        "description": "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "TKN",
+            "min_value": null,
+            "max_value": null,
+            "unit": "mg/L"
+          }
+        }
+      },
+      {
+        "id": "PZu",
+        "label": "Phosphor",
+        "description": "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "P",
+            "min_value": null,
+            "max_value": null,
+            "unit": "mg/L"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "title": "Ablauf-Parameter (Jahresmittelwerte)",
+    "fields": [
+      {
+        "id": "CsbAb",
+        "label": "Chemischer Sauerstoffbedarf",
+        "description": "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "CSB",
+            "min_value": null,
+            "max_value": null,
+            "unit": "mg/L"
+          }
+        }
+      },
+      {
+        "id": "TknAb",
+        "label": "Gesamtstickstoff",
+        "description": "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "TKN",
+            "min_value": null,
+            "max_value": null,
+            "unit": "mg/L"
+          }
+        }
+      },
+      {
+        "id": "PAb",
+        "label": "Phosphor",
+        "description": "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "P",
+            "min_value": null,
+            "max_value": null,
+            "unit": "mg/L"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "title": "Energiebedarf",
+    "fields": [
+      {
+        "id": "Klaergas",
+        "label": "Erzeugtes Klärgas",
+        "description": "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m3) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Klärgas",
+            "min_value": null,
+            "max_value": null,
+            "unit": "m³"
+          }
+        }
+      },
+      {
+        "id": "Methangehalt",
+        "label": "Methangehalt",
+        "description": "Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "65",
+            "min_value": null,
+            "max_value": null,
+            "unit": "%"
+          }
+        }
+      },
+      {
+        "id": "GasZusatz",
+        "label": "Gasbezug (Versorger)",
+        "description": "Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Gasbezug",
+            "min_value": null,
+            "max_value": null,
+            "unit": "kWh/a"
+          }
+        }
+      },
+      {
+        "id": "Biogas",
+        "label": "Bezug von Biogas",
+        "description": "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
+        "required": false,
+        "field_type": {
+          "Bool": {
+            "initial_value": null
+          }
+        }
+      },
+      {
+        "id": "Strombedarf",
+        "label": "Strombedarf gesamt",
+        "description": "Der Gesamt-Strombedarf Ihrer Kläranlage in Kilowattstunden (kWh) pro Jahr (a).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Gesamtstrombedarf",
+            "min_value": null,
+            "max_value": null,
+            "unit": "kWh/a"
+          }
+        }
+      },
+      {
+        "id": "Eigenstrom",
+        "label": "Eigenstromerzeugung",
+        "description": "Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Eigenstrom",
+            "min_value": null,
+            "max_value": null,
+            "unit": "kWh/a"
+          }
+        }
+      },
+      {
+        "id": "EfStrommix",
+        "label": "Emissionsfaktor Strommix (Versorger)",
+        "description": "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO2 pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "485",
+            "min_value": null,
+            "max_value": null,
+            "unit": "g CO₂/kWh"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "title": "Klärschlammbehandlung",
+    "fields": [
+      {
+        "id": "Schlammtaschen",
+        "label": "Offene Schlammtaschen",
+        "description": "Falls die Schlammtaschen des Faulturms nicht geschlossen sind, sondern zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.",
+        "required": false,
+        "field_type": {
+          "Bool": {
+            "initial_value": null
+          }
+        }
+      },
+      {
+        "id": "Schlammstapel",
+        "label": "Offene Schlammstapelbehälter",
+        "description": "Falls die Schlammstapelbehälter Ihrer Kläranlage nicht geschlossen sind, sondern offen betrieben werden, dann dieses Feld bitte anklicken.",
+        "required": false,
+        "field_type": {
+          "Bool": {
+            "initial_value": null
+          }
+        }
+      },
+      {
+        "id": "KlaerschlammEnstorgung",
+        "label": "Klärschlamm zur Entsorgung",
+        "description": "Angabe der Menge an Klärschlamm in Tonnen (t) die zur Entsorgung anfallen.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Masse entwässert",
+            "min_value": null,
+            "max_value": null,
+            "unit": "t"
+          }
+        }
+      },
+      {
+        "id": "KlaerschlammTransport",
+        "label": "Transportdistanz",
+        "description": "Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen.",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "Entfernung",
+            "min_value": null,
+            "max_value": null,
+            "unit": "km"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "title": "Eingesetzte Betriebsstoffe",
+    "fields": [
+      {
+        "id": "BetriebsstoffeFe3",
+        "label": "Eisen(III)-chlorid-Lösung",
+        "description": "Angabe der pro Jahr (a) eingesetzten Menge an Eisen(III)-chlorid (FeCl3) in Tonnen (t).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "kg Lösung",
+            "min_value": null,
+            "max_value": null,
+            "unit": "kg"
+          }
+        }
+      },
+      {
+        "id": "BetriebsstoffeFeso4",
+        "label": "Eisenchloridsulfat-Lösung",
+        "description": "Angabe der pro Jahr (a) eingesetzten Menge an Eisenchloridsulfat (FeClSO4) in Tonnen (t).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "kg Lösung",
+            "min_value": null,
+            "max_value": null,
+            "unit": "kg"
+          }
+        }
+      },
+      {
+        "id": "BetriebsstoffeKalk",
+        "label": "Kalkhydrat",
+        "description": "Angabe der pro Jahr (a) eingesetzten Menge an Kalkhydrat (Ca(OH)2) in Tonnen (t).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "kg Branntkalk",
+            "min_value": null,
+            "max_value": null,
+            "unit": "kg"
+          }
+        }
+      },
+      {
+        "id": "BetriebsstoffePoly",
+        "label": "Synthetische Polymere",
+        "description": "Angabe der pro Jahr (a) eingesetzten Menge an synthetischen Polymeren in Tonnen (t).",
+        "required": true,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "kg Polymere",
+            "min_value": null,
+            "max_value": null,
+            "unit": "kg"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "title": "Schätzung des N₂O-Emissionsfaktors",
+    "fields": [
+      {
+        "id": "N2oSzenario",
+        "label": "Szenario",
+        "description": null,
+        "required": true,
+        "field_type": {
+          "Selection": {
+            "initial_value": null,
+            "options": [
+              {
+                "label": "Extrapoliert nach Parravicini et al. 2016",
+                "value": 0
+              },
+              {
+                "label": "Optimistisch",
+                "value": 1
+              },
+              {
+                "label": "Pessimistisch",
+                "value": 2
+              },
+              {
+                "label": "Nach IPCC 2019",
+                "value": 3
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]
