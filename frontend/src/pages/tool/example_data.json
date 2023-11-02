@@ -1,0 +1,21 @@
+{
+  "ew" : 120000.0,
+  "abwasser" : 5000000.0,
+  "n_ges_zu" : 122.0,
+  "csb_ab" : 129.0,
+  "n_ges_ab" : 11.76,
+  "klaergas_gesamt" : 1260000.0,
+  "methangehalt" : 62.0,
+  "strombedarf" : 2683259.0,
+  "energie_eigen" : 2250897.0,
+  "ef_co2_strommix" : 468.0,
+  "schlammtaschen" : true,
+  "schlammstapel" : true,
+  "klaerschlamm_entsorgung_m" : 3687.6,
+  "klaerschlamm_transport_km" : 47.0,
+  "betriebsstoffe_fe3" : 0.0,
+  "betriebsstoffe_feso4" : 326000.0,
+  "betriebsstoffe_kalk" : 326260.0,
+  "betriebsstoffe_poly" : 23620.0,
+  "n2o_szenario" : "Ipcc2019"
+}
