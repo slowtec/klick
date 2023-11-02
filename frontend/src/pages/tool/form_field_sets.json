@@ -173,7 +173,7 @@
         "field_type": {
           "Float": {
             "initial_value": null,
-            "placeholder": "65",
+            "placeholder": "62",
             "min_value": null,
             "max_value": null,
             "unit": "%"
