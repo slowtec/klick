@@ -33,14 +33,16 @@ pub enum ValueId {
     BetriebsstoffeKalk,
     BetriebsstoffePoly,
     N2oSzenario,
+    CustomN2oSzenario,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, EnumIter, Serialize, Deserialize)]
 pub enum N2OSzenario {
     ExtrapolatedParravicini,
     Optimistic,
     Pesimistic,
     Ipcc2019,
+    Custom(f64),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use klick_boundary::{InputData, N2OSzenario, ValueId};
+use klick_boundary::{InputData, ValueId};
 use leptos::*;
 
 use crate::{forms::FieldSignal, pages::tool::util};

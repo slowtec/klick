@@ -1,76 +1,6 @@
 use klick_application as app;
 
-use crate::{InputData, N2OSzenario, OutputData, ValueId};
-
-impl From<ValueId> for app::ValueId {
-    fn from(from: ValueId) -> Self {
-        use app::ValueId as A;
-        use ValueId as F;
-
-        match from {
-            F::Name => A::Name,
-            F::Ew => A::Ew,
-            F::Flow => A::Flow,
-            F::CsbZu => A::CsbZu,
-            F::TknZu => A::TknZu,
-            F::PZu => A::PZu,
-            F::CsbAb => A::CsbAb,
-            F::TknAb => A::TknAb,
-            F::PAb => A::PAb,
-            F::Klaergas => A::Klaergas,
-            F::Methangehalt => A::Methangehalt,
-            F::GasZusatz => A::GasZusatz,
-            F::Biogas => A::Biogas,
-            F::Strombedarf => A::Strombedarf,
-            F::Eigenstrom => A::Eigenstrom,
-            F::EfStrommix => A::EfStrommix,
-            F::Schlammtaschen => A::Schlammtaschen,
-            F::Schlammstapel => A::Schlammstapel,
-            F::KlaerschlammEnstorgung => A::KlaerschlammEnstorgung,
-            F::KlaerschlammTransport => A::KlaerschlammTransport,
-            F::BetriebsstoffeFe3 => A::BetriebsstoffeFe3,
-            F::BetriebsstoffeFeso4 => A::BetriebsstoffeFeso4,
-            F::BetriebsstoffeKalk => A::BetriebsstoffeKalk,
-            F::BetriebsstoffePoly => A::BetriebsstoffePoly,
-            F::N2oSzenario => A::N2oSzenario,
-        }
-    }
-}
-
-impl From<app::ValueId> for ValueId {
-    fn from(from: app::ValueId) -> Self {
-        use app::ValueId as A;
-        use ValueId as F;
-
-        match from {
-            A::Name => F::Name,
-            A::Ew => F::Ew,
-            A::Flow => F::Flow,
-            A::CsbZu => F::CsbZu,
-            A::TknZu => F::TknZu,
-            A::PZu => F::PZu,
-            A::CsbAb => F::CsbAb,
-            A::TknAb => F::TknAb,
-            A::PAb => F::PAb,
-            A::Klaergas => F::Klaergas,
-            A::Methangehalt => F::Methangehalt,
-            A::GasZusatz => F::GasZusatz,
-            A::Biogas => F::Biogas,
-            A::Strombedarf => F::Strombedarf,
-            A::Eigenstrom => F::Eigenstrom,
-            A::EfStrommix => F::EfStrommix,
-            A::Schlammtaschen => F::Schlammtaschen,
-            A::Schlammstapel => F::Schlammstapel,
-            A::KlaerschlammEnstorgung => F::KlaerschlammEnstorgung,
-            A::KlaerschlammTransport => F::KlaerschlammTransport,
-            A::BetriebsstoffeFe3 => F::BetriebsstoffeFe3,
-            A::BetriebsstoffeFeso4 => F::BetriebsstoffeFeso4,
-            A::BetriebsstoffeKalk => F::BetriebsstoffeKalk,
-            A::BetriebsstoffePoly => F::BetriebsstoffePoly,
-            A::N2oSzenario => F::N2oSzenario,
-        }
-    }
-}
+use crate::{InputData, N2OSzenario, OutputData};
 
 impl From<N2OSzenario> for app::N2OSzenario {
     fn from(from: N2OSzenario) -> Self {
@@ -82,6 +12,7 @@ impl From<N2OSzenario> for app::N2OSzenario {
             F::Optimistic => A::Optimistic,
             F::Pesimistic => A::Pesimistic,
             F::Ipcc2019 => A::Ipcc2019,
+            F::Custom(val) => A::Custom(val),
         }
     }
 }
@@ -96,6 +27,7 @@ impl From<app::N2OSzenario> for N2OSzenario {
             A::Optimistic => F::Optimistic,
             A::Pesimistic => F::Pesimistic,
             A::Ipcc2019 => F::Ipcc2019,
+            A::Custom(val) => F::Custom(val),
         }
     }
 }

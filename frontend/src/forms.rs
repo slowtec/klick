@@ -182,7 +182,7 @@ where
               <NumberInput
                 label
                 field_id
-                placeholder = placeholder.unwrap()
+                placeholder = placeholder.unwrap_or("")
                 value = signal
                 unit
                 description

@@ -81,6 +81,7 @@ pub fn Tool() -> impl IntoView {
             N2OSzenario::Optimistic => "Optimistisch",
             N2OSzenario::Pesimistic => "Pessimistisch",
             N2OSzenario::Ipcc2019 => "IPCC 2019",
+            N2OSzenario::Custom(_) => "Benutzerdefiniert",
         })
         .collect::<Vec<_>>();
 
@@ -239,7 +240,18 @@ fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
         return None;
     };
 
-    let n2o_szenario = util::try_n2o_szenario_from_usize(n2o_szenario).unwrap();
+    let custom_n2o_szenario_value = s
+        .get(&ValueId::CustomN2oSzenario)
+        .and_then(FieldSignal::get_float);
+
+    let n2o_szenario =
+        match util::try_n2o_szenario_from_usize(n2o_szenario, custom_n2o_szenario_value) {
+            Ok(szenario) => szenario,
+            Err(err) => {
+                log::warn!("{err}");
+                return None;
+            }
+        };
 
     Some(InputData {
         ew,

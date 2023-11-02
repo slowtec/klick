@@ -1,40 +1,12 @@
 #![warn(clippy::pedantic)]
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ValueId {
-    Name,
-    Ew,
-    Flow,
-    CsbZu,
-    TknZu,
-    PZu,
-    CsbAb,
-    TknAb,
-    PAb,
-    Klaergas,
-    Methangehalt,
-    GasZusatz,
-    Biogas,
-    Strombedarf,
-    Eigenstrom,
-    EfStrommix,
-    Schlammtaschen,
-    Schlammstapel,
-    KlaerschlammEnstorgung,
-    KlaerschlammTransport,
-    BetriebsstoffeFe3,
-    BetriebsstoffeFeso4,
-    BetriebsstoffeKalk,
-    BetriebsstoffePoly,
-    N2oSzenario,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum N2OSzenario {
     ExtrapolatedParravicini,
     Optimistic,
     Pesimistic,
     Ipcc2019,
+    Custom(f64),
 }
 
 #[derive(Debug, Clone)]
@@ -143,6 +115,7 @@ pub fn calc(input: &InputData) -> OutputData {
         N2OSzenario::Optimistic => 0.005,                          // [0,5 % des Ges-N Zulauf]
         N2OSzenario::Pesimistic => 0.016,                          // [1,6 % des Ges-N Zulauf]
         N2OSzenario::Ipcc2019 => 0.032,                            // [3,2 % des Ges-N Zulauf]
+        N2OSzenario::Custom(factor) => *factor,
     };
 
     // Direkte emissionen

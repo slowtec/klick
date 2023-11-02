@@ -402,8 +402,27 @@
               {
                 "label": "Nach IPCC 2019",
                 "value": 3
+              },
+              {
+                "label": "Benutzerdefiniert",
+                "value": 4
               }
             ]
+          }
+        }
+      },
+      {
+        "id": "CustomN2oSzenario",
+        "label": "N₂O-Emissionsfaktor",
+        "description": "Benutzerdefinierter N₂O-Emissionsfaktor",
+        "required": false,
+        "field_type": {
+          "Float": {
+            "initial_value": null,
+            "placeholder": "% des Ges-N Zulauf",
+            "min_value": null,
+            "max_value": null,
+            "unit": "%"
           }
         }
       }
