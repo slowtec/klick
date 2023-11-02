@@ -6,4 +6,3 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-strum = { version = "0.25.0", features = ["derive"] }

@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use klick_application::N2OSzenario;
+use klick_boundary::N2OSzenario;
 
 pub fn n2o_szenario_to_usize(szenario: N2OSzenario) -> usize {
     match szenario {

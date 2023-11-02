@@ -4,42 +4,10 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 
-//use log::info;
-
 use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
 
-#[derive(Debug)]
-pub struct Field<ID> {
-    pub id: ID,
-    pub label: &'static str,
-    pub description: Option<&'static str>,
-    pub required: bool,
-    pub field_type: FieldType,
-}
-
-#[derive(Debug)]
-pub enum FieldType {
-    Float {
-        initial_value: Option<f64>,
-        placeholder: Option<&'static str>,
-        min_value: Option<f64>,
-        max_value: Option<f64>,
-        unit: &'static str,
-    },
-    Text {
-        initial_value: Option<String>,
-        placeholder: Option<&'static str>,
-        max_len: Option<usize>,
-    },
-    Bool {
-        initial_value: Option<bool>,
-    },
-    Selection {
-        initial_value: Option<usize>,
-        options: Vec<SelectOption>,
-    },
-}
+pub use klick_boundary::{Field, FieldSet, FieldType, SelectOption};
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -47,32 +15,18 @@ fn unique_id() -> usize {
     ID_COUNTER.fetch_add(1, Ordering::SeqCst)
 }
 
-impl<ID> Field<ID>
+pub fn form_field_id<ID>(field_id: &ID) -> String
 where
     ID: Copy + AsRef<str>,
 {
-    fn form_field_id(&self) -> String {
-        // DOM element IDs needs to be locally unique
-        // within the HTML document.
-        let id = unique_id();
+    // DOM element IDs needs to be locally unique
+    // within the HTML document.
+    let id = unique_id();
 
-        // The name is only for humans for better readability.
-        let name = to_kebab_case(self.id.as_ref());
+    // The name is only for humans for better readability.
+    let name = to_kebab_case(field_id.as_ref());
 
-        format!("{name}-{id}")
-    }
-}
-
-#[derive(Debug)]
-pub struct FieldSet<ID> {
-    pub title: &'static str,
-    pub fields: Vec<Field<ID>>,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct SelectOption {
-    pub label: &'static str,
-    pub value: usize,
+    format!("{name}-{id}")
 }
 
 #[derive(Clone, Copy)]
@@ -192,7 +146,7 @@ where
         description, label, ..
     } = field;
 
-    let field_id = field.form_field_id();
+    let field_id = crate::forms::form_field_id(&field.id);
 
     match field.field_type {
         FieldType::Text {
@@ -272,12 +226,8 @@ where
     }
 }
 
-fn create_tooltip(
-    label: &'static str,
-    description: Option<&'static str>,
-) -> impl IntoView {
-    let
-        show_tooltip: RwSignal<String> = create_rw_signal("none".to_string());
+fn create_tooltip(label: &'static str, description: Option<&'static str>) -> impl IntoView {
+    let show_tooltip: RwSignal<String> = create_rw_signal("none".to_string());
 
     view! {
         <div class="flex-col md:flex-row flex items-center md:justify-center">

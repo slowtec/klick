@@ -1,8 +1,6 @@
 #![warn(clippy::pedantic)]
 
-use strum::{AsRefStr, EnumIter};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, AsRefStr)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ValueId {
     Name,
     Ew,
@@ -31,7 +29,7 @@ pub enum ValueId {
     N2oSzenario,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum N2OSzenario {
     ExtrapolatedParravicini,
     Optimistic,

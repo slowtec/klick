@@ -788,9 +788,6 @@ dependencies = [
 [[package]]
 name = "klick-application"
 version = "0.0.0"
-dependencies = [
- "strum",
-]
 
 [[package]]
 name = "klick-backend"
@@ -810,8 +807,10 @@ dependencies = [
 name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
+ "klick-application",
  "serde",
  "serde_json",
+ "strum",
 ]
 
 [[package]]

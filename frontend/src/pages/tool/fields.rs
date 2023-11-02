@@ -1,4 +1,4 @@
-use klick_application::{N2OSzenario, ValueId};
+use klick_boundary::{N2OSzenario, ValueId};
 
 use crate::forms::{self, FieldType};
 

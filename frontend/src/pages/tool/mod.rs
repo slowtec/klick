@@ -3,7 +3,7 @@ use std::{collections::HashMap, rc::Rc};
 use leptos::{ev::MouseEvent, *};
 use strum::IntoEnumIterator;
 
-use klick_application::{N2OSzenario, ValueId};
+use klick_boundary::{InputData, N2OSzenario, ValueId};
 use klick_svg_charts::Barchart;
 
 use crate::{
@@ -24,7 +24,7 @@ pub fn Tool() -> impl IntoView {
     let (signals, set_views) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
 
-    let input_data = RwSignal::new(Option::<klick_application::InputData>::None);
+    let input_data = RwSignal::new(Option::<InputData>::None);
     let szenario_comparison = RwSignal::new(vec![]);
 
     let s = Rc::clone(&signals);
@@ -38,7 +38,7 @@ pub fn Tool() -> impl IntoView {
         match input_data.get() {
             Some(mut input_data) => {
                 log::debug!("Calculating with {input_data:#?}");
-                let output_data = klick_application::calc(&input_data);
+                let output_data = klick_application::calc(&input_data.clone().into());
                 log::debug!("Result is {output_data:#?}");
 
                 let name_ka: String = s
@@ -57,7 +57,7 @@ pub fn Tool() -> impl IntoView {
                 let szenario_calculations = N2OSzenario::iter()
                     .map(|szenario| {
                         input_data.n2o_szenario = szenario;
-                        let output_data = klick_application::calc(&input_data);
+                        let output_data = klick_application::calc(&input_data.clone().into());
                         (szenario, output_data)
                     })
                     .collect::<Vec<_>>();
@@ -147,7 +147,7 @@ where
     }
 }
 
-fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<klick_application::InputData> {
+fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
     let Some(ew) = s.get(&ValueId::Ew).and_then(FieldSignal::get_float) else {
         return None;
     };
@@ -241,7 +241,7 @@ fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<klick_applicat
 
     let n2o_szenario = util::try_n2o_szenario_from_usize(n2o_szenario).unwrap();
 
-    Some(klick_application::InputData {
+    Some(InputData {
         ew,
         abwasser,
         n_ges_zu,
