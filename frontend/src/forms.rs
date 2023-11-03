@@ -105,6 +105,48 @@ impl FieldSignal {
     }
 }
 
+fn format_float(input: Option<f64>) -> String {
+    match input {
+        Some(value) => {
+            let formatted = format!("{:.2}", value); // Format the float with two decimal places
+            let parts: Vec<&str> = formatted.split('.').collect();
+
+            // Check if the number has a fractional part
+            if parts.len() == 2 {
+                let integral_part = parts[0].chars().rev().collect::<String>();
+                let fractional_part = parts[1];
+                let mut formatted_str = String::new();
+
+                for (i, digit) in integral_part.chars().enumerate() {
+                    if i != 0 && i % 3 == 0 {
+                        formatted_str.push('.');
+                    }
+                    formatted_str.push(digit);
+                }
+
+                formatted_str = formatted_str.chars().rev().collect();
+                formatted_str.push(',');
+                formatted_str.push_str(fractional_part);
+                formatted_str
+            } else {
+                // No fractional part
+                let integral_part = parts[0].chars().rev().collect::<String>();
+                let mut formatted_str = String::new();
+
+                for (i, digit) in integral_part.chars().enumerate() {
+                    if i != 0 && i % 3 == 0 {
+                        formatted_str.push('.');
+                    }
+                    formatted_str.push(digit);
+                }
+
+                formatted_str.chars().rev().collect()
+            }
+        }
+        None => "NaN".to_string(),
+    }
+}
+
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
 ) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>)
@@ -282,10 +324,10 @@ fn create_tooltip(label: &'static str, description: Option<&'static str>, unit: 
                     <p class="text-sm font-bold text-gray-800 pb-1">Grenzwerte Warnung</p>
                     <ul class="list-disc list-inside">
                     <Show when=move || unreasonable_min.is_some()>
-                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe kleiner "  { unreasonable_min } " " { unit }</li>
+                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe kleiner "  { format_float(unreasonable_min) } " " { unit }</li>
                     </Show>
                     <Show when=move || unreasonable_max.is_some()>
-                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { unreasonable_max } " " { unit }</li>
+                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { format_float(unreasonable_max) } " " { unit }</li>
                     </Show>
                     </ul>
                   </Show>
@@ -304,7 +346,6 @@ fn TextInput(
     max_len: Option<usize>,
     description: Option<&'static str>,
 ) -> impl IntoView {
-    let unit: &'static str = "";
     view! {
       <div>
       <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
