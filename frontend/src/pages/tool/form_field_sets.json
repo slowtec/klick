@@ -24,8 +24,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Ausbaugröße [EW]",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 5000000
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 5000000
+            },
             "unit": "EW"
           }
         }
@@ -39,8 +45,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Abwassermenge",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 1000000000
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 1000000000
+            },
             "unit": "m³/a"
           }
         }
@@ -59,8 +71,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "CSB",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 5,
+              "max": 5000
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 5000
+            },
             "unit": "mg/L"
           }
         }
@@ -74,8 +92,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "TKN",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 1000
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 5000
+            },
             "unit": "mg/L"
           }
         }
@@ -89,8 +113,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "P",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 500
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 1000
+            },
             "unit": "mg/L"
           }
         }
@@ -109,8 +139,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "CSB",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 150
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 1000
+            },
             "unit": "mg/L"
           }
         }
@@ -124,8 +160,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "TKN",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 100
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 1000
+            },
             "unit": "mg/L"
           }
         }
@@ -139,8 +181,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "P",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 5
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 50
+            },
             "unit": "mg/L"
           }
         }
@@ -159,8 +207,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Klärgas",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 100000000
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 100000000
+            },
             "unit": "m³"
           }
         }
@@ -174,8 +228,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "62",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 20,
+              "max": 90
+            },
+            "unreasonable": {
+              "min": 20,
+              "max": 90
+            },
             "unit": "%"
           }
         }
@@ -189,8 +249,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Gasbezug",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": null,
+              "max": null
+            },
+            "unreasonable": {
+              "min": null,
+              "max": null
+            },
             "unit": "kWh/a"
           }
         }
@@ -215,8 +281,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Gesamtstrombedarf",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 100000000
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 1000000000
+            },
             "unit": "kWh/a"
           }
         }
@@ -230,8 +302,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Eigenstrom",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 5000000
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 50000000
+            },
             "unit": "kWh/a"
           }
         }
@@ -245,8 +323,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "485",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 800
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 2500
+            },
             "unit": "g CO₂/kWh"
           }
         }
@@ -287,8 +371,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Masse entwässert",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0.1,
+              "max": 0.2
+            },
+            "unreasonable": {
+              "min": null,
+              "max": 500000
+            },
             "unit": "t"
           }
         }
@@ -302,8 +392,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Entfernung",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": 0,
+              "max": 50
+            },
+            "unreasonable": {
+              "min": 0,
+              "max": 500
+            },
             "unit": "km"
           }
         }
@@ -322,8 +418,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Lösung",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": null,
+              "max": null
+            },
+            "unreasonable": {
+              "min": null,
+              "max": 500000
+            },
             "unit": "kg"
           }
         }
@@ -337,8 +439,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Lösung",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": null,
+              "max": null
+            },
+            "unreasonable": {
+              "min": null,
+              "max": 100000
+            },
             "unit": "kg"
           }
         }
@@ -352,8 +460,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Branntkalk",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": null,
+              "max": null
+            },
+            "unreasonable": {
+              "min": null,
+              "max": 500000
+            },
             "unit": "kg"
           }
         }
@@ -367,8 +481,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Polymere",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": null,
+              "max": null
+            },
+            "unreasonable": {
+              "min": null,
+              "max": 50000
+            },
             "unit": "kg"
           }
         }
@@ -420,8 +540,14 @@
           "Float": {
             "initial_value": null,
             "placeholder": "% des Ges-N Zulauf",
-            "min_value": null,
-            "max_value": null,
+            "plausible": {
+              "min": null,
+              "max": null
+            },
+            "unreasonable": {
+              "min": null,
+              "max": null
+            },
             "unit": "%"
           }
         }

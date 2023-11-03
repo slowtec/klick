@@ -6,8 +6,9 @@ use std::{
 
 use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
+use log::info;
 
-pub use klick_boundary::{Field, FieldSet, FieldType, SelectOption};
+pub use klick_boundary::{MinMax, Field, FieldSet, FieldType, SelectOption};
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -173,6 +174,8 @@ where
             placeholder,
             unit,
             initial_value,
+            plausible,
+            unreasonable,
             ..
         } => {
             let signal = create_rw_signal(initial_value);
@@ -186,6 +189,8 @@ where
                 value = signal
                 unit
                 description
+                plausible
+                unreasonable
               />
             }
             .into_view();
@@ -226,8 +231,16 @@ where
     }
 }
 
-fn create_tooltip(label: &'static str, description: Option<&'static str>) -> impl IntoView {
+fn create_tooltip(label: &'static str, description: Option<&'static str>, unit: Option<&'static str>, _plausible: Option<MinMax>, unreasonable: Option<MinMax>) -> impl IntoView {
     let show_tooltip: RwSignal<String> = create_rw_signal("none".to_string());
+    let unreasonable_min = match unreasonable {
+      Some(u) => u.min,
+      None => None,
+    };
+    let unreasonable_max = match unreasonable {
+        Some(u) => u.max,
+        None => None,
+    };
 
     view! {
         <div class="flex-col md:flex-row flex items-center md:justify-center">
@@ -241,8 +254,8 @@ fn create_tooltip(label: &'static str, description: Option<&'static str>) -> imp
             show_tooltip.set("none".to_string());
           }
           >
-              <div class=" cursor-pointer">
-                  <svg aria-haspopup="true" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle" width="25" height="25" viewBox="0 0 24 24" stroke-width="1.5" stroke="#A0AEC0" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <div class="cursor-pointer">
+                  <svg aria-haspopup="true" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-info-circle" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="#A0AEC0" fill="none" stroke-linecap="round" stroke-linejoin="round">
                       <path stroke="none" d="M0 0h24v24H0z" />
                       <circle cx="12" cy="12" r="9" />
                       <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -263,6 +276,19 @@ fn create_tooltip(label: &'static str, description: Option<&'static str>) -> imp
                   </svg>
                   <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
                   <p class="text-xs leading-4 text-gray-600 pb-3">{ description }</p>
+                  <Show when=move || (unreasonable_min.is_some() || unreasonable_max.is_some())>
+                    //<p class="text-sm font-bold text-gray-800 pb-1">Plausiebel</p>
+                    //<p class="block text-sm leading-6 text-gray-600">{ plausible.min } "< X " { unit } " < " {plausible.max} </p>
+                    <p class="text-sm font-bold text-gray-800 pb-1">Grenzwerte Warnung</p>
+                    <ul class="list-disc list-inside">
+                    <Show when=move || unreasonable_min.is_some()>
+                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe kleiner "  { unreasonable_min } " " { unit }</li>
+                    </Show>
+                    <Show when=move || unreasonable_max.is_some()>
+                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { unreasonable_max } " " { unit }</li>
+                    </Show>
+                    </ul>
+                  </Show>
               </div>
           </a>
         </div>
@@ -278,12 +304,12 @@ fn TextInput(
     max_len: Option<usize>,
     description: Option<&'static str>,
 ) -> impl IntoView {
+    let unit: &'static str = "";
     view! {
       <div>
-
-      <div class="block columns-2 sm:flex sm:justify-start sm:space-x-12">
+      <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
         <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
-        {create_tooltip(label, description)}
+        {create_tooltip(label, description, None, None, None)}
       </div>
 
         <div class="relative mt-2 rounded-md shadow-sm group">
@@ -318,12 +344,14 @@ fn NumberInput(
     field_id: String,
     value: RwSignal<Option<f64>>,
     description: Option<&'static str>,
+    plausible: MinMax,
+    unreasonable: MinMax,
 ) -> impl IntoView {
     view! {
       <div>
-        <div class="block columns-2 sm:flex sm:justify-start sm:space-x-12">
+        <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
-          {create_tooltip(label, description)}
+          {create_tooltip(label, description, Some(unit), Some(plausible), Some(unreasonable))}
         </div>
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
@@ -334,6 +362,8 @@ fn NumberInput(
             // TODO: aria-describedby
             prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
             on:input = move |ev| {
+              info!("plausible {} {}", plausible.min.unwrap_or_default(), plausible.max.unwrap_or_default());
+              info!("unreasonable {} {}", unreasonable.min.unwrap_or_default(), unreasonable.max.unwrap_or_default());
               let target_value = event_target_value(&ev);
               if target_value.is_empty() {
                 value.set(None);

@@ -105,13 +105,19 @@ pub struct Field<ID> {
     pub field_type: FieldType,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct MinMax {
+    pub min: Option<f64>,
+    pub max: Option<f64>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub enum FieldType {
     Float {
         initial_value: Option<f64>,
         placeholder: Option<&'static str>,
-        min_value: Option<f64>,
-        max_value: Option<f64>,
+        plausible: MinMax,
+        unreasonable: MinMax,
         unit: &'static str,
     },
     Text {
