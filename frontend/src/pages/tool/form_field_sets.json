@@ -39,7 +39,7 @@
       {
         "id": "Flow",
         "label": "Abwassermenge",
-        "description": "Die jährliche (a) Abwassermenge in Kubikmeter (m3) im Zulauf Ihrer Kläranlage.",
+        "description": "Die jährliche (a) Abwassermenge in Kubikmeter (m³) im Zulauf Ihrer Kläranlage.",
         "required": true,
         "field_type": {
           "Float": {
@@ -201,7 +201,7 @@
       {
         "id": "Klaergas",
         "label": "Erzeugtes Klärgas",
-        "description": "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m3) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
+        "description": "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m³) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
         "required": true,
         "field_type": {
           "Float": {
@@ -317,7 +317,7 @@
       {
         "id": "EfStrommix",
         "label": "Emissionsfaktor Strommix (Versorger)",
-        "description": "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO2 pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
+        "description": "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
         "required": true,
         "field_type": {
           "Float": {
