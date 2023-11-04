@@ -66,7 +66,7 @@
         "id": "CsbZu",
         "label": "Chemischer Sauerstoffbedarf",
         "description": "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
-        "required": true,
+        "required": false,
         "field_type": {
           "Float": {
             "initial_value": null,
@@ -108,7 +108,7 @@
         "id": "PZu",
         "label": "Phosphor",
         "description": "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-        "required": true,
+        "required": false,
         "field_type": {
           "Float": {
             "initial_value": null,
@@ -176,7 +176,7 @@
         "id": "PAb",
         "label": "Phosphor",
         "description": "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-        "required": true,
+        "required": false,
         "field_type": {
           "Float": {
             "initial_value": null,
@@ -244,7 +244,7 @@
         "id": "GasZusatz",
         "label": "Gasbezug (Versorger)",
         "description": "Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
-        "required": true,
+        "required": false,
         "field_type": {
           "Float": {
             "initial_value": null,
@@ -535,7 +535,7 @@
         "id": "CustomN2oSzenario",
         "label": "N₂O-Emissionsfaktor",
         "description": "Benutzerdefinierter N₂O-Emissionsfaktor",
-        "required": false,
+        "required": true,
         "field_type": {
           "Float": {
             "initial_value": null,
@@ -545,8 +545,8 @@
               "max": null
             },
             "unreasonable": {
-              "min": null,
-              "max": null
+              "min": 0.0,
+              "max": 100.0
             },
             "unit": "%"
           }

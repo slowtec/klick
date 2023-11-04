@@ -186,7 +186,7 @@ where
     ID: AsRef<str> + Copy,
 {
     let Field {
-        description, label, ..
+        description, label, required, ..
     } = field;
 
     let field_id = crate::forms::form_field_id(&field.id);
@@ -207,6 +207,7 @@ where
                 value = signal
                 max_len
                 description
+                required
               />
             }
             .into_view();
@@ -233,6 +234,7 @@ where
                 description
                 plausible
                 unreasonable
+                required
               />
             }
             .into_view();
@@ -273,7 +275,7 @@ where
     }
 }
 
-fn create_tooltip(label: &'static str, description: Option<&'static str>, unit: Option<&'static str>, _plausible: Option<MinMax>, unreasonable: Option<MinMax>) -> impl IntoView {
+fn create_tooltip(label: &'static str, description: Option<&'static str>, required: bool, unit: Option<&'static str>, _plausible: Option<MinMax>, unreasonable: Option<MinMax>) -> impl IntoView {
     let show_tooltip: RwSignal<String> = create_rw_signal("none".to_string());
     let unreasonable_min = match unreasonable {
       Some(u) => u.min,
@@ -288,11 +290,9 @@ fn create_tooltip(label: &'static str, description: Option<&'static str>, unit: 
         <div class="flex-col md:flex-row flex items-center md:justify-center">
           <a tabindex="0" role="link" aria-label="tooltip 1" class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
           on:focus = move |_| {
-            //info!("focus");
             show_tooltip.set("block".to_string());
           }
           on:blur = move |_| {
-            //info!("blur");
             show_tooltip.set("none".to_string());
           }
           >
@@ -318,7 +318,7 @@ fn create_tooltip(label: &'static str, description: Option<&'static str>, unit: 
                   </svg>
                   <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
                   <p class="text-xs leading-4 text-gray-600 pb-3">{ description }</p>
-                  <Show when=move || (unreasonable_min.is_some() || unreasonable_max.is_some())>
+                  <Show when=move || (unreasonable_min.is_some() || unreasonable_max.is_some() || required )>
                     //<p class="text-sm font-bold text-gray-800 pb-1">Plausiebel</p>
                     //<p class="block text-sm leading-6 text-gray-600">{ plausible.min } "< X " { unit } " < " {plausible.max} </p>
                     <p class="text-sm font-bold text-gray-800 pb-1">Grenzwerte Warnung</p>
@@ -328,6 +328,9 @@ fn create_tooltip(label: &'static str, description: Option<&'static str>, unit: 
                     </Show>
                     <Show when=move || unreasonable_max.is_some()>
                       <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { format_float(unreasonable_max) } " " { unit }</li>
+                    </Show>
+                    <Show when=move || required>
+                      <li class="text-xs leading-4 text-gray-600 pb-3">Eingabe benötigt!</li>
                     </Show>
                     </ul>
                   </Show>
@@ -345,12 +348,14 @@ fn TextInput(
     value: RwSignal<Option<String>>,
     max_len: Option<usize>,
     description: Option<&'static str>,
+    required: bool,
 ) -> impl IntoView {
+    let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     view! {
       <div>
       <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-        <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
-        {create_tooltip(label, description, None, None, None)}
+        <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ required_label }</label>
+        {create_tooltip(label, description, required, None, None, None)}
       </div>
 
         <div class="relative mt-2 rounded-md shadow-sm group">
@@ -387,12 +392,14 @@ fn NumberInput(
     description: Option<&'static str>,
     plausible: MinMax,
     unreasonable: MinMax,
+    required: bool,
 ) -> impl IntoView {
+    let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     view! {
       <div>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-          <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ label }</label>
-          {create_tooltip(label, description, Some(unit), Some(plausible), Some(unreasonable))}
+          <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900"> { required_label }</label>
+          {create_tooltip(label, description, required, Some(unit), Some(plausible), Some(unreasonable))}
         </div>
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
@@ -402,6 +409,17 @@ fn NumberInput(
             placeholder= { placeholder }
             // TODO: aria-describedby
             prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
+            // prop:value = move || value.get().map(|v|format_float(Some(v))).unwrap_or_default()
+            // on:focus = move |ev| {
+            //   let target_value = event_target_value(&ev);
+            //   info!("{} xxx", target_value);
+            //   match target_value.replace('.',"").replace(',',".").parse() {
+            //     Ok(v) => {
+            //       value.set(Some(v));
+            //     },
+            //     Err(_) => {},
+            //   }
+            // }
             on:input = move |ev| {
               info!("plausible {} {}", plausible.min.unwrap_or_default(), plausible.max.unwrap_or_default());
               info!("unreasonable {} {}", unreasonable.min.unwrap_or_default(), unreasonable.max.unwrap_or_default());
