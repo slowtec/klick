@@ -8,7 +8,7 @@ use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
 use log::info;
 
-pub use klick_boundary::{MinMax, Field, FieldSet, FieldType, SelectOption};
+pub use klick_boundary::{Field, FieldSet, FieldType, MinMax, SelectOption};
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -186,7 +186,10 @@ where
     ID: AsRef<str> + Copy,
 {
     let Field {
-        description, label, required, ..
+        description,
+        label,
+        required,
+        ..
     } = field;
 
     let field_id = crate::forms::form_field_id(&field.id);
@@ -275,11 +278,18 @@ where
     }
 }
 
-fn create_tooltip(label: &'static str, description: Option<&'static str>, required: bool, unit: Option<&'static str>, _plausible: Option<MinMax>, unreasonable: Option<MinMax>) -> impl IntoView {
+fn create_tooltip(
+    label: &'static str,
+    description: Option<&'static str>,
+    required: bool,
+    unit: Option<&'static str>,
+    _plausible: Option<MinMax>,
+    unreasonable: Option<MinMax>,
+) -> impl IntoView {
     let show_tooltip: RwSignal<String> = create_rw_signal("none".to_string());
     let unreasonable_min = match unreasonable {
-      Some(u) => u.min,
-      None => None,
+        Some(u) => u.min,
+        None => None,
     };
     let unreasonable_max = match unreasonable {
         Some(u) => u.max,
