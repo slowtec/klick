@@ -115,7 +115,7 @@ pub fn Tool() -> impl IntoView {
           let data = szenario_comparison.get();
           if !data.is_empty() {
             Some(view! {
-              <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich"</h3>
+              <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂-eq/Jahr]"</h3>
               <div class="">
                 <Barchart
                   width = 1200.0

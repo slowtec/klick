@@ -6,18 +6,44 @@ use charming::{
 };
 use log::info;
 
-fn format_large_number(number: f64) -> String {
-    let formatted = if number >= 1_000_000_000.0 {
-        format!("{:.2}G", number / 1_000_000_000.0)
-    } else if number >= 1_000_000.0 {
-        format!("{:.2}M", number / 1_000_000.0)
-    } else if number >= 1_000.0 {
-        format!("{:.2}k", number / 1_000.0)
-    } else {
-        format!("{:.2}", number)
-    };
+// fn format_large_number(number: f64) -> String {
+//     let formatted = if number >= 1_000_000_000.0 {
+//         format!("{:.2} Gt", number / 1_000_000_000.0)
+//     } else if number >= 1_000_000.0 {
+//         format!("{:.2} Mt", number / 1_000_000.0)
+//     } else if number >= 1_000.0 {
+//         format!("{:.2} kt", number / 1_000.0)
+//     } else {
+//         format!("{:.2} t", number)
+//     };
+//     formatted.replace(".", ",")
+// }
 
-    formatted.replace(".", ",")
+// fn format_large_number(number: f64) -> String {
+//     let formatted = format!("{:.2}", number);
+//     formatted.replace(".", ",")
+// }
+
+// fn format_large_number(f: f64) -> String {
+//     // Convert the f64 to u64
+//     let t = f.ceil();
+//     let u = t as u64;
+//
+//     // Format the u64 as a string with a comma
+//     let formatted_string = format!("{:0}", u);
+//     println!("formatted_string {formatted_string}");
+//
+//     // Insert a comma at the appropriate position
+//     let comma_separated_string = formatted_string.chars().rev().enumerate()
+//         .map(|(i, c)| if i > 0 && i % 3 == 0 { format!(".{}", c) } else { c.to_string() })
+//         .collect::<String>()
+//         .chars().rev().collect::<String>();
+//
+//     comma_separated_string
+// }
+
+fn format_large_number(f: f64) -> String {
+    return "".to_string();
 }
 
 pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, element_id: &str) {
@@ -160,10 +186,10 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
             let label = x.to_string();
 
             if !labels.contains(&label) {
-                info!("Label {} added", label);
+                //info!("Label {} added", label);
                 labels.push(label);
             } else {
-                info!("Label {} already exists", label);
+                //info!("Label {} already exists", label);
             }
         }
     }
@@ -184,7 +210,7 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
             .links(sankey_links),
     );
     log::debug!("Render Sankey chart");
-    info!("{}", chart.to_string());
+    //info!("{}", chart.to_string());
     let renderer = charming::WasmRenderer::new(1200, 800);
     renderer.render(element_id, &chart).unwrap();
 }
