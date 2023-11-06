@@ -112,9 +112,9 @@ pub fn calc(input: &InputData) -> OutputData {
 
     let ef_n2o_anlage = match n2o_szenario {
         N2OSzenario::ExtrapolatedParravicini => get_n2oef(n_elim), // [Berechnung nach Parravicini et al. 2016]
-        N2OSzenario::Optimistic => 0.005,                          // [0,5 % des Ges-N Zulauf]
-        N2OSzenario::Pesimistic => 0.016,                          // [1,6 % des Ges-N Zulauf]
-        N2OSzenario::Ipcc2019 => 0.032,                            // [3,2 % des Ges-N Zulauf]
+        N2OSzenario::Optimistic => 0.003,                          // [0,3 % des Ges-N Zulauf]
+        N2OSzenario::Pesimistic => 0.008,                          // [1,8 % des Ges-N Zulauf]
+        N2OSzenario::Ipcc2019 => 0.016,                            // [1,6 % des Ges-N Zulauf]
         N2OSzenario::Custom(factor) => *factor,
     };
 
