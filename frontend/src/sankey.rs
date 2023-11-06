@@ -4,6 +4,21 @@ use charming::{
     series::Sankey,
     Chart,
 };
+use log::info;
+
+fn format_large_number(number: f64) -> String {
+    let formatted = if number >= 1_000_000_000.0 {
+        format!("{:.2}G", number / 1_000_000_000.0)
+    } else if number >= 1_000_000.0 {
+        format!("{:.2}M", number / 1_000_000.0)
+    } else if number >= 1_000.0 {
+        format!("{:.2}k", number / 1_000.0)
+    } else {
+        format!("{:.2}", number)
+    };
+
+    formatted.replace(".", ",")
+}
 
 pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, element_id: &str) {
     let klick_application::OutputData {
@@ -27,99 +42,115 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
         emissionen_co2_eq,
     } = output_data;
 
-    let dir_em = "Direkte Emissionen";
-    let indir_em = "Indirekte Emissionen";
-    let wei_indir_em = "Weitere Indirekte Emissionen";
+    let dir_em = "Direkte Emissionen".to_string();
+    let dir_em_string = format!("{dir_em} {}", format_large_number(direkte_emissionen_co2_eq));
+
+    let indir_em = "Indirekte Emissionen".to_string();
+    let indir_em_string = format!("{indir_em} {}", format_large_number(indirekte_emissionen_co2_eq));
+    
+    let wei_indir_em = "Weitere Indirekte Emissionen".to_string();
+    let wei_indir_em_string = format!("{wei_indir_em} {}", format_large_number(weitere_indirekte_emissionen_co2_eq));
+
     let nu = "Nutzung";
+    let nu_string =  format!("{nu} {}", format_large_number(emissionen_co2_eq));
+
     let em = "Emission";
+    let em_string = format!("{em} {}", format_large_number(emissionen_co2_eq));
+
+    let bs = "Betriebsstoffe";
+    let bs_string = format!("{bs} {}", format_large_number(co2eq_betriebsstoffe));
 
     let streams: Vec<(_, _, _)> = vec![
         (
-            format!("Eisen(III)-chlorid-Lösung\n{co2eq_betriebsstoffe_fe3}"),
-            "Betriebsstoffe",
+            format!("Eisen(III)-chlorid-Lösung {}", format_large_number(co2eq_betriebsstoffe_fe3)),
+            bs_string.as_str(),
             co2eq_betriebsstoffe_fe3,
         ),
         (
-            format!("Eisenchloridsulfat-Lösung\n{co2eq_betriebsstoffe_feso4}"),
-            "Betriebsstoffe",
+            format!("Eisenchloridsulfat-Lösung {}", format_large_number(co2eq_betriebsstoffe_feso4)),
+            bs_string.as_str(),
             co2eq_betriebsstoffe_feso4,
         ),
         (
-            format!("Kalkhydrat\n{co2eq_betriebsstoffe_kalk}"),
-            "Betriebsstoffe",
+            format!("Kalkhydrat {}", format_large_number(co2eq_betriebsstoffe_kalk)),
+            bs_string.as_str(),
             co2eq_betriebsstoffe_kalk,
         ),
         (
-            format!("Synthetische Polymere\n{co2eq_betriebsstoffe_poly}"),
-            "Betriebsstoffe",
+            format!("Synthetische Polymere {}", format_large_number(co2eq_betriebsstoffe_poly)),
+            bs_string.as_str(),
             co2eq_betriebsstoffe_poly,
         ),
         (
-            format!("Klaerschlamm Transport\n{co2eq_klaerschlamm_transport}"),
-            wei_indir_em,
+            format!("Klaerschlamm Transport {}", format_large_number(co2eq_klaerschlamm_transport)),
+            wei_indir_em_string.as_str(),
             co2eq_klaerschlamm_transport,
         ),
         (
-            format!("N₂O Anlage\n{co2eq_n2o_anlage}"),
-            dir_em,
+            format!("N₂O Anlage {}", format_large_number(co2eq_n2o_anlage)),
+            dir_em_string.as_str(),
             co2eq_n2o_anlage,
         ),
         (
-            format!("N₂O Gewässer\n{co2eq_n2o_gewaesser}"),
-            dir_em,
+            format!("N₂O Gewässer {}", format_large_number(co2eq_n2o_gewaesser)),
+            dir_em_string.as_str(),
             co2eq_n2o_gewaesser,
         ),
         (
-            format!("CH₄ Klärprozess\n{co2eq_ch4_klaerprozes}"),
-            dir_em,
+            format!("CH₄ Klärprozess {}", format_large_number(co2eq_ch4_klaerprozes)),
+            dir_em_string.as_str(),
             co2eq_ch4_klaerprozes,
         ),
         (
-            format!("CH₄ Schlupf Schlammstapel\n{co2eq_ch4_schlammstapel}"),
-            dir_em,
+            format!("CH₄ Schlupf Schlammstapel {}", format_large_number(co2eq_ch4_schlammstapel)),
+            dir_em_string.as_str(),
             co2eq_ch4_schlammstapel,
         ),
         (
-            format!("CH₄ Schlupf Schlammtasche\n{co2eq_ch4_schlammtasche}"),
-            dir_em,
+            format!("CH₄ Schlupf Schlammtasche {}", format_large_number(co2eq_ch4_schlammtasche)),
+            dir_em_string.as_str(),
             co2eq_ch4_schlammtasche,
         ),
         (
-            format!("CH₄ Gewässer\n{co2eq_ch4_gewaesser}"),
-            dir_em,
+            format!("CH₄ Gewässer {}", format_large_number(co2eq_ch4_gewaesser)),
+            dir_em_string.as_str(),
             co2eq_ch4_gewaesser,
         ),
         (
-            format!("CH₄ BHKW\n{co2eq_ch4_bhkw}"),
-            dir_em,
+            format!("CH₄ BHKW {}", format_large_number(co2eq_ch4_bhkw)),
+            dir_em_string.as_str(),
             co2eq_ch4_bhkw,
         ),
         (
-            format!("Strommix\n{co2eq_strommix}"),
-            indir_em,
+            format!("Strommix {}", format_large_number(co2eq_strommix)),
+            indir_em_string.as_str(),
             co2eq_strommix,
         ),
         (
-            format!("Betriebsstoffe\n{co2eq_betriebsstoffe}"),
-            wei_indir_em,
+            format!("{}", bs_string.clone()),
+            wei_indir_em_string.as_str(),
             co2eq_betriebsstoffe,
         ),
         (
-            format!("{dir_em}\n{direkte_emissionen_co2_eq}"),
-            nu,
+            format!("{}",dir_em_string.clone()),
+            nu_string.as_str(),
             direkte_emissionen_co2_eq,
         ),
         (
-            format!("{indir_em}\n{indirekte_emissionen_co2_eq}"),
-            nu,
+            format!("{}",indir_em_string.clone()),
+            nu_string.as_str(),
             indirekte_emissionen_co2_eq,
         ),
         (
-            format!("{wei_indir_em}\n{weitere_indirekte_emissionen_co2_eq}"),
-            nu,
+            format!("{}",wei_indir_em_string.clone()),
+            nu_string.as_str(),
             weitere_indirekte_emissionen_co2_eq,
         ),
-        (format!("{nu}\n{emissionen_co2_eq}"), em, emissionen_co2_eq),
+        (
+            format!("{}",nu_string.clone()),
+            em_string.as_str(),
+            emissionen_co2_eq
+        ),
     ];
 
     let mut labels: Vec<_> = vec![];
@@ -127,8 +158,12 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
     for (src, target, _) in &streams {
         for x in [&*src, *target] {
             let label = x.to_string();
+
             if !labels.contains(&label) {
+                info!("Label {} added", label);
                 labels.push(label);
+            } else {
+                info!("Label {} already exists", label);
             }
         }
     }
@@ -149,6 +184,7 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
             .links(sankey_links),
     );
     log::debug!("Render Sankey chart");
+    info!("{}", chart.to_string());
     let renderer = charming::WasmRenderer::new(1200, 800);
     renderer.render(element_id, &chart).unwrap();
 }
