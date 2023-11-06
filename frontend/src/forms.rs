@@ -331,14 +331,14 @@ fn create_tooltip(
                   <Show when=move || (unreasonable_min.is_some() || unreasonable_max.is_some() || required )>
                     //<p class="text-sm font-bold text-gray-800 pb-1">Plausiebel</p>
                     //<p class="block text-sm leading-6 text-gray-600">{ plausible.min } "< X " { unit } " < " {plausible.max} </p>
-                    <p class="text-sm font-bold text-gray-800 pb-1">Grenzwerte Warnung</p>
+                    //<p class="text-sm font-bold text-gray-800 pb-1">Grenzwerte Warnung</p>
                     <ul class="list-disc list-inside">
-                    <Show when=move || unreasonable_min.is_some()>
-                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe kleiner "  { format_float(unreasonable_min) } " " { unit }</li>
-                    </Show>
-                    <Show when=move || unreasonable_max.is_some()>
-                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { format_float(unreasonable_max) } " " { unit }</li>
-                    </Show>
+                    // <Show when=move || unreasonable_min.is_some()>
+                    //   <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe kleiner "  { format_float(unreasonable_min) } " " { unit }</li>
+                    // </Show>
+                    // <Show when=move || unreasonable_max.is_some()>
+                    //   <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { format_float(unreasonable_max) } " " { unit }</li>
+                    // </Show>
                     <Show when=move || required>
                       <li class="text-xs leading-4 text-gray-600 pb-3">Eingabe benötigt!</li>
                     </Show>
