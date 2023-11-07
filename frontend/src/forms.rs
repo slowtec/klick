@@ -405,6 +405,7 @@ fn NumberInput(
     required: bool,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
+    let error = RwSignal::new(Option::<String>::None);
     view! {
       <div>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
@@ -415,7 +416,11 @@ fn NumberInput(
           <input
             id = { field_id }
             type="text"
-            class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            class= move || {
+              let bg = if error.get().is_some() { "bg-red-100" } else { "" };
+              format!("{bg} {}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
+            }
+            // style:border = move || { if error.get().is_some() { format!("{}", "1px solid red}") } else { "inherit".to_string() } }
             placeholder= { placeholder }
             // TODO: aria-describedby
             prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
@@ -436,7 +441,9 @@ fn NumberInput(
               let target_value = event_target_value(&ev);
               if target_value.is_empty() {
                 value.set(None);
+                error.set(None);
               } else if let Ok(target_value) = target_value.replace(',',".").parse() {
+                error.set(None);
                 match value.get() {
                   Some(v) => {
                     if target_value != v {
@@ -449,6 +456,10 @@ fn NumberInput(
                     value.set(Some(target_value));
                   }
                 }
+              } else {
+                let m = "Not able to parse float".to_string();
+                info!("{}", m);
+                error.set(Some(m));
               }
             }
           />
