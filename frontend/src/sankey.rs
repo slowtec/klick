@@ -6,18 +6,18 @@ use charming::{
 };
 use log::info;
 
-// fn format_large_number(number: f64) -> String {
-//     let formatted = if number >= 1_000_000_000.0 {
-//         format!("{:.2} Gt", number / 1_000_000_000.0)
-//     } else if number >= 1_000_000.0 {
-//         format!("{:.2} Mt", number / 1_000_000.0)
-//     } else if number >= 1_000.0 {
-//         format!("{:.2} kt", number / 1_000.0)
-//     } else {
-//         format!("{:.2} t", number)
-//     };
-//     formatted.replace(".", ",")
-// }
+fn format_large_number(number: f64) -> String {
+    let formatted = if number >= 1_000_000_000.0 {
+        format!("{:.2} Gt", number / 1_000_000_000.0)
+    } else if number >= 1_000_000.0 {
+        format!("{:.2} Mt", number / 1_000_000.0)
+    } else if number >= 1_000.0 {
+        format!("{:.2} kt", number / 1_000.0)
+    } else {
+        format!("{:.2} t", number)
+    };
+    formatted.replace(".", ",")
+}
 
 // fn format_large_number(number: f64) -> String {
 //     let formatted = format!("{:.2}", number);
@@ -41,10 +41,6 @@ use log::info;
 //
 //     comma_separated_string
 // }
-
-fn format_large_number(f: f64) -> String {
-    return "".to_string();
-}
 
 pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, element_id: &str) {
     let klick_application::OutputData {
@@ -194,7 +190,7 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
         }
     }
 
-    let einheit = "t CO₂-eq/Jahr"; // Ebenfalls in Anführungszeichen, Einheitliche - Gesamt KA oder Bezug auf EW
+    let einheit = "t CO₂-eq/Jahr";
     let title = format!("{name} ({ew} EW) / Treibhausgasemissionen [{einheit}]");
 
     let sankey_data: Vec<_> = labels;
