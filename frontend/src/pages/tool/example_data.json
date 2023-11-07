@@ -17,5 +17,6 @@
   "betriebsstoffe_feso4" : 326000.0,
   "betriebsstoffe_kalk" : 326260.0,
   "betriebsstoffe_poly" : 23620.0,
+  "custom_n2o_szenario_value" : 0.01,
   "n2o_szenario" : "Ipcc2019"
 }

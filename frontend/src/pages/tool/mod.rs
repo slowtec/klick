@@ -25,6 +25,9 @@ pub fn Tool() -> impl IntoView {
     let signals = Rc::new(signals);
 
     let input_data = RwSignal::new(Option::<InputData>::None);
+    let sankey_header = RwSignal::new(String::new());
+    let sankey_emmisionsfaktor_hint = RwSignal::new(0.0);
+
     let szenario_comparison = RwSignal::new(vec![]);
 
     let s = Rc::clone(&signals);
@@ -51,7 +54,20 @@ pub fn Tool() -> impl IntoView {
                     .and_then(FieldSignal::get_float)
                     .unwrap_or_default();
 
-                sankey::render(&name_ka, ew, output_data, CHART_ELEMENT_ID);
+                let einheit = "t CO₂-eq/Jahr";
+                let szenario =
+                    match input_data.n2o_szenario {
+                        N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
+                        N2OSzenario::Optimistic => "Optimistisch",
+                        N2OSzenario::Pesimistic => "Pessimistisch",
+                        N2OSzenario::Ipcc2019 => "IPCC 2019",
+                        N2OSzenario::Custom(_) => "Benutzerdefiniert"
+                    };
+                let title = format!("{name_ka} ({ew} EW) / Treibhausgasemissionen [{}] - Szenario {}", einheit, szenario);
+                sankey_header.set(title);
+                sankey_emmisionsfaktor_hint.set(output_data.ef_n2o_anlage * 100.0);
+
+                sankey::render(output_data, CHART_ELEMENT_ID);
 
                 // Also calculate the other szenarios
                 let szenario_calculations = N2OSzenario::iter()
@@ -69,8 +85,10 @@ pub fn Tool() -> impl IntoView {
                 szenario_comparison.set(data);
             }
             None => {
+                sankey_header.set("".to_string());
                 szenario_comparison.update(|data| data.clear());
                 sankey::clear(CHART_ELEMENT_ID);
+                sankey_emmisionsfaktor_hint.set(0.0);
             }
         }
     });
@@ -109,7 +127,23 @@ pub fn Tool() -> impl IntoView {
         </div>
         { set_views }
       </div>
+      // sankey diagram
+      <Show when= move || { sankey_header.get() != ""}>
+      <h3 class="my-8 text-xl font-bold">
+      { move ||
+         format!("{}", sankey_header.get())
+      }
+      </h3>
+
+      </Show>
       <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
+      <Show when= move || { sankey_header.get() != ""}>
+      <p>"N₂O-Emissionsfaktor: " {
+        let emmi = format!("{:.2}", sankey_emmisionsfaktor_hint.get());
+        emmi.replace(".", ",")
+      }" %"</p>
+      </Show>
+      // bar diagram
       { move ||
         {
           let data = szenario_comparison.get();

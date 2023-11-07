@@ -153,6 +153,7 @@ impl From<OutputData> for app::OutputData {
             indirekte_emissionen_co2_eq,
             weitere_indirekte_emissionen_co2_eq,
             emissionen_co2_eq,
+            ef_n2o_anlage,
         } = from;
 
         Self {
@@ -174,6 +175,7 @@ impl From<OutputData> for app::OutputData {
             indirekte_emissionen_co2_eq,
             weitere_indirekte_emissionen_co2_eq,
             emissionen_co2_eq,
+            ef_n2o_anlage,
         }
     }
 }

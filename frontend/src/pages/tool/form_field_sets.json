@@ -534,7 +534,7 @@
       {
         "id": "CustomN2oSzenario",
         "label": "N₂O-Emissionsfaktor",
-        "description": "Benutzerdefinierter N₂O-Emissionsfaktor",
+        "description": "Benutzerdefinierter N₂O-Emissionsfaktor für das Szenario Benutzerdefiniert.",
         "required": true,
         "field_type": {
           "Float": {

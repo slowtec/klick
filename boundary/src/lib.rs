@@ -88,6 +88,7 @@ pub struct OutputData {
     pub indirekte_emissionen_co2_eq: f64,
     pub weitere_indirekte_emissionen_co2_eq: f64,
     pub emissionen_co2_eq: f64,
+    pub ef_n2o_anlage: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

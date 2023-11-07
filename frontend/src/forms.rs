@@ -282,7 +282,7 @@ fn create_tooltip(
     label: &'static str,
     description: Option<&'static str>,
     required: bool,
-    unit: Option<&'static str>,
+    _unit: Option<&'static str>,
     _plausible: Option<MinMax>,
     unreasonable: Option<MinMax>,
 ) -> impl IntoView {

@@ -52,6 +52,7 @@ pub struct OutputData {
     pub indirekte_emissionen_co2_eq: f64,
     pub weitere_indirekte_emissionen_co2_eq: f64,
     pub emissionen_co2_eq: f64,
+    pub ef_n2o_anlage: f64,
 }
 
 // Emissionsfaktoren
@@ -113,7 +114,7 @@ pub fn calc(input: &InputData) -> OutputData {
     let ef_n2o_anlage = match n2o_szenario {
         N2OSzenario::ExtrapolatedParravicini => get_n2oef(n_elim), // [Berechnung nach Parravicini et al. 2016]
         N2OSzenario::Optimistic => 0.003,                          // [0,3 % des Ges-N Zulauf]
-        N2OSzenario::Pesimistic => 0.008,                          // [1,8 % des Ges-N Zulauf]
+        N2OSzenario::Pesimistic => 0.008,                          // [0,8 % des Ges-N Zulauf]
         N2OSzenario::Ipcc2019 => 0.016,                            // [1,6 % des Ges-N Zulauf]
         N2OSzenario::Custom(factor) => *factor,
     };
@@ -204,6 +205,7 @@ pub fn calc(input: &InputData) -> OutputData {
         indirekte_emissionen_co2_eq,
         weitere_indirekte_emissionen_co2_eq,
         emissionen_co2_eq,
+        ef_n2o_anlage,
     }
 }
 

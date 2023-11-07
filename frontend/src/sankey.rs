@@ -1,10 +1,8 @@
 use charming::{
-    component::Title,
     element::{Emphasis, EmphasisFocus},
     series::Sankey,
     Chart,
 };
-use log::info;
 
 // fn format_large_number(number: f64) -> String {
 //     let formatted = if number >= 1_000_000_000.0 {
@@ -42,11 +40,11 @@ use log::info;
 //     comma_separated_string
 // }
 
-fn format_large_number(f: f64) -> String {
+fn format_large_number(_f: f64) -> String {
     return "".to_string();
 }
 
-pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, element_id: &str) {
+pub fn render(output_data: klick_application::OutputData, element_id: &str) {
     let klick_application::OutputData {
         co2eq_n2o_anlage,
         co2eq_n2o_gewaesser,
@@ -66,6 +64,7 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
         indirekte_emissionen_co2_eq,
         weitere_indirekte_emissionen_co2_eq,
         emissionen_co2_eq,
+        ef_n2o_anlage,
     } = output_data;
 
     let dir_em = "Direkte Emissionen".to_string();
@@ -194,16 +193,13 @@ pub fn render(name: &str, ew: f64, output_data: klick_application::OutputData, e
         }
     }
 
-    let einheit = "t CO₂-eq/Jahr"; // Ebenfalls in Anführungszeichen, Einheitliche - Gesamt KA oder Bezug auf EW
-    let title = format!("{name} ({ew} EW) / Treibhausgasemissionen [{einheit}]");
-
     let sankey_data: Vec<_> = labels;
     let sankey_links: Vec<(_, _, f64)> = streams
         .into_iter()
         .map(|(src, target, value)| (src, target.to_string(), value))
         .collect();
 
-    let chart = Chart::new().title(Title::new().text(title)).series(
+    let chart = Chart::new().series(
         Sankey::new()
             .emphasis(Emphasis::new().focus(EmphasisFocus::Adjacency))
             .data(sankey_data)
