@@ -64,7 +64,7 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
         indirekte_emissionen_co2_eq,
         weitere_indirekte_emissionen_co2_eq,
         emissionen_co2_eq,
-        ef_n2o_anlage,
+        ef_n2o_anlage: _,
     } = output_data;
 
     let dir_em = "Direkte Emissionen".to_string();
