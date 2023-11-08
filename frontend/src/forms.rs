@@ -412,18 +412,37 @@ fn NumberInput(
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900"> { required_label }</label>
           {create_tooltip(label, description, required, Some(unit), Some(plausible), Some(unreasonable))}
         </div>
+
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             id = { field_id }
             type="text"
             class= move || {
               let bg = if error.get().is_some() { "bg-red-100" } else { "" };
-              format!("{bg} {}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
+              format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
+            // style = move || {
+            //   if error.get().is_some() {
+            //     format!("border: 1px solid red;")
+            //   } else {
+            //     format!("")
+            //   }
+            // }
             // style:border = move || { if error.get().is_some() { format!("{}", "1px solid red}") } else { "inherit".to_string() } }
             placeholder= { placeholder }
             // TODO: aria-describedby
-            prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
+            // prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
+            prop:value = move || {
+              let val = value.get();
+              match val {
+                Some(v) => {
+                  error.set(None);
+                  v.to_string().replace('.',",")
+                },
+                None => "".to_string(),
+              }
+            }
+
             // prop:value = move || value.get().map(|v|format_float(Some(v))).unwrap_or_default()
             // on:focus = move |ev| {
             //   let target_value = event_target_value(&ev);
@@ -467,6 +486,10 @@ fn NumberInput(
             <span class="text-gray-500 sm:text-sm">{ unit }</span>
           </div>
         </div>
+        <Show when=move || error.get().is_some()>
+        <p class="mt-2 text-sm" style="color: red">{ move || error.get() }</p>
+        </Show>
+
       </div>
     }
 }
