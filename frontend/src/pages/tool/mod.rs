@@ -61,7 +61,7 @@ pub fn Tool() -> impl IntoView {
                         N2OSzenario::Optimistic => "Optimistisch",
                         N2OSzenario::Pesimistic => "Pessimistisch",
                         N2OSzenario::Ipcc2019 => "IPCC 2019",
-                        N2OSzenario::Custom(_) => "Benutzerdefiniert"
+                        N2OSzenario::Custom => "Benutzerdefiniert"
                     };
                 let title = format!("{name_ka} ({ew} EW) / Treibhausgasemissionen [{}] - Szenario {}", einheit, szenario);
                 sankey_header.set(title);
@@ -99,7 +99,7 @@ pub fn Tool() -> impl IntoView {
             N2OSzenario::Optimistic => "Optimistisch",
             N2OSzenario::Pesimistic => "Pessimistisch",
             N2OSzenario::Ipcc2019 => "IPCC 2019",
-            N2OSzenario::Custom(_) => "Benutzerdefiniert",
+            N2OSzenario::Custom => "Benutzerdefiniert",
         })
         .collect::<Vec<_>>();
 
@@ -127,22 +127,7 @@ pub fn Tool() -> impl IntoView {
         </div>
         { set_views }
       </div>
-      // sankey diagram
-      <Show when= move || { sankey_header.get() != ""}>
-      <h3 class="my-8 text-xl font-bold">
-      { move ||
-         format!("{}", sankey_header.get())
-      }
-      </h3>
 
-      </Show>
-      <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
-      <Show when= move || { sankey_header.get() != ""}>
-      <p>"N₂O-Emissionsfaktor: " {
-        let emmi = format!("{:.2}", sankey_emmisionsfaktor_hint.get());
-        emmi.replace(".", ",")
-      }" %"</p>
-      </Show>
       // bar diagram
       { move ||
         {
@@ -164,6 +149,22 @@ pub fn Tool() -> impl IntoView {
           }
         }
       }
+      // sankey diagram
+      <Show when= move || { sankey_header.get() != ""}>
+      <h3 class="my-8 text-xl font-bold">
+      { move ||
+         format!("{}", sankey_header.get())
+      }
+      </h3>
+
+      </Show>
+      <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
+      <Show when= move || { sankey_header.get() != ""}>
+      <p>"N₂O-Emissionsfaktor: " {
+        let emmi = format!("{:.2}", sankey_emmisionsfaktor_hint.get());
+        emmi.replace(".", ",")
+      }" %"</p>
+      </Show>
     }
 }
 
@@ -274,18 +275,21 @@ fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
         return None;
     };
 
-    let custom_n2o_szenario_value = s
-        .get(&ValueId::CustomN2oSzenario)
-        .and_then(FieldSignal::get_float);
-
     let n2o_szenario =
-        match util::try_n2o_szenario_from_usize(n2o_szenario, custom_n2o_szenario_value) {
+        match util::try_n2o_szenario_from_usize(n2o_szenario) {
             Ok(szenario) => szenario,
             Err(err) => {
                 log::warn!("{err}");
                 return None;
             }
         };
+
+    let Some(custom_n2o_szenario_value) = s
+        .get(&ValueId::CustomN2oSzenario)
+        .and_then(FieldSignal::get_float)
+    else {
+        return None;
+    };
 
     Some(InputData {
         ew,
@@ -307,5 +311,6 @@ fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
         n2o_szenario,
+        custom_n2o_szenario_value,
     })
 }

@@ -421,13 +421,6 @@ fn NumberInput(
               let bg = if error.get().is_some() { "bg-red-100" } else { "" };
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
-            // style = move || {
-            //   if error.get().is_some() {
-            //     format!("border: 1px solid red;")
-            //   } else {
-            //     format!("")
-            //   }
-            // }
             // style:border = move || { if error.get().is_some() { format!("{}", "1px solid red}") } else { "inherit".to_string() } }
             placeholder= { placeholder }
             // TODO: aria-describedby

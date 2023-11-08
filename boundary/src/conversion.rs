@@ -12,7 +12,7 @@ impl From<N2OSzenario> for app::N2OSzenario {
             F::Optimistic => A::Optimistic,
             F::Pesimistic => A::Pesimistic,
             F::Ipcc2019 => A::Ipcc2019,
-            F::Custom(val) => A::Custom(val),
+            F::Custom => A::Custom,
         }
     }
 }
@@ -27,7 +27,7 @@ impl From<app::N2OSzenario> for N2OSzenario {
             A::Optimistic => F::Optimistic,
             A::Pesimistic => F::Pesimistic,
             A::Ipcc2019 => F::Ipcc2019,
-            A::Custom(val) => F::Custom(val),
+            A::Custom => F::Custom,
         }
     }
 }
@@ -54,6 +54,7 @@ impl From<InputData> for app::InputData {
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
             n2o_szenario,
+            custom_n2o_szenario_value,
         } = from;
 
         let n2o_szenario = n2o_szenario.into();
@@ -78,6 +79,7 @@ impl From<InputData> for app::InputData {
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
             n2o_szenario,
+            custom_n2o_szenario_value,
         }
     }
 }
@@ -104,6 +106,7 @@ impl From<app::InputData> for InputData {
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
             n2o_szenario,
+            custom_n2o_szenario_value,
         } = from;
 
         let n2o_szenario = n2o_szenario.into();
@@ -128,6 +131,7 @@ impl From<app::InputData> for InputData {
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
             n2o_szenario,
+            custom_n2o_szenario_value,
         }
     }
 }

@@ -6,7 +6,7 @@ pub enum N2OSzenario {
     Optimistic,
     Pesimistic,
     Ipcc2019,
-    Custom(f64),
+    Custom,
 }
 
 #[derive(Debug, Clone)]
@@ -30,6 +30,7 @@ pub struct InputData {
     pub betriebsstoffe_kalk: f64,
     pub betriebsstoffe_poly: f64,
     pub n2o_szenario: N2OSzenario,
+    pub custom_n2o_szenario_value: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -104,6 +105,7 @@ pub fn calc(input: &InputData) -> OutputData {
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
         n2o_szenario,
+        custom_n2o_szenario_value,
     } = input;
 
     let klaergas_methangehalt = methangehalt / 100.0; // [%]
@@ -111,12 +113,20 @@ pub fn calc(input: &InputData) -> OutputData {
 
     let n_elim = (n_ges_zu - n_ges_ab) / n_ges_zu * 100.0; // [%]
 
+    fn get_n2oef(n_elim: f64) -> f64 {
+        let mut ef = (-0.049 * n_elim + 4.553) / 100.0;
+        if ef < 0.0 {
+            ef = 0.002;
+        }
+        ef
+    }
+
     let ef_n2o_anlage = match n2o_szenario {
         N2OSzenario::ExtrapolatedParravicini => get_n2oef(n_elim), // [Berechnung nach Parravicini et al. 2016]
         N2OSzenario::Optimistic => 0.003,                          // [0,3 % des Ges-N Zulauf]
         N2OSzenario::Pesimistic => 0.008,                          // [0,8 % des Ges-N Zulauf]
         N2OSzenario::Ipcc2019 => 0.016,                            // [1,6 % des Ges-N Zulauf]
-        N2OSzenario::Custom(factor) => *factor,
+        N2OSzenario::Custom => *custom_n2o_szenario_value / 100.0, // [%]
     };
 
     // Direkte emissionen
@@ -207,12 +217,4 @@ pub fn calc(input: &InputData) -> OutputData {
         emissionen_co2_eq,
         ef_n2o_anlage,
     }
-}
-
-fn get_n2oef(n_elim: f64) -> f64 {
-    let mut ef = (-0.049 * n_elim + 4.553) / 100.0;
-    if ef < 0.0 {
-        ef = 0.002;
-    }
-    ef
 }

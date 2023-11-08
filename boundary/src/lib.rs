@@ -42,7 +42,7 @@ pub enum N2OSzenario {
     Optimistic,
     Pesimistic,
     Ipcc2019,
-    Custom(f64),
+    Custom,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -66,6 +66,7 @@ pub struct InputData {
     pub betriebsstoffe_kalk: f64,
     pub betriebsstoffe_poly: f64,
     pub n2o_szenario: N2OSzenario,
+    pub custom_n2o_szenario_value: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

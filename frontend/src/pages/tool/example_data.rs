@@ -26,6 +26,7 @@ pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>)
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
         n2o_szenario,
+        custom_n2o_szenario_value,
     } = example_input_data();
 
     let name = "Muster Klärwerk".to_string();
@@ -130,6 +131,11 @@ pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>)
         .and_then(FieldSignal::get_selection_signal)
         .unwrap()
         .set(Some(util::n2o_szenario_to_usize(n2o_szenario)));
+    signals
+        .get(&ValueId::CustomN2oSzenario)
+        .and_then(FieldSignal::get_float_signal)
+        .unwrap()
+        .set(Some(custom_n2o_szenario_value));
 }
 
 const EXAMPLE_DATA: &[u8] = include_bytes!("example_data.json");
