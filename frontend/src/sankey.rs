@@ -17,31 +17,28 @@ use charming::{
 //     formatted.replace(".", ",")
 // }
 
-// fn format_large_number(number: f64) -> String {
+//
+// fn format_large_number(number: f64) -> String { // 5963,86 t CO₂-eq/a
 //     let formatted = format!("{:.2}", number);
 //     formatted.replace(".", ",")
 // }
 
-// fn format_large_number(f: f64) -> String {
-//     // Convert the f64 to u64
-//     let t = f.ceil();
-//     let u = t as u64;
-//
-//     // Format the u64 as a string with a comma
-//     let formatted_string = format!("{:0}", u);
-//     println!("formatted_string {formatted_string}");
-//
-//     // Insert a comma at the appropriate position
-//     let comma_separated_string = formatted_string.chars().rev().enumerate()
-//         .map(|(i, c)| if i > 0 && i % 3 == 0 { format!(".{}", c) } else { c.to_string() })
-//         .collect::<String>()
-//         .chars().rev().collect::<String>();
-//
-//     comma_separated_string
-// }
+fn format_large_number(f: f64) -> String {
+    // Convert the f64 to u64
+    let t = f.ceil();
+    let u = t as u64;
 
-fn format_large_number(_f: f64) -> String {
-    return "".to_string();
+    // Format the u64 as a string with a comma
+    let formatted_string = format!("{:0}", u);
+    println!("formatted_string {formatted_string}");
+
+    // Insert a comma at the appropriate position
+    let comma_separated_string = formatted_string.chars().rev().enumerate()
+        .map(|(i, c)| if i > 0 && i % 3 == 0 { format!(".{}", c) } else { c.to_string() })
+        .collect::<String>()
+        .chars().rev().collect::<String>();
+
+    comma_separated_string
 }
 
 pub fn render(output_data: klick_application::OutputData, element_id: &str) {
