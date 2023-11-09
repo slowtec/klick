@@ -7,7 +7,7 @@ dass Sie zu den ersten Anwendern/-innen gehören die das Tool testen möchten.
 
 Das KlicK-Tool unterstützt Städte/Gemeinden und Anlagenbetreiber dabei,
 eine erste einfache Klimabilanz ihrer Kläranlage zu erstellen.
-Das Tool befindet sich im Aufbau und steht hier als Prototyp und Validierungszwecken zur Verfügung.
+Das Tool befindet sich im Aufbau und steht hier als Prototyp und zu Validierungszwecken zur Verfügung.
 Diese Version kann noch Fehler/Bugs enthalten.
 Das Tool darf aber gerne schon in dieser Version genutzt und getestet werden.
 Zur steten Verbesserung und Erweiterung des Tools, und gerne für allgemeines Feedback bitte
