@@ -469,7 +469,7 @@ fn NumberInput(
                   }
                 }
               } else {
-                let m = "Not able to parse float".to_string();
+                let m = "Eingabewert fehlerhaft".to_string();
                 info!("{}", m);
                 error.set(Some(m));
               }
