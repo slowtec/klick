@@ -298,7 +298,7 @@ fn create_tooltip(
 
     view! {
         <div class="flex-col md:flex-row flex items-center md:justify-center">
-          <a tabindex="0" role="link" aria-label="tooltip 1" class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
+          <a tabindex="-1" role="link" aria-label="tooltip 1" class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
           on:focus = move |_| {
             show_tooltip.set("block".to_string());
           }
