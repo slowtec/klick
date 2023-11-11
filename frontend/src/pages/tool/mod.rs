@@ -26,9 +26,7 @@ pub fn Tool() -> impl IntoView {
 
     let input_data = RwSignal::new(Option::<InputData>::None);
     let sankey_header = RwSignal::new(String::new());
-    let sankey_emmisionsfaktor_hint = RwSignal::new(0.0);
-
-    let szenario_comparison = RwSignal::new(vec![]);
+    let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarchartArguments>> = RwSignal::new(vec![]);
 
     let s = Rc::clone(&signals);
     create_effect(move |_| {
@@ -65,11 +63,8 @@ pub fn Tool() -> impl IntoView {
                     };
                 let title = format!("{name_ka} ({ew} EW) / Treibhausgasemissionen [{}] - Szenario {}", einheit, szenario);
                 sankey_header.set(title);
-                sankey_emmisionsfaktor_hint.set(output_data.ef_n2o_anlage * 100.0);
-
                 sankey::render(output_data, CHART_ELEMENT_ID);
 
-                // Also calculate the other szenarios
                 let szenario_calculations = N2OSzenario::iter()
                     .map(|szenario| {
                         input_data.n2o_szenario = szenario;
@@ -78,30 +73,30 @@ pub fn Tool() -> impl IntoView {
                     })
                     .collect::<Vec<_>>();
 
-                let data = szenario_calculations
-                    .iter()
-                    .map(|(_, d)| d.emissionen_co2_eq)
-                    .collect();
-                szenario_comparison.set(data);
+                barchart_arguments.set(
+                    szenario_calculations
+                        .iter()
+                        .map(|(szenario, d)| klick_svg_charts::BarchartArguments {
+                            label: Some(match szenario {
+                                N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
+                                N2OSzenario::Optimistic => "Optimistisch",
+                                N2OSzenario::Pesimistic => "Pessimistisch",
+                                N2OSzenario::Ipcc2019 => "IPCC 2019",
+                                N2OSzenario::Custom => "Benutzerdefiniert",
+                            }),
+                            co2_data: d.emissionen_co2_eq,
+                            n2o_factor: d.ef_n2o_anlage,
+                        })
+                        .collect(),
+                );
             }
             None => {
                 sankey_header.set("".to_string());
-                szenario_comparison.update(|data| data.clear());
+                barchart_arguments.update(|args| args.clear());
                 sankey::clear(CHART_ELEMENT_ID);
-                sankey_emmisionsfaktor_hint.set(0.0);
             }
         }
     });
-
-    let barchart_labels = N2OSzenario::iter()
-        .map(|s| match s {
-            N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
-            N2OSzenario::Optimistic => "Optimistisch",
-            N2OSzenario::Pesimistic => "Pessimistisch",
-            N2OSzenario::Ipcc2019 => "IPCC 2019",
-            N2OSzenario::Custom => "Benutzerdefiniert",
-        })
-        .collect::<Vec<_>>();
 
     view! {
       <div class="space-y-12">
@@ -127,20 +122,17 @@ pub fn Tool() -> impl IntoView {
         </div>
         { set_views }
       </div>
-
       // bar diagram
       { move ||
         {
-          let data = szenario_comparison.get();
-          if !data.is_empty() {
+          if !barchart_arguments.get().is_empty() {
             Some(view! {
               <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂-eq/Jahr]"</h3>
               <div class="">
                 <Barchart
                   width = 1200.0
                   height = 400.0
-                  labels = barchart_labels.clone()
-                  data = szenario_comparison.into()
+                  data  = barchart_arguments.clone().into()
                 />
               </div>
             })
@@ -159,12 +151,6 @@ pub fn Tool() -> impl IntoView {
 
       </Show>
       <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
-      <Show when= move || { sankey_header.get() != ""}>
-      <p>"N₂O-Emissionsfaktor: " {
-        let emmi = format!("{:.2}", sankey_emmisionsfaktor_hint.get());
-        emmi.replace(".", ",")
-      }" %"</p>
-      </Show>
     }
 }
 
