@@ -100,7 +100,7 @@ fn Bar(label: Option<&'static str>, co2_value: f64, n2o_factor: f64, width: f64,
         font_size.set(0.0);
     };
 
-    let value_label = format_with_thousands_seperator(co2_value, ".");
+    let co2_value_label = format_with_thousands_seperator(co2_value, ".");
 
     view! {
       <rect
@@ -110,6 +110,7 @@ fn Bar(label: Option<&'static str>, co2_value: f64, n2o_factor: f64, width: f64,
         on:mouseenter = on_mouse_enter
         on:mouseleave = on_mouse_leave
       />
+      // co2_value
       <text
         x = { width/2.0 }
         y = { -10.0 }
@@ -117,8 +118,9 @@ fn Bar(label: Option<&'static str>, co2_value: f64, n2o_factor: f64, width: f64,
         font-size = move || 20.0 + font_size.get()
         font-weight = move || font_weight.get()
       >
-        { value_label }
+        { co2_value_label }
       </text>
+      // label, i.e.: Extrapoliert, Optimistisch, IPCC 2019, Pessimistisch, ...
       {
         label.and_then(|_| {
           view! {
@@ -134,6 +136,7 @@ fn Bar(label: Option<&'static str>, co2_value: f64, n2o_factor: f64, width: f64,
           }.into()
         })
       }
+      // n2o_factor
       {
         label.and_then(|_| {
           let n2o_factor_label = format!("{:.2} % N₂O", n2o_factor).replace(".", ",");
