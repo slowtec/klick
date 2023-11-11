@@ -33,10 +33,21 @@ fn format_large_number(f: f64) -> String {
     println!("formatted_string {formatted_string}");
 
     // Insert a comma at the appropriate position
-    let comma_separated_string = formatted_string.chars().rev().enumerate()
-        .map(|(i, c)| if i > 0 && i % 3 == 0 { format!(".{}", c) } else { c.to_string() })
+    let comma_separated_string = formatted_string
+        .chars()
+        .rev()
+        .enumerate()
+        .map(|(i, c)| {
+            if i > 0 && i % 3 == 0 {
+                format!(".{}", c)
+            } else {
+                c.to_string()
+            }
+        })
         .collect::<String>()
-        .chars().rev().collect::<String>();
+        .chars()
+        .rev()
+        .collect::<String>();
 
     comma_separated_string
 }
@@ -65,16 +76,25 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
     } = output_data;
 
     let dir_em = "Direkte Emissionen".to_string();
-    let dir_em_string = format!("{dir_em} {}", format_large_number(direkte_emissionen_co2_eq));
+    let dir_em_string = format!(
+        "{dir_em} {}",
+        format_large_number(direkte_emissionen_co2_eq)
+    );
 
     let indir_em = "Indirekte Emissionen".to_string();
-    let indir_em_string = format!("{indir_em} {}", format_large_number(indirekte_emissionen_co2_eq));
-    
+    let indir_em_string = format!(
+        "{indir_em} {}",
+        format_large_number(indirekte_emissionen_co2_eq)
+    );
+
     let wei_indir_em = "Weitere Indirekte Emissionen".to_string();
-    let wei_indir_em_string = format!("{wei_indir_em} {}", format_large_number(weitere_indirekte_emissionen_co2_eq));
+    let wei_indir_em_string = format!(
+        "{wei_indir_em} {}",
+        format_large_number(weitere_indirekte_emissionen_co2_eq)
+    );
 
     let nu = "Nutzung";
-    let nu_string =  format!("{nu} {}", format_large_number(emissionen_co2_eq));
+    let nu_string = format!("{nu} {}", format_large_number(emissionen_co2_eq));
 
     let em = "Emission";
     let em_string = format!("{em} {}", format_large_number(emissionen_co2_eq));
@@ -84,27 +104,42 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
 
     let streams: Vec<(_, _, _)> = vec![
         (
-            format!("Eisen(III)-chlorid-Lösung {}", format_large_number(co2eq_betriebsstoffe_fe3)),
+            format!(
+                "Eisen(III)-chlorid-Lösung {}",
+                format_large_number(co2eq_betriebsstoffe_fe3)
+            ),
             bs_string.as_str(),
             co2eq_betriebsstoffe_fe3,
         ),
         (
-            format!("Eisenchloridsulfat-Lösung {}", format_large_number(co2eq_betriebsstoffe_feso4)),
+            format!(
+                "Eisenchloridsulfat-Lösung {}",
+                format_large_number(co2eq_betriebsstoffe_feso4)
+            ),
             bs_string.as_str(),
             co2eq_betriebsstoffe_feso4,
         ),
         (
-            format!("Kalkhydrat {}", format_large_number(co2eq_betriebsstoffe_kalk)),
+            format!(
+                "Kalkhydrat {}",
+                format_large_number(co2eq_betriebsstoffe_kalk)
+            ),
             bs_string.as_str(),
             co2eq_betriebsstoffe_kalk,
         ),
         (
-            format!("Synthetische Polymere {}", format_large_number(co2eq_betriebsstoffe_poly)),
+            format!(
+                "Synthetische Polymere {}",
+                format_large_number(co2eq_betriebsstoffe_poly)
+            ),
             bs_string.as_str(),
             co2eq_betriebsstoffe_poly,
         ),
         (
-            format!("Klaerschlamm Transport {}", format_large_number(co2eq_klaerschlamm_transport)),
+            format!(
+                "Klaerschlamm Transport {}",
+                format_large_number(co2eq_klaerschlamm_transport)
+            ),
             wei_indir_em_string.as_str(),
             co2eq_klaerschlamm_transport,
         ),
@@ -119,17 +154,26 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
             co2eq_n2o_gewaesser,
         ),
         (
-            format!("CH₄ Klärprozess {}", format_large_number(co2eq_ch4_klaerprozes)),
+            format!(
+                "CH₄ Klärprozess {}",
+                format_large_number(co2eq_ch4_klaerprozes)
+            ),
             dir_em_string.as_str(),
             co2eq_ch4_klaerprozes,
         ),
         (
-            format!("CH₄ Schlupf Schlammstapel {}", format_large_number(co2eq_ch4_schlammstapel)),
+            format!(
+                "CH₄ Schlupf Schlammstapel {}",
+                format_large_number(co2eq_ch4_schlammstapel)
+            ),
             dir_em_string.as_str(),
             co2eq_ch4_schlammstapel,
         ),
         (
-            format!("CH₄ Schlupf Schlammtasche {}", format_large_number(co2eq_ch4_schlammtasche)),
+            format!(
+                "CH₄ Schlupf Schlammtasche {}",
+                format_large_number(co2eq_ch4_schlammtasche)
+            ),
             dir_em_string.as_str(),
             co2eq_ch4_schlammtasche,
         ),
@@ -154,24 +198,24 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
             co2eq_betriebsstoffe,
         ),
         (
-            format!("{}",dir_em_string.clone()),
+            format!("{}", dir_em_string.clone()),
             nu_string.as_str(),
             direkte_emissionen_co2_eq,
         ),
         (
-            format!("{}",indir_em_string.clone()),
+            format!("{}", indir_em_string.clone()),
             nu_string.as_str(),
             indirekte_emissionen_co2_eq,
         ),
         (
-            format!("{}",wei_indir_em_string.clone()),
+            format!("{}", wei_indir_em_string.clone()),
             nu_string.as_str(),
             weitere_indirekte_emissionen_co2_eq,
         ),
         (
-            format!("{}",nu_string.clone()),
+            format!("{}", nu_string.clone()),
             em_string.as_str(),
-            emissionen_co2_eq
+            emissionen_co2_eq,
         ),
     ];
 

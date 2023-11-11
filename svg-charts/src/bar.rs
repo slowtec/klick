@@ -7,11 +7,7 @@ pub struct BarchartArguments {
 }
 
 #[component]
-pub fn Barchart(
-    width: f64,
-    height: f64,
-    data: Signal<Vec<BarchartArguments>>,
-) -> impl IntoView {
+pub fn Barchart(width: f64, height: f64, data: Signal<Vec<BarchartArguments>>) -> impl IntoView {
     let margin = 10.0;
 
     let inner_width = width - 2.0 * margin;
@@ -50,13 +46,12 @@ fn YAxis(height: f64) -> impl IntoView {
 }
 
 #[component]
-fn Bars(
-    width: f64,
-    height: f64,
-    data: Signal<Vec<BarchartArguments>>,
-) -> impl IntoView {
+fn Bars(width: f64, height: f64, data: Signal<Vec<BarchartArguments>>) -> impl IntoView {
     let count: usize = data.get().len();
-    let co2_value_max = data.get().iter().fold(0.0, |max_co2, item| f64::max(max_co2, item.co2_data));
+    let co2_value_max = data
+        .get()
+        .iter()
+        .fold(0.0, |max_co2, item| f64::max(max_co2, item.co2_data));
     let gap = width * 0.01;
     let bar_width = (width - ((count + 1) as f64 * gap)) / (count as f64);
 
@@ -83,7 +78,13 @@ fn Bars(
 }
 
 #[component]
-fn Bar(label: Option<&'static str>, co2_value: f64, n2o_factor: f64, width: f64, height: f64) -> impl IntoView {
+fn Bar(
+    label: Option<&'static str>,
+    co2_value: f64,
+    n2o_factor: f64,
+    width: f64,
+    height: f64,
+) -> impl IntoView {
     let fill = create_rw_signal("#0af");
     let font_weight = create_rw_signal("normal");
     let font_size = create_rw_signal(0.0);
