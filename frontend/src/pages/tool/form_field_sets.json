@@ -508,7 +508,7 @@
             "initial_value": null,
             "options": [
               {
-                "label": "Extrapoliert nach Parravicini et al. 2016",
+                "label": "Nach TU Wien 2016",
                 "value": 0
               },
               {
@@ -533,13 +533,13 @@
       },
       {
         "id": "CustomN2oSzenario",
-        "label": "Benutzerdefinierter N₂O-Emissionsfaktor",
-        "description": "Benutzerdefinierter N₂O-Emissionsfaktor für das Szenario Benutzerdefiniert.",
+        "label": "N₂O-Emissionsfaktor (bez. auf Szenario)",
+        "description": "N₂O-Emissionsfaktor für das Szenario Benutzerdefiniert.",
         "required": true,
         "field_type": {
           "Float": {
             "initial_value": null,
-            "placeholder": "% des Ges-N Zulauf",
+            "placeholder": "% des TN(Zulauf)",
             "plausible": {
               "min": null,
               "max": null
