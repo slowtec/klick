@@ -102,14 +102,17 @@ fn Bar(
     };
 
     let co2_value_label = format_with_thousands_seperator(co2_value, ".");
+    let selected_scenario = RwSignal::new<u64>(0);
 
     view! {
+      <g class="bar"
+        on:mouseenter = on_mouse_enter
+        on:mouseleave = on_mouse_leave
+      >
       <rect
         width={ width }
         height={ height }
         fill= move || fill.get()
-        on:mouseenter = on_mouse_enter
-        on:mouseleave = on_mouse_leave
       />
       // co2_value
       <text
@@ -153,6 +156,7 @@ fn Bar(
           }.into()
         })
       }
+      </g>
     }
 }
 
