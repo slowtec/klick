@@ -818,6 +818,7 @@ name = "klick-svg-charts"
 version = "0.0.0"
 dependencies = [
  "leptos",
+ "log",
 ]
 
 [[package]]

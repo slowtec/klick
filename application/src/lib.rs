@@ -29,8 +29,8 @@ pub struct InputData {
     pub betriebsstoffe_feso4: f64,
     pub betriebsstoffe_kalk: f64,
     pub betriebsstoffe_poly: f64,
-    pub n2o_szenario: N2OSzenario,
-    pub custom_n2o_szenario_value: f64,
+    pub custom_n2o_scenario_support: bool,
+    pub custom_n2o_scenario_value: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -84,7 +84,7 @@ const EF_DIESEL: f64 = 3.24; // kg co2/l
 const VERBRAUCH: f64 = 0.033; // l/tkm
 
 #[must_use]
-pub fn calc(input: &InputData) -> OutputData {
+pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
     let InputData {
         ew,
         abwasser,
@@ -104,8 +104,8 @@ pub fn calc(input: &InputData) -> OutputData {
         betriebsstoffe_feso4,
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
-        n2o_szenario,
-        custom_n2o_szenario_value,
+        custom_n2o_scenario_support,
+        custom_n2o_scenario_value,
     } = input;
 
     let klaergas_methangehalt = methangehalt / 100.0; // [%]
@@ -126,7 +126,7 @@ pub fn calc(input: &InputData) -> OutputData {
         N2OSzenario::Optimistic => 0.003,                          // [0,3 % des Ges-N Zulauf]
         N2OSzenario::Pesimistic => 0.008,                          // [0,8 % des Ges-N Zulauf]
         N2OSzenario::Ipcc2019 => 0.016,                            // [1,6 % des Ges-N Zulauf]
-        N2OSzenario::Custom => *custom_n2o_szenario_value / 100.0, // [%]
+        N2OSzenario::Custom => *custom_n2o_scenario_value / 100.0, // [%]
     };
 
     // Direkte emissionen

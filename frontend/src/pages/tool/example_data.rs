@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use klick_boundary::{InputData, ValueId};
 use leptos::*;
 
-use crate::{forms::FieldSignal, pages::tool::util};
+use crate::forms::FieldSignal;
 
 pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>) {
     let InputData {
@@ -25,8 +25,8 @@ pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>)
         betriebsstoffe_feso4,
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
-        n2o_szenario,
-        custom_n2o_szenario_value,
+        custom_n2o_scenario_support,
+        custom_n2o_scenario_value,
     } = example_input_data();
 
     let name = "Muster Klärwerk".to_string();
@@ -127,15 +127,15 @@ pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>)
         .unwrap()
         .set(Some(betriebsstoffe_poly));
     signals
-        .get(&ValueId::N2oSzenario)
-        .and_then(FieldSignal::get_selection_signal)
+        .get(&ValueId::CustomN2oScenarioSupport)
+        .and_then(FieldSignal::get_bool_signal)
         .unwrap()
-        .set(Some(util::n2o_szenario_to_usize(n2o_szenario)));
+        .set(custom_n2o_scenario_support);
     signals
-        .get(&ValueId::CustomN2oSzenario)
+        .get(&ValueId::CustomN2oSzenarioValue)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(custom_n2o_szenario_value));
+        .set(Some(custom_n2o_scenario_value));
 }
 
 const EXAMPLE_DATA: &[u8] = include_bytes!("example_data.json");

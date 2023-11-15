@@ -220,8 +220,7 @@ where
             placeholder,
             unit,
             initial_value,
-            plausible,
-            unreasonable,
+            limits,
             ..
         } => {
             let signal = create_rw_signal(initial_value);
@@ -235,8 +234,7 @@ where
                 value = signal
                 unit
                 description
-                plausible
-                unreasonable
+                limits
                 required
               />
             }
@@ -283,15 +281,14 @@ fn create_tooltip(
     description: Option<&'static str>,
     required: bool,
     _unit: Option<&'static str>,
-    _plausible: Option<MinMax>,
-    unreasonable: Option<MinMax>,
+    limits: Option<MinMax>,
 ) -> impl IntoView {
     let show_tooltip: RwSignal<String> = create_rw_signal("none".to_string());
-    let unreasonable_min = match unreasonable {
+    let _limits_min = match limits {
         Some(u) => u.min,
         None => None,
     };
-    let unreasonable_max = match unreasonable {
+    let _limits_max = match limits {
         Some(u) => u.max,
         None => None,
     };
@@ -328,16 +325,16 @@ fn create_tooltip(
                   </svg>
                   <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
                   <p class="text-xs leading-4 text-gray-600 pb-3">{ description }</p>
-                  <Show when=move || (unreasonable_min.is_some() || unreasonable_max.is_some() || required )>
+                  <Show when=move || (limits.is_some() || limits.is_some() || required )>
                     //<p class="text-sm font-bold text-gray-800 pb-1">Plausiebel</p>
                     //<p class="block text-sm leading-6 text-gray-600">{ plausible.min } "< X " { unit } " < " {plausible.max} </p>
                     //<p class="text-sm font-bold text-gray-800 pb-1">Grenzwerte Warnung</p>
                     <ul class="list-disc list-inside">
-                    // <Show when=move || unreasonable_min.is_some()>
-                    //   <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe kleiner "  { format_float(unreasonable_min) } " " { unit }</li>
+                    // <Show when=move || limits.is_some()>
+                    //   <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe kleiner "  { format_float(limits_min) } " " { unit }</li>
                     // </Show>
-                    // <Show when=move || unreasonable_max.is_some()>
-                    //   <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { format_float(unreasonable_max) } " " { unit }</li>
+                    // <Show when=move || limits.is_some()>
+                    //   <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe größer " { format_float(limits_max) } " " { unit }</li>
                     // </Show>
                     <Show when=move || required>
                       <li class="text-xs leading-4 text-gray-600 pb-3">Eingabe benötigt!</li>
@@ -365,7 +362,7 @@ fn TextInput(
       <div>
       <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
         <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">{ required_label }</label>
-        {create_tooltip(label, description, required, None, None, None)}
+        {create_tooltip(label, description, required, None, None)}
       </div>
 
         <div class="relative mt-2 rounded-md shadow-sm group">
@@ -400,8 +397,7 @@ fn NumberInput(
     field_id: String,
     value: RwSignal<Option<f64>>,
     description: Option<&'static str>,
-    plausible: MinMax,
-    unreasonable: MinMax,
+    limits: MinMax,
     required: bool,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
@@ -410,7 +406,7 @@ fn NumberInput(
       <div>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900"> { required_label }</label>
-          {create_tooltip(label, description, required, Some(unit), Some(plausible), Some(unreasonable))}
+          {create_tooltip(label, description, required, Some(unit), Some(limits))}
         </div>
 
         <div class="relative mt-2 rounded-md shadow-sm">
@@ -448,8 +444,7 @@ fn NumberInput(
             //   }
             // }
             on:input = move |ev| {
-              info!("plausible {} {}", plausible.min.unwrap_or_default(), plausible.max.unwrap_or_default());
-              info!("unreasonable {} {}", unreasonable.min.unwrap_or_default(), unreasonable.max.unwrap_or_default());
+              info!("limits {} {}", limits.min.unwrap_or_default(), limits.max.unwrap_or_default());
               let target_value = event_target_value(&ev);
               if target_value.is_empty() {
                 value.set(None);

@@ -26,6 +26,7 @@ pub fn Tool() -> impl IntoView {
 
     let input_data = RwSignal::new(Option::<InputData>::None);
     let sankey_header = RwSignal::new(String::new());
+    let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarchartArguments>> =
         RwSignal::new(vec![]);
 
@@ -38,40 +39,49 @@ pub fn Tool() -> impl IntoView {
     let s = Rc::clone(&signals);
     create_effect(move |_| match input_data.get() {
         Some(mut input_data) => {
+            if input_data.custom_n2o_scenario_support == false && selected_scenario.get() == Some(4)
+            {
+                selected_scenario.set(Some(0));
+            }
             log::debug!("Calculating with {input_data:#?}");
-            let output_data = klick_application::calc(&input_data.clone().into());
-            log::debug!("Result is {output_data:#?}");
-
-            let name_ka: String = s
-                .get(&ValueId::Name)
-                .and_then(FieldSignal::get_text)
-                .unwrap_or_else(|| "Kläranlage".to_string());
-
-            let ew = s
-                .get(&ValueId::Ew)
-                .and_then(FieldSignal::get_float)
-                .unwrap_or_default();
-
-            let einheit = "t CO₂-eq/Jahr";
-            let szenario = match input_data.n2o_szenario {
-                N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
-                N2OSzenario::Optimistic => "Optimistisch",
-                N2OSzenario::Pesimistic => "Pessimistisch",
-                N2OSzenario::Ipcc2019 => "IPCC 2019",
-                N2OSzenario::Custom => "Benutzerdefiniert",
-            };
-            let title = format!(
-                "{name_ka} ({ew} EW) / Treibhausgasemissionen [{}] - Szenario {}",
-                einheit, szenario
-            );
-            sankey_header.set(title);
-            sankey::render(output_data, CHART_ELEMENT_ID);
-
             let szenario_calculations = N2OSzenario::iter()
-                .map(|szenario| {
-                    input_data.n2o_szenario = szenario;
-                    let output_data = klick_application::calc(&input_data.clone().into());
-                    (szenario, output_data)
+                .enumerate()
+                .filter_map(|(i, szenario)| {
+                    let output_data =
+                        klick_application::calc(&input_data.clone().into(), szenario.into());
+                    if selected_scenario.get() == Some(i as u64) {
+                        let name_ka: String = s
+                            .get(&ValueId::Name)
+                            .and_then(FieldSignal::get_text)
+                            .unwrap_or_else(|| "Kläranlage".to_string());
+
+                        let ew = s
+                            .get(&ValueId::Ew)
+                            .and_then(FieldSignal::get_float)
+                            .unwrap_or_default();
+
+                        let einheit = "t CO₂-eq/Jahr";
+                        let szenario_name = match szenario {
+                            N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
+                            N2OSzenario::Optimistic => "Optimistisch",
+                            N2OSzenario::Pesimistic => "Pessimistisch",
+                            N2OSzenario::Ipcc2019 => "IPCC 2019",
+                            N2OSzenario::Custom => "Benutzerdefiniert",
+                        };
+                        let title = format!(
+                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{}] - Szenario {}",
+                            einheit, szenario_name
+                        );
+                        sankey_header.set(title);
+                        sankey::render(output_data.clone(), CHART_ELEMENT_ID);
+                    }
+                    if szenario == N2OSzenario::Custom
+                        && input_data.custom_n2o_scenario_support == false
+                    {
+                        None
+                    } else {
+                        Some((szenario, output_data))
+                    }
                 })
                 .collect::<Vec<_>>();
 
@@ -134,6 +144,7 @@ pub fn Tool() -> impl IntoView {
                   width = 1200.0
                   height = 400.0
                   data  = barchart_arguments.clone().into()
+                  selected_bar = selected_scenario.clone().into()
                 />
               </div>
             })
@@ -255,23 +266,14 @@ fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
     else {
         return None;
     };
-    let Some(n2o_szenario) = s
-        .get(&ValueId::N2oSzenario)
-        .and_then(FieldSignal::get_selection)
+    let Some(custom_n2o_scenario_support) = s
+        .get(&ValueId::CustomN2oScenarioSupport)
+        .and_then(FieldSignal::get_bool)
     else {
         return None;
     };
-
-    let n2o_szenario = match util::try_n2o_szenario_from_usize(n2o_szenario) {
-        Ok(szenario) => szenario,
-        Err(err) => {
-            log::warn!("{err}");
-            return None;
-        }
-    };
-
-    let Some(custom_n2o_szenario_value) = s
-        .get(&ValueId::CustomN2oSzenario)
+    let Some(custom_n2o_scenario_value) = s
+        .get(&ValueId::CustomN2oSzenarioValue)
         .and_then(FieldSignal::get_float)
     else {
         return None;
@@ -296,7 +298,7 @@ fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
         betriebsstoffe_feso4,
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
-        n2o_szenario,
-        custom_n2o_szenario_value,
+        custom_n2o_scenario_support,
+        custom_n2o_scenario_value,
     })
 }

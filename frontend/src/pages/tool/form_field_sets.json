@@ -24,11 +24,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Ausbaugröße [EW]",
-            "plausible": {
-              "min": 0,
-              "max": 5000000
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 5000000
             },
@@ -45,11 +41,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Abwassermenge",
-            "plausible": {
-              "min": 0,
-              "max": 1000000000
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 1000000000
             },
@@ -71,11 +63,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "CSB",
-            "plausible": {
-              "min": 5,
-              "max": 5000
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 5000
             },
@@ -92,11 +80,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "TKN",
-            "plausible": {
-              "min": 0,
-              "max": 1000
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 5000
             },
@@ -113,11 +97,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "P",
-            "plausible": {
-              "min": 0,
-              "max": 500
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 1000
             },
@@ -139,11 +119,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "CSB",
-            "plausible": {
-              "min": 0,
-              "max": 150
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 1000
             },
@@ -160,11 +136,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "TKN",
-            "plausible": {
-              "min": 0,
-              "max": 100
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 1000
             },
@@ -181,11 +153,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "P",
-            "plausible": {
-              "min": 0,
-              "max": 5
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 50
             },
@@ -207,11 +175,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Klärgas",
-            "plausible": {
-              "min": 0,
-              "max": 100000000
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 100000000
             },
@@ -228,11 +192,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "62",
-            "plausible": {
-              "min": 20,
-              "max": 90
-            },
-            "unreasonable": {
+            "limits": {
               "min": 20,
               "max": 90
             },
@@ -249,11 +209,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Gasbezug",
-            "plausible": {
-              "min": null,
-              "max": null
-            },
-            "unreasonable": {
+            "limits": {
               "min": null,
               "max": null
             },
@@ -281,11 +237,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Gesamtstrombedarf",
-            "plausible": {
-              "min": 0,
-              "max": 100000000
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 1000000000
             },
@@ -302,11 +254,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Eigenstrom",
-            "plausible": {
-              "min": 0,
-              "max": 5000000
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 50000000
             },
@@ -323,11 +271,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "485",
-            "plausible": {
-              "min": 0,
-              "max": 800
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 2500
             },
@@ -371,11 +315,8 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Masse entwässert",
-            "plausible": {
-              "min": 0.1,
-              "max": 0.2
-            },
-            "unreasonable": {
+
+            "limits": {
               "min": null,
               "max": 500000
             },
@@ -392,11 +333,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "Entfernung",
-            "plausible": {
-              "min": 0,
-              "max": 50
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0,
               "max": 500
             },
@@ -418,11 +355,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Lösung",
-            "plausible": {
-              "min": null,
-              "max": null
-            },
-            "unreasonable": {
+            "limits": {
               "min": null,
               "max": 500000
             },
@@ -439,11 +372,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Lösung",
-            "plausible": {
-              "min": null,
-              "max": null
-            },
-            "unreasonable": {
+            "limits": {
               "min": null,
               "max": 100000
             },
@@ -460,11 +389,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Branntkalk",
-            "plausible": {
-              "min": null,
-              "max": null
-            },
-            "unreasonable": {
+            "limits": {
               "min": null,
               "max": 500000
             },
@@ -481,11 +406,7 @@
           "Float": {
             "initial_value": null,
             "placeholder": "kg Polymere",
-            "plausible": {
-              "min": null,
-              "max": null
-            },
-            "unreasonable": {
+            "limits": {
               "min": null,
               "max": 50000
             },
@@ -496,55 +417,29 @@
     ]
   },
   {
-    "title": "Schätzung des N₂O-Emissionsfaktors",
+    "title": "Szenario Benutzerdefiniert: N₂O-Emissionsfaktors",
     "fields": [
       {
-        "id": "N2oSzenario",
-        "label": "Szenario",
-        "description": null,
-        "required": true,
+        "id": "CustomN2oScenarioSupport",
+        "label": "Szenario Benutzerdefiniert",
+        "description": "Falls Sie ein Szenario mit einem eigenen N₂O-Emissionsfaktor berechnen möchten, dieses Feld bitte anklicken.",
+        "required": false,
         "field_type": {
-          "Selection": {
-            "initial_value": null,
-            "options": [
-              {
-                "label": "Nach TU Wien 2016",
-                "value": 0
-              },
-              {
-                "label": "Optimistisch",
-                "value": 1
-              },
-              {
-                "label": "Pessimistisch",
-                "value": 2
-              },
-              {
-                "label": "Nach IPCC 2019",
-                "value": 3
-              },
-              {
-                "label": "Benutzerdefiniert",
-                "value": 4
-              }
-            ]
+          "Bool": {
+            "initial_value": false
           }
         }
       },
       {
-        "id": "CustomN2oSzenario",
-        "label": "N₂O-Emissionsfaktor (bez. auf Szenario)",
+        "id": "CustomN2oSzenarioValue",
+        "label": "N₂O-Emissionsfaktor",
         "description": "N₂O-Emissionsfaktor für das Szenario Benutzerdefiniert.",
-        "required": true,
+        "required": false,
         "field_type": {
           "Float": {
             "initial_value": null,
             "placeholder": "% des TN(Zulauf)",
-            "plausible": {
-              "min": null,
-              "max": null
-            },
-            "unreasonable": {
+            "limits": {
               "min": 0.0,
               "max": 100.0
             },

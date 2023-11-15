@@ -1,4 +1,6 @@
 use leptos::*;
+use log::info;
+
 #[derive(Debug, Clone)]
 pub struct BarchartArguments {
     pub label: Option<&'static str>,
@@ -7,7 +9,12 @@ pub struct BarchartArguments {
 }
 
 #[component]
-pub fn Barchart(width: f64, height: f64, data: Signal<Vec<BarchartArguments>>) -> impl IntoView {
+pub fn Barchart(
+    width: f64,
+    height: f64,
+    data: Signal<Vec<BarchartArguments>>,
+    selected_bar: RwSignal<Option<u64>>,
+) -> impl IntoView {
     let margin = 10.0;
 
     let inner_width = width - 2.0 * margin;
@@ -25,7 +32,7 @@ pub fn Barchart(width: f64, height: f64, data: Signal<Vec<BarchartArguments>>) -
             <XAxis width={ inner_width } />
           </g>
           <YAxis height={ inner_height } />
-          <Bars width={ inner_width } height={ inner_height } data=data />
+          <Bars width={ inner_width } height={ inner_height } data=data selected_bar=selected_bar/>
         </g>
       </svg>
     }
@@ -46,7 +53,12 @@ fn YAxis(height: f64) -> impl IntoView {
 }
 
 #[component]
-fn Bars(width: f64, height: f64, data: Signal<Vec<BarchartArguments>>) -> impl IntoView {
+fn Bars(
+    width: f64,
+    height: f64,
+    data: Signal<Vec<BarchartArguments>>,
+    selected_bar: RwSignal<Option<u64>>,
+) -> impl IntoView {
     let count: usize = data.get().len();
     let co2_value_max = data
         .get()
@@ -67,9 +79,24 @@ fn Bars(width: f64, height: f64, data: Signal<Vec<BarchartArguments>>) -> impl I
           let bar_height = (height - 4.0 * gap) * co2_value/co2_value_max;
           let dx = gap + (bar_width + gap) * i as f64;
           let dy = (height - gap) - bar_height;
+
+          let grey_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
           view! {
+            // grey background for selected bar
+            <Show when= move || { selected_bar.get() == Some(i as u64)}>
+            <g transform=format!("translate({grey_dx},0)")>
+            <rect
+              width={ bar_width + gap }
+              height={ height }
+              fill="lightgrey"
+              rx=3
+              ry=3
+            />
+            </g>
+            </Show>
+            // bar
             <g transform=format!("translate({dx},{dy})")>
-              <Bar label co2_value n2o_factor width={ bar_width } height={ bar_height } />
+              <Bar label co2_value n2o_factor width={ bar_width } height={ bar_height } i=i selected_bar/>
             </g>
           }
         }
@@ -84,35 +111,48 @@ fn Bar(
     n2o_factor: f64,
     width: f64,
     height: f64,
+    i: usize,
+    selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
     let fill = create_rw_signal("#0af");
     let font_weight = create_rw_signal("normal");
     let font_size = create_rw_signal(0.0);
-
     let on_mouse_enter = move |_| {
         fill.set("#5cf");
         font_weight.set("bold");
         font_size.set(2.0);
     };
-
     let on_mouse_leave = move |_| {
-        fill.set("#0af");
+        let selected_fill = if selected_bar.get() == Some(i as u64) {
+            "#0076b2" // #0088cc
+        } else {
+            "#0af"
+        };
+        fill.set(selected_fill);
         font_weight.set("normal");
         font_size.set(0.0);
     };
 
     let co2_value_label = format_with_thousands_seperator(co2_value, ".");
-    let selected_scenario = RwSignal::new<u64>(0);
 
     view! {
       <g class="bar"
         on:mouseenter = on_mouse_enter
         on:mouseleave = on_mouse_leave
+        on:mousedown = move |_| {
+            //info!("Bar {} clicked", i);
+            selected_bar.set(Some(i as u64))
+        }
       >
+      // bar with 6.038 label above
       <rect
         width={ width }
         height={ height }
-        fill= move || fill.get()
+        fill= move || if selected_bar.get() == Some(i as u64)  {
+          "#0076b2" // #0088cc
+        } else {
+          "#0af"
+        }
       />
       // co2_value
       <text

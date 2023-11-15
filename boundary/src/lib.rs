@@ -33,7 +33,8 @@ pub enum ValueId {
     BetriebsstoffeKalk,
     BetriebsstoffePoly,
     N2oSzenario,
-    CustomN2oSzenario,
+    CustomN2oScenarioSupport,
+    CustomN2oSzenarioValue,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, EnumIter, Serialize, Deserialize)]
@@ -65,8 +66,8 @@ pub struct InputData {
     pub betriebsstoffe_feso4: f64,
     pub betriebsstoffe_kalk: f64,
     pub betriebsstoffe_poly: f64,
-    pub n2o_szenario: N2OSzenario,
-    pub custom_n2o_szenario_value: f64,
+    pub custom_n2o_scenario_support: bool,
+    pub custom_n2o_scenario_value: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -118,8 +119,7 @@ pub enum FieldType {
     Float {
         initial_value: Option<f64>,
         placeholder: Option<&'static str>,
-        plausible: MinMax,
-        unreasonable: MinMax,
+        limits: MinMax,
         unit: &'static str,
     },
     Text {

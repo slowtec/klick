@@ -8,6 +8,7 @@ rust-version.workspace = true
 
 [dependencies]
 leptos = "0.5.2"
+log = "0.4.20"
 
 [features]
 ssr = []

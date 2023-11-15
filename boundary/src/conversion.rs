@@ -53,11 +53,9 @@ impl From<InputData> for app::InputData {
             betriebsstoffe_feso4,
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
-            n2o_szenario,
-            custom_n2o_szenario_value,
+            custom_n2o_scenario_support,
+            custom_n2o_scenario_value,
         } = from;
-
-        let n2o_szenario = n2o_szenario.into();
 
         Self {
             ew,
@@ -78,8 +76,8 @@ impl From<InputData> for app::InputData {
             betriebsstoffe_feso4,
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
-            n2o_szenario,
-            custom_n2o_szenario_value,
+            custom_n2o_scenario_support,
+            custom_n2o_scenario_value,
         }
     }
 }
@@ -105,11 +103,9 @@ impl From<app::InputData> for InputData {
             betriebsstoffe_feso4,
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
-            n2o_szenario,
-            custom_n2o_szenario_value,
+            custom_n2o_scenario_support,
+            custom_n2o_scenario_value,
         } = from;
-
-        let n2o_szenario = n2o_szenario.into();
 
         Self {
             ew,
@@ -130,8 +126,8 @@ impl From<app::InputData> for InputData {
             betriebsstoffe_feso4,
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
-            n2o_szenario,
-            custom_n2o_szenario_value,
+            custom_n2o_scenario_support,
+            custom_n2o_scenario_value,
         }
     }
 }
