@@ -81,24 +81,22 @@ fn Bars(
           let dx = gap + (bar_width + gap) * i as f64;
           let dy = (height - gap) - bar_height;
 
-          let grey_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
+          let selected_rect_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
           view! {
-            // grey background for selected bar
+            // background for selected bar
             <Show when= move || { selected_bar.get() == Some(i as u64)}>
-            <g transform=format!("translate({grey_dx},0)")>
+            <g transform=format!("translate({selected_rect_dx},0)")>
             <rect
               width={ bar_width + gap }
               height={ height }
-              fill="lightgrey"
+              fill="#9FE2BF"
               rx=3
               ry=3
             />
             </g>
             </Show>
             // bar
-            <g transform=format!("translate({dx},{dy})")>
-              <Bar label co2_value n2o_factor width={ bar_width } height={ bar_height } i=i selected_bar/>
-            </g>
+            <Bar label co2_value n2o_factor dx={dx} dy={dy} bar_width={ bar_width } bar_height={ bar_height } width={ width } height={ height } i=i selected_bar/>
           }
         }
       />
@@ -110,20 +108,27 @@ fn Bar(
     label: Option<&'static str>,
     co2_value: f64,
     n2o_factor: f64,
+    dx: f64,
+    dy: f64,
+    bar_width: f64,
+    bar_height: f64,
     width: f64,
     height: f64,
     i: usize,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
+    let hovered = create_rw_signal(false);
     let fill = RwSignal::new("#0af");
     let font_weight = RwSignal::new("normal");
     let font_size = RwSignal::new(0.0);
     let on_mouse_enter = move |_| {
+        hovered.set(true);
         fill.set("#5cf");
         font_weight.set("bold");
         font_size.set(2.0);
     };
     let on_mouse_leave = move |_| {
+        hovered.set(false);
         let selected_fill = if selected_bar.get() == Some(i as u64) {
             "#0076b2" // #0088cc
         } else {
@@ -133,9 +138,10 @@ fn Bar(
         font_weight.set("normal");
         font_size.set(0.0);
     };
-
     let co2_value_label = format_with_thousands_seperator(co2_value, ".");
-
+    let gap = width * 0.01;
+    let transparent_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
+    let hovered_color = move || if hovered.get() { "grey" } else { "" };
     view! {
       <g class="bar"
         on:mouseenter = on_mouse_enter
@@ -144,11 +150,25 @@ fn Bar(
             //info!("Bar {} clicked", i);
             selected_bar.set(Some(i as u64));
         }
+        cursor="pointer"
       >
+      // transparent background for mouse events
+      <g transform=format!("translate({transparent_dx},0)")>
+        <rect
+          width={ bar_width + gap }
+          height={ height }
+          fill="transparent"
+          stroke={ hovered_color }
+          stroke-width="3"
+          stroke-dasharray="0 5"
+          stroke-linecap="round"
+        />
+      </g>
       // bar with 6.038 label above
+      <g transform=format!("translate({dx},{dy})")>
       <rect
-        width={ width }
-        height={ height }
+        width={ bar_width }
+        height={ bar_height }
         fill= move || if selected_bar.get() == Some(i as u64)  {
           "#0076b2" // #0088cc
         } else {
@@ -157,7 +177,7 @@ fn Bar(
       />
       // co2_value
       <text
-        x = { width/2.0 }
+        x = { bar_width/2.0 }
         y = { -10.0 }
         text-anchor = "middle"
         font-size = move || 20.0 + font_size.get()
@@ -170,8 +190,8 @@ fn Bar(
         label.and_then(|_| {
           view! {
             <text
-              x = { width/2.0 }
-              y = { height - 25.0 }
+              x = { bar_width/2.0 }
+              y = { bar_height - 25.0 }
               text-anchor = "middle"
               font-size = move || 20.0 + font_size.get()
               font-weight = "bold"
@@ -187,8 +207,8 @@ fn Bar(
           let n2o_factor_label = format!("{n2o_factor:.2} % N₂O").replace('.', ",");
           view! {
             <text
-              x = { width/2.0 }
-              y = { height - 5.0 }
+              x = { bar_width/2.0 }
+              y = { bar_height - 5.0 }
               text-anchor = "middle"
               font-size = move || 16.0 + font_size.get()
             >
@@ -197,6 +217,7 @@ fn Bar(
           }.into()
         })
       }
+      </g>
       </g>
     }
 }
