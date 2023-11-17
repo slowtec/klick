@@ -6,7 +6,8 @@ use leptos::{
 };
 use strum::IntoEnumIterator;
 
-use klick_boundary::{InputData, N2OSzenario, ValueId};
+use klick_application as app;
+use klick_boundary::{N2OSzenario, ValueId};
 use klick_svg_charts::BarChart;
 
 use crate::{
@@ -27,7 +28,7 @@ pub fn Tool() -> impl IntoView {
     let (signals, set_views) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
 
-    let input_data = RwSignal::new(Option::<InputData>::None);
+    let input_data = RwSignal::new(Option::<app::InputData>::None);
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
@@ -51,7 +52,7 @@ pub fn Tool() -> impl IntoView {
             .enumerate()
             .filter_map(|(i, szenario)| {
                 let output_data =
-                    klick_application::calc(&input_data.clone().into(), szenario.into());
+                    klick_application::calc(&input_data.clone(), szenario.into());
                 if selected_scenario.get() == Some(i as u64) {
                     let name_ka: String = s
                         .get(&ValueId::Name)
@@ -183,7 +184,7 @@ where
 }
 
 #[allow(clippy::too_many_lines)]
-fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
+fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<app::InputData> {
     let Some(ew) = s.get(&ValueId::Ew).and_then(FieldSignal::get_float) else {
         return None;
     };
@@ -281,7 +282,7 @@ fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
         return None;
     };
 
-    Some(InputData {
+    Some(app::InputData {
         ew,
         abwasser,
         n_ges_zu,

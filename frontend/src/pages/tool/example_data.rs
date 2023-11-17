@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 
-use klick_boundary::{InputData, ValueId};
 use leptos::SignalSet;
+
+use klick_application as app;
+use klick_boundary::{InputData, ValueId};
 
 use crate::forms::FieldSignal;
 
 #[allow(clippy::too_many_lines)]
 pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>) {
-    let InputData {
+    let app::InputData {
         ew,
         abwasser,
         n_ges_zu,
@@ -28,7 +30,7 @@ pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>)
         betriebsstoffe_poly,
         custom_n2o_scenario_support,
         custom_n2o_scenario_value,
-    } = example_input_data();
+    } = example_input_data().try_into().unwrap();
 
     let name = "Muster Klärwerk".to_string();
 

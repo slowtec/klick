@@ -791,6 +791,7 @@ dependencies = [
 name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "klick-application",
  "serde",
  "serde_json",

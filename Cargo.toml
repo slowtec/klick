@@ -49,5 +49,10 @@ missing_const_for_fn = "warn"
 # The error types returned should be self-explanatory.
 missing_errors_doc = "allow"
 
+# Repetitions of module/type names occur frequently when using many
+# modules for keeping the size of the source files handy. Often
+# types have the same name as their parent module.
+module_name_repetitions = "allow"
+
 # This is a matter of taste... and I just like it that way ;-P
 mod_module_files = "allow"
