@@ -5,8 +5,10 @@ use std::{
 };
 
 use inflector::cases::kebabcase::to_kebab_case;
-use leptos::*;
-use log::info;
+use leptos::{
+    component, create_rw_signal, event_target_value, tracing, view, For, IntoView, RwSignal, Show,
+    SignalGet, SignalSet, SignalUpdate,
+};
 
 pub use klick_boundary::{Field, FieldSet, FieldType, MinMax, SelectOption};
 
@@ -60,37 +62,23 @@ impl FieldSignal {
         }
     }
 
-    pub fn get_selection(&self) -> Option<usize> {
-        match self {
-            Self::Selection(s) => s.get(),
-            _ => None,
-        }
-    }
-
-    pub fn get_float_signal(&self) -> Option<RwSignal<Option<f64>>> {
+    pub const fn get_float_signal(&self) -> Option<RwSignal<Option<f64>>> {
         match self {
             Self::Float(s) => Some(*s),
             _ => None,
         }
     }
 
-    pub fn get_text_signal(&self) -> Option<RwSignal<Option<String>>> {
+    pub const fn get_text_signal(&self) -> Option<RwSignal<Option<String>>> {
         match self {
             Self::Text(s) => Some(*s),
             _ => None,
         }
     }
 
-    pub fn get_bool_signal(&self) -> Option<RwSignal<bool>> {
+    pub const fn get_bool_signal(&self) -> Option<RwSignal<bool>> {
         match self {
             Self::Bool(s) => Some(*s),
-            _ => None,
-        }
-    }
-
-    pub fn get_selection_signal(&self) -> Option<RwSignal<Option<usize>>> {
-        match self {
-            Self::Selection(s) => Some(*s),
             _ => None,
         }
     }
@@ -102,48 +90,6 @@ impl FieldSignal {
             Self::Bool(s) => s.set(false),
             Self::Selection(s) => s.set(None),
         }
-    }
-}
-
-fn format_float(input: Option<f64>) -> String {
-    match input {
-        Some(value) => {
-            let formatted = format!("{:.2}", value); // Format the float with two decimal places
-            let parts: Vec<&str> = formatted.split('.').collect();
-
-            // Check if the number has a fractional part
-            if parts.len() == 2 {
-                let integral_part = parts[0].chars().rev().collect::<String>();
-                let fractional_part = parts[1];
-                let mut formatted_str = String::new();
-
-                for (i, digit) in integral_part.chars().enumerate() {
-                    if i != 0 && i % 3 == 0 {
-                        formatted_str.push('.');
-                    }
-                    formatted_str.push(digit);
-                }
-
-                formatted_str = formatted_str.chars().rev().collect();
-                formatted_str.push(',');
-                formatted_str.push_str(fractional_part);
-                formatted_str
-            } else {
-                // No fractional part
-                let integral_part = parts[0].chars().rev().collect::<String>();
-                let mut formatted_str = String::new();
-
-                for (i, digit) in integral_part.chars().enumerate() {
-                    if i != 0 && i % 3 == 0 {
-                        formatted_str.push('.');
-                    }
-                    formatted_str.push(digit);
-                }
-
-                formatted_str.chars().rev().collect()
-            }
-        }
-        None => "NaN".to_string(),
     }
 }
 
@@ -417,10 +363,8 @@ fn NumberInput(
               let bg = if error.get().is_some() { "bg-red-100" } else { "" };
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
-            // style:border = move || { if error.get().is_some() { format!("{}", "1px solid red}") } else { "inherit".to_string() } }
             placeholder= { placeholder }
             // TODO: aria-describedby
-            // prop:value = move || value.get().map(|v|v.to_string().replace('.',",")).unwrap_or_default()
             prop:value = move || {
               let val = value.get();
               match val {
@@ -428,45 +372,34 @@ fn NumberInput(
                   error.set(None);
                   v.to_string().replace('.',",")
                 },
-                None => "".to_string(),
+                None => String::new(),
               }
             }
 
-            // prop:value = move || value.get().map(|v|format_float(Some(v))).unwrap_or_default()
-            // on:focus = move |ev| {
-            //   let target_value = event_target_value(&ev);
-            //   info!("{} xxx", target_value);
-            //   match target_value.replace('.',"").replace(',',".").parse() {
-            //     Ok(v) => {
-            //       value.set(Some(v));
-            //     },
-            //     Err(_) => {},
-            //   }
-            // }
             on:input = move |ev| {
-              info!("limits {} {}", limits.min.unwrap_or_default(), limits.max.unwrap_or_default());
+              log::info!("limits {} {}", limits.min.unwrap_or_default(), limits.max.unwrap_or_default());
               let target_value = event_target_value(&ev);
               if target_value.is_empty() {
-                value.set(None);
-                error.set(None);
-              } else if let Ok(target_value) = target_value.replace(',',".").parse() {
-                error.set(None);
-                match value.get() {
-                  Some(v) => {
-                    if target_value != v {
-                      // fixes issue with signal-loop and incomplete numbers which
-                      // get converted from "1," into "1" and prevent entering "," or "." separator
-                      value.set(Some(target_value));
-                    }
-                  },
-                  None => {
-                    value.set(Some(target_value));
+                  value.set(None);
+                  error.set(None);
+              } else if let Ok(target_value) = target_value.replace(',',".").parse::<f64>() {
+                  error.set(None);
+                  match value.get() {
+                      Some(v) => {
+                          if (target_value - v).abs() > 0.000_000_001 {
+                            // fixes issue with signal-loop and incomplete numbers which
+                            // get converted from "1," into "1" and prevent entering "," or "." separator
+                            value.set(Some(target_value));
+                          }
+                      },
+                      None => {
+                          value.set(Some(target_value));
+                      }
                   }
-                }
               } else {
-                let m = "Eingabewert fehlerhaft".to_string();
-                info!("{}", m);
-                error.set(Some(m));
+                  let m = "Eingabewert fehlerhaft".to_string();
+                  log::info!("{}", m);
+                  error.set(Some(m));
               }
             }
           />
@@ -531,15 +464,12 @@ fn SelectInput(
           on:change = move |ev| {
               let target_value = event_target_value(&ev);
               if target_value.is_empty() {
-                value.set(None);
+                  value.set(None);
+              } else if let Ok(v) = target_value.parse() {
+                  value.set(Some(v));
               } else {
-                 match target_value.parse() {
-                    Ok(v) => { value.set(Some(v)) },
-                    Err(_) => {
-                      value.set(None);
-                      log::error!("Unexpected option value {target_value}");
-                    },
-                 }
+                  value.set(None);
+                  log::error!("Unexpected option value {target_value}");
               }
           }
         >

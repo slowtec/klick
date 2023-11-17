@@ -16,3 +16,6 @@ optional = true
 
 [features]
 conversion = ["dep:klick-application"]
+
+[lints]
+workspace = true

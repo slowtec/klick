@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 
 use klick_boundary::{InputData, ValueId};
-use leptos::*;
+use leptos::SignalSet;
 
 use crate::forms::FieldSignal;
 
+#[allow(clippy::too_many_lines)]
 pub fn load_example_field_signal_values(signals: &HashMap<ValueId, FieldSignal>) {
     let InputData {
         ew,

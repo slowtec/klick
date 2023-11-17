@@ -1,5 +1,3 @@
-#![warn(clippy::pedantic)]
-
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum N2OSzenario {
     ExtrapolatedParravicini,
@@ -84,6 +82,7 @@ const EF_DIESEL: f64 = 3.24; // kg co2/l
 const VERBRAUCH: f64 = 0.033; // l/tkm
 
 #[must_use]
+#[allow(clippy::too_many_lines)]
 pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
     let InputData {
         ew,
@@ -104,7 +103,7 @@ pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
         betriebsstoffe_feso4,
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
-        custom_n2o_scenario_support,
+        custom_n2o_scenario_support: _,
         custom_n2o_scenario_value,
     } = input;
 
@@ -112,14 +111,6 @@ pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
     let energie_fremd = strombedarf - energie_eigen; // [kwh/a]
 
     let n_elim = (n_ges_zu - n_ges_ab) / n_ges_zu * 100.0; // [%]
-
-    fn get_n2oef(n_elim: f64) -> f64 {
-        let mut ef = (-0.049 * n_elim + 4.553) / 100.0;
-        if ef < 0.0 {
-            ef = 0.002;
-        }
-        ef
-    }
 
     let ef_n2o_anlage = match n2o_szenario {
         N2OSzenario::ExtrapolatedParravicini => get_n2oef(n_elim), // [Berechnung nach Parravicini et al. 2016]
@@ -217,4 +208,12 @@ pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
         emissionen_co2_eq,
         ef_n2o_anlage,
     }
+}
+
+fn get_n2oef(n_elim: f64) -> f64 {
+    let mut ef = (-0.049 * n_elim + 4.553) / 100.0;
+    if ef < 0.0 {
+        ef = 0.002;
+    }
+    ef
 }

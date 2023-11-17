@@ -12,3 +12,6 @@ log = "0.4.20"
 
 [features]
 ssr = []
+
+[lints]
+workspace = true

@@ -1,10 +1,13 @@
 use std::{collections::HashMap, rc::Rc};
 
-use leptos::{ev::MouseEvent, *};
+use leptos::{
+    component, create_effect, ev::MouseEvent, tracing, view, IntoView, RwSignal, Show, SignalGet,
+    SignalSet, SignalUpdate,
+};
 use strum::IntoEnumIterator;
 
 use klick_boundary::{InputData, N2OSzenario, ValueId};
-use klick_svg_charts::Barchart;
+use klick_svg_charts::BarChart;
 
 use crate::{
     forms::{self, FieldSignal},
@@ -13,11 +16,11 @@ use crate::{
 
 mod example_data;
 mod fields;
-mod util;
 
 const CHART_ELEMENT_ID: &str = "chart";
 
 #[component]
+#[allow(clippy::too_many_lines)]
 pub fn Tool() -> impl IntoView {
     let field_sets = fields::field_sets();
 
@@ -27,7 +30,7 @@ pub fn Tool() -> impl IntoView {
     let input_data = RwSignal::new(Option::<InputData>::None);
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
-    let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarchartArguments>> =
+    let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
 
     let s = Rc::clone(&signals);
@@ -37,58 +40,57 @@ pub fn Tool() -> impl IntoView {
     });
 
     let s = Rc::clone(&signals);
-    create_effect(move |_| match input_data.get() {
-        Some(mut input_data) => {
-            if input_data.custom_n2o_scenario_support == false && selected_scenario.get() == Some(4)
-            {
+
+    create_effect(move |_| {
+        if let Some(input_data) = input_data.get() {
+            if !input_data.custom_n2o_scenario_support && selected_scenario.get() == Some(4) {
                 selected_scenario.set(Some(0));
             }
             log::debug!("Calculating with {input_data:#?}");
             let szenario_calculations = N2OSzenario::iter()
-                .enumerate()
-                .filter_map(|(i, szenario)| {
-                    let output_data =
-                        klick_application::calc(&input_data.clone().into(), szenario.into());
-                    if selected_scenario.get() == Some(i as u64) {
-                        let name_ka: String = s
-                            .get(&ValueId::Name)
-                            .and_then(FieldSignal::get_text)
-                            .unwrap_or_else(|| "Kläranlage".to_string());
+            .enumerate()
+            .filter_map(|(i, szenario)| {
+                let output_data =
+                    klick_application::calc(&input_data.clone().into(), szenario.into());
+                if selected_scenario.get() == Some(i as u64) {
+                    let name_ka: String = s
+                        .get(&ValueId::Name)
+                        .and_then(FieldSignal::get_text)
+                        .unwrap_or_else(|| "Kläranlage".to_string());
 
-                        let ew = s
-                            .get(&ValueId::Ew)
-                            .and_then(FieldSignal::get_float)
-                            .unwrap_or_default();
+                    let ew = s
+                        .get(&ValueId::Ew)
+                        .and_then(FieldSignal::get_float)
+                        .unwrap_or_default();
 
-                        let einheit = "t CO₂-eq/Jahr";
-                        let szenario_name = match szenario {
-                            N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
-                            N2OSzenario::Optimistic => "Optimistisch",
-                            N2OSzenario::Pesimistic => "Pessimistisch",
-                            N2OSzenario::Ipcc2019 => "IPCC 2019",
-                            N2OSzenario::Custom => "Benutzerdefiniert",
-                        };
-                        let title = format!(
-                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{}] - Szenario {}",
-                            einheit, szenario_name
-                        );
-                        sankey_header.set(title);
-                        sankey::render(output_data.clone(), CHART_ELEMENT_ID);
-                    }
-                    if szenario == N2OSzenario::Custom
-                        && input_data.custom_n2o_scenario_support == false
-                    {
-                        None
-                    } else {
-                        Some((szenario, output_data))
-                    }
-                })
-                .collect::<Vec<_>>();
+                    let einheit = "t CO₂-eq/Jahr";
+                    let szenario_name = match szenario {
+                        N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
+                        N2OSzenario::Optimistic => "Optimistisch",
+                        N2OSzenario::Pesimistic => "Pessimistisch",
+                        N2OSzenario::Ipcc2019 => "IPCC 2019",
+                        N2OSzenario::Custom => "Benutzerdefiniert",
+                    };
+                    let title = format!(
+                        "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
+                    );
+                    sankey_header.set(title);
+                    sankey::render(output_data.clone(), CHART_ELEMENT_ID);
+                }
+                if szenario == N2OSzenario::Custom
+                    && !input_data.custom_n2o_scenario_support
+                {
+                    None
+                } else {
+                    Some((szenario, output_data))
+                }
+            })
+            .collect::<Vec<_>>();
 
             barchart_arguments.set(
                 szenario_calculations
                     .iter()
-                    .map(|(szenario, d)| klick_svg_charts::BarchartArguments {
+                    .map(|(szenario, d)| klick_svg_charts::BarChartArguments {
                         label: Some(match szenario {
                             N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
                             N2OSzenario::Optimistic => "Optimistisch",
@@ -101,10 +103,9 @@ pub fn Tool() -> impl IntoView {
                     })
                     .collect(),
             );
-        }
-        None => {
-            sankey_header.set("".to_string());
-            barchart_arguments.update(|args| args.clear());
+        } else {
+            sankey_header.set(String::new());
+            barchart_arguments.update(std::vec::Vec::clear);
             sankey::clear(CHART_ELEMENT_ID);
         }
     });
@@ -136,20 +137,20 @@ pub fn Tool() -> impl IntoView {
       // bar diagram
       { move ||
         {
-          if !barchart_arguments.get().is_empty() {
+          if barchart_arguments.get().is_empty() {
+            None
+          } else {
             Some(view! {
               <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂-eq/Jahr]"</h3>
               <div class="">
-                <Barchart
+                <BarChart
                   width = 1200.0
                   height = 400.0
-                  data  = barchart_arguments.clone().into()
-                  selected_bar = selected_scenario.clone().into()
+                  data  = barchart_arguments.into()
+                  selected_bar = selected_scenario
                 />
               </div>
             })
-          } else {
-            None
           }
         }
       }
@@ -157,7 +158,7 @@ pub fn Tool() -> impl IntoView {
       <Show when= move || { sankey_header.get() != ""}>
       <h3 class="my-8 text-xl font-bold">
       { move ||
-         format!("{}", sankey_header.get())
+         sankey_header.get().to_string()
       }
       </h3>
 
@@ -181,6 +182,7 @@ where
     }
 }
 
+#[allow(clippy::too_many_lines)]
 fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<InputData> {
     let Some(ew) = s.get(&ValueId::Ew).and_then(FieldSignal::get_float) else {
         return None;

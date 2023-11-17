@@ -3,7 +3,7 @@ name = "klick-frontend"
 version = "0.0.0"
 edition = "2021"
 publish = false
-rust-version = "1.73.0"
+rust-version = "1.74.0"
 
 [dependencies]
 # Project dependencies
@@ -35,3 +35,18 @@ klick-svg-charts  = { path = "../svg-charts"  }
 lto = true
 opt-level = 'z'
 codegen-units = 1
+
+[lints.clippy]
+pedantic = "warn"
+missing_const_for_fn = "warn"
+
+# The error types returned should be self-explanatory.
+missing_errors_doc = "allow"
+
+# Repetitions of module/type names occur frequently when using many
+# modules for keeping the size of the source files handy. Often
+# types have the same name as their parent module.
+module_name_repetitions = "allow"
+
+# This is a matter of taste... and I just like it that way ;-P
+mod_module_files = "allow"

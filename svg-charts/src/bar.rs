@@ -1,18 +1,18 @@
 use leptos::*;
-use log::info;
 
 #[derive(Debug, Clone)]
-pub struct BarchartArguments {
+pub struct Arguments {
     pub label: Option<&'static str>,
     pub co2_data: f64,
     pub n2o_factor: f64,
 }
 
 #[component]
-pub fn Barchart(
+#[allow(clippy::module_name_repetitions)]
+pub fn Chart(
     width: f64,
     height: f64,
-    data: Signal<Vec<BarchartArguments>>,
+    data: Signal<Vec<Arguments>>,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
     let margin = 10.0;
@@ -53,10 +53,11 @@ fn YAxis(height: f64) -> impl IntoView {
 }
 
 #[component]
+#[allow(clippy::cast_precision_loss)]
 fn Bars(
     width: f64,
     height: f64,
-    data: Signal<Vec<BarchartArguments>>,
+    data: Signal<Vec<Arguments>>,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
     let count: usize = data.get().len();
@@ -114,9 +115,9 @@ fn Bar(
     i: usize,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
-    let fill = create_rw_signal("#0af");
-    let font_weight = create_rw_signal("normal");
-    let font_size = create_rw_signal(0.0);
+    let fill = RwSignal::new("#0af");
+    let font_weight = RwSignal::new("normal");
+    let font_size = RwSignal::new(0.0);
     let on_mouse_enter = move |_| {
         fill.set("#5cf");
         font_weight.set("bold");
@@ -141,7 +142,7 @@ fn Bar(
         on:mouseleave = on_mouse_leave
         on:mousedown = move |_| {
             //info!("Bar {} clicked", i);
-            selected_bar.set(Some(i as u64))
+            selected_bar.set(Some(i as u64));
         }
       >
       // bar with 6.038 label above
@@ -183,7 +184,7 @@ fn Bar(
       // n2o_factor
       {
         label.and_then(|_| {
-          let n2o_factor_label = format!("{:.2} % N₂O", n2o_factor).replace(".", ",");
+          let n2o_factor_label = format!("{n2o_factor:.2} % N₂O").replace('.', ",");
           view! {
             <text
               x = { width/2.0 }

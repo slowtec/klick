@@ -28,32 +28,28 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
     let path = uri.path().trim_start_matches('/');
 
     if path.is_empty() || path == INDEX_HTML {
-        return index_html().await;
+        return index_html();
     }
 
-    match Assets::get(path) {
-        Some(content) => {
-            let mime = mime_guess::from_path(path).first_or_octet_stream();
+    if let Some(content) = Assets::get(path) {
+        let mime = mime_guess::from_path(path).first_or_octet_stream();
 
-            ([(header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
+        ([(header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
+    } else {
+        if path.contains('.') {
+            return not_found();
         }
-        None => {
-            if path.contains('.') {
-                return not_found().await;
-            }
-
-            index_html().await
-        }
+        index_html()
     }
 }
 
-async fn index_html() -> Response {
+fn index_html() -> Response {
     match Assets::get(INDEX_HTML) {
         Some(content) => Html(content.data).into_response(),
-        None => not_found().await,
+        None => not_found(),
     }
 }
 
-async fn not_found() -> Response {
+fn not_found() -> Response {
     (StatusCode::NOT_FOUND, "404").into_response()
 }

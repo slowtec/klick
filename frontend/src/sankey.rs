@@ -4,32 +4,14 @@ use charming::{
     Chart,
 };
 
-// fn format_large_number(number: f64) -> String {
-//     let formatted = if number >= 1_000_000_000.0 {
-//         format!("{:.2} Gt", number / 1_000_000_000.0)
-//     } else if number >= 1_000_000.0 {
-//         format!("{:.2} Mt", number / 1_000_000.0)
-//     } else if number >= 1_000.0 {
-//         format!("{:.2} kt", number / 1_000.0)
-//     } else {
-//         format!("{:.2} t", number)
-//     };
-//     formatted.replace(".", ",")
-// }
-
-//
-// fn format_large_number(number: f64) -> String { // 5963,86 t CO₂-eq/a
-//     let formatted = format!("{:.2}", number);
-//     formatted.replace(".", ",")
-// }
-
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 fn format_large_number(f: f64) -> String {
     // Convert the f64 to u64
     let t = f.ceil();
     let u = t as u64;
 
     // Format the u64 as a string with a comma
-    let formatted_string = format!("{:0}", u);
+    let formatted_string = format!("{u:0}");
     println!("formatted_string {formatted_string}");
 
     // Insert a comma at the appropriate position
@@ -39,7 +21,7 @@ fn format_large_number(f: f64) -> String {
         .enumerate()
         .map(|(i, c)| {
             if i > 0 && i % 3 == 0 {
-                format!(".{}", c)
+                format!(".{c}")
             } else {
                 c.to_string()
             }
@@ -52,6 +34,7 @@ fn format_large_number(f: f64) -> String {
     comma_separated_string
 }
 
+#[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 pub fn render(output_data: klick_application::OutputData, element_id: &str) {
     let klick_application::OutputData {
         co2eq_n2o_anlage,
@@ -193,27 +176,27 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
             co2eq_strommix,
         ),
         (
-            format!("{}", bs_string.clone()),
+            bs_string.clone().to_string(),
             wei_indir_em_string.as_str(),
             co2eq_betriebsstoffe,
         ),
         (
-            format!("{}", dir_em_string.clone()),
+            dir_em_string.clone().to_string(),
             nu_string.as_str(),
             direkte_emissionen_co2_eq,
         ),
         (
-            format!("{}", indir_em_string.clone()),
+            indir_em_string.clone().to_string(),
             nu_string.as_str(),
             indirekte_emissionen_co2_eq,
         ),
         (
-            format!("{}", wei_indir_em_string.clone()),
+            wei_indir_em_string.clone().to_string(),
             nu_string.as_str(),
             weitere_indirekte_emissionen_co2_eq,
         ),
         (
-            format!("{}", nu_string.clone()),
+            nu_string.clone().to_string(),
             em_string.as_str(),
             emissionen_co2_eq,
         ),
@@ -222,14 +205,11 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
     let mut labels: Vec<_> = vec![];
 
     for (src, target, _) in &streams {
-        for x in [&*src, *target] {
+        for x in [src, *target] {
             let label = x.to_string();
 
             if !labels.contains(&label) {
-                //info!("Label {} added", label);
                 labels.push(label);
-            } else {
-                //info!("Label {} already exists", label);
             }
         }
     }

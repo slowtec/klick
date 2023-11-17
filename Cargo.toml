@@ -13,7 +13,7 @@ authors = ["slowtec GmbH <post@slowtec.de>"]
 license = "AGPL-3.0-or-later"
 version = "0.0.0"
 edition = "2021"
-rust-version = "1.73.0"
+rust-version = "1.74.0"
 
 [patch.crates-io]
 # Local paths to library crates in workspace
@@ -41,3 +41,13 @@ log = "0.4.20"
 [dependencies.tokio]
 version = "1.34.0"
 features = ["macros", "rt-multi-thread"]
+
+[workspace.lints.clippy]
+pedantic = "warn"
+missing_const_for_fn = "warn"
+
+# The error types returned should be self-explanatory.
+missing_errors_doc = "allow"
+
+# This is a matter of taste... and I just like it that way ;-P
+mod_module_files = "allow"

@@ -1,5 +1,6 @@
+use leptos::{mount_to_body, view};
+
 use klick_frontend::App;
-use leptos::*;
 
 pub fn main() {
     _ = console_log::init_with_level(log::Level::Debug); // TODO: use 'Info' in release mode
@@ -7,5 +8,5 @@ pub fn main() {
     log::info!("Start web application");
     mount_to_body(|| {
         view! { <App /> }
-    })
+    });
 }

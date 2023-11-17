@@ -17,3 +17,6 @@ axum = "0.6.20"
 log = "0.4.20"
 mime_guess = "2.0.4"
 rust-embed = { version = "8.0.0", features = ["axum"] }
+
+[lints]
+workspace = true

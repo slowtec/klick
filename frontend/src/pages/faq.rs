@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{component, tracing, view, IntoView};
 
 #[component]
 pub fn Faq() -> impl IntoView {
