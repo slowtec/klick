@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct InputData {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -25,7 +26,8 @@ pub struct InputData {
     pub custom_n2o_emission_factor: Option<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct AnnualAverages {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nitrogen: Option<f64>,
@@ -37,7 +39,8 @@ pub struct AnnualAverages {
     pub phosphorus: Option<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct EnergyConsumption {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sewage_gas_produced: Option<f64>,
@@ -61,7 +64,8 @@ pub struct EnergyConsumption {
     pub emission_factor_electricity_mix: Option<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct SewageSludgeTreatment {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub open_sludge_bags: Option<bool>,
@@ -76,7 +80,8 @@ pub struct SewageSludgeTreatment {
     pub transport_distance: Option<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct OperatingMaterials {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fecl3: Option<f64>,

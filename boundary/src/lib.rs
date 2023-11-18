@@ -1,13 +1,22 @@
 use serde::{Deserialize, Serialize};
 use strum::{AsRefStr, EnumIter};
 
+mod export;
+mod import;
 mod input;
 mod output;
 
-pub use self::{input::*, output::*};
+pub use self::{
+    export::export_to_string_pretty,
+    import::{import_from_str, Error as ImportError},
+    input::*,
+    output::*,
+};
 
 #[cfg(feature = "conversion")]
 mod conversion;
+
+pub const CURRENT_VERSION: u32 = 1;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum ValueId {

@@ -1,4 +1,6 @@
-use leptos::{component, create_signal, view, Children, IntoView, SignalUpdate};
+#![allow(clippy::wildcard_imports)]
+
+use leptos::*;
 use leptos_meta::provide_meta_context;
 use leptos_router::{Route, Router, Routes};
 

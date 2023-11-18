@@ -5,10 +5,7 @@ use std::{
 };
 
 use inflector::cases::kebabcase::to_kebab_case;
-use leptos::{
-    component, create_rw_signal, event_target_value, view, For, IntoView, RwSignal, Show,
-    SignalGet, SignalSet, SignalUpdate,
-};
+use leptos::*;
 
 pub use klick_boundary::{Field, FieldSet, FieldType, MinMax, SelectOption};
 

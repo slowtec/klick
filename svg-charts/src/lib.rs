@@ -1,5 +1,4 @@
 #[allow(clippy::wildcard_imports)]
-
 mod bar;
 
 #[cfg(feature = "ssr")]

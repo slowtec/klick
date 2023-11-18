@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "input": {
+    "population_values" : 120000.0,
+    "waste_water" : 5000000.0,
+    "inflow_averages": {
+      "nitrogen" : 122.0
+    },
+    "effluent_averages": {
+      "nitrogen" : 11.76,
+      "chemical_oxygen_demand" : 129.0
+    },
+    "energy_consumption": {
+      "sewage_gas_produced" : 1260000.0,
+      "methane_level" : 62.0,
+      "total_power_consumption" : 2683259.0,
+      "in_house_power_generation" : 2250897.0,
+      "emission_factor_electricity_mix" : 468.0
+    },
+    "sewage_sludge_treatment": {
+      "open_sludge_bags" : true,
+      "open_sludge_storage_containers" : true,
+      "sewage_sludge_for_disposal" : 3687.6,
+      "transport_distance" : 47.0
+    },
+    "operating_materials": {
+      "fecl3" : 0.0,
+      "feclso4" : 326000.0,
+      "caoh2" : 326260.0,
+      "synthetic_polymers" : 23620.0
+    },
+    "custom_n2o_emission_factor": 1.5
+  }
+}

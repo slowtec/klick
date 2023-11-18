@@ -1,9 +1,6 @@
 use std::{collections::HashMap, rc::Rc};
 
-use leptos::{
-    component, create_effect, ev::MouseEvent, view, IntoView, RwSignal, Show, SignalGet,
-    SignalSet, SignalUpdate,
-};
+use leptos::{ev::MouseEvent, *};
 use strum::IntoEnumIterator;
 
 use klick_application as app;

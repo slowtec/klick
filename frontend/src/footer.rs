@@ -1,4 +1,4 @@
-use leptos::{component, view, IntoView};
+use leptos::*;
 
 const LOGO: &str = include_str!("../assets/logo_BMWK_NKI.svg");
 const FOOTER_MD: &str = include_str!("../content/footer.md");
