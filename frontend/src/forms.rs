@@ -6,7 +6,7 @@ use std::{
 
 use inflector::cases::kebabcase::to_kebab_case;
 use leptos::{
-    component, create_rw_signal, event_target_value, tracing, view, For, IntoView, RwSignal, Show,
+    component, create_rw_signal, event_target_value, view, For, IntoView, RwSignal, Show,
     SignalGet, SignalSet, SignalUpdate,
 };
 

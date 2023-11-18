@@ -1,4 +1,4 @@
-use leptos::{component, create_signal, tracing, view, Children, IntoView, SignalUpdate};
+use leptos::{component, create_signal, view, Children, IntoView, SignalUpdate};
 use leptos_meta::provide_meta_context;
 use leptos_router::{Route, Router, Routes};
 
