@@ -20,3 +20,14 @@ pub fn export_to_string_pretty(input: &InputData, scenario: &Scenario) -> String
     };
     serde_json::to_string_pretty(&export).expect("Valid input data")
 }
+
+#[must_use]
+#[allow(clippy::missing_panics_doc)]
+pub fn export_to_vec_pretty(input: &InputData, scenario: &Scenario) -> Vec<u8> {
+    let export = Export {
+        version: CURRENT_VERSION,
+        input,
+        scenario,
+    };
+    serde_json::to_vec_pretty(&export).expect("Valid input data")
+}

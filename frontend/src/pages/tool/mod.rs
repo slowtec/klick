@@ -1,13 +1,11 @@
-use std::{collections::HashMap, rc::Rc};
+use std::rc::Rc;
 
+use gloo_file::{Blob, ObjectUrl};
 use leptos::{ev::MouseEvent, *};
 use strum::IntoEnumIterator;
 
 use klick_application as app;
-use klick_boundary::{
-    AnnualAverages, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod, OperatingMaterials,
-    SewageSludgeTreatment,
-};
+use klick_boundary::{export_to_vec_pretty, N2oEmissionFactorCalcMethod};
 use klick_svg_charts::BarChart;
 
 use crate::{
@@ -18,7 +16,7 @@ use crate::{
 mod example_data;
 mod fields;
 
-use self::fields::FieldId;
+use self::fields::{read_input_fields, read_scenario_fields, FieldId};
 
 const CHART_ELEMENT_ID: &str = "chart";
 
@@ -39,7 +37,7 @@ pub fn Tool() -> impl IntoView {
 
     let s = Rc::clone(&signals);
     create_effect(move |_| {
-        let data = read_input_fields(&s);
+        let data = read_input_fields(&s).try_into().ok();
         input_data.set(data);
     });
 
@@ -119,6 +117,8 @@ pub fn Tool() -> impl IntoView {
         }
     });
 
+    let download_link: NodeRef<leptos::html::A> = create_node_ref();
+
     view! {
       <div class="space-y-12">
         <div class="flex items-center justify-end gap-x-6">
@@ -140,6 +140,31 @@ pub fn Tool() -> impl IntoView {
               }
             }
           />
+          <Button
+            label = "Project speichern"
+            on_click = {
+              let signals = Rc::clone(&signals);
+              move |ev| {
+
+                ev.prevent_default();
+
+                let input = read_input_fields(&signals);
+                let szenario = read_scenario_fields(&signals);
+                let json_bytes = export_to_vec_pretty(&input, &szenario);
+
+                let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
+                let object_url = ObjectUrl::from(blob);
+
+                let link = download_link.get().expect("<a> to exist");
+                link.set_attribute("href", &object_url).unwrap();
+                link.set_attribute("download", "klimabilanzklaeranlage.json").unwrap();
+                link.click();
+                link.remove_attribute("href").unwrap();
+              }
+            }
+          />
+          // Hidden download anchor
+          <a style="display:none;" node_ref=download_link></a>
         </div>
         { set_views }
       </div>
@@ -201,80 +226,4 @@ where
         { label }
       </button>
     }
-}
-
-fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> Option<app::InputData> {
-    let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
-    let population_values = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
-    let waste_water = s.get(&FieldId::Flow).and_then(FieldSignal::get_float);
-
-    let inflow_averages = AnnualAverages {
-        nitrogen: s.get(&FieldId::TknZu).and_then(FieldSignal::get_float),
-        chemical_oxygen_demand: s.get(&FieldId::CsbZu).and_then(FieldSignal::get_float),
-        phosphorus: s.get(&FieldId::PZu).and_then(FieldSignal::get_float),
-    };
-    let effluent_averages = AnnualAverages {
-        nitrogen: s.get(&FieldId::TknAb).and_then(FieldSignal::get_float),
-        chemical_oxygen_demand: s.get(&FieldId::CsbAb).and_then(FieldSignal::get_float),
-        phosphorus: s.get(&FieldId::PAb).and_then(FieldSignal::get_float),
-    };
-
-    let energy_consumption = EnergyConsumption {
-        sewage_gas_produced: s.get(&FieldId::Klaergas).and_then(FieldSignal::get_float),
-        methane_level: s
-            .get(&FieldId::Methangehalt)
-            .and_then(FieldSignal::get_float),
-        gas_supply: s.get(&FieldId::GasZusatz).and_then(FieldSignal::get_float),
-        purchase_of_biogas: s.get(&FieldId::Biogas).and_then(FieldSignal::get_bool),
-        total_power_consumption: s
-            .get(&FieldId::Strombedarf)
-            .and_then(FieldSignal::get_float),
-        in_house_power_generation: s.get(&FieldId::Eigenstrom).and_then(FieldSignal::get_float),
-        emission_factor_electricity_mix: s
-            .get(&FieldId::EfStrommix)
-            .and_then(FieldSignal::get_float),
-    };
-
-    let sewage_sludge_treatment = SewageSludgeTreatment {
-        open_sludge_bags: s
-            .get(&FieldId::Schlammtaschen)
-            .and_then(FieldSignal::get_bool),
-        open_sludge_storage_containers: s
-            .get(&FieldId::Schlammstapel)
-            .and_then(FieldSignal::get_bool),
-        sewage_sludge_for_disposal: s
-            .get(&FieldId::KlaerschlammEnstorgung)
-            .and_then(FieldSignal::get_float),
-        transport_distance: s
-            .get(&FieldId::KlaerschlammTransport)
-            .and_then(FieldSignal::get_float),
-    };
-
-    let operating_materials = OperatingMaterials {
-        fecl3: s
-            .get(&FieldId::BetriebsstoffeFe3)
-            .and_then(FieldSignal::get_float),
-        feclso4: s
-            .get(&FieldId::BetriebsstoffeFeso4)
-            .and_then(FieldSignal::get_float),
-        caoh2: s
-            .get(&FieldId::BetriebsstoffeKalk)
-            .and_then(FieldSignal::get_float),
-        synthetic_polymers: s
-            .get(&FieldId::BetriebsstoffePoly)
-            .and_then(FieldSignal::get_float),
-    };
-
-    let input_data = InputData {
-        plant_name,
-        population_values,
-        waste_water,
-        inflow_averages,
-        effluent_averages,
-        energy_consumption,
-        sewage_sludge_treatment,
-        operating_materials,
-    };
-
-    app::InputData::try_from(input_data).ok()
 }
