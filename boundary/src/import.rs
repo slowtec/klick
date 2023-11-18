@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::{InputData, CURRENT_VERSION};
+use crate::{InputData, Scenario, CURRENT_VERSION};
 
 #[derive(Deserialize)]
 struct VersionInfo {
@@ -12,6 +12,7 @@ struct VersionInfo {
 #[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 struct Import {
     input: InputData,
+    scenario: Scenario,
 }
 
 #[derive(Debug, Error)]
@@ -22,8 +23,23 @@ pub enum Error {
     Serde(#[from] serde_json::Error),
 }
 
-pub fn import_from_str(json: &str) -> Result<InputData, Error> {
-    let VersionInfo { version } = serde_json::from_str(json)?;
+pub fn import_from_str(json: &str) -> Result<(InputData, Scenario), Error> {
+    let version_info = serde_json::from_str(json)?;
+    check_version(version_info)?;
+    let Import { input, scenario } = serde_json::from_str(json)?;
+    Ok((input, scenario))
+}
+
+pub fn import_from_slice(slice: &[u8]) -> Result<(InputData, Scenario), Error> {
+    let version_info = serde_json::from_slice(slice)?;
+    check_version(version_info)?;
+    let Import { input, scenario } = serde_json::from_slice(slice)?;
+    Ok((input, scenario))
+}
+
+#[allow(clippy::needless_pass_by_value)]
+const fn check_version(info: VersionInfo) -> Result<(), Error> {
+    let VersionInfo { version } = info;
 
     if version != CURRENT_VERSION {
         return Err(Error::Version {
@@ -31,6 +47,5 @@ pub fn import_from_str(json: &str) -> Result<InputData, Error> {
             expected: CURRENT_VERSION,
         });
     }
-    let import: Import = serde_json::from_str(json)?;
-    Ok(import.input)
+    Ok(())
 }

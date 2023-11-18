@@ -1,6 +1,7 @@
 {
   "version": 1,
   "input": {
+    "plant_name" : "Example Plant",
     "population_values" : 120000.0,
     "waste_water" : 5000000.0,
     "inflow_averages": {
@@ -28,7 +29,12 @@
       "feclso4" : 326000.0,
       "caoh2" : 326260.0,
       "synthetic_polymers" : 23620.0
-    },
-    "custom_n2o_emission_factor": 1.5
+    }
+  },
+  "scenario": {
+    "n2o_emission_factor": {
+      "calculation_method": "custom-factor",
+      "custom_factor": 1.5
+    }
   }
 }

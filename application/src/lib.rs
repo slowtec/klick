@@ -1,14 +1,15 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum N2OSzenario {
+pub enum N2oEmissionFactorCalcMethod {
     ExtrapolatedParravicini,
     Optimistic,
     Pesimistic,
     Ipcc2019,
-    Custom,
+    CustomFactor(f64),
 }
 
 #[derive(Debug, Clone)]
 pub struct InputData {
+    pub plant_name: Option<String>,
     pub ew: f64,
     pub abwasser: f64,
     pub n_ges_zu: f64,
@@ -27,8 +28,6 @@ pub struct InputData {
     pub betriebsstoffe_feso4: f64,
     pub betriebsstoffe_kalk: f64,
     pub betriebsstoffe_poly: f64,
-    pub custom_n2o_scenario_support: bool,
-    pub custom_n2o_scenario_value: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -83,8 +82,9 @@ const VERBRAUCH: f64 = 0.033; // l/tkm
 
 #[must_use]
 #[allow(clippy::too_many_lines)]
-pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
+pub fn calc(input: &InputData, n2o_szenario: N2oEmissionFactorCalcMethod) -> OutputData {
     let InputData {
+        plant_name: _,
         ew,
         abwasser,
         n_ges_zu,
@@ -103,8 +103,6 @@ pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
         betriebsstoffe_feso4,
         betriebsstoffe_kalk,
         betriebsstoffe_poly,
-        custom_n2o_scenario_support: _,
-        custom_n2o_scenario_value,
     } = input;
 
     let klaergas_methangehalt = methangehalt / 100.0; // [%]
@@ -113,11 +111,11 @@ pub fn calc(input: &InputData, n2o_szenario: N2OSzenario) -> OutputData {
     let n_elim = (n_ges_zu - n_ges_ab) / n_ges_zu * 100.0; // [%]
 
     let ef_n2o_anlage = match n2o_szenario {
-        N2OSzenario::ExtrapolatedParravicini => get_n2oef(n_elim), // [Berechnung nach Parravicini et al. 2016]
-        N2OSzenario::Optimistic => 0.003,                          // [0,3 % des Ges-N Zulauf]
-        N2OSzenario::Pesimistic => 0.008,                          // [0,8 % des Ges-N Zulauf]
-        N2OSzenario::Ipcc2019 => 0.016,                            // [1,6 % des Ges-N Zulauf]
-        N2OSzenario::Custom => *custom_n2o_scenario_value / 100.0, // [%]
+        N2oEmissionFactorCalcMethod::ExtrapolatedParravicini => get_n2oef(n_elim), // [Berechnung nach Parravicini et al. 2016]
+        N2oEmissionFactorCalcMethod::Optimistic => 0.003, // [0,3 % des Ges-N Zulauf]
+        N2oEmissionFactorCalcMethod::Pesimistic => 0.008, // [0,8 % des Ges-N Zulauf]
+        N2oEmissionFactorCalcMethod::Ipcc2019 => 0.016,   // [1,6 % des Ges-N Zulauf]
+        N2oEmissionFactorCalcMethod::CustomFactor(factor) => factor,
     };
 
     // Direkte emissionen

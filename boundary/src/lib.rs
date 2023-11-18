@@ -1,62 +1,24 @@
 use serde::{Deserialize, Serialize};
-use strum::{AsRefStr, EnumIter};
+
+mod input;
+mod output;
+mod scenario;
 
 mod export;
 mod import;
-mod input;
-mod output;
 
 pub use self::{
     export::export_to_string_pretty,
-    import::{import_from_str, Error as ImportError},
+    import::{import_from_slice, import_from_str, Error as ImportError},
     input::*,
     output::*,
+    scenario::*,
 };
 
 #[cfg(feature = "conversion")]
 mod conversion;
 
 pub const CURRENT_VERSION: u32 = 1;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum ValueId {
-    Name,
-    Ew,
-    Flow,
-    CsbZu,
-    TknZu,
-    PZu,
-    CsbAb,
-    TknAb,
-    PAb,
-    Klaergas,
-    Methangehalt,
-    GasZusatz,
-    Biogas,
-    Strombedarf,
-    Eigenstrom,
-    EfStrommix,
-    Schlammtaschen,
-    Schlammstapel,
-    KlaerschlammEnstorgung,
-    KlaerschlammTransport,
-    BetriebsstoffeFe3,
-    BetriebsstoffeFeso4,
-    BetriebsstoffeKalk,
-    BetriebsstoffePoly,
-    N2oSzenario,
-    CustomN2oScenarioSupport,
-    CustomN2oSzenarioValue,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, EnumIter, Serialize, Deserialize)]
-pub enum N2OSzenario {
-    ExtrapolatedParravicini,
-    Optimistic,
-    Pesimistic,
-    Ipcc2019,
-    Custom,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FieldSet<ID> {

@@ -3,36 +3,55 @@ use anyhow::bail;
 use klick_application as app;
 
 use crate::{
-    AnnualAverages, CO2Equivalents, EnergyConsumption, InputData, N2OSzenario, OperatingMaterials,
-    OutputData, SewageSludgeTreatment,
+    AnnualAverages, CO2Equivalents, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
+    N2oEmissionFactorScenario, OperatingMaterials, OutputData, SewageSludgeTreatment,
 };
 
-impl From<N2OSzenario> for app::N2OSzenario {
-    fn from(from: N2OSzenario) -> Self {
-        use app::N2OSzenario as A;
-        use N2OSzenario as F;
+impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
+    type Error = anyhow::Error;
 
-        match from {
-            F::ExtrapolatedParravicini => A::ExtrapolatedParravicini,
-            F::Optimistic => A::Optimistic,
-            F::Pesimistic => A::Pesimistic,
-            F::Ipcc2019 => A::Ipcc2019,
-            F::Custom => A::Custom,
-        }
+    fn try_from(from: N2oEmissionFactorScenario) -> Result<Self, Self::Error> {
+        use app::N2oEmissionFactorCalcMethod as A;
+        use N2oEmissionFactorCalcMethod as M;
+
+        let f = match from.calculation_method {
+            M::ExtrapolatedParravicini => A::ExtrapolatedParravicini,
+            M::Optimistic => A::Optimistic,
+            M::Pesimistic => A::Pesimistic,
+            M::Ipcc2019 => A::Ipcc2019,
+            M::CustomFactor => {
+                let Some(factor) = from.custom_factor else {
+                    bail!("custom N2O emission factor is missing");
+                };
+                A::CustomFactor(factor)
+            }
+        };
+        Ok(f)
     }
 }
 
-impl From<app::N2OSzenario> for N2OSzenario {
-    fn from(from: app::N2OSzenario) -> Self {
-        use app::N2OSzenario as A;
-        use N2OSzenario as F;
+impl From<app::N2oEmissionFactorCalcMethod> for N2oEmissionFactorScenario {
+    fn from(from: app::N2oEmissionFactorCalcMethod) -> Self {
+        use app::N2oEmissionFactorCalcMethod as A;
+        use N2oEmissionFactorCalcMethod as M;
 
-        match from {
-            A::ExtrapolatedParravicini => F::ExtrapolatedParravicini,
-            A::Optimistic => F::Optimistic,
-            A::Pesimistic => F::Pesimistic,
-            A::Ipcc2019 => F::Ipcc2019,
-            A::Custom => F::Custom,
+        let calculation_method = match from {
+            A::ExtrapolatedParravicini => M::ExtrapolatedParravicini,
+            A::Optimistic => M::Optimistic,
+            A::Pesimistic => M::Pesimistic,
+            A::Ipcc2019 => M::Ipcc2019,
+            A::CustomFactor(_) => M::CustomFactor,
+        };
+
+        let custom_factor = if let A::CustomFactor(factor) = from {
+            Some(factor)
+        } else {
+            None
+        };
+
+        Self {
+            calculation_method,
+            custom_factor,
         }
     }
 }
@@ -42,7 +61,7 @@ impl TryFrom<InputData> for app::InputData {
 
     fn try_from(from: InputData) -> Result<Self, Self::Error> {
         let InputData {
-            name: _,
+            plant_name,
             population_values,
             waste_water,
             inflow_averages,
@@ -50,7 +69,6 @@ impl TryFrom<InputData> for app::InputData {
             energy_consumption,
             sewage_sludge_treatment,
             operating_materials,
-            custom_n2o_emission_factor,
         } = from;
 
         let Some(population_values) = population_values else {
@@ -151,6 +169,7 @@ impl TryFrom<InputData> for app::InputData {
         };
 
         Ok(Self {
+            plant_name,
             ew: population_values,
             abwasser: waste_water,
             n_ges_zu: inflow_nitrogen,
@@ -169,8 +188,6 @@ impl TryFrom<InputData> for app::InputData {
             betriebsstoffe_feso4: feclso4,
             betriebsstoffe_kalk: caoh2,
             betriebsstoffe_poly: synthetic_polymers,
-            custom_n2o_scenario_support: custom_n2o_emission_factor.is_some(),
-            custom_n2o_scenario_value: custom_n2o_emission_factor.unwrap_or_default(),
         })
     }
 }
@@ -178,6 +195,7 @@ impl TryFrom<InputData> for app::InputData {
 impl From<app::InputData> for InputData {
     fn from(from: app::InputData) -> Self {
         let app::InputData {
+            plant_name,
             ew,
             abwasser,
             n_ges_zu,
@@ -196,8 +214,6 @@ impl From<app::InputData> for InputData {
             betriebsstoffe_feso4,
             betriebsstoffe_kalk,
             betriebsstoffe_poly,
-            custom_n2o_scenario_support,
-            custom_n2o_scenario_value,
         } = from;
 
         let population_values = Some(ew);
@@ -255,14 +271,8 @@ impl From<app::InputData> for InputData {
             synthetic_polymers,
         };
 
-        let custom_n2o_emission_factor = if custom_n2o_scenario_support == true {
-            Some(custom_n2o_scenario_value)
-        } else {
-            None
-        };
-
         Self {
-            name: None, // TODO
+            plant_name,
             population_values,
             waste_water,
             inflow_averages,
@@ -270,7 +280,6 @@ impl From<app::InputData> for InputData {
             energy_consumption,
             sewage_sludge_treatment,
             operating_materials,
-            custom_n2o_emission_factor,
         }
     }
 }

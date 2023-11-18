@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct InputData {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub plant_name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub population_values: Option<f64>,
@@ -21,9 +21,6 @@ pub struct InputData {
     pub sewage_sludge_treatment: SewageSludgeTreatment,
 
     pub operating_materials: OperatingMaterials,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_n2o_emission_factor: Option<f64>,
 }
 
 #[derive(Serialize, Deserialize)]

@@ -763,6 +763,7 @@ dependencies = [
  "leptos_router",
  "log",
  "pulldown-cmark",
+ "serde",
  "serde_json",
  "strum",
  "thiserror",

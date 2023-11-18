@@ -4,7 +4,10 @@ use leptos::{ev::MouseEvent, *};
 use strum::IntoEnumIterator;
 
 use klick_application as app;
-use klick_boundary::{N2OSzenario, ValueId};
+use klick_boundary::{
+    AnnualAverages, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod, OperatingMaterials,
+    SewageSludgeTreatment,
+};
 use klick_svg_charts::BarChart;
 
 use crate::{
@@ -14,6 +17,8 @@ use crate::{
 
 mod example_data;
 mod fields;
+
+use self::fields::FieldId;
 
 const CHART_ELEMENT_ID: &str = "chart";
 
@@ -26,6 +31,7 @@ pub fn Tool() -> impl IntoView {
     let signals = Rc::new(signals);
 
     let input_data = RwSignal::new(Option::<app::InputData>::None);
+
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
@@ -41,61 +47,66 @@ pub fn Tool() -> impl IntoView {
 
     create_effect(move |_| {
         if let Some(input_data) = input_data.get() {
-            if !input_data.custom_n2o_scenario_support && selected_scenario.get() == Some(4) {
+            let use_custom_factor = s
+                .get(&FieldId::CustomN2oScenarioSupport)
+                .and_then(FieldSignal::get_bool)
+                == Some(true);
+            if !use_custom_factor && selected_scenario.get() == Some(4) {
                 selected_scenario.set(Some(0));
             }
             log::debug!("Calculating with {input_data:#?}");
-            let szenario_calculations = N2OSzenario::iter()
+            let szenario_calculations = N2oEmissionFactorCalcMethod::iter()
             .enumerate()
-            .filter_map(|(i, szenario)| {
-                let output_data =
-                    klick_application::calc(&input_data.clone(), szenario.into());
-                if selected_scenario.get() == Some(i as u64) {
-                    let name_ka: String = s
-                        .get(&ValueId::Name)
-                        .and_then(FieldSignal::get_text)
-                        .unwrap_or_else(|| "Kläranlage".to_string());
+            .filter_map(|(i, method)| {
 
-                    let ew = s
-                        .get(&ValueId::Ew)
-                        .and_then(FieldSignal::get_float)
-                        .unwrap_or_default();
+                  let calc_method = match method {
+                      N2oEmissionFactorCalcMethod::CustomFactor => {
+                          let custom_factor = s
+                              .get(&FieldId::CustomN2oScenarioValue)
+                              .and_then(FieldSignal::get_float).unwrap_or_default() / 100.0;
+                          app::N2oEmissionFactorCalcMethod::CustomFactor(custom_factor)
+                      }
+                      N2oEmissionFactorCalcMethod::ExtrapolatedParravicini=>  app::N2oEmissionFactorCalcMethod::ExtrapolatedParravicini,
+                      N2oEmissionFactorCalcMethod::Optimistic             =>  app::N2oEmissionFactorCalcMethod::Optimistic,
+                      N2oEmissionFactorCalcMethod::Pesimistic             =>  app::N2oEmissionFactorCalcMethod::Pesimistic,
+                      N2oEmissionFactorCalcMethod::Ipcc2019               =>  app::N2oEmissionFactorCalcMethod::Ipcc2019,
+                  };
 
-                    let einheit = "t CO₂-eq/Jahr";
-                    let szenario_name = match szenario {
-                        N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
-                        N2OSzenario::Optimistic => "Optimistisch",
-                        N2OSzenario::Pesimistic => "Pessimistisch",
-                        N2OSzenario::Ipcc2019 => "IPCC 2019",
-                        N2OSzenario::Custom => "Benutzerdefiniert",
-                    };
-                    let title = format!(
-                        "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
-                    );
-                    sankey_header.set(title);
-                    sankey::render(output_data.clone(), CHART_ELEMENT_ID);
-                }
-                if szenario == N2OSzenario::Custom
-                    && !input_data.custom_n2o_scenario_support
-                {
-                    None
-                } else {
-                    Some((szenario, output_data))
-                }
-            })
-            .collect::<Vec<_>>();
+                 let output_data = klick_application::calc(&input_data, calc_method);
+
+                 if selected_scenario.get() == Some(i as u64) {
+                     let name_ka: String = s
+                         .get(&FieldId::Name)
+                         .and_then(FieldSignal::get_text)
+                         .unwrap_or_else(|| "Kläranlage".to_string());
+
+                     let ew = s
+                         .get(&FieldId::Ew)
+                         .and_then(FieldSignal::get_float)
+                         .unwrap_or_default();
+
+                     let einheit = "t CO₂-eq/Jahr";
+                     let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
+                     let title = format!(
+                         "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
+                     );
+                     sankey_header.set(title);
+                     sankey::render(output_data.clone(), CHART_ELEMENT_ID);
+                 }
+                 if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
+                 {
+                     None
+                 } else {
+                    Some((method, output_data))
+                 }
+             })
+             .collect::<Vec<_>>();
 
             barchart_arguments.set(
                 szenario_calculations
                     .iter()
                     .map(|(szenario, d)| klick_svg_charts::BarChartArguments {
-                        label: Some(match szenario {
-                            N2OSzenario::ExtrapolatedParravicini => "Extrapoliert",
-                            N2OSzenario::Optimistic => "Optimistisch",
-                            N2OSzenario::Pesimistic => "Pessimistisch",
-                            N2OSzenario::Ipcc2019 => "IPCC 2019",
-                            N2OSzenario::Custom => "Benutzerdefiniert",
-                        }),
+                        label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
                         co2_data: d.emissionen_co2_eq,
                         n2o_factor: d.ef_n2o_anlage,
                     })
@@ -165,6 +176,18 @@ pub fn Tool() -> impl IntoView {
     }
 }
 
+const fn label_of_n2o_emission_factor_calc_method(
+    method: &N2oEmissionFactorCalcMethod,
+) -> &'static str {
+    match method {
+        N2oEmissionFactorCalcMethod::ExtrapolatedParravicini => "Extrapoliert",
+        N2oEmissionFactorCalcMethod::Optimistic => "Optimistisch",
+        N2oEmissionFactorCalcMethod::Pesimistic => "Pessimistisch",
+        N2oEmissionFactorCalcMethod::Ipcc2019 => "IPCC 2019",
+        N2oEmissionFactorCalcMethod::CustomFactor => "Benutzerdefiniert",
+    }
+}
+
 #[component]
 fn Button<F>(label: &'static str, on_click: F) -> impl IntoView
 where
@@ -180,125 +203,78 @@ where
     }
 }
 
-#[allow(clippy::too_many_lines)]
-fn read_input_fields(s: &HashMap<ValueId, FieldSignal>) -> Option<app::InputData> {
-    let Some(ew) = s.get(&ValueId::Ew).and_then(FieldSignal::get_float) else {
-        return None;
+fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> Option<app::InputData> {
+    let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
+    let population_values = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
+    let waste_water = s.get(&FieldId::Flow).and_then(FieldSignal::get_float);
+
+    let inflow_averages = AnnualAverages {
+        nitrogen: s.get(&FieldId::TknZu).and_then(FieldSignal::get_float),
+        chemical_oxygen_demand: s.get(&FieldId::CsbZu).and_then(FieldSignal::get_float),
+        phosphorus: s.get(&FieldId::PZu).and_then(FieldSignal::get_float),
     };
-    let Some(abwasser) = s.get(&ValueId::Flow).and_then(FieldSignal::get_float) else {
-        return None;
-    };
-    let Some(n_ges_zu) = s.get(&ValueId::TknZu).and_then(FieldSignal::get_float) else {
-        return None;
-    };
-    let Some(csb_ab) = s.get(&ValueId::CsbAb).and_then(FieldSignal::get_float) else {
-        return None;
-    };
-    let Some(n_ges_ab) = s.get(&ValueId::TknAb).and_then(FieldSignal::get_float) else {
-        return None;
-    };
-    let Some(klaergas_gesamt) = s.get(&ValueId::Klaergas).and_then(FieldSignal::get_float) else {
-        return None;
-    };
-    let Some(methangehalt) = s
-        .get(&ValueId::Methangehalt)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(strombedarf) = s
-        .get(&ValueId::Strombedarf)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(energie_eigen) = s.get(&ValueId::Eigenstrom).and_then(FieldSignal::get_float) else {
-        return None;
-    };
-    let Some(ef_co2_strommix) = s.get(&ValueId::EfStrommix).and_then(FieldSignal::get_float) else {
-        return None;
-    };
-    let Some(schlammtaschen) = s
-        .get(&ValueId::Schlammtaschen)
-        .and_then(FieldSignal::get_bool)
-    else {
-        return None;
-    };
-    let Some(schlammstapel) = s
-        .get(&ValueId::Schlammstapel)
-        .and_then(FieldSignal::get_bool)
-    else {
-        return None;
-    };
-    let Some(klaerschlamm_transport_km) = s
-        .get(&ValueId::KlaerschlammTransport)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(klaerschlamm_entsorgung_m) = s
-        .get(&ValueId::KlaerschlammEnstorgung)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(betriebsstoffe_fe3) = s
-        .get(&ValueId::BetriebsstoffeFe3)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(betriebsstoffe_feso4) = s
-        .get(&ValueId::BetriebsstoffeFeso4)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(betriebsstoffe_kalk) = s
-        .get(&ValueId::BetriebsstoffeKalk)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(betriebsstoffe_poly) = s
-        .get(&ValueId::BetriebsstoffePoly)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
-    };
-    let Some(custom_n2o_scenario_support) = s
-        .get(&ValueId::CustomN2oScenarioSupport)
-        .and_then(FieldSignal::get_bool)
-    else {
-        return None;
-    };
-    let Some(custom_n2o_scenario_value) = s
-        .get(&ValueId::CustomN2oSzenarioValue)
-        .and_then(FieldSignal::get_float)
-    else {
-        return None;
+    let effluent_averages = AnnualAverages {
+        nitrogen: s.get(&FieldId::TknAb).and_then(FieldSignal::get_float),
+        chemical_oxygen_demand: s.get(&FieldId::CsbAb).and_then(FieldSignal::get_float),
+        phosphorus: s.get(&FieldId::PAb).and_then(FieldSignal::get_float),
     };
 
-    Some(app::InputData {
-        ew,
-        abwasser,
-        n_ges_zu,
-        csb_ab,
-        n_ges_ab,
-        klaergas_gesamt,
-        methangehalt,
-        strombedarf,
-        energie_eigen,
-        ef_co2_strommix,
-        schlammtaschen,
-        schlammstapel,
-        klaerschlamm_transport_km,
-        klaerschlamm_entsorgung_m,
-        betriebsstoffe_fe3,
-        betriebsstoffe_feso4,
-        betriebsstoffe_kalk,
-        betriebsstoffe_poly,
-        custom_n2o_scenario_support,
-        custom_n2o_scenario_value,
-    })
+    let energy_consumption = EnergyConsumption {
+        sewage_gas_produced: s.get(&FieldId::Klaergas).and_then(FieldSignal::get_float),
+        methane_level: s
+            .get(&FieldId::Methangehalt)
+            .and_then(FieldSignal::get_float),
+        gas_supply: s.get(&FieldId::GasZusatz).and_then(FieldSignal::get_float),
+        purchase_of_biogas: s.get(&FieldId::Biogas).and_then(FieldSignal::get_bool),
+        total_power_consumption: s
+            .get(&FieldId::Strombedarf)
+            .and_then(FieldSignal::get_float),
+        in_house_power_generation: s.get(&FieldId::Eigenstrom).and_then(FieldSignal::get_float),
+        emission_factor_electricity_mix: s
+            .get(&FieldId::EfStrommix)
+            .and_then(FieldSignal::get_float),
+    };
+
+    let sewage_sludge_treatment = SewageSludgeTreatment {
+        open_sludge_bags: s
+            .get(&FieldId::Schlammtaschen)
+            .and_then(FieldSignal::get_bool),
+        open_sludge_storage_containers: s
+            .get(&FieldId::Schlammstapel)
+            .and_then(FieldSignal::get_bool),
+        sewage_sludge_for_disposal: s
+            .get(&FieldId::KlaerschlammEnstorgung)
+            .and_then(FieldSignal::get_float),
+        transport_distance: s
+            .get(&FieldId::KlaerschlammTransport)
+            .and_then(FieldSignal::get_float),
+    };
+
+    let operating_materials = OperatingMaterials {
+        fecl3: s
+            .get(&FieldId::BetriebsstoffeFe3)
+            .and_then(FieldSignal::get_float),
+        feclso4: s
+            .get(&FieldId::BetriebsstoffeFeso4)
+            .and_then(FieldSignal::get_float),
+        caoh2: s
+            .get(&FieldId::BetriebsstoffeKalk)
+            .and_then(FieldSignal::get_float),
+        synthetic_polymers: s
+            .get(&FieldId::BetriebsstoffePoly)
+            .and_then(FieldSignal::get_float),
+    };
+
+    let input_data = InputData {
+        plant_name,
+        population_values,
+        waste_water,
+        inflow_averages,
+        effluent_averages,
+        energy_consumption,
+        sewage_sludge_treatment,
+        operating_materials,
+    };
+
+    app::InputData::try_from(input_data).ok()
 }
