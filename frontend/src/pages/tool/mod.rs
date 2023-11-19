@@ -1,11 +1,11 @@
-use std::rc::Rc;
+use std::{collections::HashMap, rc::Rc};
 
-use gloo_file::{Blob, ObjectUrl};
+use gloo_file::{Blob, File, ObjectUrl};
 use leptos::{ev::MouseEvent, *};
 use strum::IntoEnumIterator;
 
 use klick_application as app;
-use klick_boundary::{export_to_vec_pretty, N2oEmissionFactorCalcMethod};
+use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
 use klick_svg_charts::BarChart;
 
 use crate::{
@@ -16,7 +16,7 @@ use crate::{
 mod example_data;
 mod fields;
 
-use self::fields::{read_input_fields, read_scenario_fields, FieldId};
+use self::fields::{load_fields, read_input_fields, read_scenario_fields, FieldId};
 
 const CHART_ELEMENT_ID: &str = "chart";
 
@@ -118,6 +118,19 @@ pub fn Tool() -> impl IntoView {
     });
 
     let download_link: NodeRef<leptos::html::A> = create_node_ref();
+    let upload_input: NodeRef<leptos::html::Input> = create_node_ref();
+
+    let upload_action = create_action({
+        let signals = Rc::clone(&signals);
+        move |_: &()| {
+            let signals = Rc::clone(&signals);
+            async move {
+                if let Err(err) = upload_and_load(signals, upload_input).await {
+                    log::warn!("Unable to upload data: {err}");
+                }
+            }
+        }
+    });
 
     view! {
       <div class="space-y-12">
@@ -136,7 +149,9 @@ pub fn Tool() -> impl IntoView {
             on_click = {
               let signals = Rc::clone(&signals);
               move |_| {
-                example_data::load_example_field_signal_values(&signals);
+                if let Err(err) = example_data::load_example_field_signal_values(&signals) {
+                  log::error!("Unable to load example data: {err}");
+                }
               }
             }
           />
@@ -145,7 +160,6 @@ pub fn Tool() -> impl IntoView {
             on_click = {
               let signals = Rc::clone(&signals);
               move |ev| {
-
                 ev.prevent_default();
 
                 let input = read_input_fields(&signals);
@@ -165,6 +179,16 @@ pub fn Tool() -> impl IntoView {
           />
           // Hidden download anchor
           <a style="display:none;" node_ref=download_link></a>
+          <input
+            class = "block text-sm bg-gray-50 rounded-md shadow-sm file:bg-primary file:rounded-md file:border-0 file:mr-4 file:py-1 file:px-2 file:font-semibold"
+            type="file"
+            accept="application/json"
+            node_ref=upload_input
+            on:change = move |ev| {
+                ev.prevent_default();
+                upload_action.dispatch(());
+            }
+          />
         </div>
         { set_views }
       </div>
@@ -211,6 +235,25 @@ const fn label_of_n2o_emission_factor_calc_method(
         N2oEmissionFactorCalcMethod::Ipcc2019 => "IPCC 2019",
         N2oEmissionFactorCalcMethod::CustomFactor => "Benutzerdefiniert",
     }
+}
+
+async fn upload_and_load(
+    signals: Rc<HashMap<FieldId, FieldSignal>>,
+    upload_input: NodeRef<leptos::html::Input>,
+) -> anyhow::Result<()> {
+    let Some(file_list) = upload_input.get().expect("<input /> to exist").files() else {
+        log::debug!("No file list");
+        return Ok(());
+    };
+    let Some(file) = file_list.item(0) else {
+        log::debug!("No file selected");
+        return Ok(());
+    };
+    let gloo_file = File::from(file);
+    let bytes = gloo_file::futures::read_as_bytes(&gloo_file).await?;
+    let (input, scenario) = import_from_slice(&bytes)?;
+    load_fields(&signals, input, scenario)?;
+    Ok(())
 }
 
 #[component]

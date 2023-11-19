@@ -12,10 +12,11 @@ klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-svg-charts = "=0.0.0"
 
 # External dependencies
+anyhow = "1.0.75"
 charming = { version = "0.2.5", features = ["wasm"] }
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
-gloo-file = "0.3.0"
+gloo-file = { version = "0.3.0", features = ["futures"] }
 Inflector = "0.11.4"
 leptos = { version = "0.5.2", features = ["csr"] }
 leptos_meta = { version = "0.5.2", features = ["csr"] }
