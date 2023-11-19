@@ -32,7 +32,7 @@ pub fn Tool() -> impl IntoView {
     let (signals, set_views) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
 
-    let input_data = RwSignal::new(Option::<app::InputData>::None);
+    let input_data = RwSignal::new(Option::<app::Input>::None);
 
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
@@ -109,14 +109,14 @@ pub fn Tool() -> impl IntoView {
                     .iter()
                     .map(|(szenario, d)| klick_svg_charts::BarChartArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
-                        co2_data: d.emissionen_co2_eq,
-                        n2o_factor: d.ef_n2o_anlage,
+                        co2_data: d.co2_equivalents.emissions,
+                        n2o_factor: d.n2o_emission_factor,
                     })
                     .collect(),
             );
         } else {
             sankey_header.set(String::new());
-            barchart_arguments.update(std::vec::Vec::clear);
+            barchart_arguments.update(Vec::clear);
             sankey::clear(CHART_ELEMENT_ID);
         }
     });
@@ -153,9 +153,7 @@ pub fn Tool() -> impl IntoView {
             on_click = {
               let signals = Rc::clone(&signals);
               move |_| {
-                if let Err(err) = example_data::load_example_field_signal_values(&signals) {
-                  log::error!("Unable to load example data: {err}");
-                }
+                example_data::load_example_field_signal_values(&signals);
               }
             }
           />
@@ -256,7 +254,7 @@ async fn upload_and_load(
     let gloo_file = File::from(file);
     let bytes = gloo_file::futures::read_as_bytes(&gloo_file).await?;
     let (input, scenario) = import_from_slice(&bytes)?;
-    load_fields(&signals, input, scenario)?;
+    load_fields(&signals, input, scenario);
     Ok(())
 }
 

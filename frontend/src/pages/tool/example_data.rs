@@ -6,11 +6,9 @@ use crate::forms::FieldSignal;
 
 use super::fields::{load_fields, FieldId};
 
-pub fn load_example_field_signal_values(
-    signals: &HashMap<FieldId, FieldSignal>,
-) -> anyhow::Result<()> {
+pub fn load_example_field_signal_values(signals: &HashMap<FieldId, FieldSignal>) {
     let (input, scenario) = example_input_data();
-    load_fields(signals, input, scenario)
+    load_fields(signals, input, scenario);
 }
 
 const EXAMPLE_DATA: &[u8] = include_bytes!("example_data.json");

@@ -4,6 +4,8 @@ use charming::{
     Chart,
 };
 
+use klick_application as app;
+
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 fn format_large_number(f: f64) -> String {
     // Convert the f64 to u64
@@ -35,171 +37,160 @@ fn format_large_number(f: f64) -> String {
 }
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
-pub fn render(output_data: klick_application::OutputData, element_id: &str) {
-    let klick_application::OutputData {
-        co2eq_n2o_anlage,
-        co2eq_n2o_gewaesser,
-        co2eq_ch4_klaerprozes,
-        co2eq_ch4_schlammstapel,
-        co2eq_ch4_schlammtasche,
-        co2eq_ch4_gewaesser,
-        co2eq_ch4_bhkw,
-        co2eq_betriebsstoffe_fe3,
-        co2eq_betriebsstoffe_feso4,
-        co2eq_betriebsstoffe_kalk,
-        co2eq_betriebsstoffe_poly,
-        co2eq_strommix,
-        co2eq_betriebsstoffe,
-        co2eq_klaerschlamm_transport,
-        direkte_emissionen_co2_eq,
-        indirekte_emissionen_co2_eq,
-        weitere_indirekte_emissionen_co2_eq,
-        emissionen_co2_eq,
-        ef_n2o_anlage: _,
+pub fn render(output_data: app::Output, element_id: &str) {
+    let app::Output {
+        co2_equivalents,
+        n2o_emission_factor: _,
     } = output_data;
 
+    let app::CO2Equivalents {
+        n2o_plant,
+        n2o_water,
+        ch4_sewage_treatment,
+        ch4_sludge_storage_containers,
+        ch4_sludge_bags,
+        ch4_water,
+        ch4_combined_heat_and_power_plant,
+        fecl3,
+        feclso4,
+        caoh2,
+        synthetic_polymers,
+        electricity_mix,
+        operating_materials,
+        sewage_sludge_transport,
+        emissions,
+        direct_emissions,
+        indirect_emissions,
+        other_indirect_emissions,
+    } = co2_equivalents;
+
     let dir_em = "Direkte Emissionen".to_string();
-    let dir_em_string = format!(
-        "{dir_em} {}",
-        format_large_number(direkte_emissionen_co2_eq)
-    );
+    let dir_em_string = format!("{dir_em} {}", format_large_number(direct_emissions));
 
     let indir_em = "Indirekte Emissionen".to_string();
-    let indir_em_string = format!(
-        "{indir_em} {}",
-        format_large_number(indirekte_emissionen_co2_eq)
-    );
+    let indir_em_string = format!("{indir_em} {}", format_large_number(indirect_emissions));
 
     let wei_indir_em = "Weitere Indirekte Emissionen".to_string();
     let wei_indir_em_string = format!(
         "{wei_indir_em} {}",
-        format_large_number(weitere_indirekte_emissionen_co2_eq)
+        format_large_number(other_indirect_emissions)
     );
 
+    // TODO: what's the difference to emissions?
     let nu = "Nutzung";
-    let nu_string = format!("{nu} {}", format_large_number(emissionen_co2_eq));
+    let nu_string = format!("{nu} {}", format_large_number(emissions));
 
     let em = "Emission";
-    let em_string = format!("{em} {}", format_large_number(emissionen_co2_eq));
+    let em_string = format!("{em} {}", format_large_number(emissions));
 
     let bs = "Betriebsstoffe";
-    let bs_string = format!("{bs} {}", format_large_number(co2eq_betriebsstoffe));
+    let bs_string = format!("{bs} {}", format_large_number(operating_materials));
 
     let streams: Vec<(_, _, _)> = vec![
         (
-            format!(
-                "Eisen(III)-chlorid-Lösung {}",
-                format_large_number(co2eq_betriebsstoffe_fe3)
-            ),
+            format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)),
             bs_string.as_str(),
-            co2eq_betriebsstoffe_fe3,
+            fecl3,
         ),
         (
-            format!(
-                "Eisenchloridsulfat-Lösung {}",
-                format_large_number(co2eq_betriebsstoffe_feso4)
-            ),
+            format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)),
             bs_string.as_str(),
-            co2eq_betriebsstoffe_feso4,
+            feclso4,
         ),
         (
-            format!(
-                "Kalkhydrat {}",
-                format_large_number(co2eq_betriebsstoffe_kalk)
-            ),
+            format!("Kalkhydrat {}", format_large_number(caoh2)),
             bs_string.as_str(),
-            co2eq_betriebsstoffe_kalk,
+            caoh2,
         ),
         (
             format!(
                 "Synthetische Polymere {}",
-                format_large_number(co2eq_betriebsstoffe_poly)
+                format_large_number(synthetic_polymers)
             ),
             bs_string.as_str(),
-            co2eq_betriebsstoffe_poly,
+            synthetic_polymers,
         ),
         (
             format!(
                 "Klaerschlamm Transport {}",
-                format_large_number(co2eq_klaerschlamm_transport)
+                format_large_number(sewage_sludge_transport)
             ),
             wei_indir_em_string.as_str(),
-            co2eq_klaerschlamm_transport,
+            sewage_sludge_transport,
         ),
         (
-            format!("N₂O Anlage {}", format_large_number(co2eq_n2o_anlage)),
+            format!("N₂O Anlage {}", format_large_number(n2o_plant)),
             dir_em_string.as_str(),
-            co2eq_n2o_anlage,
+            n2o_plant,
         ),
         (
-            format!("N₂O Gewässer {}", format_large_number(co2eq_n2o_gewaesser)),
+            format!("N₂O Gewässer {}", format_large_number(n2o_water)),
             dir_em_string.as_str(),
-            co2eq_n2o_gewaesser,
+            n2o_water,
         ),
         (
             format!(
                 "CH₄ Klärprozess {}",
-                format_large_number(co2eq_ch4_klaerprozes)
+                format_large_number(ch4_sewage_treatment)
             ),
             dir_em_string.as_str(),
-            co2eq_ch4_klaerprozes,
+            ch4_sewage_treatment,
         ),
         (
             format!(
                 "CH₄ Schlupf Schlammstapel {}",
-                format_large_number(co2eq_ch4_schlammstapel)
+                format_large_number(ch4_sludge_storage_containers)
             ),
             dir_em_string.as_str(),
-            co2eq_ch4_schlammstapel,
+            ch4_sludge_storage_containers,
         ),
         (
             format!(
                 "CH₄ Schlupf Schlammtasche {}",
-                format_large_number(co2eq_ch4_schlammtasche)
+                format_large_number(ch4_sludge_bags)
             ),
             dir_em_string.as_str(),
-            co2eq_ch4_schlammtasche,
+            ch4_sludge_bags,
         ),
         (
-            format!("CH₄ Gewässer {}", format_large_number(co2eq_ch4_gewaesser)),
+            format!("CH₄ Gewässer {}", format_large_number(ch4_water)),
             dir_em_string.as_str(),
-            co2eq_ch4_gewaesser,
+            ch4_water,
         ),
         (
-            format!("CH₄ BHKW {}", format_large_number(co2eq_ch4_bhkw)),
+            format!(
+                "CH₄ BHKW {}",
+                format_large_number(ch4_combined_heat_and_power_plant)
+            ),
             dir_em_string.as_str(),
-            co2eq_ch4_bhkw,
+            ch4_combined_heat_and_power_plant,
         ),
         (
-            format!("Strommix {}", format_large_number(co2eq_strommix)),
+            format!("Strommix {}", format_large_number(electricity_mix)),
             indir_em_string.as_str(),
-            co2eq_strommix,
+            electricity_mix,
         ),
         (
             bs_string.clone().to_string(),
             wei_indir_em_string.as_str(),
-            co2eq_betriebsstoffe,
+            operating_materials,
         ),
         (
             dir_em_string.clone().to_string(),
             nu_string.as_str(),
-            direkte_emissionen_co2_eq,
+            direct_emissions,
         ),
         (
             indir_em_string.clone().to_string(),
             nu_string.as_str(),
-            indirekte_emissionen_co2_eq,
+            indirect_emissions,
         ),
         (
             wei_indir_em_string.clone().to_string(),
             nu_string.as_str(),
-            weitere_indirekte_emissionen_co2_eq,
+            other_indirect_emissions,
         ),
-        (
-            nu_string.clone().to_string(),
-            em_string.as_str(),
-            emissionen_co2_eq,
-        ),
+        (nu_string.clone().to_string(), em_string.as_str(), emissions),
     ];
 
     let mut labels: Vec<_> = vec![];
@@ -227,7 +218,6 @@ pub fn render(output_data: klick_application::OutputData, element_id: &str) {
             .links(sankey_links),
     );
     log::debug!("Render Sankey chart");
-    //info!("{}", chart.to_string());
     let renderer = charming::WasmRenderer::new(1200, 800);
     renderer.render(element_id, &chart).unwrap();
 }

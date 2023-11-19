@@ -1,12 +1,10 @@
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OutputData {
+#[derive(Debug, Clone)]
+pub struct Output {
     pub co2_equivalents: CO2Equivalents,
     pub n2o_emission_factor: f64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct CO2Equivalents {
     pub n2o_plant: f64,
     pub n2o_water: f64,

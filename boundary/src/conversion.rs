@@ -3,8 +3,8 @@ use anyhow::bail;
 use klick_application as app;
 
 use crate::{
-    AnnualAverages, CO2Equivalents, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
-    N2oEmissionFactorScenario, OperatingMaterials, OutputData, SewageSludgeTreatment,
+    AnnualAverages, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
+    N2oEmissionFactorScenario, OperatingMaterials, SewageSludgeTreatment,
 };
 
 impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
@@ -56,7 +56,7 @@ impl From<app::N2oEmissionFactorCalcMethod> for N2oEmissionFactorScenario {
     }
 }
 
-impl TryFrom<InputData> for app::InputData {
+impl TryFrom<InputData> for app::Input {
     type Error = anyhow::Error;
 
     fn try_from(from: InputData) -> Result<Self, Self::Error> {
@@ -79,38 +79,38 @@ impl TryFrom<InputData> for app::InputData {
             bail!("missing waste_water");
         };
 
-        let AnnualAverages {
-            nitrogen,
-            chemical_oxygen_demand: _,
-            phosphorus: _,
-        } = inflow_averages;
+        let inflow_averages = inflow_averages.try_into()?;
+        let effluent_averages = effluent_averages.try_into()?;
+        let energy_consumption = energy_consumption.try_into()?;
+        let sewage_sludge_treatment = sewage_sludge_treatment.try_into()?;
+        let operating_materials = operating_materials.try_into()?;
 
-        let Some(inflow_nitrogen) = nitrogen else {
-            bail!("missing inflow nitrogen");
-        };
+        Ok(Self {
+            plant_name,
+            population_values,
+            waste_water,
+            inflow_averages,
+            effluent_averages,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        })
+    }
+}
 
-        let AnnualAverages {
-            nitrogen,
-            chemical_oxygen_demand,
-            phosphorus: _,
-        } = effluent_averages;
+impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
+    type Error = anyhow::Error;
 
-        let Some(effluent_nitrogen) = nitrogen else {
-            bail!("missing effluent nitrogen");
-        };
-        let Some(effluent_chemical_oxygen_demand) = chemical_oxygen_demand else {
-            bail!("missing effluent chemical_oxygen_demand");
-        };
-
+    fn try_from(from: EnergyConsumption) -> Result<Self, Self::Error> {
         let EnergyConsumption {
             sewage_gas_produced,
             methane_level,
-            gas_supply: _,
-            purchase_of_biogas: _,
+            gas_supply,
+            purchase_of_biogas,
             total_power_consumption,
             in_house_power_generation,
             emission_factor_electricity_mix,
-        } = energy_consumption;
+        } = from;
 
         let Some(sewage_gas_produced) = sewage_gas_produced else {
             bail!("missing sewage_gas_produced");
@@ -128,13 +128,28 @@ impl TryFrom<InputData> for app::InputData {
             bail!("missing emission_factor_electricity_mix");
         };
 
+        Ok(Self {
+            sewage_gas_produced,
+            methane_level,
+            gas_supply,
+            purchase_of_biogas,
+            total_power_consumption,
+            in_house_power_generation,
+            emission_factor_electricity_mix,
+        })
+    }
+}
+
+impl TryFrom<SewageSludgeTreatment> for app::SewageSludgeTreatment {
+    type Error = anyhow::Error;
+
+    fn try_from(from: SewageSludgeTreatment) -> Result<Self, Self::Error> {
         let SewageSludgeTreatment {
             open_sludge_bags,
             open_sludge_storage_containers,
             sewage_sludge_for_disposal,
             transport_distance,
-        } = sewage_sludge_treatment;
-
+        } = from;
         let Some(open_sludge_bags) = open_sludge_bags else {
             bail!("missing open_sludge_bags");
         };
@@ -147,14 +162,25 @@ impl TryFrom<InputData> for app::InputData {
         let Some(transport_distance) = transport_distance else {
             bail!("missing transport_distance");
         };
+        Ok(Self {
+            open_sludge_bags,
+            open_sludge_storage_containers,
+            sewage_sludge_for_disposal,
+            transport_distance,
+        })
+    }
+}
 
+impl TryFrom<OperatingMaterials> for app::OperatingMaterials {
+    type Error = anyhow::Error;
+
+    fn try_from(from: OperatingMaterials) -> Result<Self, Self::Error> {
         let OperatingMaterials {
             fecl3,
             feclso4,
             caoh2,
             synthetic_polymers,
-        } = operating_materials;
-
+        } = from;
         let Some(fecl3) = fecl3 else {
             bail!("missing fecl3");
         };
@@ -167,171 +193,55 @@ impl TryFrom<InputData> for app::InputData {
         let Some(synthetic_polymers) = synthetic_polymers else {
             bail!("missing synthetic_polymers");
         };
-
         Ok(Self {
-            plant_name,
-            ew: population_values,
-            abwasser: waste_water,
-            n_ges_zu: inflow_nitrogen,
-            n_ges_ab: effluent_nitrogen,
-            csb_ab: effluent_chemical_oxygen_demand,
-            klaergas_gesamt: sewage_gas_produced,
-            methangehalt: methane_level,
-            strombedarf: total_power_consumption,
-            energie_eigen: in_house_power_generation,
-            ef_co2_strommix: emission_factor_electricity_mix,
-            schlammtaschen: open_sludge_bags,
-            schlammstapel: open_sludge_storage_containers,
-            klaerschlamm_transport_km: transport_distance,
-            klaerschlamm_entsorgung_m: sewage_sludge_for_disposal,
-            betriebsstoffe_fe3: fecl3,
-            betriebsstoffe_feso4: feclso4,
-            betriebsstoffe_kalk: caoh2,
-            betriebsstoffe_poly: synthetic_polymers,
+            fecl3,
+            feclso4,
+            caoh2,
+            synthetic_polymers,
         })
     }
 }
 
-impl From<app::InputData> for InputData {
-    fn from(from: app::InputData) -> Self {
-        let app::InputData {
-            plant_name,
-            ew,
-            abwasser,
-            n_ges_zu,
-            csb_ab,
-            n_ges_ab,
-            klaergas_gesamt,
-            methangehalt,
-            strombedarf,
-            energie_eigen,
-            ef_co2_strommix,
-            schlammtaschen,
-            schlammstapel,
-            klaerschlamm_transport_km,
-            klaerschlamm_entsorgung_m,
-            betriebsstoffe_fe3,
-            betriebsstoffe_feso4,
-            betriebsstoffe_kalk,
-            betriebsstoffe_poly,
+impl TryFrom<AnnualAverages> for app::AnnualAveragesInflow {
+    type Error = anyhow::Error;
+
+    fn try_from(from: AnnualAverages) -> Result<Self, Self::Error> {
+        let AnnualAverages {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
         } = from;
 
-        let population_values = Some(ew);
-        let waste_water = Some(abwasser);
-        let inflow_nitrogen = Some(n_ges_zu);
-        let effluent_nitrogen = Some(n_ges_ab);
-        let effluent_chemical_oxygen_demand = Some(csb_ab);
-        let sewage_gas_produced = Some(klaergas_gesamt);
-        let methane_level = Some(methangehalt);
-        let total_power_consumption = Some(strombedarf);
-        let in_house_power_generation = Some(energie_eigen);
-        let emission_factor_electricity_mix = Some(ef_co2_strommix);
-        let open_sludge_bags = Some(schlammtaschen);
-        let open_sludge_storage_containers = Some(schlammstapel);
-        let transport_distance = Some(klaerschlamm_transport_km);
-        let sewage_sludge_for_disposal = Some(klaerschlamm_entsorgung_m);
-        let fecl3 = Some(betriebsstoffe_fe3);
-        let feclso4 = Some(betriebsstoffe_feso4);
-        let caoh2 = Some(betriebsstoffe_kalk);
-        let synthetic_polymers = Some(betriebsstoffe_poly);
-
-        let inflow_averages = AnnualAverages {
-            nitrogen: inflow_nitrogen,
-            chemical_oxygen_demand: None,
-            phosphorus: None,
+        let Some(nitrogen) = nitrogen else {
+            bail!("missing inflow nitrogen");
         };
-
-        let effluent_averages = AnnualAverages {
-            nitrogen: effluent_nitrogen,
-            chemical_oxygen_demand: effluent_chemical_oxygen_demand,
-            phosphorus: None,
-        };
-
-        let energy_consumption = EnergyConsumption {
-            sewage_gas_produced,
-            methane_level,
-            gas_supply: None,
-            purchase_of_biogas: None,
-            total_power_consumption,
-            in_house_power_generation,
-            emission_factor_electricity_mix,
-        };
-
-        let sewage_sludge_treatment = SewageSludgeTreatment {
-            open_sludge_bags,
-            open_sludge_storage_containers,
-            sewage_sludge_for_disposal,
-            transport_distance,
-        };
-
-        let operating_materials = OperatingMaterials {
-            fecl3,
-            feclso4,
-            caoh2,
-            synthetic_polymers,
-        };
-
-        Self {
-            plant_name,
-            population_values,
-            waste_water,
-            inflow_averages,
-            effluent_averages,
-            energy_consumption,
-            sewage_sludge_treatment,
-            operating_materials,
-        }
+        Ok(Self {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        })
     }
 }
 
-impl From<OutputData> for app::OutputData {
-    fn from(from: OutputData) -> Self {
-        let OutputData {
-            co2_equivalents,
-            n2o_emission_factor,
+impl TryFrom<AnnualAverages> for app::AnnualAveragesEffluent {
+    type Error = anyhow::Error;
+
+    fn try_from(from: AnnualAverages) -> Result<Self, Self::Error> {
+        let AnnualAverages {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
         } = from;
-
-        let CO2Equivalents {
-            n2o_plant,
-            n2o_water,
-            ch4_sewage_treatment,
-            ch4_sludge_storage_containers,
-            ch4_sludge_bags,
-            ch4_water,
-            ch4_combined_heat_and_power_plant,
-            fecl3,
-            feclso4,
-            caoh2,
-            synthetic_polymers,
-            electricity_mix,
-            operating_materials,
-            sewage_sludge_transport,
-            emissions,
-            direct_emissions,
-            indirect_emissions,
-            other_indirect_emissions,
-        } = co2_equivalents;
-
-        Self {
-            co2eq_n2o_anlage: n2o_plant,
-            co2eq_n2o_gewaesser: n2o_water,
-            co2eq_ch4_klaerprozes: ch4_sewage_treatment,
-            co2eq_ch4_schlammstapel: ch4_sludge_storage_containers,
-            co2eq_ch4_schlammtasche: ch4_sludge_bags,
-            co2eq_ch4_gewaesser: ch4_water,
-            co2eq_ch4_bhkw: ch4_combined_heat_and_power_plant,
-            co2eq_betriebsstoffe_fe3: fecl3,
-            co2eq_betriebsstoffe_feso4: feclso4,
-            co2eq_betriebsstoffe_kalk: caoh2,
-            co2eq_betriebsstoffe_poly: synthetic_polymers,
-            co2eq_strommix: electricity_mix,
-            co2eq_betriebsstoffe: operating_materials,
-            co2eq_klaerschlamm_transport: sewage_sludge_transport,
-            emissionen_co2_eq: emissions,
-            direkte_emissionen_co2_eq: direct_emissions,
-            indirekte_emissionen_co2_eq: indirect_emissions,
-            weitere_indirekte_emissionen_co2_eq: other_indirect_emissions,
-            ef_n2o_anlage: n2o_emission_factor,
-        }
+        let Some(nitrogen) = nitrogen else {
+            bail!("missing effluent nitrogen");
+        };
+        let Some(chemical_oxygen_demand) = chemical_oxygen_demand else {
+            bail!("missing effluent chemical_oxygen_demand");
+        };
+        Ok(Self {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        })
     }
 }

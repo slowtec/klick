@@ -4,7 +4,6 @@ use leptos::*;
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
-use klick_application as app;
 use klick_boundary::{
     AnnualAverages, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
     N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
@@ -131,36 +130,57 @@ pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {
 }
 
 #[allow(clippy::too_many_lines)]
-pub fn load_fields(
-    signals: &HashMap<FieldId, FieldSignal>,
-    input: InputData,
-    scenario: Scenario,
-) -> anyhow::Result<()> {
-    let app::InputData {
+pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, scenario: Scenario) {
+    let InputData {
         plant_name,
-        ew,
-        abwasser,
-        n_ges_zu,
-        csb_ab,
-        n_ges_ab,
-        klaergas_gesamt,
-        methangehalt,
-        strombedarf,
-        energie_eigen,
-        ef_co2_strommix,
-        schlammtaschen,
-        schlammstapel,
-        klaerschlamm_transport_km,
-        klaerschlamm_entsorgung_m,
-        betriebsstoffe_fe3,
-        betriebsstoffe_feso4,
-        betriebsstoffe_kalk,
-        betriebsstoffe_poly,
-    } = input.try_into()?;
+        population_values,
+        waste_water,
+        inflow_averages,
+        effluent_averages,
+        energy_consumption,
+        sewage_sludge_treatment,
+        operating_materials,
+    } = input;
 
     let Scenario {
         n2o_emission_factor,
     } = scenario;
+
+    let AnnualAverages {
+        nitrogen: nitrogen_inflow,
+        chemical_oxygen_demand: chemical_oxygen_demand_inflow,
+        phosphorus: phosphorus_inflow,
+    } = inflow_averages;
+
+    let AnnualAverages {
+        nitrogen: nitrogen_effluent,
+        chemical_oxygen_demand: chemical_oxygen_demand_effluent,
+        phosphorus: phosphorus_effluent,
+    } = effluent_averages;
+
+    let EnergyConsumption {
+        sewage_gas_produced,
+        methane_level,
+        gas_supply,
+        purchase_of_biogas,
+        total_power_consumption,
+        in_house_power_generation,
+        emission_factor_electricity_mix,
+    } = energy_consumption;
+
+    let SewageSludgeTreatment {
+        open_sludge_bags,
+        open_sludge_storage_containers,
+        sewage_sludge_for_disposal,
+        transport_distance,
+    } = sewage_sludge_treatment;
+
+    let OperatingMaterials {
+        fecl3,
+        feclso4,
+        caoh2,
+        synthetic_polymers,
+    } = operating_materials;
 
     signals
         .get(&FieldId::Name)
@@ -171,93 +191,118 @@ pub fn load_fields(
         .get(&FieldId::Ew)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(ew));
+        .set(population_values);
     signals
         .get(&FieldId::Flow)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(abwasser));
+        .set(waste_water);
     signals
         .get(&FieldId::TknZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(n_ges_zu));
+        .set(nitrogen_inflow);
     signals
-        .get(&FieldId::CsbAb)
+        .get(&FieldId::CsbZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(csb_ab));
+        .set(chemical_oxygen_demand_inflow);
+    signals
+        .get(&FieldId::PZu)
+        .and_then(FieldSignal::get_float_signal)
+        .unwrap()
+        .set(phosphorus_inflow);
+
     signals
         .get(&FieldId::TknAb)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(n_ges_ab));
+        .set(nitrogen_effluent);
+    signals
+        .get(&FieldId::CsbAb)
+        .and_then(FieldSignal::get_float_signal)
+        .unwrap()
+        .set(chemical_oxygen_demand_effluent);
+    signals
+        .get(&FieldId::PAb)
+        .and_then(FieldSignal::get_float_signal)
+        .unwrap()
+        .set(phosphorus_effluent);
     signals
         .get(&FieldId::Klaergas)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(klaergas_gesamt));
+        .set(sewage_gas_produced);
     signals
         .get(&FieldId::Methangehalt)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(methangehalt));
+        .set(methane_level);
     signals
         .get(&FieldId::Strombedarf)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(strombedarf));
+        .set(total_power_consumption);
     signals
         .get(&FieldId::Eigenstrom)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(energie_eigen));
+        .set(in_house_power_generation);
     signals
         .get(&FieldId::EfStrommix)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(ef_co2_strommix));
+        .set(emission_factor_electricity_mix);
+    signals
+        .get(&FieldId::Biogas)
+        .and_then(FieldSignal::get_bool_signal)
+        .unwrap()
+        .set(purchase_of_biogas == Some(true));
+    signals
+        .get(&FieldId::GasZusatz)
+        .and_then(FieldSignal::get_float_signal)
+        .unwrap()
+        .set(gas_supply);
     signals
         .get(&FieldId::Schlammtaschen)
         .and_then(FieldSignal::get_bool_signal)
         .unwrap()
-        .set(schlammtaschen);
+        .set(open_sludge_bags == Some(true));
     signals
         .get(&FieldId::Schlammstapel)
         .and_then(FieldSignal::get_bool_signal)
         .unwrap()
-        .set(schlammstapel);
+        .set(open_sludge_storage_containers == Some(true));
     signals
         .get(&FieldId::KlaerschlammTransport)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(klaerschlamm_transport_km));
+        .set(transport_distance);
     signals
         .get(&FieldId::KlaerschlammEnstorgung)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(klaerschlamm_entsorgung_m));
+        .set(sewage_sludge_for_disposal);
     signals
         .get(&FieldId::BetriebsstoffeFe3)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(betriebsstoffe_fe3));
+        .set(fecl3);
     signals
         .get(&FieldId::BetriebsstoffeFeso4)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(betriebsstoffe_feso4));
+        .set(feclso4);
     signals
         .get(&FieldId::BetriebsstoffeKalk)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(betriebsstoffe_kalk));
+        .set(caoh2);
     signals
         .get(&FieldId::BetriebsstoffePoly)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(Some(betriebsstoffe_poly));
-
+        .set(synthetic_polymers);
     signals
         .get(&FieldId::CustomN2oScenarioSupport)
         .and_then(FieldSignal::get_bool_signal)
@@ -266,11 +311,9 @@ pub fn load_fields(
             n2o_emission_factor.calculation_method,
             N2oEmissionFactorCalcMethod::CustomFactor
         ));
-
     signals
         .get(&FieldId::CustomN2oScenarioValue)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(n2o_emission_factor.custom_factor);
-    Ok(())
 }
