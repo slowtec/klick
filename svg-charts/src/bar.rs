@@ -104,6 +104,7 @@ fn Bars(
 }
 
 #[component]
+#[allow(clippy::cast_precision_loss)]
 fn Bar(
     label: Option<&'static str>,
     co2_value: f64,

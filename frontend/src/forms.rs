@@ -7,8 +7,6 @@ use std::{
 use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
 
-pub use klick_boundary::{Field, FieldSet, FieldType, MinMax, SelectOption};
-
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 fn unique_id() -> usize {
@@ -495,4 +493,54 @@ fn Options(value: RwSignal<Option<usize>>, options: Vec<SelectOption>) -> impl I
         </option>
       </For>
     }
+}
+
+#[derive(Debug)]
+pub struct FieldSet<ID> {
+    pub title: &'static str,
+    pub fields: Vec<Field<ID>>,
+}
+
+#[derive(Debug)]
+pub struct Field<ID> {
+    pub id: ID,
+    pub label: &'static str,
+    pub description: Option<&'static str>,
+    pub required: bool,
+    pub field_type: FieldType,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct MinMax {
+    pub min: Option<f64>,
+    pub max: Option<f64>,
+}
+
+#[derive(Debug)]
+#[allow(dead_code)]
+pub enum FieldType {
+    Float {
+        initial_value: Option<f64>,
+        placeholder: Option<&'static str>,
+        limits: MinMax,
+        unit: &'static str,
+    },
+    Text {
+        initial_value: Option<String>,
+        placeholder: Option<&'static str>,
+        max_len: Option<usize>,
+    },
+    Bool {
+        initial_value: Option<bool>,
+    },
+    Selection {
+        initial_value: Option<usize>,
+        options: Vec<SelectOption>,
+    },
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct SelectOption {
+    pub label: &'static str,
+    pub value: usize,
 }

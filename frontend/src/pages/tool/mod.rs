@@ -14,16 +14,20 @@ use crate::{
 };
 
 mod example_data;
+mod field_sets;
 mod fields;
 
-use self::fields::{load_fields, read_input_fields, read_scenario_fields, FieldId};
+use self::{
+    field_sets::field_sets,
+    fields::{load_fields, read_input_fields, read_scenario_fields, FieldId},
+};
 
 const CHART_ELEMENT_ID: &str = "chart";
 
 #[component]
 #[allow(clippy::too_many_lines)]
 pub fn Tool() -> impl IntoView {
-    let field_sets = fields::field_sets();
+    let field_sets = field_sets();
 
     let (signals, set_views) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);

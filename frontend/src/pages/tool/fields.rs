@@ -10,9 +10,7 @@ use klick_boundary::{
     N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
 };
 
-use crate::forms::{self, FieldSignal};
-
-type FieldSet = forms::FieldSet<FieldId>;
+use crate::forms::FieldSignal;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum FieldId {
@@ -43,12 +41,6 @@ pub enum FieldId {
     N2oSzenario,
     CustomN2oScenarioSupport,
     CustomN2oScenarioValue,
-}
-
-const JSON_FIELD_SETS: &[u8] = include_bytes!("form_field_sets.json");
-
-pub fn field_sets() -> Vec<FieldSet> {
-    serde_json::from_slice(JSON_FIELD_SETS).unwrap()
 }
 
 pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
