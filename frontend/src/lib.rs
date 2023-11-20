@@ -16,6 +16,7 @@ use self::{
     pages::{Faq, Page, Tool},
 };
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 const IMPRINT_MD: &str = include_str!("../content/imprint.md");
 const ABOUT_MD: &str = include_str!("../content/about.md");
 
@@ -47,7 +48,12 @@ pub fn App() -> impl IntoView {
               view! {
                 <Main>
                   <header class="prose">
-                    <h1 class="mb-8">"KlicK-Tool "<span class="font-light text-gray-600">"(Betaversion)"</span></h1>
+                    <h1 class="mb-8">
+                      "KlicK-Tool "
+                      <span class="font-light text-xl text-gray-600">
+                        "(Betaversion v" {VERSION} ")"
+                      </span>
+                    </h1>
                   </header>
                   <Tool />
                 </Main>
