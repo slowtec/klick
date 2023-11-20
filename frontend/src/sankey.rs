@@ -1,8 +1,9 @@
 use charming::{
-    element::{Emphasis, EmphasisFocus},
+    //element::{Emphasis, EmphasisFocus},
     series::Sankey,
     Chart,
 };
+// use log::info;
 
 use klick_application as app;
 
@@ -195,15 +196,20 @@ pub fn render(output_data: app::Output, element_id: &str) {
 
     let mut labels: Vec<_> = vec![];
 
-    for (src, target, _) in &streams {
+    for (src, target, value) in &streams {
         for x in [src, *target] {
             let label = x.to_string();
+            if value < &0.000001 {
+                continue;
+            }
 
             if !labels.contains(&label) {
                 labels.push(label);
             }
         }
     }
+    // info!("{:?}", labels);
+    // info!("{:?}", streams);
 
     let sankey_data: Vec<_> = labels;
     let sankey_links: Vec<(_, _, f64)> = streams
@@ -213,11 +219,12 @@ pub fn render(output_data: app::Output, element_id: &str) {
 
     let chart = Chart::new().series(
         Sankey::new()
-            .emphasis(Emphasis::new().focus(EmphasisFocus::Adjacency))
+            //.emphasis(Emphasis::new().focus(EmphasisFocus::Adjacency))
+            .layoutIterations(0u64)
             .data(sankey_data)
             .links(sankey_links),
     );
-    log::debug!("Render Sankey chart");
+    //log::debug!("Render Sankey chart");
     let renderer = charming::WasmRenderer::new(1200, 800);
     renderer.render(element_id, &chart).unwrap();
 }

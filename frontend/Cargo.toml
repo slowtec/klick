@@ -33,6 +33,8 @@ thiserror = "1.0.50"
 klick-application = { path = "../application" }
 klick-boundary    = { path = "../boundary"    }
 klick-svg-charts  = { path = "../svg-charts"  }
+#charming          = { path = "../charming/charming" }
+charming          = { git = "https://github.com/qknight/charming", branch = "layoutIterations" }
 
 [profile.release]
 lto = true
