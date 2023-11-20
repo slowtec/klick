@@ -39,6 +39,8 @@ pub fn Tool() -> impl IntoView {
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
 
+    let show_upload_input = RwSignal::new(false);
+
     let s = Rc::clone(&signals);
     create_effect(move |_| {
         let data = read_input_fields(&s).try_into().ok();
@@ -132,6 +134,7 @@ pub fn Tool() -> impl IntoView {
                 if let Err(err) = upload_and_load(signals, upload_input).await {
                     log::warn!("Unable to upload data: {err}");
                 }
+                show_upload_input.set(false);
             }
         }
     });
@@ -179,11 +182,19 @@ pub fn Tool() -> impl IntoView {
               }
             }
           />
-          // Hidden download anchor
-          <a style="display:none;" node_ref=download_link></a>
+          <Button
+            label = "Project laden"
+            on_click = {
+              move |ev| {
+                ev.prevent_default();
+                show_upload_input.set(true);
+              }
+            }
+          />
           <input
             class = "block text-sm bg-gray-50 rounded-md shadow-sm file:bg-primary file:rounded-md file:border-0 file:mr-4 file:py-1 file:px-2 file:font-semibold"
             type="file"
+            style = move || if !show_upload_input.get() { Some("display:none;") } else { None }
             accept="application/json"
             node_ref=upload_input
             on:change = move |ev| {
@@ -191,6 +202,8 @@ pub fn Tool() -> impl IntoView {
                 upload_action.dispatch(());
             }
           />
+          // Hidden download anchor
+          <a style="display:none;" node_ref=download_link></a>
         </div>
         { set_views }
       </div>
@@ -243,7 +256,7 @@ async fn upload_and_load(
     signals: Rc<HashMap<FieldId, FieldSignal>>,
     upload_input: NodeRef<leptos::html::Input>,
 ) -> anyhow::Result<()> {
-    let Some(file_list) = upload_input.get().expect("<input /> to exist").files() else {
+    let Some(file_list) = get_file_list(upload_input) else {
         log::debug!("No file list");
         return Ok(());
     };
@@ -256,6 +269,10 @@ async fn upload_and_load(
     let (input, scenario) = import_from_slice(&bytes)?;
     load_fields(&signals, input, scenario);
     Ok(())
+}
+
+fn get_file_list(upload_input: NodeRef<leptos::html::Input>) -> Option<web_sys::FileList> {
+    upload_input.get().expect("<input /> to exist").files()
 }
 
 #[component]
