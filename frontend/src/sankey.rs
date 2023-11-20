@@ -220,7 +220,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
     let chart = Chart::new().series(
         Sankey::new()
             //.emphasis(Emphasis::new().focus(EmphasisFocus::Adjacency))
-            .layoutIterations(0u64)
+            .layout_iterations(0u64)
             .data(sankey_data)
             .links(sankey_links),
     );
