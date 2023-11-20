@@ -1,9 +1,9 @@
 use charming::{
-    //element::{Emphasis, EmphasisFocus},
+    element::{ItemStyle, LineStyle},
     series::Sankey,
     Chart,
 };
-// use log::info;
+use log::info;
 
 use klick_application as app;
 
@@ -65,164 +65,156 @@ pub fn render(output_data: app::Output, element_id: &str) {
         other_indirect_emissions,
     } = co2_equivalents;
 
-    let dir_em = "Direkte Emissionen".to_string();
-    let dir_em_string = format!("{dir_em} {}", format_large_number(direct_emissions));
+    let style_red    = ItemStyle::new().color("red").border_color("black");
+    let style_orange = ItemStyle::new().color("#ff7400").border_color("black");
+    let style_yellow = ItemStyle::new().color("#ffc100").border_color("black");
 
-    let indir_em = "Indirekte Emissionen".to_string();
-    let indir_em_string = format!("{indir_em} {}", format_large_number(indirect_emissions));
+    #[derive(Debug, Clone)]
+    struct item {
+        value: f64,
+        name: String,
+        itemStyle: ItemStyle,
+    }
 
-    let wei_indir_em = "Weitere Indirekte Emissionen".to_string();
-    let wei_indir_em_string = format!(
-        "{wei_indir_em} {}",
-        format_large_number(other_indirect_emissions)
-    );
+    // red
+    let emission: item = item { value: emissions, name: format!("Emission {}", format_large_number(emissions)), itemStyle: style_red.clone() };
+    let nutzung: item = item { value: emissions, name: format!("Nutzung {}", format_large_number(emissions)), itemStyle: style_red.clone() };
 
-    // TODO: what's the difference to emissions?
-    let nu = "Nutzung";
-    let nu_string = format!("{nu} {}", format_large_number(emissions));
+    // orange
+    let indir_em: item = item { value: indirect_emissions, name: format!("Indirekte Emissionen {}", format_large_number(indirect_emissions)), itemStyle: style_orange.clone() };
+    let strommix: item = item { value: electricity_mix, name: format!("Strommix {}", format_large_number(electricity_mix)), itemStyle: style_orange.clone() };
 
-    let em = "Emission";
-    let em_string = format!("{em} {}", format_large_number(emissions));
+    // yellow
+    let wei_indir_em: item = item { value: other_indirect_emissions, name: format!("Weitere Indirekte Emissionen {}", format_large_number(other_indirect_emissions)), itemStyle: style_yellow.clone() };
+    let betriebsstoffe: item = item { value: operating_materials, name: format!("Betriebsstoffe {}", format_large_number(operating_materials)), itemStyle: style_yellow.clone() };
+    let eischlorsulfatsol: item = item { value: feclso4, name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)), itemStyle: style_yellow.clone() };
+    let kalkhydrat: item = item { value: caoh2, name: format!("Kalkhydrat {}", format_large_number(caoh2)), itemStyle: style_yellow.clone() };
+    let synth_poly: item = item { value: synthetic_polymers, name: format!("Synthetische Polymere {}", format_large_number(synthetic_polymers)), itemStyle: style_yellow.clone() };
+    let klaerschl_trans: item = item { value: sewage_sludge_transport, name: format!("Klaerschlamm Transport {}", format_large_number(sewage_sludge_transport)), itemStyle: style_yellow.clone() };
 
-    let bs = "Betriebsstoffe";
-    let bs_string = format!("{bs} {}", format_large_number(operating_materials));
+    // red
+    let dir_em: item = item { value: direct_emissions, name: format!("Direkte Emissionen {}", format_large_number(direct_emissions)), itemStyle: style_red.clone() };
+    let fe3cl: item = item { value: fecl3, name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)), itemStyle: style_red.clone() };
+    let n2o_anlage: item = item { value: n2o_plant, name: format!("N₂O Anlage {}", format_large_number(n2o_plant)), itemStyle: style_red.clone() };
+    let n2o_gewaesser: item = item { value: n2o_water, name: format!("N₂O Gewässer {}", format_large_number(n2o_water)), itemStyle: style_red.clone() };
+    let ch4_klaerprozess: item = item { value: ch4_sewage_treatment, name: format!("CH₄ Klärprozess {}",format_large_number(ch4_sewage_treatment)), itemStyle: style_red.clone() };
+    let ch4_schlupf_schlammstapel: item = item { value: ch4_sludge_storage_containers, name: format!("CH₄ Schlupf Schlammstapel {}",format_large_number(ch4_sludge_storage_containers)), itemStyle: style_red.clone() };
+    let ch4_schlupf_schlammtasche: item = item { value: ch4_sludge_bags, name: format!("CH₄ Schlupf Schlammtasche {}",format_large_number(ch4_sludge_bags)), itemStyle: style_red.clone() };
+    let ch4_gewaesser: item = item { value: ch4_water, name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)), itemStyle: style_red.clone() };
+    let ch4_bhkw: item = item { value: ch4_combined_heat_and_power_plant, name: format!("CH₄ BHKW {}",format_large_number(ch4_combined_heat_and_power_plant)), itemStyle: style_red.clone() };
 
-    let streams: Vec<(_, _, _)> = vec![
+
+    let streams: Vec<(_, _)> = vec![
         (
-            format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)),
-            bs_string.as_str(),
-            fecl3,
+            fe3cl.clone(),
+            betriebsstoffe.clone(),
         ),
         (
-            format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)),
-            bs_string.as_str(),
-            feclso4,
+            eischlorsulfatsol.clone(),
+            betriebsstoffe.clone(),
         ),
         (
-            format!("Kalkhydrat {}", format_large_number(caoh2)),
-            bs_string.as_str(),
-            caoh2,
+            kalkhydrat.clone(),
+            betriebsstoffe.clone(),
         ),
         (
-            format!(
-                "Synthetische Polymere {}",
-                format_large_number(synthetic_polymers)
-            ),
-            bs_string.as_str(),
-            synthetic_polymers,
+            synth_poly.clone(),
+            betriebsstoffe.clone(),
         ),
         (
-            format!(
-                "Klaerschlamm Transport {}",
-                format_large_number(sewage_sludge_transport)
-            ),
-            wei_indir_em_string.as_str(),
-            sewage_sludge_transport,
+            klaerschl_trans.clone(),
+            wei_indir_em.clone(),
         ),
         (
-            format!("N₂O Anlage {}", format_large_number(n2o_plant)),
-            dir_em_string.as_str(),
-            n2o_plant,
+            n2o_anlage.clone(),
+            dir_em.clone(),
         ),
         (
-            format!("N₂O Gewässer {}", format_large_number(n2o_water)),
-            dir_em_string.as_str(),
-            n2o_water,
+            n2o_gewaesser.clone(),
+            dir_em.clone(),
         ),
         (
-            format!(
-                "CH₄ Klärprozess {}",
-                format_large_number(ch4_sewage_treatment)
-            ),
-            dir_em_string.as_str(),
-            ch4_sewage_treatment,
+            ch4_klaerprozess.clone(),
+            dir_em.clone(),
         ),
         (
-            format!(
-                "CH₄ Schlupf Schlammstapel {}",
-                format_large_number(ch4_sludge_storage_containers)
-            ),
-            dir_em_string.as_str(),
-            ch4_sludge_storage_containers,
+            ch4_schlupf_schlammstapel.clone(),
+            dir_em.clone(),
         ),
         (
-            format!(
-                "CH₄ Schlupf Schlammtasche {}",
-                format_large_number(ch4_sludge_bags)
-            ),
-            dir_em_string.as_str(),
-            ch4_sludge_bags,
+            ch4_schlupf_schlammtasche.clone(),
+            dir_em.clone(),
         ),
         (
-            format!("CH₄ Gewässer {}", format_large_number(ch4_water)),
-            dir_em_string.as_str(),
-            ch4_water,
+            ch4_gewaesser.clone(),
+            dir_em.clone(),
         ),
         (
-            format!(
-                "CH₄ BHKW {}",
-                format_large_number(ch4_combined_heat_and_power_plant)
-            ),
-            dir_em_string.as_str(),
-            ch4_combined_heat_and_power_plant,
+            ch4_bhkw.clone(),
+            dir_em.clone(),
         ),
         (
-            format!("Strommix {}", format_large_number(electricity_mix)),
-            indir_em_string.as_str(),
-            electricity_mix,
+            strommix.clone(),
+            indir_em.clone(),
         ),
         (
-            bs_string.clone().to_string(),
-            wei_indir_em_string.as_str(),
-            operating_materials,
+            betriebsstoffe.clone(),
+            wei_indir_em.clone(),
         ),
         (
-            dir_em_string.clone().to_string(),
-            nu_string.as_str(),
-            direct_emissions,
+            dir_em.clone(),
+            nutzung.clone(),
         ),
         (
-            indir_em_string.clone().to_string(),
-            nu_string.as_str(),
-            indirect_emissions,
+            indir_em.clone(),
+            nutzung.clone(),
         ),
         (
-            wei_indir_em_string.clone().to_string(),
-            nu_string.as_str(),
-            other_indirect_emissions,
+            wei_indir_em.clone(),
+            nutzung.clone(),
         ),
-        (nu_string.clone().to_string(), em_string.as_str(), emissions),
+        (
+            nutzung.clone(),
+            emission.clone(),
+        ),
     ];
 
-    let mut labels: Vec<_> = vec![];
+    let mut labels: Vec<(String, ItemStyle)> = vec![];
 
-    for (src, target, value) in &streams {
-        for x in [src, *target] {
+    for (source, target) in &streams {
+        for x in [source.name.clone(), target.name.clone()] {
             let label = x.to_string();
-            if value < &0.000001 {
+            if source.value < 0.000001 {
                 continue;
             }
 
-            if !labels.contains(&label) {
-                labels.push(label);
+            if !labels.iter().any(|(n, s)| {
+                if n == &label {
+                    return true;
+                }
+                false
+            }){
+                labels.push((label, source.itemStyle.clone()));
             }
         }
     }
-    // info!("{:?}", labels);
-    // info!("{:?}", streams);
+    info!("{:?}", labels);
+    info!("{:?}", streams);
 
     let sankey_data: Vec<_> = labels;
     let sankey_links: Vec<(_, _, f64)> = streams
         .into_iter()
-        .map(|(src, target, value)| (src, target.to_string(), value))
+        .map(|(src, target)| (src.name.to_string(), target.name.to_string(), src.value))
         .collect();
+
+    let color_style: LineStyle = LineStyle::new().color("source").curveness(0.4);
 
     let chart = Chart::new().series(
         Sankey::new()
-            //.emphasis(Emphasis::new().focus(EmphasisFocus::Adjacency))
             .layout_iterations(0u64)
+            .links(sankey_links)
+            .line_style(color_style)
             .data(sankey_data)
-            .links(sankey_links),
     );
     //log::debug!("Render Sankey chart");
     let renderer = charming::WasmRenderer::new(1200, 800);
