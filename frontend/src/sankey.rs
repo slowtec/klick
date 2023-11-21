@@ -79,7 +79,6 @@ pub fn render(output_data: app::Output, element_id: &str) {
 
     // red
     let emission: SankeyItem = SankeyItem { value: emissions, name: format!("Emission {}", format_large_number(emissions)), item_style: style_red.clone() };
-    let nutzung: SankeyItem = SankeyItem { value: emissions, name: format!("Nutzung {}", format_large_number(emissions)), item_style: style_red.clone() };
 
     // orange
     let indir_em: SankeyItem = SankeyItem { value: indirect_emissions, name: format!("Indirekte Emissionen {}", format_large_number(indirect_emissions)), item_style: style_orange.clone() };
@@ -164,18 +163,14 @@ pub fn render(output_data: app::Output, element_id: &str) {
         ),
         (
             dir_em.clone(),
-            nutzung.clone(),
+            emission.clone(),
         ),
         (
             indir_em.clone(),
-            nutzung.clone(),
+            emission.clone(),
         ),
         (
             wei_indir_em.clone(),
-            nutzung.clone(),
-        ),
-        (
-            nutzung.clone(),
             emission.clone(),
         ),
     ];
@@ -202,7 +197,6 @@ pub fn render(output_data: app::Output, element_id: &str) {
     // info!("{:?}", labels);
     // info!("{:?}", streams);
 
-    let sankey_data: Vec<_> = labels;
     let sankey_links: Vec<(_, _, f64)> = streams
         .into_iter()
         .map(|(src, target)| (src.name.to_string(), target.name.to_string(), src.value))
@@ -215,7 +209,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
             .layout_iterations(0u64)
             .links(sankey_links)
             .line_style(color_style)
-            .data(sankey_data)
+            .data(labels)
     );
     //log::debug!("Render Sankey chart");
     let renderer = charming::WasmRenderer::new(1200, 800);
