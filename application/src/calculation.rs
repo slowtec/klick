@@ -1,9 +1,6 @@
 use crate::{
-    input::{
-        AnnualAveragesEffluent, AnnualAveragesInflow, EnergyConsumption, Input, OperatingMaterials,
-        SewageSludgeTreatment,
-    },
-    output::{CO2Equivalents, Output},
+    AnnualAveragesEffluent, AnnualAveragesInflow, CO2Equivalents, EnergyConsumption, Factor, Input,
+    OperatingMaterials, Output, Percent, SewageSludgeTreatment,
 };
 
 const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0; // g ch4 / (population values * year)
@@ -30,7 +27,7 @@ pub enum N2oEmissionFactorCalcMethod {
     Optimistic,
     Pesimistic,
     Ipcc2019,
-    CustomFactor(f64),
+    Custom(Factor),
 }
 
 #[must_use]
@@ -85,7 +82,7 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
 
     let n2o_emission_factor =
         calculate_n2o_emission_factor(calc_method, *nitrogen_inflow, *nitrogen_effluent);
-    debug_assert!(n2o_emission_factor < 1.0);
+    debug_assert!(n2o_emission_factor < Factor::new(1.0));
 
     let (n2o_plant, n2o_water) = calculate_nitrous_oxide(
         *nitrogen_inflow,
@@ -101,8 +98,6 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
         * f64::from(10_i32.pow(3))
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
     let ch4_bhkw = in_house_power_generation * EMISSION_FACTOR_CH4_CHP / f64::from(10_i32.pow(6)); // [t CH4/a]
-
-    let methane_level = methane_level / 100.0; // [%]
 
     let ch4_slippage_sludge_bags = if *open_sludge_bags {
         sewage_gas_produced
@@ -191,25 +186,25 @@ fn calculate_n2o_emission_factor(
     calc_method: N2oEmissionFactorCalcMethod,
     nitrogen_inflow: f64,
     nitrogen_effluent: f64,
-) -> f64 {
+) -> Factor {
     match calc_method {
         N2oEmissionFactorCalcMethod::ExtrapolatedParravicini => {
             extrapolate_according_to_parravicini(nitrogen_inflow, nitrogen_effluent)
         }
-        N2oEmissionFactorCalcMethod::Optimistic => 0.003, // 0,3 % of the nitrogen inflow
-        N2oEmissionFactorCalcMethod::Pesimistic => 0.008, // 0,8 % of the nitrogen inflow
-        N2oEmissionFactorCalcMethod::Ipcc2019 => 0.016,   // 1,6 % of the nitrogen inflow
-        N2oEmissionFactorCalcMethod::CustomFactor(factor) => factor,
+        N2oEmissionFactorCalcMethod::Optimistic => Percent::new(0.3).as_factor(), // 0,3 % of the nitrogen inflow
+        N2oEmissionFactorCalcMethod::Pesimistic => Percent::new(0.8).as_factor(), // 0,8 % of the nitrogen inflow
+        N2oEmissionFactorCalcMethod::Ipcc2019 => Percent::new(1.6).as_factor(), // 1,6 % of the nitrogen inflow
+        N2oEmissionFactorCalcMethod::Custom(factor) => factor,
     }
 }
 
-fn extrapolate_according_to_parravicini(nitrogen_inflow: f64, nitrogen_effluent: f64) -> f64 {
+fn extrapolate_according_to_parravicini(nitrogen_inflow: f64, nitrogen_effluent: f64) -> Factor {
     let n_elim = (nitrogen_inflow - nitrogen_effluent) / nitrogen_inflow * 100.0;
     let mut ef = (-0.049 * n_elim + 4.553) / 100.0;
     if ef < 0.0 {
         ef = 0.002;
     }
-    ef
+    Factor::new(ef)
 }
 
 const CONVERSION_FACTOR_N_TO_N2O: f64 = 44.0 / 28.0;
@@ -218,7 +213,7 @@ fn calculate_nitrous_oxide(
     nitrogen_inflow: f64,
     nitrogen_effluent: f64,
     waste_water: f64,
-    n2o_emission_factor: f64,
+    n2o_emission_factor: Factor,
 ) -> (f64, f64) {
     let n2o_anlage = nitrogen_inflow / f64::from(10_i32.pow(9))
         * waste_water
@@ -241,8 +236,8 @@ mod tests {
     fn calculate_with_n2o_emission_factor_method_by_parravicini() {
         let input = Input {
             plant_name: None,
-            population_values: 120000.0,
-            waste_water: 5000000.0,
+            population_values: 120_000.0,
+            waste_water: 5_000_000.0,
             inflow_averages: AnnualAveragesInflow {
                 nitrogen: 122.0,
                 chemical_oxygen_demand: None,
@@ -254,12 +249,12 @@ mod tests {
                 phosphorus: None,
             },
             energy_consumption: EnergyConsumption {
-                sewage_gas_produced: 1260000.0,
-                methane_level: 62.0,
+                sewage_gas_produced: 1_260_000.0,
+                methane_level: Percent::new(62.0),
                 gas_supply: None,
                 purchase_of_biogas: None,
-                total_power_consumption: 2683259.0,
-                in_house_power_generation: 2250897.0,
+                total_power_consumption: 2_683_259.0,
+                in_house_power_generation: 2_250_897.0,
                 emission_factor_electricity_mix: 468.0,
             },
             sewage_sludge_treatment: SewageSludgeTreatment {
@@ -270,8 +265,8 @@ mod tests {
             },
             operating_materials: OperatingMaterials {
                 fecl3: 0.0,
-                feclso4: 326000.0,
-                caoh2: 326260.0,
+                feclso4: 326_000.0,
+                caoh2: 326_260.0,
                 synthetic_polymers: 23620.0,
             },
         };
@@ -303,24 +298,27 @@ mod tests {
             other_indirect_emissions,
         } = co2_equivalents;
 
-        assert_eq!(n2o_plant, 327.97050000000183);
-        assert_eq!(n2o_water, 126.12599999999999);
-        assert_eq!(ch4_sewage_treatment, 772.8000000000001);
-        assert_eq!(ch4_sludge_storage_containers, 26.680323600000005);
-        assert_eq!(ch4_sludge_bags, 47.082924);
+        assert_eq!(n2o_plant, 327.970_500_000_001_83);
+        assert_eq!(n2o_water, 126.125_999_999_999_99);
+        assert_eq!(ch4_sewage_treatment, 772.800_000_000_000_1);
+        assert_eq!(ch4_sludge_storage_containers, 26.680_323_600_000_005);
+        assert_eq!(ch4_sludge_bags, 47.082_924);
         assert_eq!(ch4_water, 162.54);
-        assert_eq!(ch4_combined_heat_and_power_plant, 73.361235024);
+        assert_eq!(ch4_combined_heat_and_power_plant, 73.361_235_024);
         assert_eq!(fecl3, 0.0);
         assert_eq!(feclso4, 24.776);
-        assert_eq!(caoh2, 344.302178);
+        assert_eq!(caoh2, 344.302_178);
         assert_eq!(synthetic_polymers, 51.964);
-        assert_eq!(electricity_mix, 202.345416);
-        assert_eq!(operating_materials, 421.04217800000004);
-        assert_eq!(sewage_sludge_transport, 18.531075024000003);
-        assert_eq!(direct_emissions, 1536.560982624002);
-        assert_eq!(indirect_emissions, 202.345416);
-        assert_eq!(other_indirect_emissions, 439.57325302400005);
-        assert_eq!(emissions, 2178.4796516480023);
-        assert_eq!(n2o_emission_factor, 0.0012532786885245972);
+        assert_eq!(electricity_mix, 202.345_416);
+        assert_eq!(operating_materials, 421.042_178_000_000_04);
+        assert_eq!(sewage_sludge_transport, 18.531_075_024_000_003);
+        assert_eq!(direct_emissions, 1_536.560_982_624_002);
+        assert_eq!(indirect_emissions, 202.345_416);
+        assert_eq!(other_indirect_emissions, 439.573_253_024_000_05);
+        assert_eq!(emissions, 2_178.479_651_648_002_3);
+        assert_eq!(
+            n2o_emission_factor,
+            Factor::new(0.001_253_278_688_524_597_2)
+        );
     }
 }

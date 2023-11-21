@@ -23,7 +23,7 @@ impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
                 let Some(factor) = from.custom_factor else {
                     bail!("custom N2O emission factor is missing");
                 };
-                A::CustomFactor(factor)
+                A::Custom(app::Factor::new(factor))
             }
         };
         Ok(f)
@@ -40,14 +40,15 @@ impl From<app::N2oEmissionFactorCalcMethod> for N2oEmissionFactorScenario {
             A::Optimistic => M::Optimistic,
             A::Pesimistic => M::Pesimistic,
             A::Ipcc2019 => M::Ipcc2019,
-            A::CustomFactor(_) => M::CustomFactor,
+            A::Custom(_) => M::CustomFactor,
         };
 
-        let custom_factor = if let A::CustomFactor(factor) = from {
+        let custom_factor = if let A::Custom(factor) = from {
             Some(factor)
         } else {
             None
-        };
+        }
+        .map(f64::from);
 
         Self {
             calculation_method,
@@ -127,6 +128,8 @@ impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
         let Some(emission_factor_electricity_mix) = emission_factor_electricity_mix else {
             bail!("missing emission_factor_electricity_mix");
         };
+
+        let methane_level = app::Percent::new(methane_level);
 
         Ok(Self {
             sewage_gas_produced,

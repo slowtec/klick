@@ -1,3 +1,5 @@
+use crate::Percent;
+
 #[derive(Debug, Clone)]
 pub struct Input {
     pub plant_name: Option<String>,
@@ -27,7 +29,7 @@ pub struct AnnualAveragesEffluent {
 #[derive(Debug, Clone)]
 pub struct EnergyConsumption {
     pub sewage_gas_produced: f64,
-    pub methane_level: f64,
+    pub methane_level: Percent,
     pub gas_supply: Option<f64>,
     pub purchase_of_biogas: Option<bool>,
     pub total_power_consumption: f64,
