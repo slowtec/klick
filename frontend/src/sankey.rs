@@ -1,6 +1,7 @@
 use charming::{
     element::{ItemStyle, LineStyle},
     series::Sankey,
+    series::SankeyNode,
     Chart,
 };
 use log::info;
@@ -70,38 +71,38 @@ pub fn render(output_data: app::Output, element_id: &str) {
     let style_yellow = ItemStyle::new().color("#ffc100").border_color("black");
 
     #[derive(Debug, Clone)]
-    struct item {
+    struct SankeyItem {
         value: f64,
         name: String,
-        itemStyle: ItemStyle,
+        item_style: ItemStyle,
     }
 
     // red
-    let emission: item = item { value: emissions, name: format!("Emission {}", format_large_number(emissions)), itemStyle: style_red.clone() };
-    let nutzung: item = item { value: emissions, name: format!("Nutzung {}", format_large_number(emissions)), itemStyle: style_red.clone() };
+    let emission: SankeyItem = SankeyItem { value: emissions, name: format!("Emission {}", format_large_number(emissions)), item_style: style_red.clone() };
+    let nutzung: SankeyItem = SankeyItem { value: emissions, name: format!("Nutzung {}", format_large_number(emissions)), item_style: style_red.clone() };
 
     // orange
-    let indir_em: item = item { value: indirect_emissions, name: format!("Indirekte Emissionen {}", format_large_number(indirect_emissions)), itemStyle: style_orange.clone() };
-    let strommix: item = item { value: electricity_mix, name: format!("Strommix {}", format_large_number(electricity_mix)), itemStyle: style_orange.clone() };
+    let indir_em: SankeyItem = SankeyItem { value: indirect_emissions, name: format!("Indirekte Emissionen {}", format_large_number(indirect_emissions)), item_style: style_orange.clone() };
+    let strommix: SankeyItem = SankeyItem { value: electricity_mix, name: format!("Strommix {}", format_large_number(electricity_mix)), item_style: style_orange.clone() };
 
     // yellow
-    let wei_indir_em: item = item { value: other_indirect_emissions, name: format!("Weitere Indirekte Emissionen {}", format_large_number(other_indirect_emissions)), itemStyle: style_yellow.clone() };
-    let betriebsstoffe: item = item { value: operating_materials, name: format!("Betriebsstoffe {}", format_large_number(operating_materials)), itemStyle: style_yellow.clone() };
-    let eischlorsulfatsol: item = item { value: feclso4, name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)), itemStyle: style_yellow.clone() };
-    let kalkhydrat: item = item { value: caoh2, name: format!("Kalkhydrat {}", format_large_number(caoh2)), itemStyle: style_yellow.clone() };
-    let synth_poly: item = item { value: synthetic_polymers, name: format!("Synthetische Polymere {}", format_large_number(synthetic_polymers)), itemStyle: style_yellow.clone() };
-    let klaerschl_trans: item = item { value: sewage_sludge_transport, name: format!("Klaerschlamm Transport {}", format_large_number(sewage_sludge_transport)), itemStyle: style_yellow.clone() };
+    let wei_indir_em: SankeyItem = SankeyItem { value: other_indirect_emissions, name: format!("Weitere Indirekte Emissionen {}", format_large_number(other_indirect_emissions)), item_style: style_yellow.clone() };
+    let betriebsstoffe: SankeyItem = SankeyItem { value: operating_materials, name: format!("Betriebsstoffe {}", format_large_number(operating_materials)), item_style: style_yellow.clone() };
+    let eischlorsulfatsol: SankeyItem = SankeyItem { value: feclso4, name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)), item_style: style_yellow.clone() };
+    let kalkhydrat: SankeyItem = SankeyItem { value: caoh2, name: format!("Kalkhydrat {}", format_large_number(caoh2)), item_style: style_yellow.clone() };
+    let synth_poly: SankeyItem = SankeyItem { value: synthetic_polymers, name: format!("Synthetische Polymere {}", format_large_number(synthetic_polymers)), item_style: style_yellow.clone() };
+    let klaerschl_trans: SankeyItem = SankeyItem { value: sewage_sludge_transport, name: format!("Klaerschlamm Transport {}", format_large_number(sewage_sludge_transport)), item_style: style_yellow.clone() };
 
     // red
-    let dir_em: item = item { value: direct_emissions, name: format!("Direkte Emissionen {}", format_large_number(direct_emissions)), itemStyle: style_red.clone() };
-    let fe3cl: item = item { value: fecl3, name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)), itemStyle: style_red.clone() };
-    let n2o_anlage: item = item { value: n2o_plant, name: format!("N₂O Anlage {}", format_large_number(n2o_plant)), itemStyle: style_red.clone() };
-    let n2o_gewaesser: item = item { value: n2o_water, name: format!("N₂O Gewässer {}", format_large_number(n2o_water)), itemStyle: style_red.clone() };
-    let ch4_klaerprozess: item = item { value: ch4_sewage_treatment, name: format!("CH₄ Klärprozess {}",format_large_number(ch4_sewage_treatment)), itemStyle: style_red.clone() };
-    let ch4_schlupf_schlammstapel: item = item { value: ch4_sludge_storage_containers, name: format!("CH₄ Schlupf Schlammstapel {}",format_large_number(ch4_sludge_storage_containers)), itemStyle: style_red.clone() };
-    let ch4_schlupf_schlammtasche: item = item { value: ch4_sludge_bags, name: format!("CH₄ Schlupf Schlammtasche {}",format_large_number(ch4_sludge_bags)), itemStyle: style_red.clone() };
-    let ch4_gewaesser: item = item { value: ch4_water, name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)), itemStyle: style_red.clone() };
-    let ch4_bhkw: item = item { value: ch4_combined_heat_and_power_plant, name: format!("CH₄ BHKW {}",format_large_number(ch4_combined_heat_and_power_plant)), itemStyle: style_red.clone() };
+    let dir_em: SankeyItem = SankeyItem { value: direct_emissions, name: format!("Direkte Emissionen {}", format_large_number(direct_emissions)), item_style: style_red.clone() };
+    let fe3cl: SankeyItem = SankeyItem { value: fecl3, name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)), item_style: style_red.clone() };
+    let n2o_anlage: SankeyItem = SankeyItem { value: n2o_plant, name: format!("N₂O Anlage {}", format_large_number(n2o_plant)), item_style: style_red.clone() };
+    let n2o_gewaesser: SankeyItem = SankeyItem { value: n2o_water, name: format!("N₂O Gewässer {}", format_large_number(n2o_water)), item_style: style_red.clone() };
+    let ch4_klaerprozess: SankeyItem = SankeyItem { value: ch4_sewage_treatment, name: format!("CH₄ Klärprozess {}", format_large_number(ch4_sewage_treatment)), item_style: style_red.clone() };
+    let ch4_schlupf_schlammstapel: SankeyItem = SankeyItem { value: ch4_sludge_storage_containers, name: format!("CH₄ Schlupf Schlammstapel {}", format_large_number(ch4_sludge_storage_containers)), item_style: style_red.clone() };
+    let ch4_schlupf_schlammtasche: SankeyItem = SankeyItem { value: ch4_sludge_bags, name: format!("CH₄ Schlupf Schlammtasche {}", format_large_number(ch4_sludge_bags)), item_style: style_red.clone() };
+    let ch4_gewaesser: SankeyItem = SankeyItem { value: ch4_water, name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)), item_style: style_red.clone() };
+    let ch4_bhkw: SankeyItem = SankeyItem { value: ch4_combined_heat_and_power_plant, name: format!("CH₄ BHKW {}", format_large_number(ch4_combined_heat_and_power_plant)), item_style: style_red.clone() };
 
 
     let streams: Vec<(_, _)> = vec![
@@ -179,7 +180,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         ),
     ];
 
-    let mut labels: Vec<(String, ItemStyle)> = vec![];
+    let mut labels: Vec<SankeyNode> = vec![];
 
     for (source, target) in &streams {
         for x in [source.name.clone(), target.name.clone()] {
@@ -188,18 +189,18 @@ pub fn render(output_data: app::Output, element_id: &str) {
                 continue;
             }
 
-            if !labels.iter().any(|(n, s)| {
-                if n == &label {
+            if !labels.iter().any(|s| {
+                if s.name == label {
                     return true;
                 }
                 false
             }){
-                labels.push((label, source.itemStyle.clone()));
+                labels.push(SankeyNode::new(label).item_style(source.item_style.clone()));
             }
         }
     }
-    info!("{:?}", labels);
-    info!("{:?}", streams);
+    // info!("{:?}", labels);
+    // info!("{:?}", streams);
 
     let sankey_data: Vec<_> = labels;
     let sankey_links: Vec<(_, _, f64)> = streams

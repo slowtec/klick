@@ -36,7 +36,7 @@ klick-svg-charts  = { path = "../svg-charts"  }
 
 [patch.crates-io.charming]
 git = "https://github.com/qknight/charming"
-branch = "klick"
+branch = "klick_builder_pattern"
 #path = "../charming/charming"
 
 [profile.release]
