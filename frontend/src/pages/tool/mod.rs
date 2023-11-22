@@ -87,7 +87,7 @@ pub fn Tool() -> impl IntoView {
                          .and_then(FieldSignal::get_float)
                          .unwrap_or_default();
 
-                     let einheit = "t CO₂-eq/Jahr";
+                     let einheit = "t CO₂ Äquivalente/Jahr";
                      let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
                      selected_scenario_name.set(szenario_name.to_string().clone());
                      let title = format!(
@@ -213,7 +213,7 @@ pub fn Tool() -> impl IntoView {
             None
           } else {
             Some(view! {
-              <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂-eq/Jahr]"</h3>
+              <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"</h3>
               <div class="">
                 <BarChart
                   width = 1200.0
