@@ -205,7 +205,7 @@ fn Bar(
       // n2o_factor
       {
         label.and_then(|_| {
-          let n2o_factor_label = format!("{n2o_factor:.2} % N₂O").replace('.', ",");
+          let n2o_factor_label = format!("N₂O EF = {n2o_factor:.2} %").replace('.', ",");
           view! {
             <text
               x = { bar_width/2.0 }
