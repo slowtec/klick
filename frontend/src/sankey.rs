@@ -4,7 +4,6 @@ use charming::{
     series::SankeyNode,
     Chart,
 };
-use log::info;
 
 use klick_application as app;
 
@@ -38,6 +37,13 @@ fn format_large_number(f: f64) -> String {
     comma_separated_string
 }
 
+#[derive(Debug, Clone)]
+struct SankeyItem {
+    value: f64,
+    name: String,
+    item_style: ItemStyle,
+}
+
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 pub fn render(output_data: app::Output, element_id: &str) {
     let app::Output {
@@ -66,113 +72,156 @@ pub fn render(output_data: app::Output, element_id: &str) {
         other_indirect_emissions,
     } = co2_equivalents;
 
-    let style_red    = ItemStyle::new().color("red").border_color("black");
+    let style_red = ItemStyle::new().color("red").border_color("black");
     let style_orange = ItemStyle::new().color("#ff7400").border_color("black");
     let style_yellow = ItemStyle::new().color("#ffc100").border_color("black");
 
-    #[derive(Debug, Clone)]
-    struct SankeyItem {
-        value: f64,
-        name: String,
-        item_style: ItemStyle,
-    }
-
     // red
-    let emission: SankeyItem = SankeyItem { value: emissions, name: format!("Emission {}", format_large_number(emissions)), item_style: style_red.clone() };
+    let emission: SankeyItem = SankeyItem {
+        value: emissions,
+        name: format!("Emission {}", format_large_number(emissions)),
+        item_style: style_red.clone(),
+    };
 
     // orange
-    let indir_em: SankeyItem = SankeyItem { value: indirect_emissions, name: format!("Indirekte Emissionen {}", format_large_number(indirect_emissions)), item_style: style_orange.clone() };
-    let strommix: SankeyItem = SankeyItem { value: electricity_mix, name: format!("Strommix {}", format_large_number(electricity_mix)), item_style: style_orange.clone() };
+    let indir_em: SankeyItem = SankeyItem {
+        value: indirect_emissions,
+        name: format!(
+            "Indirekte Emissionen {}",
+            format_large_number(indirect_emissions)
+        ),
+        item_style: style_orange.clone(),
+    };
+    let strommix: SankeyItem = SankeyItem {
+        value: electricity_mix,
+        name: format!("Strommix {}", format_large_number(electricity_mix)),
+        item_style: style_orange.clone(),
+    };
 
     // yellow
-    let wei_indir_em: SankeyItem = SankeyItem { value: other_indirect_emissions, name: format!("Weitere Indirekte Emissionen {}", format_large_number(other_indirect_emissions)), item_style: style_yellow.clone() };
-    let betriebsstoffe: SankeyItem = SankeyItem { value: operating_materials, name: format!("Betriebsstoffe {}", format_large_number(operating_materials)), item_style: style_yellow.clone() };
-    let eischlorsulfatsol: SankeyItem = SankeyItem { value: feclso4, name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)), item_style: style_yellow.clone() };
-    let kalkhydrat: SankeyItem = SankeyItem { value: caoh2, name: format!("Kalkhydrat {}", format_large_number(caoh2)), item_style: style_yellow.clone() };
-    let synth_poly: SankeyItem = SankeyItem { value: synthetic_polymers, name: format!("Synthetische Polymere {}", format_large_number(synthetic_polymers)), item_style: style_yellow.clone() };
-    let klaerschl_trans: SankeyItem = SankeyItem { value: sewage_sludge_transport, name: format!("Klaerschlamm Transport {}", format_large_number(sewage_sludge_transport)), item_style: style_yellow.clone() };
+    let wei_indir_em: SankeyItem = SankeyItem {
+        value: other_indirect_emissions,
+        name: format!(
+            "Weitere Indirekte Emissionen {}",
+            format_large_number(other_indirect_emissions)
+        ),
+        item_style: style_yellow.clone(),
+    };
+    let betriebsstoffe: SankeyItem = SankeyItem {
+        value: operating_materials,
+        name: format!(
+            "Betriebsstoffe {}",
+            format_large_number(operating_materials)
+        ),
+        item_style: style_yellow.clone(),
+    };
+    let eischlorsulfatsol: SankeyItem = SankeyItem {
+        value: feclso4,
+        name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)),
+        item_style: style_yellow.clone(),
+    };
+    let kalkhydrat: SankeyItem = SankeyItem {
+        value: caoh2,
+        name: format!("Kalkhydrat {}", format_large_number(caoh2)),
+        item_style: style_yellow.clone(),
+    };
+    let synth_poly: SankeyItem = SankeyItem {
+        value: synthetic_polymers,
+        name: format!(
+            "Synthetische Polymere {}",
+            format_large_number(synthetic_polymers)
+        ),
+        item_style: style_yellow.clone(),
+    };
+    let klaerschl_trans: SankeyItem = SankeyItem {
+        value: sewage_sludge_transport,
+        name: format!(
+            "Klaerschlamm Transport {}",
+            format_large_number(sewage_sludge_transport)
+        ),
+        item_style: style_yellow.clone(),
+    };
 
     // red
-    let dir_em: SankeyItem = SankeyItem { value: direct_emissions, name: format!("Direkte Emissionen {}", format_large_number(direct_emissions)), item_style: style_red.clone() };
-    let fe3cl: SankeyItem = SankeyItem { value: fecl3, name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)), item_style: style_red.clone() };
-    let n2o_anlage: SankeyItem = SankeyItem { value: n2o_plant, name: format!("N₂O Anlage {}", format_large_number(n2o_plant)), item_style: style_red.clone() };
-    let n2o_gewaesser: SankeyItem = SankeyItem { value: n2o_water, name: format!("N₂O Gewässer {}", format_large_number(n2o_water)), item_style: style_red.clone() };
-    let ch4_klaerprozess: SankeyItem = SankeyItem { value: ch4_sewage_treatment, name: format!("CH₄ Klärprozess {}", format_large_number(ch4_sewage_treatment)), item_style: style_red.clone() };
-    let ch4_schlupf_schlammstapel: SankeyItem = SankeyItem { value: ch4_sludge_storage_containers, name: format!("CH₄ Schlupf Schlammstapel {}", format_large_number(ch4_sludge_storage_containers)), item_style: style_red.clone() };
-    let ch4_schlupf_schlammtasche: SankeyItem = SankeyItem { value: ch4_sludge_bags, name: format!("CH₄ Schlupf Schlammtasche {}", format_large_number(ch4_sludge_bags)), item_style: style_red.clone() };
-    let ch4_gewaesser: SankeyItem = SankeyItem { value: ch4_water, name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)), item_style: style_red.clone() };
-    let ch4_bhkw: SankeyItem = SankeyItem { value: ch4_combined_heat_and_power_plant, name: format!("CH₄ BHKW {}", format_large_number(ch4_combined_heat_and_power_plant)), item_style: style_red.clone() };
-
+    let dir_em: SankeyItem = SankeyItem {
+        value: direct_emissions,
+        name: format!(
+            "Direkte Emissionen {}",
+            format_large_number(direct_emissions)
+        ),
+        item_style: style_red.clone(),
+    };
+    let fe3cl: SankeyItem = SankeyItem {
+        value: fecl3,
+        name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)),
+        item_style: style_red.clone(),
+    };
+    let n2o_anlage: SankeyItem = SankeyItem {
+        value: n2o_plant,
+        name: format!("N₂O Anlage {}", format_large_number(n2o_plant)),
+        item_style: style_red.clone(),
+    };
+    let n2o_gewaesser: SankeyItem = SankeyItem {
+        value: n2o_water,
+        name: format!("N₂O Gewässer {}", format_large_number(n2o_water)),
+        item_style: style_red.clone(),
+    };
+    let ch4_klaerprozess: SankeyItem = SankeyItem {
+        value: ch4_sewage_treatment,
+        name: format!(
+            "CH₄ Klärprozess {}",
+            format_large_number(ch4_sewage_treatment)
+        ),
+        item_style: style_red.clone(),
+    };
+    let ch4_schlupf_schlammstapel: SankeyItem = SankeyItem {
+        value: ch4_sludge_storage_containers,
+        name: format!(
+            "CH₄ Schlupf Schlammstapel {}",
+            format_large_number(ch4_sludge_storage_containers)
+        ),
+        item_style: style_red.clone(),
+    };
+    let ch4_schlupf_schlammtasche: SankeyItem = SankeyItem {
+        value: ch4_sludge_bags,
+        name: format!(
+            "CH₄ Schlupf Schlammtasche {}",
+            format_large_number(ch4_sludge_bags)
+        ),
+        item_style: style_red.clone(),
+    };
+    let ch4_gewaesser: SankeyItem = SankeyItem {
+        value: ch4_water,
+        name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)),
+        item_style: style_red.clone(),
+    };
+    let ch4_bhkw: SankeyItem = SankeyItem {
+        value: ch4_combined_heat_and_power_plant,
+        name: format!(
+            "CH₄ BHKW {}",
+            format_large_number(ch4_combined_heat_and_power_plant)
+        ),
+        item_style: style_red.clone(),
+    };
 
     let streams: Vec<(_, _)> = vec![
-        (
-            fe3cl.clone(),
-            betriebsstoffe.clone(),
-        ),
-        (
-            eischlorsulfatsol.clone(),
-            betriebsstoffe.clone(),
-        ),
-        (
-            kalkhydrat.clone(),
-            betriebsstoffe.clone(),
-        ),
-        (
-            synth_poly.clone(),
-            betriebsstoffe.clone(),
-        ),
-        (
-            klaerschl_trans.clone(),
-            wei_indir_em.clone(),
-        ),
-        (
-            n2o_anlage.clone(),
-            dir_em.clone(),
-        ),
-        (
-            n2o_gewaesser.clone(),
-            dir_em.clone(),
-        ),
-        (
-            ch4_klaerprozess.clone(),
-            dir_em.clone(),
-        ),
-        (
-            ch4_schlupf_schlammstapel.clone(),
-            dir_em.clone(),
-        ),
-        (
-            ch4_schlupf_schlammtasche.clone(),
-            dir_em.clone(),
-        ),
-        (
-            ch4_gewaesser.clone(),
-            dir_em.clone(),
-        ),
-        (
-            ch4_bhkw.clone(),
-            dir_em.clone(),
-        ),
-        (
-            strommix.clone(),
-            indir_em.clone(),
-        ),
-        (
-            betriebsstoffe.clone(),
-            wei_indir_em.clone(),
-        ),
-        (
-            dir_em.clone(),
-            emission.clone(),
-        ),
-        (
-            indir_em.clone(),
-            emission.clone(),
-        ),
-        (
-            wei_indir_em.clone(),
-            emission.clone(),
-        ),
+        (fe3cl.clone(), betriebsstoffe.clone()),
+        (eischlorsulfatsol.clone(), betriebsstoffe.clone()),
+        (kalkhydrat.clone(), betriebsstoffe.clone()),
+        (synth_poly.clone(), betriebsstoffe.clone()),
+        (klaerschl_trans.clone(), wei_indir_em.clone()),
+        (n2o_anlage.clone(), dir_em.clone()),
+        (n2o_gewaesser.clone(), dir_em.clone()),
+        (ch4_klaerprozess.clone(), dir_em.clone()),
+        (ch4_schlupf_schlammstapel.clone(), dir_em.clone()),
+        (ch4_schlupf_schlammtasche.clone(), dir_em.clone()),
+        (ch4_gewaesser.clone(), dir_em.clone()),
+        (ch4_bhkw.clone(), dir_em.clone()),
+        (strommix.clone(), indir_em.clone()),
+        (betriebsstoffe.clone(), wei_indir_em.clone()),
+        (dir_em.clone(), emission.clone()),
+        (indir_em.clone(), emission.clone()),
+        (wei_indir_em.clone(), emission.clone()),
     ];
 
     let mut labels: Vec<SankeyNode> = vec![];
@@ -180,7 +229,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
     for (source, target) in &streams {
         for x in [source.name.clone(), target.name.clone()] {
             let label = x.to_string();
-            if source.value < 0.000001 {
+            if source.value < 0.000_001 {
                 continue;
             }
 
@@ -189,13 +238,11 @@ pub fn render(output_data: app::Output, element_id: &str) {
                     return true;
                 }
                 false
-            }){
+            }) {
                 labels.push(SankeyNode::new(label).item_style(source.item_style.clone()));
             }
         }
     }
-    // info!("{:?}", labels);
-    // info!("{:?}", streams);
 
     let sankey_links: Vec<(_, _, f64)> = streams
         .into_iter()
@@ -209,9 +256,8 @@ pub fn render(output_data: app::Output, element_id: &str) {
             .layout_iterations(0u64)
             .links(sankey_links)
             .line_style(color_style)
-            .data(labels)
+            .data(labels),
     );
-    //log::debug!("Render Sankey chart");
     let renderer = charming::WasmRenderer::new(1200, 800);
     renderer.render(element_id, &chart).unwrap();
 }

@@ -55,7 +55,7 @@ pub fn Tool() -> impl IntoView {
             let custom_factor_value = s
                 .get(&FieldId::CustomN2oScenarioValue)
                 .and_then(FieldSignal::get_float);
-            let use_custom_factor = custom_factor_value != None;
+            let use_custom_factor = custom_factor_value.is_some();
             if !use_custom_factor && selected_scenario.get() == Some(4) {
                 selected_scenario.set(Some(0));
             }
@@ -193,7 +193,7 @@ pub fn Tool() -> impl IntoView {
           <input
             class = "block text-sm bg-gray-50 rounded-md shadow-sm file:bg-primary file:rounded-md file:border-0 file:mr-4 file:py-1 file:px-2 file:font-semibold"
             type="file"
-            style = move || if !show_upload_input.get() { Some("display:none;") } else { None }
+            style = move || if show_upload_input.get() { None } else { Some("display:none;") }
             accept="application/json"
             node_ref=upload_input
             on:change = move |ev| {
