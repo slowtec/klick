@@ -537,19 +537,6 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: "Szenario Benutzerdefiniert: N₂O-Emissionsfaktors",
         fields: vec![
             Field {
-                id: Id::CustomN2oScenarioSupport,
-                label: "Szenario Benutzerdefiniert",
-                description: Some(
-                    "Falls Sie ein Szenario mit einem eigenen N₂O-Emissionsfaktor berechnen möchten, dieses Feld bitte anklicken.",
-                ),
-                required: false,
-                field_type: FieldType::Bool {
-                    initial_value: Some(
-                        false,
-                    ),
-                },
-            },
-            Field {
                 id: Id::CustomN2oScenarioValue,
                 label: "N₂O-Emissionsfaktor",
                 description: Some(

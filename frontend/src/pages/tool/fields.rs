@@ -304,14 +304,6 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .unwrap()
         .set(synthetic_polymers);
     signals
-        .get(&FieldId::CustomN2oScenarioSupport)
-        .and_then(FieldSignal::get_bool_signal)
-        .unwrap()
-        .set(matches!(
-            n2o_emission_factor.calculation_method,
-            N2oEmissionFactorCalcMethod::CustomFactor
-        ));
-    signals
         .get(&FieldId::CustomN2oScenarioValue)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()

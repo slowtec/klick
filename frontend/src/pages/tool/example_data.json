@@ -33,7 +33,6 @@
   },
   "scenario": {
     "n2o_emission_factor": {
-      "custom_factor": 1.5,
       "calculation_method":"custom-factor"
     }
   }

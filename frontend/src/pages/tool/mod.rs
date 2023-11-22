@@ -36,6 +36,7 @@ pub fn Tool() -> impl IntoView {
 
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
+    let selected_scenario_name = RwSignal::new(String::new());
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
 
@@ -51,10 +52,10 @@ pub fn Tool() -> impl IntoView {
 
     create_effect(move |_| {
         if let Some(input_data) = input_data.get() {
-            let use_custom_factor = s
-                .get(&FieldId::CustomN2oScenarioSupport)
-                .and_then(FieldSignal::get_bool)
-                == Some(true);
+            let custom_factor_value = s
+                .get(&FieldId::CustomN2oScenarioValue)
+                .and_then(FieldSignal::get_float);
+            let use_custom_factor = custom_factor_value != None;
             if !use_custom_factor && selected_scenario.get() == Some(4) {
                 selected_scenario.set(Some(0));
             }
@@ -65,10 +66,7 @@ pub fn Tool() -> impl IntoView {
 
                   let calc_method = match method {
                       N2oEmissionFactorCalcMethod::CustomFactor => {
-                          let custom_factor = s
-                              .get(&FieldId::CustomN2oScenarioValue)
-                              .and_then(FieldSignal::get_float).unwrap_or_default() / 100.0;
-                          app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(custom_factor))
+                          app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
                       }
                       N2oEmissionFactorCalcMethod::ExtrapolatedParravicini=>  app::N2oEmissionFactorCalcMethod::ExtrapolatedParravicini,
                       N2oEmissionFactorCalcMethod::Optimistic             =>  app::N2oEmissionFactorCalcMethod::Optimistic,
@@ -91,6 +89,7 @@ pub fn Tool() -> impl IntoView {
 
                      let einheit = "t CO₂-eq/Jahr";
                      let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
+                     selected_scenario_name.set(szenario_name.to_string().clone());
                      let title = format!(
                          "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
                      );
@@ -223,6 +222,7 @@ pub fn Tool() -> impl IntoView {
                   selected_bar = selected_scenario
                 />
               </div>
+                <p>"Es ist das Szenario \""{selected_scenario_name.get()}"\" ausgewählt. Durch Anklicken kann ein anderes Szenario ausgewählt werden."</p>
             })
           }
         }
