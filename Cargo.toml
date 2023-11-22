@@ -4,7 +4,8 @@ members = [
   "crates/backend",
   "crates/boundary",
   "crates/convert-numbers",
-  "crates/svg-charts"
+  "crates/svg-charts",
+  "crates/svg-charts/examples/*"
 ]
 exclude = ["frontend"]
 resolver = "2"

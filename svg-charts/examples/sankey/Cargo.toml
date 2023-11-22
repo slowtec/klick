@@ -1,0 +1,13 @@
+[package]
+name = "sankey-example"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+klick-svg-charts = { path = "../.." }
+
+console_error_panic_hook = "0.1.7"
+console_log = "1.0.0"
+leptos = { version = "0.5.2", features = ["csr"] }
+log = "0.4.20"
