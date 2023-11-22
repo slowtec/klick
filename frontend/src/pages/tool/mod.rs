@@ -142,7 +142,7 @@ pub fn Tool() -> impl IntoView {
       <div class="space-y-12">
         <div class="flex items-center justify-end gap-x-6">
           <Button
-            label = "alle Werte löschen"
+            label = "Werte zurücksetzen"
             on_click = {
               let signals = Rc::clone(&signals);
               move |_| {
@@ -160,7 +160,7 @@ pub fn Tool() -> impl IntoView {
             }
           />
           <Button
-            label = "Project speichern"
+            label = "Projekt speichern"
             on_click = {
               let signals = Rc::clone(&signals);
               move |ev| {
@@ -182,7 +182,7 @@ pub fn Tool() -> impl IntoView {
             }
           />
           <Button
-            label = "Project laden"
+            label = "Projekt laden"
             on_click = {
               move |ev| {
                 ev.prevent_default();
