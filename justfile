@@ -62,7 +62,7 @@ upgrade: setup
 
 # Run code checks
 clippy:
-  cargo clippy --locked --all-targets --all-features
+  cargo clippy --workspace --locked --all-targets --all-features
   cd frontend && cargo clippy --locked --all-targets --all-features
 
 # Fix lint warnings
