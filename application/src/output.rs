@@ -26,4 +26,6 @@ pub struct CO2Equivalents {
     pub direct_emissions: f64,
     pub indirect_emissions: f64,
     pub other_indirect_emissions: f64,
+    pub ch4_emissions: f64,
+    pub n2o_emissions: f64,
 }

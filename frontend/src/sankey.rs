@@ -54,11 +54,13 @@ pub fn render(output_data: app::Output, element_id: &str) {
     let app::CO2Equivalents {
         n2o_plant,
         n2o_water,
+        n2o_emissions,
         ch4_sewage_treatment,
         ch4_sludge_storage_containers,
         ch4_sludge_bags,
         ch4_water,
         ch4_combined_heat_and_power_plant,
+        ch4_emissions,
         fecl3,
         feclso4,
         caoh2,
@@ -105,6 +107,53 @@ pub fn render(output_data: app::Output, element_id: &str) {
             "Weitere Indirekte Emissionen {}",
             format_large_number(other_indirect_emissions)
         ),
+        item_style: style_yellow.clone(),
+    };
+    let betriebsstoffe: SankeyItem = SankeyItem {
+        value: operating_materials,
+        name: format!(
+            "Betriebsstoffe {}",
+            format_large_number(operating_materials)
+        ),
+        item_style: style_yellow.clone(),
+    };
+    let eischlorsulfatsol: SankeyItem = SankeyItem {
+        value: feclso4,
+        name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)),
+        item_style: style_yellow.clone(),
+    };
+    let kalkhydrat: SankeyItem = SankeyItem {
+        value: caoh2,
+        name: format!("Kalkhydrat {}", format_large_number(caoh2)),
+        item_style: style_yellow.clone(),
+    };
+    let synth_poly: SankeyItem = SankeyItem {
+        value: synthetic_polymers,
+        name: format!(
+            "Synthetische Polymere {}",
+            format_large_number(synthetic_polymers)
+        ),
+        item_style: style_yellow.clone(),
+    };
+    let klaerschl_trans: SankeyItem = SankeyItem {
+        value: sewage_sludge_transport,
+        name: format!(
+            "Klaerschlamm Transport {}",
+            format_large_number(sewage_sludge_transport)
+        ),
+        item_style: style_yellow.clone(),
+    };
+    let wei_indir_em: SankeyItem = SankeyItem {
+        value: other_indirect_emissions,
+        name: format!(
+            "Weitere Indirekte Emissionen {}",
+            format_large_number(other_indirect_emissions)
+        ),
+        item_style: style_yellow.clone(),
+    };
+    let fe3cl: SankeyItem = SankeyItem {
+        value: fecl3,
+        name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)),
         item_style: style_yellow.clone(),
     };
     let betriebsstoffe: SankeyItem = SankeyItem {
@@ -203,6 +252,73 @@ pub fn render(output_data: app::Output, element_id: &str) {
         ),
         item_style: style_red.clone(),
     };
+    let dir_em: SankeyItem = SankeyItem {
+        value: direct_emissions,
+        name: format!(
+            "Direkte Emissionen {}",
+            format_large_number(direct_emissions)
+        ),
+        item_style: style_red.clone(),
+    };
+
+    let lachgas_em: SankeyItem = SankeyItem {
+        value: n2o_emissions,
+        name: format!("Lachgasemissionen {}", format_large_number(n2o_emissions)),
+        item_style: style_red.clone(),
+    };
+    let methan_em: SankeyItem = SankeyItem {
+        value: ch4_emissions,
+        name: format!("Methanemissionen {}", format_large_number(ch4_emissions)),
+        item_style: style_red.clone(),
+    };
+
+    let n2o_anlage: SankeyItem = SankeyItem {
+        value: n2o_plant,
+        name: format!("N₂O Anlage {}", format_large_number(n2o_plant)),
+        item_style: style_red.clone(),
+    };
+    let n2o_gewaesser: SankeyItem = SankeyItem {
+        value: n2o_water,
+        name: format!("N₂O Gewässer {}", format_large_number(n2o_water)),
+        item_style: style_red.clone(),
+    };
+    let ch4_klaerprozess: SankeyItem = SankeyItem {
+        value: ch4_sewage_treatment,
+        name: format!(
+            "CH₄ Klärprozess {}",
+            format_large_number(ch4_sewage_treatment)
+        ),
+        item_style: style_red.clone(),
+    };
+    let ch4_schlupf_schlammstapel: SankeyItem = SankeyItem {
+        value: ch4_sludge_storage_containers,
+        name: format!(
+            "CH₄ Schlupf Schlammstapel {}",
+            format_large_number(ch4_sludge_storage_containers)
+        ),
+        item_style: style_red.clone(),
+    };
+    let ch4_schlupf_schlammtasche: SankeyItem = SankeyItem {
+        value: ch4_sludge_bags,
+        name: format!(
+            "CH₄ Schlupf Schlammtasche {}",
+            format_large_number(ch4_sludge_bags)
+        ),
+        item_style: style_red.clone(),
+    };
+    let ch4_gewaesser: SankeyItem = SankeyItem {
+        value: ch4_water,
+        name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)),
+        item_style: style_red.clone(),
+    };
+    let ch4_bhkw: SankeyItem = SankeyItem {
+        value: ch4_combined_heat_and_power_plant,
+        name: format!(
+            "CH₄ BHKW {}",
+            format_large_number(ch4_combined_heat_and_power_plant)
+        ),
+        item_style: style_red.clone(),
+    };
 
     let streams: Vec<(_, _)> = vec![
         (fe3cl.clone(), betriebsstoffe.clone()),
@@ -210,13 +326,15 @@ pub fn render(output_data: app::Output, element_id: &str) {
         (kalkhydrat.clone(), betriebsstoffe.clone()),
         (synth_poly.clone(), betriebsstoffe.clone()),
         (klaerschl_trans.clone(), wei_indir_em.clone()),
-        (n2o_anlage.clone(), dir_em.clone()),
-        (n2o_gewaesser.clone(), dir_em.clone()),
-        (ch4_klaerprozess.clone(), dir_em.clone()),
-        (ch4_schlupf_schlammstapel.clone(), dir_em.clone()),
-        (ch4_schlupf_schlammtasche.clone(), dir_em.clone()),
-        (ch4_gewaesser.clone(), dir_em.clone()),
-        (ch4_bhkw.clone(), dir_em.clone()),
+        (n2o_anlage.clone(), lachgas_em.clone()),
+        (n2o_gewaesser.clone(), lachgas_em.clone()),
+        (lachgas_em.clone(), dir_em.clone()),
+        (ch4_klaerprozess.clone(), methan_em.clone()),
+        (ch4_schlupf_schlammstapel.clone(), methan_em.clone()),
+        (ch4_schlupf_schlammtasche.clone(), methan_em.clone()),
+        (ch4_gewaesser.clone(), methan_em.clone()),
+        (ch4_bhkw.clone(), methan_em.clone()),
+        (methan_em.clone(), dir_em.clone()),
         (strommix.clone(), indir_em.clone()),
         (betriebsstoffe.clone(), wei_indir_em.clone()),
         (dir_em.clone(), emission.clone()),

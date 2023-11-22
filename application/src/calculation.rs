@@ -121,12 +121,18 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
 
     let n2o_plant = n2o_plant * GWP_N2O;
     let n2o_water = n2o_water * GWP_N2O;
+    let n2o_emissions = n2o_plant + n2o_water;
 
     let ch4_sewage_treatment = ch4_sewage_treatment * GWP_CH4;
     let ch4_sludge_storage_containers = ch4_slippage_sludge_storage * GWP_CH4;
     let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
     let ch4_water = ch4_water * GWP_CH4;
     let ch4_combined_heat_and_power_plant = ch4_bhkw * GWP_CH4;
+    let ch4_emissions = ch4_sewage_treatment
+        + ch4_sludge_storage_containers
+        + ch4_sludge_bags
+        + ch4_water
+        + ch4_combined_heat_and_power_plant;
 
     let external_energy = total_power_consumption - in_house_power_generation; // [kwh/a]
 
@@ -158,11 +164,13 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
     let co2_equivalents = CO2Equivalents {
         n2o_plant,
         n2o_water,
+        n2o_emissions,
         ch4_sewage_treatment,
         ch4_sludge_storage_containers,
         ch4_sludge_bags,
         ch4_water,
         ch4_combined_heat_and_power_plant,
+        ch4_emissions,
         fecl3,
         feclso4,
         caoh2,
@@ -280,11 +288,13 @@ mod tests {
         let CO2Equivalents {
             n2o_plant,
             n2o_water,
+            n2o_emissions,
             ch4_sewage_treatment,
             ch4_sludge_storage_containers,
             ch4_sludge_bags,
             ch4_water,
             ch4_combined_heat_and_power_plant,
+            ch4_emissions,
             fecl3,
             feclso4,
             caoh2,
@@ -300,11 +310,13 @@ mod tests {
 
         assert_eq!(n2o_plant, 327.970_500_000_001_83);
         assert_eq!(n2o_water, 126.125_999_999_999_99);
+        assert_eq!(n2o_emissions, 454.096_500_000_001_8);
         assert_eq!(ch4_sewage_treatment, 772.800_000_000_000_1);
         assert_eq!(ch4_sludge_storage_containers, 26.680_323_600_000_005);
         assert_eq!(ch4_sludge_bags, 47.082_924);
         assert_eq!(ch4_water, 162.54);
         assert_eq!(ch4_combined_heat_and_power_plant, 73.361_235_024);
+        assert_eq!(ch4_emissions, 1_082.464_482_624);
         assert_eq!(fecl3, 0.0);
         assert_eq!(feclso4, 24.776);
         assert_eq!(caoh2, 344.302_178);
