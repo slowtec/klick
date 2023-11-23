@@ -5,3 +5,6 @@ mod output;
 mod units;
 
 pub use self::{calculation::*, constants::*, input::*, output::*, units::*};
+
+#[cfg(test)]
+mod tests;

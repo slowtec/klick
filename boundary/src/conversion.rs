@@ -196,6 +196,12 @@ impl TryFrom<OperatingMaterials> for app::OperatingMaterials {
         let Some(synthetic_polymers) = synthetic_polymers else {
             bail!("missing synthetic_polymers");
         };
+
+        let fecl3 = app::Tons::new(fecl3);
+        let feclso4 = app::Tons::new(feclso4);
+        let caoh2 = app::Tons::new(caoh2);
+        let synthetic_polymers = app::Tons::new(synthetic_polymers);
+
         Ok(Self {
             fecl3,
             feclso4,

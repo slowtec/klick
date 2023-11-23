@@ -1,4 +1,4 @@
-use crate::Percent;
+use crate::{Percent, Tons};
 
 #[derive(Debug, Clone)]
 pub struct Input {
@@ -47,8 +47,8 @@ pub struct SewageSludgeTreatment {
 
 #[derive(Debug, Clone)]
 pub struct OperatingMaterials {
-    pub fecl3: f64,
-    pub feclso4: f64,
-    pub caoh2: f64,
-    pub synthetic_polymers: f64,
+    pub fecl3: Tons,
+    pub feclso4: Tons,
+    pub caoh2: Tons,
+    pub synthetic_polymers: Tons,
 }
