@@ -7,7 +7,7 @@ pub const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0;
 pub const EMISSION_FACTOR_CH4_WATER: Percent = Percent::new(0.9);
 
 /// `[g ch4 / kwh]`
-pub const EMISSION_FACTOR_CH4_CHP: f64 = 1.164;
+pub const EMISSION_FACTOR_CH4_CHP: f64 = 1.124;
 
 /// 0,5 `[%]` nitrogen effulent
 pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);

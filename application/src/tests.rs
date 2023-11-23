@@ -85,8 +85,8 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
     assert_approx_eq(ch4_sludge_storage_containers, 26.680_323_6);
     assert_approx_eq(ch4_sludge_bags, 47.082_924);
     assert_approx_eq(ch4_water, 162.54);
-    assert_approx_eq(ch4_combined_heat_and_power_plant, 73.361_235_024);
-    assert_approx_eq(ch4_emissions, 1_082.464_482_624);
+    assert_approx_eq(ch4_combined_heat_and_power_plant, 70.840230384);
+    assert_approx_eq(ch4_emissions, 1_079.943_477_984);
     assert_approx_eq(fecl3, 0.0);
     assert_approx_eq(feclso4, 24.776);
     assert_approx_eq(caoh2, 344.302_177_999_999_97);
@@ -94,9 +94,9 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
     assert_approx_eq(electricity_mix, 202.345_416);
     assert_approx_eq(operating_materials, 421.042_178);
     assert_approx_eq(sewage_sludge_transport, 15.15658914);
-    assert_approx_eq(direct_emissions, 1_536.560_982_624_002);
+    assert_approx_eq(direct_emissions, 1534.039977984002);
     assert_approx_eq(indirect_emissions, 202.345_416);
     assert_approx_eq(other_indirect_emissions, 436.19876714);
-    assert_approx_eq(emissions, 2175.105165764002);
+    assert_approx_eq(emissions, 2172.584161124002);
     assert_approx_eq(f64::from(n2o_emission_factor), 0.001_253_278_688_524_597_2);
 }

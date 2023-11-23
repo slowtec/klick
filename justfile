@@ -71,3 +71,8 @@ fix:
   cargo clippy --workspace --all-targets --fix
   cd frontend && cargo fix --all-targets
   cd frontend && cargo clippy --all-targets --fix
+
+# Run tests
+test:
+  cargo test --workspace
+  cd frontend && cargo test
