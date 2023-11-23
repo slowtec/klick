@@ -31,8 +31,8 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
         sewage_sludge_treatment: SewageSludgeTreatment {
             open_sludge_bags: true,
             open_sludge_storage_containers: true,
-            sewage_sludge_for_disposal: 3687.6,
-            transport_distance: 47.0,
+            sewage_sludge_for_disposal: Tons::new(3687.6),
+            transport_distance: Kilometers::new(47.0),
         },
         operating_materials: OperatingMaterials {
             fecl3: Tons::new(0.0),

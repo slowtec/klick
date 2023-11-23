@@ -1,5 +1,6 @@
 mod factor;
+mod kilometers;
 mod percent;
 mod tons;
 
-pub use self::{factor::*, percent::*, tons::*};
+pub use self::{factor::*, kilometers::*, percent::*, tons::*};

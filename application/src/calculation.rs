@@ -129,9 +129,11 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
 
     let operating_materials = synthetic_polymers + feclso4 + caoh2 + fecl3;
 
-    let sewage_sludge_transport =
-        sewage_sludge_for_disposal * transport_distance * FUEL_CONSUMPTION * EMISSION_FACTOR_DIESEL
-            / 1_000.0;
+    let sewage_sludge_transport = f64::from(*sewage_sludge_for_disposal)
+        * f64::from(*transport_distance)
+        * FUEL_CONSUMPTION
+        * EMISSION_FACTOR_DIESEL
+        / 1_000.0;
 
     let direct_emissions = n2o_plant
         + n2o_water

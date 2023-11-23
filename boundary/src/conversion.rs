@@ -165,6 +165,9 @@ impl TryFrom<SewageSludgeTreatment> for app::SewageSludgeTreatment {
         let Some(transport_distance) = transport_distance else {
             bail!("missing transport_distance");
         };
+
+        let sewage_sludge_for_disposal = app::Tons::new(sewage_sludge_for_disposal);
+        let transport_distance = app::Kilometers::new(transport_distance);
         Ok(Self {
             open_sludge_bags,
             open_sludge_storage_containers,

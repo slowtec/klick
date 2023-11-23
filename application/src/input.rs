@@ -1,4 +1,4 @@
-use crate::{Percent, Tons};
+use crate::{Kilometers, Percent, Tons};
 
 #[derive(Debug, Clone)]
 pub struct Input {
@@ -41,8 +41,8 @@ pub struct EnergyConsumption {
 pub struct SewageSludgeTreatment {
     pub open_sludge_bags: bool,
     pub open_sludge_storage_containers: bool,
-    pub sewage_sludge_for_disposal: f64,
-    pub transport_distance: f64,
+    pub sewage_sludge_for_disposal: Tons,
+    pub transport_distance: Kilometers,
 }
 
 #[derive(Debug, Clone)]
