@@ -136,13 +136,14 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
 
     let external_energy = total_power_consumption - in_house_power_generation; // [kwh/a]
 
-    let divisor = f64::from(10_i32.pow(6));
+    let divisor6 = f64::from(10_i32.pow(6));
+    let electricity_mix = external_energy * emission_factor_electricity_mix / divisor6;
 
-    let electricity_mix = external_energy * emission_factor_electricity_mix / divisor;
-    let synthetic_polymers = synthetic_polymers * EMISSION_FACTOR_POLYMERS / divisor;
-    let fecl3 = fecl3 * EMISSION_FACTOR_FECL3 / divisor;
-    let feclso4 = feclso4 * EMISSION_FACTOR_FECLSO4 / divisor;
-    let caoh2 = caoh2 * EMISSION_FACTOR_CAOH2 / divisor;
+    let divisor3 = f64::from(10_i32.pow(3));
+    let synthetic_polymers = synthetic_polymers * EMISSION_FACTOR_POLYMERS / divisor3;
+    let fecl3 = fecl3 * EMISSION_FACTOR_FECL3 / divisor3;
+    let feclso4 = feclso4 * EMISSION_FACTOR_FECLSO4 / divisor3;
+    let caoh2 = caoh2 * EMISSION_FACTOR_CAOH2 / divisor3;
 
     let operating_materials = synthetic_polymers + feclso4 + caoh2 + fecl3;
 
@@ -273,9 +274,9 @@ mod tests {
             },
             operating_materials: OperatingMaterials {
                 fecl3: 0.0,
-                feclso4: 326_000.0,
-                caoh2: 326_260.0,
-                synthetic_polymers: 23620.0,
+                feclso4: 326.0,
+                caoh2: 326.26,
+                synthetic_polymers: 23.62,
             },
         };
 
@@ -308,29 +309,36 @@ mod tests {
             other_indirect_emissions,
         } = co2_equivalents;
 
-        assert_eq!(n2o_plant, 327.970_500_000_001_83);
-        assert_eq!(n2o_water, 126.125_999_999_999_99);
-        assert_eq!(n2o_emissions, 454.096_500_000_001_8);
-        assert_eq!(ch4_sewage_treatment, 772.800_000_000_000_1);
-        assert_eq!(ch4_sludge_storage_containers, 26.680_323_600_000_005);
-        assert_eq!(ch4_sludge_bags, 47.082_924);
-        assert_eq!(ch4_water, 162.54);
-        assert_eq!(ch4_combined_heat_and_power_plant, 73.361_235_024);
-        assert_eq!(ch4_emissions, 1_082.464_482_624);
-        assert_eq!(fecl3, 0.0);
-        assert_eq!(feclso4, 24.776);
-        assert_eq!(caoh2, 344.302_178);
-        assert_eq!(synthetic_polymers, 51.964);
-        assert_eq!(electricity_mix, 202.345_416);
-        assert_eq!(operating_materials, 421.042_178_000_000_04);
-        assert_eq!(sewage_sludge_transport, 18.531_075_024_000_003);
-        assert_eq!(direct_emissions, 1_536.560_982_624_002);
-        assert_eq!(indirect_emissions, 202.345_416);
-        assert_eq!(other_indirect_emissions, 439.573_253_024_000_05);
-        assert_eq!(emissions, 2_178.479_651_648_002_3);
-        assert_eq!(
-            n2o_emission_factor,
-            Factor::new(0.001_253_278_688_524_597_2)
-        );
+        let approx_eq = |a: f64, b: f64| {
+            (a - b).abs() < f64::EPSILON // TODO: What precision is required?
+        };
+
+        assert!(approx_eq(n2o_plant, 327.970_500_000_001_83));
+        assert!(approx_eq(n2o_water, 126.125_999_999_999_99));
+        assert!(approx_eq(n2o_emissions, 454.096_500_000_001_8));
+        assert!(approx_eq(ch4_sewage_treatment, 772.800_000_000_000_1));
+        assert!(approx_eq(
+            ch4_sludge_storage_containers,
+            26.680_323_600_000_005
+        ));
+        assert!(approx_eq(ch4_sludge_bags, 47.082_924));
+        assert!(approx_eq(ch4_water, 162.54));
+        assert!(approx_eq(ch4_combined_heat_and_power_plant, 73.361_235_024));
+        assert!(approx_eq(ch4_emissions, 1_082.464_482_624));
+        assert!(approx_eq(fecl3, 0.0));
+        assert!(approx_eq(feclso4, 24.776));
+        assert!(approx_eq(caoh2, 344.302_177_999_999_97));
+        assert!(approx_eq(synthetic_polymers, 51.964));
+        assert!(approx_eq(electricity_mix, 202.345_416));
+        assert!(approx_eq(operating_materials, 421.042_178));
+        assert!(approx_eq(sewage_sludge_transport, 18.531_075_024_000_003));
+        assert!(approx_eq(direct_emissions, 1_536.560_982_624_002));
+        assert!(approx_eq(indirect_emissions, 202.345_416));
+        assert!(approx_eq(other_indirect_emissions, 439.573_253_024));
+        assert!(approx_eq(emissions, 2_178.479_651_648_002));
+        assert!(approx_eq(
+            f64::from(n2o_emission_factor),
+            0.001_253_278_688_524_597_2
+        ));
     }
 }

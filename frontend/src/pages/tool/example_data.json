@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "input": {
     "plant_name": "Muster Klärwerk",
     "population_values" : 120000.0,
@@ -26,9 +26,9 @@
     },
     "operating_materials": {
       "fecl3" : 0.0,
-      "feclso4" : 326000.0,
-      "caoh2" : 326260.0,
-      "synthetic_polymers" : 23620.0
+      "feclso4" : 326.0,
+      "caoh2" : 326.26,
+      "synthetic_polymers" : 23.62
     }
   },
   "scenario": {

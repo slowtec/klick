@@ -10,11 +10,13 @@ pub struct Output {
 pub struct CO2Equivalents {
     pub n2o_plant: f64,
     pub n2o_water: f64,
+    pub n2o_emissions: f64,
     pub ch4_sewage_treatment: f64,
     pub ch4_sludge_storage_containers: f64,
     pub ch4_sludge_bags: f64,
     pub ch4_water: f64,
     pub ch4_combined_heat_and_power_plant: f64,
+    pub ch4_emissions: f64,
     pub fecl3: f64,
     pub feclso4: f64,
     pub caoh2: f64,
@@ -26,6 +28,4 @@ pub struct CO2Equivalents {
     pub direct_emissions: f64,
     pub indirect_emissions: f64,
     pub other_indirect_emissions: f64,
-    pub ch4_emissions: f64,
-    pub n2o_emissions: f64,
 }

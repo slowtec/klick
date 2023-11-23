@@ -14,4 +14,4 @@ pub use self::{
 #[cfg(feature = "conversion")]
 mod conversion;
 
-pub const CURRENT_VERSION: u32 = 1;
+pub const CURRENT_VERSION: u32 = 2;

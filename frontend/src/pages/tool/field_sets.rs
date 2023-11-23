@@ -457,7 +457,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "kg Lösung",
+                        "t Lösung",
                     ),
                     limits: MinMax {
                         min: None,
@@ -465,7 +465,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                             500_000.0,
                         ),
                     },
-                    unit: "kg",
+                    unit: "t",
                 },
             },
             Field {
@@ -478,7 +478,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "kg Lösung",
+                        "t Lösung",
                     ),
                     limits: MinMax {
                         min: None,
@@ -486,7 +486,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                             100_000.0,
                         ),
                     },
-                    unit: "kg",
+                    unit: "t",
                 },
             },
             Field {
@@ -499,7 +499,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "kg Branntkalk",
+                        "t Branntkalk",
                     ),
                     limits: MinMax {
                         min: None,
@@ -507,7 +507,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                             500_000.0,
                         ),
                     },
-                    unit: "kg",
+                    unit: "t",
                 },
             },
             Field {
@@ -520,7 +520,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "kg Polymere",
+                        "t Polymere",
                     ),
                     limits: MinMax {
                         min: None,
@@ -528,7 +528,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                             50000.0,
                         ),
                     },
-                    unit: "kg",
+                    unit: "t",
                 },
             },
         ],
