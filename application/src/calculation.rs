@@ -1,6 +1,6 @@
 use crate::{
     constants::*, AnnualAveragesEffluent, AnnualAveragesInflow, CO2Equivalents, EnergyConsumption,
-    Factor, Input, OperatingMaterials, Output, Percent, SewageSludgeTreatment,
+    Factor, Input, OperatingMaterials, Output, SewageSludgeTreatment,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -14,7 +14,7 @@ pub enum N2oEmissionFactorCalcMethod {
 
 #[must_use]
 #[allow(clippy::too_many_lines)]
-pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
+pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
     let Input {
         plant_name: _,
         population_values,
@@ -78,13 +78,13 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
     let ch4_water = chemical_oxygen_demand_effluent / f64::from(10_i32.pow(9))
         * waste_water
         * f64::from(10_i32.pow(3))
-        * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
+        * EMISSION_FACTOR_CH4_WATER.as_factor(); // [t CH4/a]
     let ch4_bhkw = in_house_power_generation * EMISSION_FACTOR_CH4_CHP / f64::from(10_i32.pow(6)); // [t CH4/a]
 
     let ch4_slippage_sludge_bags = if *open_sludge_bags {
         sewage_gas_produced
             * methane_level
-            * EMISSION_FACTOR_SLUDGE_BAGS
+            * EMISSION_FACTOR_SLUDGE_BAGS.as_factor()
             * CONVERSION_FACTOR_CH4_M3_TO_KG
             / 1_000.0
     } else {
@@ -94,7 +94,7 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
     let ch4_slippage_sludge_storage = if *open_sludge_storage_containers {
         sewage_gas_produced
             * methane_level
-            * EMISSION_FACTOR_SLUDGE_STORAGE
+            * EMISSION_FACTOR_SLUDGE_STORAGE.as_factor()
             * CONVERSION_FACTOR_CH4_M3_TO_KG
             / 10_000.0
     } else {
@@ -173,7 +173,7 @@ pub fn calc(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
     }
 }
 
-fn calculate_n2o_emission_factor(
+pub fn calculate_n2o_emission_factor(
     calc_method: N2oEmissionFactorCalcMethod,
     nitrogen_inflow: f64,
     nitrogen_effluent: f64,
@@ -182,9 +182,9 @@ fn calculate_n2o_emission_factor(
         N2oEmissionFactorCalcMethod::ExtrapolatedParravicini => {
             extrapolate_according_to_parravicini(nitrogen_inflow, nitrogen_effluent)
         }
-        N2oEmissionFactorCalcMethod::Optimistic => Percent::new(0.3).as_factor(), // 0,3 % of the nitrogen inflow
-        N2oEmissionFactorCalcMethod::Pesimistic => Percent::new(0.8).as_factor(), // 0,8 % of the nitrogen inflow
-        N2oEmissionFactorCalcMethod::Ipcc2019 => Percent::new(1.6).as_factor(), // 1,6 % of the nitrogen inflow
+        N2oEmissionFactorCalcMethod::Optimistic => EMISSION_FACTOR_N2O_OPTIMISTIC.as_factor(),
+        N2oEmissionFactorCalcMethod::Pesimistic => EMISSION_FACTOR_N2O_PESIMISTIC.as_factor(),
+        N2oEmissionFactorCalcMethod::Ipcc2019 => EMISSION_FACTOR_N2O_IPCC2019.as_factor(),
         N2oEmissionFactorCalcMethod::Custom(factor) => factor,
     }
 }
@@ -214,7 +214,7 @@ fn calculate_nitrous_oxide(
     let n2o_gewaesser = nitrogen_effluent / f64::from(10_i32.pow(9))
         * waste_water
         * 1_000.0
-        * EMISSION_FACTOR_N2O_WATER
+        * EMISSION_FACTOR_N2O_WATER.as_factor()
         * CONVERSION_FACTOR_N_TO_N2O; // [t N2O/a]
     (n2o_anlage, n2o_gewaesser)
 }

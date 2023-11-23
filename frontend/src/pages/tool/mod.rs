@@ -74,7 +74,7 @@ pub fn Tool() -> impl IntoView {
                       N2oEmissionFactorCalcMethod::Ipcc2019               =>  app::N2oEmissionFactorCalcMethod::Ipcc2019,
                   };
 
-                 let output_data = klick_application::calc(&input_data, calc_method);
+                 let output_data = klick_application::calculate_emissions(&input_data, calc_method);
 
                  if selected_scenario.get() == Some(i as u64) {
                      let name_ka: String = s
