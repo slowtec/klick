@@ -1,5 +1,6 @@
 use std::ops::Mul;
 
+/// A dimensionless factor.
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Factor(f64);
 

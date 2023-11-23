@@ -2,6 +2,7 @@ use std::{fmt, ops::Mul};
 
 use crate::Factor;
 
+/// A percent value `[%]`.
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Percent(f64);
 

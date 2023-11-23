@@ -1,25 +1,7 @@
 use crate::{
-    AnnualAveragesEffluent, AnnualAveragesInflow, CO2Equivalents, EnergyConsumption, Factor, Input,
-    OperatingMaterials, Output, Percent, SewageSludgeTreatment,
+    constants::*, AnnualAveragesEffluent, AnnualAveragesInflow, CO2Equivalents, EnergyConsumption,
+    Factor, Input, OperatingMaterials, Output, Percent, SewageSludgeTreatment,
 };
-
-const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0; // g ch4 / (population values * year)
-const EMISSION_FACTOR_CH4_WATER: f64 = 0.009; // 0,9 % of chemical oxygen demand effluent
-const EMISSION_FACTOR_CH4_CHP: f64 = 1.164; // 1,164 g ch4 / kwh
-const EMISSION_FACTOR_N2O_WATER: f64 = 0.005; // 0,5 % of nitrogen effulent
-const EMISSION_FACTOR_SLUDGE_BAGS: f64 = 0.003; // 0.3 % of the total methane gas yield
-const EMISSION_FACTOR_SLUDGE_STORAGE: f64 = 0.017; // 1,7 % of the total digester gas production
-const EMISSION_FACTOR_FECL3: f64 = 395.0; // g co2 / kg solution
-const EMISSION_FACTOR_FECLSO4: f64 = 76.0; // g co2 / kg solution
-const EMISSION_FACTOR_CAOH2: f64 = 1055.3; // g co2 / kg solution
-const EMISSION_FACTOR_POLYMERS: f64 = 2200.0; // g co2 / kg solution
-
-const GWP_N2O: f64 = 273.0;
-const GWP_CH4: f64 = 28.0;
-const CONVERSION_FACTOR_CH4_M3_TO_KG: f64 = 0.7175; // kg/m^3 for standard cubic meters (GESTIS substance database)
-
-const EMISSION_FACTOR_DIESEL: f64 = 3.24; // kg co2/l
-const FUEL_CONSUMPTION: f64 = 0.033; // l/tkm
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum N2oEmissionFactorCalcMethod {
