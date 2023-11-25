@@ -129,6 +129,39 @@ pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {
     }
 }
 
+pub fn format_f64_into_de_string(number: f64) -> String {
+    // FIXME duplicated code
+    let mut num_str = format!("{:.}", number);
+    let mut integer = "";
+    let mut decimal = "";
+    if num_str.find('.').is_none() {
+        num_str.push_str(".");
+        (integer, _) = num_str.split_at(num_str.find('.').unwrap());
+    } else {
+        (integer, decimal) = num_str.split_at(num_str.find('.').unwrap());
+    }
+    let integer_str = integer
+        .chars()
+        .rev()
+        .enumerate()
+        .map(|(i, c)| {
+            let z: &str = if i != 0 && i % 3 == 0 && i != integer.len() {
+                "."
+            } else {
+                ""
+            };
+            format!("{}{}", z, c.to_string())
+        })
+        .collect::<String>();
+    let v = integer_str.chars().rev().collect::<String>();
+
+    format!("{}{}", v, decimal.replace(".", ","))
+}
+
+fn float_to_sting_option(f: Option<f64>) -> Option<String> {
+    f.map(|f| format_f64_into_de_string(f))
+}
+
 #[allow(clippy::too_many_lines)]
 pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, scenario: Scenario) {
     let InputData {
@@ -191,68 +224,68 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .get(&FieldId::Ew)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(population_values);
+        .set(float_to_sting_option(population_values));
     signals
         .get(&FieldId::Flow)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(waste_water);
+        .set(float_to_sting_option(waste_water));
     signals
         .get(&FieldId::TknZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(nitrogen_inflow);
+        .set(float_to_sting_option(nitrogen_inflow));
     signals
         .get(&FieldId::CsbZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(chemical_oxygen_demand_inflow);
+        .set(float_to_sting_option(chemical_oxygen_demand_inflow));
     signals
         .get(&FieldId::PZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(phosphorus_inflow);
+        .set(float_to_sting_option(phosphorus_inflow));
 
     signals
         .get(&FieldId::TknAb)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(nitrogen_effluent);
+        .set(float_to_sting_option(nitrogen_effluent));
     signals
         .get(&FieldId::CsbAb)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(chemical_oxygen_demand_effluent);
+        .set(float_to_sting_option(chemical_oxygen_demand_effluent));
     signals
         .get(&FieldId::PAb)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(phosphorus_effluent);
+        .set(float_to_sting_option(phosphorus_effluent));
     signals
         .get(&FieldId::Klaergas)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(sewage_gas_produced);
+        .set(float_to_sting_option(sewage_gas_produced));
     signals
         .get(&FieldId::Methangehalt)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(methane_level);
+        .set(float_to_sting_option(methane_level));
     signals
         .get(&FieldId::Strombedarf)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(total_power_consumption);
+        .set(float_to_sting_option(total_power_consumption));
     signals
         .get(&FieldId::Eigenstrom)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(in_house_power_generation);
+        .set(float_to_sting_option(in_house_power_generation));
     signals
         .get(&FieldId::EfStrommix)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(emission_factor_electricity_mix);
+        .set(float_to_sting_option(emission_factor_electricity_mix));
     signals
         .get(&FieldId::Biogas)
         .and_then(FieldSignal::get_bool_signal)
@@ -262,7 +295,7 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .get(&FieldId::GasZusatz)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(gas_supply);
+        .set(float_to_sting_option(gas_supply));
     signals
         .get(&FieldId::Schlammtaschen)
         .and_then(FieldSignal::get_bool_signal)
@@ -277,35 +310,35 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .get(&FieldId::KlaerschlammTransport)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(transport_distance);
+        .set(float_to_sting_option(transport_distance));
     signals
         .get(&FieldId::KlaerschlammEnstorgung)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(sewage_sludge_for_disposal);
+        .set(float_to_sting_option(sewage_sludge_for_disposal));
     signals
         .get(&FieldId::BetriebsstoffeFe3)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(fecl3);
+        .set(float_to_sting_option(fecl3));
     signals
         .get(&FieldId::BetriebsstoffeFeso4)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(feclso4);
+        .set(float_to_sting_option(feclso4));
     signals
         .get(&FieldId::BetriebsstoffeKalk)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(caoh2);
+        .set(float_to_sting_option(caoh2));
     signals
         .get(&FieldId::BetriebsstoffePoly)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(synthetic_polymers);
+        .set(float_to_sting_option(synthetic_polymers));
     signals
         .get(&FieldId::CustomN2oScenarioValue)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(n2o_emission_factor.custom_factor);
+        .set(float_to_sting_option(n2o_emission_factor.custom_factor));
 }

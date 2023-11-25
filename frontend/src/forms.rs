@@ -7,6 +7,8 @@ use std::{
 use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
 
+use log::info;
+
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 fn unique_id() -> usize {
@@ -14,8 +16,8 @@ fn unique_id() -> usize {
 }
 
 pub fn form_field_id<ID>(field_id: &ID) -> String
-where
-    ID: Copy + AsRef<str>,
+    where
+        ID: Copy + AsRef<str>,
 {
     // DOM element IDs needs to be locally unique
     // within the HTML document.
@@ -29,7 +31,10 @@ where
 
 #[derive(Clone, Copy)]
 pub enum FieldSignal {
-    Float(RwSignal<Option<f64>>),
+    Float {
+        input: RwSignal<Option<String>>,
+        output: RwSignal<Option<f64>>,
+    },
     Text(RwSignal<Option<String>>),
     Bool(RwSignal<bool>),
     Selection(RwSignal<Option<usize>>),
@@ -38,7 +43,7 @@ pub enum FieldSignal {
 impl FieldSignal {
     pub fn get_float(&self) -> Option<f64> {
         match self {
-            Self::Float(s) => s.get(),
+            Self::Float { input, output } => output.get(),
             _ => None,
         }
     }
@@ -57,9 +62,10 @@ impl FieldSignal {
         }
     }
 
-    pub const fn get_float_signal(&self) -> Option<RwSignal<Option<f64>>> {
+    pub const fn get_float_signal(&self) -> Option<RwSignal<Option<String>>> {
+        // FIXME rename
         match self {
-            Self::Float(s) => Some(*s),
+            Self::Float { input, output } => Some(*input),
             _ => None,
         }
     }
@@ -80,7 +86,7 @@ impl FieldSignal {
 
     pub fn clear(&self) {
         match self {
-            Self::Float(s) => s.set(None),
+            Self::Float { input, output } => input.set(None),
             Self::Text(s) => s.set(None),
             Self::Bool(s) => s.set(false),
             Self::Selection(s) => s.set(None),
@@ -91,8 +97,8 @@ impl FieldSignal {
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
 ) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>)
-where
-    ID: AsRef<str> + Copy + Hash + Eq,
+    where
+        ID: AsRef<str> + Copy + Hash + Eq,
 {
     let mut signals = HashMap::new();
     let mut set_views = vec![];
@@ -116,15 +122,15 @@ where
                 </div>
               </div>
             }
-            .into_view(),
+                .into_view(),
         );
     }
     (signals, set_views)
 }
 
 fn render_field<ID>(field: Field<ID>) -> (FieldSignal, impl IntoView)
-where
-    ID: AsRef<str> + Copy,
+    where
+        ID: AsRef<str> + Copy,
 {
     let Field {
         description,
@@ -154,7 +160,7 @@ where
                 required
               />
             }
-            .into_view();
+                .into_view();
             (field_signal, view)
         }
         FieldType::Float {
@@ -164,22 +170,35 @@ where
             limits,
             ..
         } => {
-            let signal = create_rw_signal(initial_value);
-            let field_signal = FieldSignal::Float(signal);
+            let i_value = match initial_value {
+                Some(v) => {
+                    info!("{}", v);
+                    Some(format_f64_into_de_string(v))
+                }
+                None => None,
+            };
+            let input_signal = create_rw_signal(i_value);
+            let output_signal = create_rw_signal(Option::<f64>::None);
+            // create a new FieldSignal::Float using
+            let field_signal = FieldSignal::Float {
+                input: input_signal,
+                output: output_signal,
+            };
 
             let view = view! {
               <NumberInput
                 label
                 field_id
                 placeholder = placeholder.unwrap_or("")
-                value = signal
+                input_value = input_signal
+                output_value = output_signal
                 unit
                 description
                 limits
                 required
               />
             }
-            .into_view();
+                .into_view();
             (field_signal, view)
         }
         FieldType::Bool { initial_value } => {
@@ -193,7 +212,7 @@ where
                 description
               />
             }
-            .into_view();
+                .into_view();
             (field_signal, view)
         }
         FieldType::Selection {
@@ -211,7 +230,7 @@ where
                 //description
               />
             }
-            .into_view();
+                .into_view();
             (field_signal, view)
         }
     }
@@ -330,13 +349,54 @@ fn TextInput(
     }
 }
 
+// parses 1.100.100,23 to 1100100.23
+fn parse_de_string_into_f64(input: String) -> Result<f64, String> {
+    let f = input.replace(".", "").replace(",", ".").parse::<f64>();
+    match f {
+        Ok(v) => Ok(v),
+        Err(e) => Err(format!("{}", e)),
+    }
+}
+
+// formats 23222221231.7666 to 23.222.221.231,7666
+// formats 23222221231 to 23.222.221.231
+// formats 2, to 2
+fn format_f64_into_de_string(number: f64) -> String {
+    let mut num_str = format!("{:.}", number);
+    let mut integer = "";
+    let mut decimal = "";
+    if num_str.find('.').is_none() {
+        num_str.push_str(".");
+        (integer, _) = num_str.split_at(num_str.find('.').unwrap());
+    } else {
+        (integer, decimal) = num_str.split_at(num_str.find('.').unwrap());
+    }
+    let integer_str = integer
+        .chars()
+        .rev()
+        .enumerate()
+        .map(|(i, c)| {
+            let z: &str = if i != 0 && i % 3 == 0 && i != integer.len() {
+                "."
+            } else {
+                ""
+            };
+            format!("{}{}", z, c.to_string())
+        })
+        .collect::<String>();
+    let v = integer_str.chars().rev().collect::<String>();
+
+    format!("{}{}", v, decimal.replace(".", ","))
+}
+
 #[component]
 fn NumberInput(
     label: &'static str,
     unit: &'static str,
     placeholder: &'static str,
     field_id: String,
-    value: RwSignal<Option<f64>>,
+    input_value: RwSignal<Option<String>>,
+    output_value: RwSignal<Option<f64>>,
     description: Option<&'static str>,
     limits: MinMax,
     required: bool,
@@ -359,42 +419,92 @@ fn NumberInput(
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
             placeholder= { placeholder }
-            // TODO: aria-describedby
-            prop:value = move || {
-              let val = value.get();
-              match val {
-                Some(v) => {
-                  error.set(None);
-                  v.to_string().replace('.',",")
-                },
-                None => String::new(),
-              }
-            }
-
-            on:input = move |ev| {
-              log::info!("limits {} {}", limits.min.unwrap_or_default(), limits.max.unwrap_or_default());
-              let target_value = event_target_value(&ev);
-              if target_value.is_empty() {
-                  value.set(None);
-                  error.set(None);
-              } else if let Ok(target_value) = target_value.replace(',',".").parse::<f64>() {
-                  error.set(None);
-                  match value.get() {
-                      Some(v) => {
-                          if (target_value - v).abs() > 0.000_000_001 {
-                            // fixes issue with signal-loop and incomplete numbers which
-                            // get converted from "1," into "1" and prevent entering "," or "." separator
-                            value.set(Some(target_value));
-                          }
-                      },
-                      None => {
-                          value.set(Some(target_value));
-                      }
+              on:focusin=move |_ev| {
+                let z = input_value.get();
+                match z {
+                  Some(v) => {
+                    input_value.set(Some(v.replace(".", "")))
+                  },
+                  None => {
                   }
+                }
+              }
+              on:focusout=move |_ev| {
+                // info!("on:focusout");
+                match input_value.get() {
+                    Some(v) => {
+                        let zz = parse_de_string_into_f64(v);
+                        match zz {
+                          Ok(q) => {
+                              // info!("on:focusout Some -> Ok");
+                              input_value.set(Some(format_f64_into_de_string(q)));
+                              //error.set(None);
+                          },
+                          Err(_e) => {
+                            // info!("on:focusout Some -> Err");
+                          }
+                        }
+                    },
+                    None => {
+                        // info!("on:focusout None");
+                        input_value.set(None);
+                        if required {
+                            error.set(Some("Eingabe benötigt!".to_string()));
+                        }
+                    }
+                }
+              }
+            prop:value = move || {
+                match input_value.get() {
+                    Some(v) => {
+                    // info!("prop:value: this is some + ");
+                        match parse_de_string_into_f64(v.clone()) {
+                          Ok(t) => {
+                              // info!("prop:value: this to Some + parsable value!");
+                              if let Some(min) = limits.min {
+                                if t <= min {
+                                    error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
+                                    // info!("prop:value: Eingabe unterschreitet das Minimum!");
+                                    output_value.set(None);
+                                    return v;
+                                }
+                              }
+                              if let Some(max) = limits.max {
+                                if t >= max {
+                                    error.set(Some("Eingabe überschreitet das Maximum".to_string()));
+                                    // info!("prop:value: Eingabe überschreitet das Maximum!");
+                                    output_value.set(None);
+                                    return v;
+                                }
+                              }
+                              // info!("prop:value: Alles gut!");
+                              error.set(None);
+                              output_value.set(Some(t));
+                              v
+                          },
+                          Err(_e) => {
+                            error.set(Some("Fehlerhafte Eingabe!".to_string()));
+                            output_value.set(None);
+                            v
+                          }
+                        }
+                    },
+                    None => {
+                      // info!("prop:value: this to none");
+                      // do not reset error because on:focusout could have set it
+                      output_value.set(None);
+                      "".to_string()
+                    }
+                }
+            }
+            on:input=move |ev| {
+              let input: String = event_target_value(&ev);
+              if input.is_empty() {
+                // info!("on:input: setting this none");
+                input_value.set(None);
               } else {
-                  let m = "Eingabewert fehlerhaft".to_string();
-                  log::info!("{}", m);
-                  error.set(Some(m));
+                // info!("on:input: setting this to some(input)");
+                input_value.set(Some(input));
               }
             }
           />
