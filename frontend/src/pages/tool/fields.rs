@@ -9,7 +9,7 @@ use klick_boundary::{
     N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
 };
 
-use crate::forms::FieldSignal;
+use crate::forms::{format_f64_into_de_string, FieldSignal};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum FieldId {
@@ -129,37 +129,8 @@ pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {
     }
 }
 
-pub fn format_f64_into_de_string(number: f64) -> String {
-    // FIXME duplicated code
-    let mut num_str = format!("{:.}", number);
-    let mut integer = "";
-    let mut decimal = "";
-    if num_str.find('.').is_none() {
-        num_str.push_str(".");
-        (integer, _) = num_str.split_at(num_str.find('.').unwrap());
-    } else {
-        (integer, decimal) = num_str.split_at(num_str.find('.').unwrap());
-    }
-    let integer_str = integer
-        .chars()
-        .rev()
-        .enumerate()
-        .map(|(i, c)| {
-            let z: &str = if i != 0 && i % 3 == 0 && i != integer.len() {
-                "."
-            } else {
-                ""
-            };
-            format!("{}{}", z, c.to_string())
-        })
-        .collect::<String>();
-    let v = integer_str.chars().rev().collect::<String>();
-
-    format!("{}{}", v, decimal.replace(".", ","))
-}
-
 fn float_to_sting_option(f: Option<f64>) -> Option<String> {
-    f.map(|f| format_f64_into_de_string(f))
+    f.map(format_f64_into_de_string)
 }
 
 #[allow(clippy::too_many_lines)]

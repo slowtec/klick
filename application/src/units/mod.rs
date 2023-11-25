@@ -1,7 +1,5 @@
 macro_rules! unit {
-
     ($name:ident, $abbreviation:expr, $description:expr) => {
-
         #[doc = concat!($description, "`[",$abbreviation, "].`")]
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct $name(f64);
