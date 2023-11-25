@@ -86,6 +86,8 @@ impl TryFrom<InputData> for app::Input {
         let sewage_sludge_treatment = sewage_sludge_treatment.try_into()?;
         let operating_materials = operating_materials.try_into()?;
 
+        let waste_water = app::Qubicmeters::new(waste_water);
+
         Ok(Self {
             plant_name,
             population_values,
@@ -130,6 +132,12 @@ impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
         };
 
         let methane_level = app::Percent::new(methane_level);
+        let sewage_gas_produced = app::Qubicmeters::new(sewage_gas_produced);
+        let in_house_power_generation = app::Kilowatthours::new(in_house_power_generation);
+        let total_power_consumption = app::Kilowatthours::new(total_power_consumption);
+        let gas_supply = gas_supply.map(app::Kilowatthours::new);
+        let emission_factor_electricity_mix =
+            app::GramsPerKilowatthour::new(emission_factor_electricity_mix);
 
         Ok(Self {
             sewage_gas_produced,
@@ -227,6 +235,11 @@ impl TryFrom<AnnualAverages> for app::AnnualAveragesInflow {
         let Some(nitrogen) = nitrogen else {
             bail!("missing inflow nitrogen");
         };
+
+        let phosphorus = phosphorus.map(app::MilligramsPerLiter::new);
+        let chemical_oxygen_demand = chemical_oxygen_demand.map(app::MilligramsPerLiter::new);
+        let nitrogen = app::MilligramsPerLiter::new(nitrogen);
+
         Ok(Self {
             nitrogen,
             chemical_oxygen_demand,
@@ -244,12 +257,18 @@ impl TryFrom<AnnualAverages> for app::AnnualAveragesEffluent {
             chemical_oxygen_demand,
             phosphorus,
         } = from;
+
         let Some(nitrogen) = nitrogen else {
             bail!("missing effluent nitrogen");
         };
         let Some(chemical_oxygen_demand) = chemical_oxygen_demand else {
             bail!("missing effluent chemical_oxygen_demand");
         };
+
+        let phosphorus = phosphorus.map(app::MilligramsPerLiter::new);
+        let chemical_oxygen_demand = app::MilligramsPerLiter::new(chemical_oxygen_demand);
+        let nitrogen = app::MilligramsPerLiter::new(nitrogen);
+
         Ok(Self {
             nitrogen,
             chemical_oxygen_demand,

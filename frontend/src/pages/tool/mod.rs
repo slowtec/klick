@@ -110,7 +110,7 @@ pub fn Tool() -> impl IntoView {
                     .iter()
                     .map(|(szenario, d)| klick_svg_charts::BarChartArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
-                        co2_data: d.co2_equivalents.emissions,
+                        co2_data: d.co2_equivalents.emissions.into(),
                         n2o_factor: f64::from(d.n2o_emission_factor),
                     })
                     .collect(),

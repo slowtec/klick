@@ -1,4 +1,6 @@
-use crate::Percent;
+use crate::{
+    GramsPerKilowatthour, KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent,
+};
 
 /// `[g ch4 / (population values * year)]`
 pub const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0;
@@ -7,7 +9,7 @@ pub const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0;
 pub const EMISSION_FACTOR_CH4_WATER: Percent = Percent::new(0.9);
 
 /// `[g ch4 / kwh]`
-pub const EMISSION_FACTOR_CH4_CHP: f64 = 1.124;
+pub const EMISSION_FACTOR_CH4_CHP: GramsPerKilowatthour = GramsPerKilowatthour::new(1.124);
 
 /// 0,5 `[%]` nitrogen effulent
 pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);
@@ -34,7 +36,8 @@ pub const GWP_N2O: f64 = 273.0;
 pub const GWP_CH4: f64 = 28.0;
 
 /// `[kg/m^3]` for standard cubic meters (GESTIS substance database)
-pub const CONVERSION_FACTOR_CH4_M3_TO_KG: f64 = 0.7175;
+pub const CONVERSION_FACTOR_CH4_M3_TO_KG: KilogramsPerQubicmeter =
+    KilogramsPerQubicmeter::new(0.7175);
 
 /// Emission factor `[kg CO₂/l]` of diesel.
 ///
@@ -48,10 +51,10 @@ pub const CONVERSION_FACTOR_CH4_M3_TO_KG: f64 = 0.7175;
 /// # References
 ///
 /// - [CO2-Emissionsfaktoren für fossile Brennstoffe - 28/2022](https://www.umweltbundesamt.de/publikationen/co2-emissionsfaktoren-fuer-fossile-brennstoffe-0) p.36f
-pub const EMISSION_FACTOR_DIESEL: f64 = 2.65;
+pub const EMISSION_FACTOR_DIESEL: KilogramsPerLiter = KilogramsPerLiter::new(2.65);
 
 /// `[l/tkm]`
-pub const FUEL_CONSUMPTION: f64 = 0.033;
+pub const FUEL_CONSUMPTION: LitersPerTonKilometer = LitersPerTonKilometer::new(0.033);
 
 /// 0,3 `[%]` of the nitrogen inflow
 pub const EMISSION_FACTOR_N2O_OPTIMISTIC: Percent = Percent::new(0.3);

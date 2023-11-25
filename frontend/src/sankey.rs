@@ -8,14 +8,17 @@ use charming::{
 use klick_application as app;
 
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-fn format_large_number(f: f64) -> String {
+fn format_large_number<T>(number: T) -> String
+where
+    T: Into<f64>,
+{
     // Convert the f64 to u64
-    let t = f.ceil();
+    let t = number.into().ceil();
     let u = t as u64;
 
     // Format the u64 as a string with a comma
     let formatted_string = format!("{u:0}");
-    println!("formatted_string {formatted_string}");
+    log::debug!("formatted_string {formatted_string}");
 
     // Insert a comma at the appropriate position
     let comma_separated_string = formatted_string
@@ -80,14 +83,14 @@ pub fn render(output_data: app::Output, element_id: &str) {
 
     // red
     let emission: SankeyItem = SankeyItem {
-        value: emissions,
+        value: emissions.into(),
         name: format!("Emission {}", format_large_number(emissions)),
         item_style: style_red.clone(),
     };
 
     // orange
     let indir_em: SankeyItem = SankeyItem {
-        value: indirect_emissions,
+        value: indirect_emissions.into(),
         name: format!(
             "Indirekte Emissionen {}",
             format_large_number(indirect_emissions)
@@ -95,14 +98,14 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_orange.clone(),
     };
     let strommix: SankeyItem = SankeyItem {
-        value: electricity_mix,
+        value: electricity_mix.into(),
         name: format!("Strommix {}", format_large_number(electricity_mix)),
         item_style: style_orange.clone(),
     };
 
     // yellow
     let wei_indir_em: SankeyItem = SankeyItem {
-        value: other_indirect_emissions,
+        value: other_indirect_emissions.into(),
         name: format!(
             "Weitere Indirekte Emissionen {}",
             format_large_number(other_indirect_emissions)
@@ -110,7 +113,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_yellow.clone(),
     };
     let betriebsstoffe: SankeyItem = SankeyItem {
-        value: operating_materials,
+        value: operating_materials.into(),
         name: format!(
             "Betriebsstoffe {}",
             format_large_number(operating_materials)
@@ -118,17 +121,17 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_yellow.clone(),
     };
     let eischlorsulfatsol: SankeyItem = SankeyItem {
-        value: feclso4,
+        value: feclso4.into(),
         name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)),
         item_style: style_yellow.clone(),
     };
     let kalkhydrat: SankeyItem = SankeyItem {
-        value: caoh2,
+        value: caoh2.into(),
         name: format!("Kalkhydrat {}", format_large_number(caoh2)),
         item_style: style_yellow.clone(),
     };
     let synth_poly: SankeyItem = SankeyItem {
-        value: synthetic_polymers,
+        value: synthetic_polymers.into(),
         name: format!(
             "Synthetische Polymere {}",
             format_large_number(synthetic_polymers)
@@ -136,7 +139,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_yellow.clone(),
     };
     let klaerschl_trans: SankeyItem = SankeyItem {
-        value: sewage_sludge_transport,
+        value: sewage_sludge_transport.into(),
         name: format!(
             "Klaerschlamm Transport {}",
             format_large_number(sewage_sludge_transport)
@@ -146,12 +149,12 @@ pub fn render(output_data: app::Output, element_id: &str) {
 
     // red
     let fe3cl: SankeyItem = SankeyItem {
-        value: fecl3,
+        value: fecl3.into(),
         name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)),
         item_style: style_red.clone(),
     };
     let dir_em: SankeyItem = SankeyItem {
-        value: direct_emissions,
+        value: direct_emissions.into(),
         name: format!(
             "Direkte Emissionen {}",
             format_large_number(direct_emissions)
@@ -159,27 +162,27 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_red.clone(),
     };
     let lachgas_em: SankeyItem = SankeyItem {
-        value: n2o_emissions,
+        value: n2o_emissions.into(),
         name: format!("Lachgasemissionen {}", format_large_number(n2o_emissions)),
         item_style: style_red.clone(),
     };
     let methan_em: SankeyItem = SankeyItem {
-        value: ch4_emissions,
+        value: ch4_emissions.into(),
         name: format!("Methanemissionen {}", format_large_number(ch4_emissions)),
         item_style: style_red.clone(),
     };
     let n2o_anlage: SankeyItem = SankeyItem {
-        value: n2o_plant,
+        value: n2o_plant.into(),
         name: format!("N₂O Anlage {}", format_large_number(n2o_plant)),
         item_style: style_red.clone(),
     };
     let n2o_gewaesser: SankeyItem = SankeyItem {
-        value: n2o_water,
+        value: n2o_water.into(),
         name: format!("N₂O Gewässer {}", format_large_number(n2o_water)),
         item_style: style_red.clone(),
     };
     let ch4_klaerprozess: SankeyItem = SankeyItem {
-        value: ch4_sewage_treatment,
+        value: ch4_sewage_treatment.into(),
         name: format!(
             "CH₄ Klärprozess {}",
             format_large_number(ch4_sewage_treatment)
@@ -187,7 +190,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_red.clone(),
     };
     let ch4_schlupf_schlammstapel: SankeyItem = SankeyItem {
-        value: ch4_sludge_storage_containers,
+        value: ch4_sludge_storage_containers.into(),
         name: format!(
             "CH₄ Schlupf Schlammstapel {}",
             format_large_number(ch4_sludge_storage_containers)
@@ -195,7 +198,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_red.clone(),
     };
     let ch4_schlupf_schlammtasche: SankeyItem = SankeyItem {
-        value: ch4_sludge_bags,
+        value: ch4_sludge_bags.into(),
         name: format!(
             "CH₄ Schlupf Schlammtasche {}",
             format_large_number(ch4_sludge_bags)
@@ -203,12 +206,12 @@ pub fn render(output_data: app::Output, element_id: &str) {
         item_style: style_red.clone(),
     };
     let ch4_gewaesser: SankeyItem = SankeyItem {
-        value: ch4_water,
+        value: ch4_water.into(),
         name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)),
         item_style: style_red.clone(),
     };
     let ch4_bhkw: SankeyItem = SankeyItem {
-        value: ch4_combined_heat_and_power_plant,
+        value: ch4_combined_heat_and_power_plant.into(),
         name: format!(
             "CH₄ BHKW {}",
             format_large_number(ch4_combined_heat_and_power_plant)
