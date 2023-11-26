@@ -9,6 +9,7 @@ pub enum Page {
     Tool,
     Faq,
     Imprint,
+    OpenSource,
 }
 
 impl Page {
@@ -18,6 +19,7 @@ impl Page {
             Self::Tool => "/tool",
             Self::Faq => "/faq",
             Self::Imprint => "/imprint",
+            Self::OpenSource => "/open-source",
         }
     }
 }

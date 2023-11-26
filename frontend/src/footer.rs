@@ -21,6 +21,7 @@ pub fn Footer() -> impl IntoView {
               <FooterLink page = Page::Home label ="Über KlicK" />
               <FooterLink page = Page::Tool label ="Tool" />
               <FooterLink page = Page::Faq label ="FAQs" />
+              <FooterLink page = Page::OpenSource label ="Open Source" />
               <FooterLink page = Page::Imprint label ="Impressum" />
             </nav>
             <div class="mt-10 flex justify-center space-x-10">

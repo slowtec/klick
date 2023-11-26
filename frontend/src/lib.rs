@@ -19,6 +19,7 @@ use self::{
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const IMPRINT_MD: &str = include_str!("../content/imprint.md");
 const ABOUT_MD: &str = include_str!("../content/about.md");
+const OPEN_SOURCE_MD: &str = include_str!("../content/open-source.md");
 const CHANGELOG_URL: &str = concat!(
     "https://codeberg.org/slowtec/klick/src/tag/v",
     env!("CARGO_PKG_VERSION"),
@@ -76,6 +77,17 @@ pub fn App() -> impl IntoView {
                     <h1>"FAQs"</h1>
                   </header>
                   <Faq />
+                </Main>
+              }
+            }
+          />
+          <Route
+            path=Page::OpenSource.path()
+            view= move || {
+              set_current_page.update(|p|*p = Page::OpenSource);
+              view! {
+                <Main>
+                  <Markdown content = OPEN_SOURCE_MD />
                 </Main>
               }
             }
