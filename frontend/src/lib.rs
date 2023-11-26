@@ -19,6 +19,11 @@ use self::{
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const IMPRINT_MD: &str = include_str!("../content/imprint.md");
 const ABOUT_MD: &str = include_str!("../content/about.md");
+const CHANGELOG_URL: &str = concat!(
+    "https://codeberg.org/slowtec/klick/src/tag/v",
+    env!("CARGO_PKG_VERSION"),
+    "/CHANGELOG.md"
+);
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -51,7 +56,8 @@ pub fn App() -> impl IntoView {
                     <h1 class="mb-8">
                       "KlicK-Tool "
                       <span class="font-light text-xl text-gray-600">
-                        "(Betaversion v" {VERSION} ")"
+                        "(Betaversion "
+                        <a class="font-light text-xl no-underline hover:underline" href= { CHANGELOG_URL} >"v" { VERSION } ")"</a>
                       </span>
                     </h1>
                   </header>
