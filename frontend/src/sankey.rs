@@ -120,6 +120,11 @@ pub fn render(output_data: app::Output, element_id: &str) {
         ),
         item_style: style_yellow.clone(),
     };
+    let fe3cl: SankeyItem = SankeyItem {
+        value: fecl3.into(),
+        name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)),
+        item_style: style_yellow.clone(),
+    };
     let eischlorsulfatsol: SankeyItem = SankeyItem {
         value: feclso4.into(),
         name: format!("Eisenchloridsulfat-Lösung {}", format_large_number(feclso4)),
@@ -148,11 +153,6 @@ pub fn render(output_data: app::Output, element_id: &str) {
     };
 
     // red
-    let fe3cl: SankeyItem = SankeyItem {
-        value: fecl3.into(),
-        name: format!("Eisen(III)-chlorid-Lösung {}", format_large_number(fecl3)),
-        item_style: style_red.clone(),
-    };
     let dir_em: SankeyItem = SankeyItem {
         value: direct_emissions.into(),
         name: format!(
