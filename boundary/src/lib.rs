@@ -1,5 +1,4 @@
-mod input;
-mod scenario;
+mod v2;
 
 mod export;
 mod import;
@@ -7,8 +6,7 @@ mod import;
 pub use self::{
     export::{export_to_string_pretty, export_to_vec_pretty},
     import::{import_from_slice, import_from_str, Error as ImportError},
-    input::*,
-    scenario::*,
+    v2::*,
 };
 
 #[cfg(feature = "conversion")]

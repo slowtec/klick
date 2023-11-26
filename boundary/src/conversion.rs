@@ -3,7 +3,7 @@ use anyhow::bail;
 use klick_application as app;
 
 use crate::{
-    AnnualAverages, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
+    AnnualAverage, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
     N2oEmissionFactorScenario, OperatingMaterials, SewageSludgeTreatment,
 };
 
@@ -63,37 +63,37 @@ impl TryFrom<InputData> for app::Input {
     fn try_from(from: InputData) -> Result<Self, Self::Error> {
         let InputData {
             plant_name,
-            population_values,
-            waste_water,
-            inflow_averages,
-            effluent_averages,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
             energy_consumption,
             sewage_sludge_treatment,
             operating_materials,
         } = from;
 
-        let Some(population_values) = population_values else {
+        let Some(population_equivalent) = population_equivalent else {
             bail!("missing population_values");
         };
 
-        let Some(waste_water) = waste_water else {
-            bail!("missing waste_water");
+        let Some(wastewater) = wastewater else {
+            bail!("missing wastewater");
         };
 
-        let inflow_averages = inflow_averages.try_into()?;
-        let effluent_averages = effluent_averages.try_into()?;
+        let influent_average = influent_average.try_into()?;
+        let effluent_average = effluent_average.try_into()?;
         let energy_consumption = energy_consumption.try_into()?;
         let sewage_sludge_treatment = sewage_sludge_treatment.try_into()?;
         let operating_materials = operating_materials.try_into()?;
 
-        let waste_water = app::Qubicmeters::new(waste_water);
+        let wastewater = app::Qubicmeters::new(wastewater);
 
         Ok(Self {
             plant_name,
-            population_values,
-            waste_water,
-            inflow_averages,
-            effluent_averages,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
             energy_consumption,
             sewage_sludge_treatment,
             operating_materials,
@@ -107,33 +107,33 @@ impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
     fn try_from(from: EnergyConsumption) -> Result<Self, Self::Error> {
         let EnergyConsumption {
             sewage_gas_produced,
-            methane_level,
+            methane_fraction,
             gas_supply,
             purchase_of_biogas,
             total_power_consumption,
-            in_house_power_generation,
+            on_site_power_generation,
             emission_factor_electricity_mix,
         } = from;
 
         let Some(sewage_gas_produced) = sewage_gas_produced else {
             bail!("missing sewage_gas_produced");
         };
-        let Some(methane_level) = methane_level else {
-            bail!("missing methane_level");
+        let Some(methane_fraction) = methane_fraction else {
+            bail!("missing methane_fraction");
         };
         let Some(total_power_consumption) = total_power_consumption else {
             bail!("missing total_power_consumption");
         };
-        let Some(in_house_power_generation) = in_house_power_generation else {
-            bail!("missing in_house_power_generation");
+        let Some(on_site_power_generation) = on_site_power_generation else {
+            bail!("missing on_site_power_generation");
         };
         let Some(emission_factor_electricity_mix) = emission_factor_electricity_mix else {
             bail!("missing emission_factor_electricity_mix");
         };
 
-        let methane_level = app::Percent::new(methane_level);
+        let methane_fraction = app::Percent::new(methane_fraction);
         let sewage_gas_produced = app::Qubicmeters::new(sewage_gas_produced);
-        let in_house_power_generation = app::Kilowatthours::new(in_house_power_generation);
+        let on_site_power_generation = app::Kilowatthours::new(on_site_power_generation);
         let total_power_consumption = app::Kilowatthours::new(total_power_consumption);
         let gas_supply = gas_supply.map(app::Kilowatthours::new);
         let emission_factor_electricity_mix =
@@ -141,11 +141,11 @@ impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
 
         Ok(Self {
             sewage_gas_produced,
-            methane_level,
+            methane_fraction,
             gas_supply,
             purchase_of_biogas,
             total_power_consumption,
-            in_house_power_generation,
+            on_site_power_generation,
             emission_factor_electricity_mix,
         })
     }
@@ -222,11 +222,11 @@ impl TryFrom<OperatingMaterials> for app::OperatingMaterials {
     }
 }
 
-impl TryFrom<AnnualAverages> for app::AnnualAveragesInflow {
+impl TryFrom<AnnualAverage> for app::AnnualAverageInfluent {
     type Error = anyhow::Error;
 
-    fn try_from(from: AnnualAverages) -> Result<Self, Self::Error> {
-        let AnnualAverages {
+    fn try_from(from: AnnualAverage) -> Result<Self, Self::Error> {
+        let AnnualAverage {
             nitrogen,
             chemical_oxygen_demand,
             phosphorus,
@@ -248,11 +248,11 @@ impl TryFrom<AnnualAverages> for app::AnnualAveragesInflow {
     }
 }
 
-impl TryFrom<AnnualAverages> for app::AnnualAveragesEffluent {
+impl TryFrom<AnnualAverage> for app::AnnualAverageEffluent {
     type Error = anyhow::Error;
 
-    fn try_from(from: AnnualAverages) -> Result<Self, Self::Error> {
-        let AnnualAverages {
+    fn try_from(from: AnnualAverage) -> Result<Self, Self::Error> {
+        let AnnualAverage {
             nitrogen,
             chemical_oxygen_demand,
             phosphorus,

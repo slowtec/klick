@@ -5,18 +5,23 @@
     "population_values" : 120000.0,
     "waste_water" : 5000000.0,
     "inflow_averages": {
-      "nitrogen" : 122.0
+      "nitrogen" : 122.0,
+      "chemical_oxygen_demand" : 333.0,
+      "phosphorus" : 555.0
     },
     "effluent_averages": {
       "nitrogen" : 11.76,
-      "chemical_oxygen_demand" : 129.0
+      "chemical_oxygen_demand" : 129.0,
+      "phosphorus" : 10.0
     },
     "energy_consumption": {
       "sewage_gas_produced" : 1260000.0,
       "methane_level" : 62.0,
       "total_power_consumption" : 2683259.0,
       "in_house_power_generation" : 2250897.0,
-      "emission_factor_electricity_mix" : 468.0
+      "emission_factor_electricity_mix" : 468.0,
+      "gas_supply" : 500,
+      "purchase_of_biogas": true
     },
     "sewage_sludge_treatment": {
       "open_sludge_bags" : true,

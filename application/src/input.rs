@@ -5,24 +5,24 @@ use crate::{
 #[derive(Debug, Clone)]
 pub struct Input {
     pub plant_name: Option<String>,
-    pub population_values: f64,
-    pub waste_water: Qubicmeters,
-    pub inflow_averages: AnnualAveragesInflow,
-    pub effluent_averages: AnnualAveragesEffluent,
+    pub population_equivalent: f64,
+    pub wastewater: Qubicmeters,
+    pub influent_average: AnnualAverageInfluent,
+    pub effluent_average: AnnualAverageEffluent,
     pub energy_consumption: EnergyConsumption,
     pub sewage_sludge_treatment: SewageSludgeTreatment,
     pub operating_materials: OperatingMaterials,
 }
 
 #[derive(Debug, Clone)]
-pub struct AnnualAveragesInflow {
+pub struct AnnualAverageInfluent {
     pub nitrogen: MilligramsPerLiter,
     pub chemical_oxygen_demand: Option<MilligramsPerLiter>,
     pub phosphorus: Option<MilligramsPerLiter>,
 }
 
 #[derive(Debug, Clone)]
-pub struct AnnualAveragesEffluent {
+pub struct AnnualAverageEffluent {
     pub nitrogen: MilligramsPerLiter,
     pub chemical_oxygen_demand: MilligramsPerLiter,
     pub phosphorus: Option<MilligramsPerLiter>,
@@ -31,11 +31,11 @@ pub struct AnnualAveragesEffluent {
 #[derive(Debug, Clone)]
 pub struct EnergyConsumption {
     pub sewage_gas_produced: Qubicmeters,
-    pub methane_level: Percent,
+    pub methane_fraction: Percent,
     pub gas_supply: Option<Kilowatthours>,
     pub purchase_of_biogas: Option<bool>,
     pub total_power_consumption: Kilowatthours,
-    pub in_house_power_generation: Kilowatthours,
+    pub on_site_power_generation: Kilowatthours,
     pub emission_factor_electricity_mix: GramsPerKilowatthour,
 }
 

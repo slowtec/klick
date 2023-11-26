@@ -1,5 +1,5 @@
 use klick_boundary::{
-    export_to_string_pretty, import_from_str, AnnualAverages, InputData,
+    export_to_string_pretty, import_from_str, AnnualAverage, InputData,
     N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, Scenario, CURRENT_VERSION,
 };
 
@@ -7,7 +7,7 @@ use klick_boundary::{
 fn export() {
     let data = InputData {
         plant_name: Some("test export".to_string()),
-        waste_water: Some(3456.889),
+        wastewater: Some(3456.889),
         ..Default::default()
     };
     let scenario = Scenario {
@@ -19,15 +19,15 @@ fn export() {
 
     let json_string = export_to_string_pretty(&data, &scenario);
     assert!(json_string.starts_with(&format!("{{\n  \"version\": {CURRENT_VERSION}")));
-    assert!(json_string.contains("\"waste_water\": 3456.889"));
+    assert!(json_string.contains("\"wastewater\": 3456.889"));
 }
 
 #[test]
 fn roundtrip() {
     let original_input = InputData {
         plant_name: Some("test export".to_string()),
-        waste_water: Some(3456.889),
-        inflow_averages: AnnualAverages {
+        wastewater: Some(3456.889),
+        influent_average: AnnualAverage {
             nitrogen: Some(1.2345000000000000000000000001),
             ..Default::default()
         },

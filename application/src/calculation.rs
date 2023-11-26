@@ -1,5 +1,5 @@
 use crate::{
-    constants::*, AnnualAveragesEffluent, AnnualAveragesInflow, CO2Equivalents, EnergyConsumption,
+    constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CO2Equivalents, EnergyConsumption,
     Factor, Input, Mass, MilligramsPerLiter, OperatingMaterials, Output, Qubicmeters,
     SewageSludgeTreatment, Tons,
 };
@@ -18,34 +18,34 @@ pub enum N2oEmissionFactorCalcMethod {
 pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
     let Input {
         plant_name: _,
-        population_values,
-        waste_water,
-        inflow_averages,
-        effluent_averages,
+        population_equivalent,
+        wastewater,
+        influent_average,
+        effluent_average,
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
     } = input;
 
-    let AnnualAveragesInflow {
-        nitrogen: nitrogen_inflow,
+    let AnnualAverageInfluent {
+        nitrogen: nitrogen_influent,
         chemical_oxygen_demand: _,
         phosphorus: _,
-    } = inflow_averages;
+    } = influent_average;
 
-    let AnnualAveragesEffluent {
+    let AnnualAverageEffluent {
         nitrogen: nitrogen_effluent,
         chemical_oxygen_demand: chemical_oxygen_demand_effluent,
         phosphorus: _,
-    } = effluent_averages;
+    } = effluent_average;
 
     let EnergyConsumption {
         sewage_gas_produced,
-        methane_level,
+        methane_fraction,
         gas_supply: _,
         purchase_of_biogas: _,
         total_power_consumption,
-        in_house_power_generation,
+        on_site_power_generation,
         emission_factor_electricity_mix,
     } = energy_consumption;
 
@@ -64,25 +64,25 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
     } = operating_materials;
 
     let n2o_emission_factor =
-        calculate_n2o_emission_factor(calc_method, *nitrogen_inflow, *nitrogen_effluent);
+        calculate_n2o_emission_factor(calc_method, *nitrogen_influent, *nitrogen_effluent);
     debug_assert!(n2o_emission_factor < Factor::new(1.0));
 
     let (n2o_plant, n2o_water) = calculate_nitrous_oxide(
-        *nitrogen_inflow,
+        *nitrogen_influent,
         *nitrogen_effluent,
-        *waste_water,
+        *wastewater,
         n2o_emission_factor,
     );
 
     let ch4_sewage_treatment =
-        population_values * EMISSION_FACTOR_CH4_PLANT / f64::from(10_i32.pow(6)); // [t CH4/a]
-    let ch4_water = f64::from(*chemical_oxygen_demand_effluent * *waste_water) / 1000.0
+        population_equivalent * EMISSION_FACTOR_CH4_PLANT / f64::from(10_i32.pow(6)); // [t CH4/a]
+    let ch4_water = f64::from(*chemical_oxygen_demand_effluent * *wastewater) / 1000.0
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
     let ch4_bhkw =
-        f64::from(*in_house_power_generation * EMISSION_FACTOR_CH4_CHP) / f64::from(10_i32.pow(6)); // [t CH4/a]
+        f64::from(*on_site_power_generation * EMISSION_FACTOR_CH4_CHP) / f64::from(10_i32.pow(6)); // [t CH4/a]
 
     let ch4_slippage_sludge_bags = if *open_sludge_bags {
-        let volume = *sewage_gas_produced * *methane_level * EMISSION_FACTOR_SLUDGE_BAGS;
+        let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_BAGS;
         let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
         f64::from(mass) / 1_000.0
     } else {
@@ -90,7 +90,7 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
     }; // [t CH4 / a]
 
     let ch4_slippage_sludge_storage = if *open_sludge_storage_containers {
-        let volume = *sewage_gas_produced * *methane_level * EMISSION_FACTOR_SLUDGE_STORAGE;
+        let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_STORAGE;
         let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
         f64::from(mass) / 10_000.0
     } else {
@@ -112,7 +112,7 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
         + ch4_water
         + ch4_combined_heat_and_power_plant;
 
-    let external_energy = *total_power_consumption - *in_house_power_generation; // [kwh/a]
+    let external_energy = *total_power_consumption - *on_site_power_generation; // [kwh/a]
 
     let divisor6 = f64::from(10_i32.pow(6));
     let electricity_mix =
@@ -176,12 +176,12 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
 #[must_use]
 pub fn calculate_n2o_emission_factor(
     calc_method: N2oEmissionFactorCalcMethod,
-    nitrogen_inflow: MilligramsPerLiter,
+    nitrogen_influent: MilligramsPerLiter,
     nitrogen_effluent: MilligramsPerLiter,
 ) -> Factor {
     match calc_method {
         N2oEmissionFactorCalcMethod::ExtrapolatedParravicini => {
-            extrapolate_according_to_parravicini(nitrogen_inflow, nitrogen_effluent)
+            extrapolate_according_to_parravicini(nitrogen_influent, nitrogen_effluent)
         }
         N2oEmissionFactorCalcMethod::Optimistic => EMISSION_FACTOR_N2O_OPTIMISTIC.into(),
         N2oEmissionFactorCalcMethod::Pesimistic => EMISSION_FACTOR_N2O_PESIMISTIC.into(),
@@ -192,10 +192,10 @@ pub fn calculate_n2o_emission_factor(
 
 #[must_use]
 pub fn extrapolate_according_to_parravicini(
-    nitrogen_inflow: MilligramsPerLiter,
+    nitrogen_influent: MilligramsPerLiter,
     nitrogen_effluent: MilligramsPerLiter,
 ) -> Factor {
-    let n_elim = f64::from((nitrogen_inflow - nitrogen_effluent) / nitrogen_inflow) * 100.0;
+    let n_elim = f64::from((nitrogen_influent - nitrogen_effluent) / nitrogen_influent) * 100.0;
     let mut ef = (-0.049 * n_elim + 4.553) / 100.0;
     if ef < 0.0 {
         ef = 0.002;
@@ -206,15 +206,15 @@ pub fn extrapolate_according_to_parravicini(
 const CONVERSION_FACTOR_N_TO_N2O: f64 = 44.0 / 28.0;
 
 fn calculate_nitrous_oxide(
-    nitrogen_inflow: MilligramsPerLiter,
+    nitrogen_influent: MilligramsPerLiter,
     nitrogen_effluent: MilligramsPerLiter,
-    waste_water: Qubicmeters,
+    wastewater: Qubicmeters,
     n2o_emission_factor: Factor,
 ) -> (f64, f64) {
-    let n2o_anlage = f64::from(waste_water * nitrogen_inflow) / 1000.0
+    let n2o_anlage = f64::from(wastewater * nitrogen_influent) / 1_000.0
         * n2o_emission_factor
         * CONVERSION_FACTOR_N_TO_N2O; // [t N2O/a]
-    let n2o_gewaesser = f64::from(nitrogen_effluent * waste_water) / 1000.0
+    let n2o_gewaesser = f64::from(nitrogen_effluent * wastewater) / 1_000.0
         * EMISSION_FACTOR_N2O_WATER
         * CONVERSION_FACTOR_N_TO_N2O; // [t N2O/a]
     (n2o_anlage, n2o_gewaesser)

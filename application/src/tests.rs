@@ -9,25 +9,25 @@ const EPSILON: f64 = 0.000_000_000_001;
 fn calculate_with_n2o_emission_factor_method_by_parravicini() {
     let input = Input {
         plant_name: None,
-        population_values: 120_000.0,
-        waste_water: Qubicmeters::new(5_000_000.0),
-        inflow_averages: AnnualAveragesInflow {
+        population_equivalent: 120_000.0,
+        wastewater: Qubicmeters::new(5_000_000.0),
+        influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
             chemical_oxygen_demand: None,
             phosphorus: None,
         },
-        effluent_averages: AnnualAveragesEffluent {
+        effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
             chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
             phosphorus: None,
         },
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Qubicmeters::new(1_260_000.0),
-            methane_level: Percent::new(62.0),
+            methane_fraction: Percent::new(62.0),
             gas_supply: None,
             purchase_of_biogas: None,
             total_power_consumption: Kilowatthours::new(2_683_259.0),
-            in_house_power_generation: Kilowatthours::new(2_250_897.0),
+            on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {

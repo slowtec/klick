@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 use klick_boundary::{
-    AnnualAverages, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
+    AnnualAverage, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
     N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
 };
 
@@ -44,15 +44,15 @@ pub enum FieldId {
 
 pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
     let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
-    let population_values = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
-    let waste_water = s.get(&FieldId::Flow).and_then(FieldSignal::get_float);
+    let population_equivalent = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
+    let wastewater = s.get(&FieldId::Flow).and_then(FieldSignal::get_float);
 
-    let inflow_averages = AnnualAverages {
+    let influent_average = AnnualAverage {
         nitrogen: s.get(&FieldId::TknZu).and_then(FieldSignal::get_float),
         chemical_oxygen_demand: s.get(&FieldId::CsbZu).and_then(FieldSignal::get_float),
         phosphorus: s.get(&FieldId::PZu).and_then(FieldSignal::get_float),
     };
-    let effluent_averages = AnnualAverages {
+    let effluent_average = AnnualAverage {
         nitrogen: s.get(&FieldId::TknAb).and_then(FieldSignal::get_float),
         chemical_oxygen_demand: s.get(&FieldId::CsbAb).and_then(FieldSignal::get_float),
         phosphorus: s.get(&FieldId::PAb).and_then(FieldSignal::get_float),
@@ -60,7 +60,7 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
 
     let energy_consumption = EnergyConsumption {
         sewage_gas_produced: s.get(&FieldId::Klaergas).and_then(FieldSignal::get_float),
-        methane_level: s
+        methane_fraction: s
             .get(&FieldId::Methangehalt)
             .and_then(FieldSignal::get_float),
         gas_supply: s.get(&FieldId::GasZusatz).and_then(FieldSignal::get_float),
@@ -68,7 +68,7 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
         total_power_consumption: s
             .get(&FieldId::Strombedarf)
             .and_then(FieldSignal::get_float),
-        in_house_power_generation: s.get(&FieldId::Eigenstrom).and_then(FieldSignal::get_float),
+        on_site_power_generation: s.get(&FieldId::Eigenstrom).and_then(FieldSignal::get_float),
         emission_factor_electricity_mix: s
             .get(&FieldId::EfStrommix)
             .and_then(FieldSignal::get_float),
@@ -106,10 +106,10 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
 
     InputData {
         plant_name,
-        population_values,
-        waste_water,
-        inflow_averages,
-        effluent_averages,
+        population_equivalent,
+        wastewater,
+        influent_average,
+        effluent_average,
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
@@ -137,10 +137,10 @@ fn float_to_sting_option(f: Option<f64>) -> Option<String> {
 pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, scenario: Scenario) {
     let InputData {
         plant_name,
-        population_values,
-        waste_water,
-        inflow_averages,
-        effluent_averages,
+        population_equivalent,
+        wastewater,
+        influent_average,
+        effluent_average,
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
@@ -150,25 +150,25 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         n2o_emission_factor,
     } = scenario;
 
-    let AnnualAverages {
-        nitrogen: nitrogen_inflow,
-        chemical_oxygen_demand: chemical_oxygen_demand_inflow,
-        phosphorus: phosphorus_inflow,
-    } = inflow_averages;
+    let AnnualAverage {
+        nitrogen: nitrogen_influent,
+        chemical_oxygen_demand: chemical_oxygen_demand_influent,
+        phosphorus: phosphorus_influent,
+    } = influent_average;
 
-    let AnnualAverages {
+    let AnnualAverage {
         nitrogen: nitrogen_effluent,
         chemical_oxygen_demand: chemical_oxygen_demand_effluent,
         phosphorus: phosphorus_effluent,
-    } = effluent_averages;
+    } = effluent_average;
 
     let EnergyConsumption {
         sewage_gas_produced,
-        methane_level,
+        methane_fraction,
         gas_supply,
         purchase_of_biogas,
         total_power_consumption,
-        in_house_power_generation,
+        on_site_power_generation,
         emission_factor_electricity_mix,
     } = energy_consumption;
 
@@ -195,27 +195,27 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .get(&FieldId::Ew)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(population_values));
+        .set(float_to_sting_option(population_equivalent));
     signals
         .get(&FieldId::Flow)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(waste_water));
+        .set(float_to_sting_option(wastewater));
     signals
         .get(&FieldId::TknZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(nitrogen_inflow));
+        .set(float_to_sting_option(nitrogen_influent));
     signals
         .get(&FieldId::CsbZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(chemical_oxygen_demand_inflow));
+        .set(float_to_sting_option(chemical_oxygen_demand_influent));
     signals
         .get(&FieldId::PZu)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(phosphorus_inflow));
+        .set(float_to_sting_option(phosphorus_influent));
 
     signals
         .get(&FieldId::TknAb)
@@ -241,7 +241,7 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .get(&FieldId::Methangehalt)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(methane_level));
+        .set(float_to_sting_option(methane_fraction));
     signals
         .get(&FieldId::Strombedarf)
         .and_then(FieldSignal::get_float_signal)
@@ -251,7 +251,7 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .get(&FieldId::Eigenstrom)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(in_house_power_generation));
+        .set(float_to_sting_option(on_site_power_generation));
     signals
         .get(&FieldId::EfStrommix)
         .and_then(FieldSignal::get_float_signal)

@@ -1,4 +1,12 @@
 use serde::{Deserialize, Serialize};
+use strum::EnumIter;
+
+#[derive(Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+pub(crate) struct Import {
+    pub(crate) input: InputData,
+    pub(crate) scenario: Scenario,
+}
 
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
@@ -7,14 +15,14 @@ pub struct InputData {
     pub plant_name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub population_values: Option<f64>,
+    pub population_equivalent: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub waste_water: Option<f64>,
+    pub wastewater: Option<f64>,
 
-    pub inflow_averages: AnnualAverages,
+    pub influent_average: AnnualAverage,
 
-    pub effluent_averages: AnnualAverages,
+    pub effluent_average: AnnualAverage,
 
     pub energy_consumption: EnergyConsumption,
 
@@ -25,7 +33,7 @@ pub struct InputData {
 
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
-pub struct AnnualAverages {
+pub struct AnnualAverage {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nitrogen: Option<f64>,
 
@@ -43,7 +51,7 @@ pub struct EnergyConsumption {
     pub sewage_gas_produced: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub methane_level: Option<f64>,
+    pub methane_fraction: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gas_supply: Option<f64>,
@@ -55,7 +63,7 @@ pub struct EnergyConsumption {
     pub total_power_consumption: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub in_house_power_generation: Option<f64>,
+    pub on_site_power_generation: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub emission_factor_electricity_mix: Option<f64>,
@@ -91,4 +99,32 @@ pub struct OperatingMaterials {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub synthetic_polymers: Option<f64>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+pub struct Scenario {
+    pub n2o_emission_factor: N2oEmissionFactorScenario,
+}
+
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+pub struct N2oEmissionFactorScenario {
+    pub calculation_method: N2oEmissionFactorCalcMethod,
+    pub custom_factor: Option<f64>,
+}
+
+#[derive(Serialize, Deserialize, EnumIter)]
+#[serde(rename_all = "kebab-case")]
+#[cfg_attr(
+    feature = "extra-derive",
+    derive(Debug, Default, Clone, Copy, PartialEq, Eq)
+)]
+pub enum N2oEmissionFactorCalcMethod {
+    #[cfg_attr(feature = "extra-derive", default)]
+    ExtrapolatedParravicini,
+    Optimistic,
+    Pesimistic,
+    Ipcc2019,
+    CustomFactor,
 }
