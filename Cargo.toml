@@ -24,7 +24,7 @@ klick-svg-charts  = { path = "svg-charts"  }
 
 [package]
 name = "klick"
-version = "0.1.1"
+version = "0.1.2"
 edition.workspace = true
 rust-version.workspace = true
 publish = false

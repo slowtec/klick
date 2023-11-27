@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.1.2 (2023-11-27)
+
+- New:
+  - input form field validation with min/max value checks, see #13
+  - page 'Open Source'
+  - Add link to CHANGELOG.md
+  - Thousands separator and decimal point (DE spelling/keyboard), see #60
+  - Sankey: contains summary values N2O+CH4, see #49
+- Changed: unit of 4 operating material values: kg -> t, see #23
+
 ## v0.1.1 (2023-11-22)
 
 - New:
