@@ -43,12 +43,15 @@ pub enum FieldId {
     CustomN2oScenarioValue,
 }
 
-pub fn read_input_fields<'a>(s: &'a HashMap<FieldId, FieldSignal>, required_fields: &'a Vec<RequiredField>) -> (InputData, Vec<MissingField<'a>>) {
-    let missing_fields: Vec<MissingField> = required_fields.iter().fold(vec![], | mut acc, &field| {
+pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>, required_fields: & Vec<RequiredField>) -> (InputData, Vec<MissingField>) {
+    let missing_fields: Vec<MissingField> = required_fields.iter().fold(vec![], | mut acc, field| {
+        // match s.get(&field.id) { // FIXME
+        //
+        // }
         if field.id == FieldId::Name {
             if s.get(&field.id).and_then(FieldSignal::get_text_signal).is_none()
             {
-                let x = MissingField::new(field.id, field.label);
+                let x = MissingField::new(field.field_id.clone(), field.label);
                 acc.push(x);
                 acc
             } else {
@@ -57,7 +60,7 @@ pub fn read_input_fields<'a>(s: &'a HashMap<FieldId, FieldSignal>, required_fiel
         } else {
             if s.get(&field.id).and_then(FieldSignal::get_float).is_none()
             {
-                let x = MissingField::new(field.id, field.label);
+                let x = MissingField::new(field.field_id.clone(), field.label);
                 acc.push(x);
                 acc
             }else {

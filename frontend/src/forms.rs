@@ -93,22 +93,22 @@ impl FieldSignal {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct RequiredField<ID> where
     ID: AsRef<str> + Copy + Hash + Eq, {
     pub id: ID,
-    pub field_id: &'static str,
+    pub field_id: String,
     pub label: &'static str,
 }
 
-#[derive(Copy, Clone)]
-pub struct MissingField<'a> {
-    pub field_id: &'a str,
-    pub label: &'a str,
+#[derive(Clone)]
+pub struct MissingField {
+    pub field_id: String,
+    pub label: &'static str,
 }
 
-impl<'a>MissingField<'a> {
-    pub fn new(field_id: &'a str, label: &'a str) -> Self {
+impl MissingField {
+    pub fn new(field_id: String, label: &'static str) -> Self {
         Self {
             field_id,
             label,
@@ -117,8 +117,8 @@ impl<'a>MissingField<'a> {
 }
 
 #[component]
-pub fn HelperWidget<'a>(
-    missing_fields: Vec<MissingField<'a>>,
+pub fn HelperWidget(
+    missing_fields: Vec<MissingField>,
 ) -> impl IntoView {
     let missing_fields = missing_fields.clone();
     view! {
@@ -162,7 +162,7 @@ where
                 required_fields.push(RequiredField {
                     label,
                     id,
-                    field_id: field_id.as_str(),
+                    field_id,
                 });
             }
         }
