@@ -8,7 +8,7 @@ use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
 use klick_svg_charts::BarChart;
 
-use self::fields::RequiredField;
+// use self::fields::RequiredField;
 
 use crate::{
     forms::{self, FieldSignal, MissingField},

@@ -102,14 +102,23 @@ pub struct RequiredField<ID> where
 }
 
 #[derive(Copy, Clone)]
-pub struct MissingField {
-    pub field_id: &'static str,
-    pub label: &'static str,
+pub struct MissingField<'a> {
+    pub field_id: &'a str,
+    pub label: &'a str,
+}
+
+impl<'a>MissingField<'a> {
+    pub fn new(field_id: &'a str, label: &'a str) -> Self {
+        Self {
+            field_id,
+            label,
+        }
+    }
 }
 
 #[component]
-pub fn HelperWidget(
-    missing_fields: Vec<MissingField>,
+pub fn HelperWidget<'a>(
+    missing_fields: Vec<MissingField<'a>>,
 ) -> impl IntoView {
     let missing_fields = missing_fields.clone();
     view! {
