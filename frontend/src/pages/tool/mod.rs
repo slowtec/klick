@@ -8,8 +8,10 @@ use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
 use klick_svg_charts::BarChart;
 
+// use self::fields::RequiredField;
+
 use crate::{
-    forms::{self, FieldSignal},
+    forms::{self, FieldSignal, MissingField},
     sankey,
 };
 
@@ -24,13 +26,15 @@ use self::{
 
 const CHART_ELEMENT_ID: &str = "chart";
 
+
+
 #[component]
 #[allow(clippy::too_many_lines)]
 pub fn Tool() -> impl IntoView {
     let field_sets = field_sets();
-
-    let (signals, set_views) = forms::render_field_sets(field_sets);
+    let (signals, set_views, required_fields) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
+    let missing_fields: RwSignal::<Vec::<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
     let input_data = RwSignal::new(Option::<app::Input>::None);
 
@@ -44,8 +48,9 @@ pub fn Tool() -> impl IntoView {
 
     let s = Rc::clone(&signals);
     create_effect(move |_| {
-        let data = read_input_fields(&s).try_into().ok();
-        input_data.set(data);
+        let (data, filtered_required_fields) = read_input_fields(&s, &required_fields);
+        missing_fields.set(filtered_required_fields);
+        input_data.set(data.try_into().ok());
     });
 
     let s = Rc::clone(&signals);
@@ -98,9 +103,9 @@ pub fn Tool() -> impl IntoView {
                  }
                  if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
                  {
-                     None
+                   None
                  } else {
-                    Some((method, output_data))
+                   Some((method, output_data))
                  }
              })
              .collect::<Vec<_>>();
@@ -166,7 +171,7 @@ pub fn Tool() -> impl IntoView {
               move |ev| {
                 ev.prevent_default();
 
-                let input = read_input_fields(&signals);
+                let (input, _) = read_input_fields(&signals, &vec![]);
                 let szenario = read_scenario_fields(&signals);
                 let json_bytes = export_to_vec_pretty(&input, &szenario);
 
@@ -206,6 +211,23 @@ pub fn Tool() -> impl IntoView {
         </div>
         { set_views }
       </div>
+      // form field requirements helper widget
+      { move ||  {
+          if barchart_arguments.get().is_empty() {
+              Some(view! {
+
+              <div>
+                  <h3 class="my-8 text-xl font-bold">"Barchart/Sankey Diagramme"</h3>
+                  <p>"Bitte ergenzen Sie folgende Werte, ein damit die Szenarien berechnet werden können:"</p>
+                  <forms::HelperWidget missing_fields=missing_fields.get()/>
+                  <p>"Bei jeder Eingabe werden die Grafen automatisch neu berechnet solange alle benötigten Felder korrekt eingegeben wurden."</p>
+              </div>
+              })
+          } else {
+              None
+          }
+          }
+      }
       // bar diagram
       { move ||
         {

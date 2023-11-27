@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+pub type RequiredField = crate::forms::RequiredField<FieldId>;
 
 use leptos::*;
 use serde::{Deserialize, Serialize};
@@ -9,7 +10,7 @@ use klick_boundary::{
     N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
 };
 
-use crate::forms::{format_f64_into_de_string, FieldSignal};
+use crate::forms::{format_f64_into_de_string, FieldSignal, MissingField};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum FieldId {
@@ -42,7 +43,30 @@ pub enum FieldId {
     CustomN2oScenarioValue,
 }
 
-pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
+pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>, required_fields: & Vec<RequiredField>) -> (InputData, Vec<MissingField>) {
+    let missing_fields: Vec<MissingField> = required_fields.iter().fold(vec![], | mut acc, field| {
+
+        if field.id == FieldId::Name {
+            if s.get(&field.id).and_then(FieldSignal::get_text).is_none()
+            {
+                let x = MissingField::new(field.field_id.clone(), field.label);
+                acc.push(x);
+                acc
+            } else {
+                acc
+            }
+        } else {
+            if s.get(&field.id).and_then(FieldSignal::get_float).is_none()
+            {
+                let x = MissingField::new(field.field_id.clone(), field.label);
+                acc.push(x);
+                acc
+            }else {
+                acc
+            }
+        }
+    });
+
     let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
     let population_equivalent = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
     let wastewater = s.get(&FieldId::Flow).and_then(FieldSignal::get_float);
@@ -104,7 +128,7 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
             .and_then(FieldSignal::get_float),
     };
 
-    InputData {
+    (InputData {
         plant_name,
         population_equivalent,
         wastewater,
@@ -113,7 +137,8 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
-    }
+    },
+    missing_fields)
 }
 
 pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {
