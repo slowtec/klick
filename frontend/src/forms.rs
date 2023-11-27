@@ -102,7 +102,7 @@ pub struct RequiredFields {
 
 #[component]
 pub fn HelperWidget(
-    required_fields: &'static Vec<RequiredFields>,
+    required_fields: Vec<RequiredFields>,
 ) -> impl IntoView {
 
     view! {
@@ -119,7 +119,7 @@ pub fn HelperWidget(
 
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
-) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>, &'static Vec<RequiredFields>)
+) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>, Vec<RequiredFields>)
 where
     ID: AsRef<str> + Copy + Hash + Eq,
 {

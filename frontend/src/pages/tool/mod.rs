@@ -30,8 +30,9 @@ const CHART_ELEMENT_ID: &str = "chart";
 #[allow(clippy::too_many_lines)]
 pub fn Tool() -> impl IntoView {
     let field_sets = field_sets();
-    let (signals, set_views, &required_fields) = forms::render_field_sets(field_sets);
+    let (signals, set_views, required_fields) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
+    //let required_fields = Rc::new(required_fields);
 
     let input_data = RwSignal::new(Option::<app::Input>::None);
 
