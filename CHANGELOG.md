@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.3 (2023-11-28)
+
+- New: 
+  - Implemented form field validation with hints which still need to be filled out, see #13
+
 ## v0.1.2 (2023-11-27)
 
 - New:
