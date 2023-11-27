@@ -8,6 +8,8 @@ use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
 use klick_svg_charts::BarChart;
 
+use self::fields::RequiredField;
+
 use crate::{
     forms::{self, FieldSignal},
     sankey,
@@ -32,7 +34,7 @@ pub fn Tool() -> impl IntoView {
     let field_sets = field_sets();
     let (signals, set_views, required_fields) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
-    //let required_fields = Rc::new(required_fields);
+    let missing_fields: RwSignal::<Vec::<RequiredField>> = RwSignal::new(Vec::<RequiredField>::new());
 
     let input_data = RwSignal::new(Option::<app::Input>::None);
 
@@ -46,8 +48,9 @@ pub fn Tool() -> impl IntoView {
 
     let s = Rc::clone(&signals);
     create_effect(move |_| {
-        let data = read_input_fields(&s).try_into().ok();
-        input_data.set(data);
+        let (data, missing_fields_data) = read_input_fields(&s, &required_fields);
+        missing_fields.set(missing_fields_data);
+        input_data.set(data.try_into().ok());
     });
 
     let s = Rc::clone(&signals);
@@ -168,7 +171,7 @@ pub fn Tool() -> impl IntoView {
               move |ev| {
                 ev.prevent_default();
 
-                let input = read_input_fields(&signals);
+                let (input, _) = read_input_fields(&signals, &vec![]);
                 let szenario = read_scenario_fields(&signals);
                 let json_bytes = export_to_vec_pretty(&input, &szenario);
 
@@ -217,7 +220,7 @@ pub fn Tool() -> impl IntoView {
                   <h3 class="my-8 text-xl font-bold">"Barchart/Sankey Diagramme"</h3>
                   <p>"Bitte geben Sie Werte ein damit die Szenarien berechnet werden können."</p>
                   <p>"Bei jeder Eingabe werden die Grafen automatisch neu berechnet solange alle benötigten Felder korrekt eingegeben wurden."</p>
-                  <forms::HelperWidget required_fields=required_fields/>
+                  <forms::HelperWidget missing_fields=missing_fields.get()/>
               </div>
               })
           } else {

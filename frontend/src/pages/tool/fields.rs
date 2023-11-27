@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+pub type RequiredField = crate::forms::RequiredField<FieldId>;
 
 use leptos::*;
 use serde::{Deserialize, Serialize};
@@ -42,7 +43,10 @@ pub enum FieldId {
     CustomN2oScenarioValue,
 }
 
-pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
+pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>, required_fields: &Vec<RequiredField>) -> (InputData, Vec<RequiredField>) {
+    let missing_fields: Vec<RequiredField> = required_fields.iter().filter(|field|
+        s.get(&field.id).and_then(FieldSignal::get_float).is_none()).cloned().collect();
+
     let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
     let population_equivalent = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
     let wastewater = s.get(&FieldId::Flow).and_then(FieldSignal::get_float);
@@ -104,7 +108,7 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
             .and_then(FieldSignal::get_float),
     };
 
-    InputData {
+    (InputData {
         plant_name,
         population_equivalent,
         wastewater,
@@ -113,7 +117,8 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>) -> InputData {
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
-    }
+    },
+    missing_fields)
 }
 
 pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {

@@ -94,32 +94,32 @@ impl FieldSignal {
 }
 
 #[derive(Copy, Clone)]
-pub struct RequiredFields {
-    // pub id: ID,
-    pub field_signal: Option<f64>,
+pub struct RequiredField<ID> where
+    ID: AsRef<str> + Copy + Hash + Eq, {
+    pub id: ID,
     pub label: &'static str,
 }
 
 #[component]
-pub fn HelperWidget(
-    required_fields: Vec<RequiredFields>,
-) -> impl IntoView {
-
+pub fn HelperWidget<ID>(
+    missing_fields: Vec<RequiredField<ID>>,
+) -> impl IntoView where
+    ID: AsRef<str> + Copy + Hash + Eq + 'static, {
+    let missing_fields = missing_fields.clone();
     view! {
         <For
-            each = move || required_fields.clone()
-            key = |e| e.field_signal.is_none()
+            each = move || missing_fields.clone()
+            key = |e| e.label.to_string()
             let:e
         >
-        <p>{ e.label }</p>
+        <p><a href="#">{ e.label }</a></p>
         </For>
-        <p>TUT</p>
     }
 }
 
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
-) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>, Vec<RequiredFields>)
+) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>, Vec<RequiredField<ID>>)
 where
     ID: AsRef<str> + Copy + Hash + Eq,
 {
@@ -140,9 +140,9 @@ where
             field_views.push(view);
             signals.insert(id, field_signal);
             if required {
-                required_fields.push(RequiredFields {
-                    label: label,
-                    field_signal: field_signal.get_float(),
+                required_fields.push(RequiredField {
+                    label,
+                    id,
                 });
             }
         }
