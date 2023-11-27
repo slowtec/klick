@@ -11,7 +11,7 @@ use klick_svg_charts::BarChart;
 use self::fields::RequiredField;
 
 use crate::{
-    forms::{self, FieldSignal},
+    forms::{self, FieldSignal, MissingField},
     sankey,
 };
 
@@ -34,7 +34,7 @@ pub fn Tool() -> impl IntoView {
     let field_sets = field_sets();
     let (signals, set_views, required_fields) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
-    let missing_fields: RwSignal::<Vec::<RequiredField>> = RwSignal::new(Vec::<RequiredField>::new());
+    let missing_fields: RwSignal::<Vec::<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
     let input_data = RwSignal::new(Option::<app::Input>::None);
 
@@ -48,8 +48,8 @@ pub fn Tool() -> impl IntoView {
 
     let s = Rc::clone(&signals);
     create_effect(move |_| {
-        let (data, missing_fields_data) = read_input_fields(&s, &required_fields);
-        missing_fields.set(missing_fields_data);
+        let (data, filtered_required_fields) = read_input_fields(&s, &required_fields);
+        missing_fields.set(filtered_required_fields);
         input_data.set(data.try_into().ok());
     });
 
@@ -218,9 +218,9 @@ pub fn Tool() -> impl IntoView {
 
               <div>
                   <h3 class="my-8 text-xl font-bold">"Barchart/Sankey Diagramme"</h3>
-                  <p>"Bitte geben Sie Werte ein damit die Szenarien berechnet werden können."</p>
-                  <p>"Bei jeder Eingabe werden die Grafen automatisch neu berechnet solange alle benötigten Felder korrekt eingegeben wurden."</p>
+                  <p>"Bitte ergenzen Sie folgende Werte, ein damit die Szenarien berechnet werden können:"</p>
                   <forms::HelperWidget missing_fields=missing_fields.get()/>
+                  <p>"Bei jeder Eingabe werden die Grafen automatisch neu berechnet solange alle benötigten Felder korrekt eingegeben wurden."</p>
               </div>
               })
           } else {

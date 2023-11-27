@@ -97,23 +97,33 @@ impl FieldSignal {
 pub struct RequiredField<ID> where
     ID: AsRef<str> + Copy + Hash + Eq, {
     pub id: ID,
+    pub field_id: &'static str,
+    pub label: &'static str,
+}
+
+#[derive(Copy, Clone)]
+pub struct MissingField {
+    pub field_id: &'static str,
     pub label: &'static str,
 }
 
 #[component]
-pub fn HelperWidget<ID>(
-    missing_fields: Vec<RequiredField<ID>>,
-) -> impl IntoView where
-    ID: AsRef<str> + Copy + Hash + Eq + 'static, {
+pub fn HelperWidget(
+    missing_fields: Vec<MissingField>,
+) -> impl IntoView {
     let missing_fields = missing_fields.clone();
     view! {
+        <ul class="list-disc list-inside">
         <For
             each = move || missing_fields.clone()
             key = |e| e.label.to_string()
             let:e
         >
-        <p><a href="#">{ e.label }</a></p>
+        // document.getElementById('betriebsstoffe-kalk-22').scrollIntoView({ behavior: 'smooth' });
+        // document.getElementById('betriebsstoffe-kalk-22').focus();
+        <li><a href={format!("#focus-{}", e.field_id)}>{ e.label }</a></li>
         </For>
+        </ul>
     }
 }
 
@@ -132,17 +142,18 @@ where
 
         for field in set.fields {
             let id = field.id;
-            //let field_label_string: String = field.label.to_string();
             let label = field.label;
             let required = field.required;
+            let field_id: String = crate::forms::form_field_id(&field.id);
 
-            let (field_signal, view) = render_field(field);
+            let (field_signal, view) = render_field(field, field_id.clone());
             field_views.push(view);
             signals.insert(id, field_signal);
             if required {
                 required_fields.push(RequiredField {
                     label,
                     id,
+                    field_id: field_id.as_str(),
                 });
             }
         }
@@ -164,7 +175,7 @@ where
     (signals, set_views, required_fields)
 }
 
-fn render_field<ID>(field: Field<ID>) -> (FieldSignal, impl IntoView)
+fn render_field<ID>(field: Field<ID>, field_id: String) -> (FieldSignal, impl IntoView)
 where
     ID: AsRef<str> + Copy,
 {
@@ -174,8 +185,6 @@ where
         required,
         ..
     } = field;
-
-    let field_id = crate::forms::form_field_id(&field.id);
 
     match field.field_type {
         FieldType::Text {
@@ -359,7 +368,7 @@ fn TextInput(
 ) -> impl IntoView {
     let required_label = format!("{} {label}", if required { "*" } else { "" });
     view! {
-      <div>
+      <div id={format!("focus-{}", field_id)}>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }

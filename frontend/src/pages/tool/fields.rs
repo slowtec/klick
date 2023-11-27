@@ -10,7 +10,7 @@ use klick_boundary::{
     N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
 };
 
-use crate::forms::{format_f64_into_de_string, FieldSignal};
+use crate::forms::{format_f64_into_de_string, FieldSignal, MissingField};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum FieldId {
@@ -43,9 +43,34 @@ pub enum FieldId {
     CustomN2oScenarioValue,
 }
 
-pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>, required_fields: &Vec<RequiredField>) -> (InputData, Vec<RequiredField>) {
-    let missing_fields: Vec<RequiredField> = required_fields.iter().filter(|field|
-        s.get(&field.id).and_then(FieldSignal::get_float).is_none()).cloned().collect();
+pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>, required_fields: &Vec<RequiredField>) -> (InputData, Vec<MissingField>) {
+    let missing_fields: Vec<MissingField> = required_fields.iter().fold(vec![], | mut acc, &field| {
+        if field.id == FieldId::Name {
+            if s.get(&field.id).and_then(FieldSignal::get_text_signal).is_none()
+            {
+                let x = MissingField {
+                    field_id: field.field_id,
+                    label: field.label,
+                };
+                acc.push(x);
+                acc
+            } else {
+                acc
+            }
+        } else {
+            if s.get(&field.id).and_then(FieldSignal::get_float).is_none()
+            {
+                let x = MissingField {
+                    field_id: field.field_id,
+                    label: field.label,
+                };
+                acc.push(x);
+                acc
+            }else {
+                acc
+            }
+        }
+    });
 
     let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
     let population_equivalent = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
