@@ -93,23 +93,58 @@ impl FieldSignal {
     }
 }
 
+#[derive(Copy, Clone)]
+pub struct RequiredFields {
+    // pub id: ID,
+    pub field_signal: Option<f64>,
+    pub label: &'static str,
+}
+
+#[component]
+pub fn HelperWidget(
+    required_fields: &'static Vec<RequiredFields>,
+) -> impl IntoView {
+
+    view! {
+        <For
+            each = move || required_fields.clone()
+            key = |e| e.field_signal.is_none()
+            let:e
+        >
+        <p>{ e.label }</p>
+        </For>
+        <p>TUT</p>
+    }
+}
+
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
-) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>)
+) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>, &'static Vec<RequiredFields>)
 where
     ID: AsRef<str> + Copy + Hash + Eq,
 {
     let mut signals = HashMap::new();
     let mut set_views = vec![];
+    let mut required_fields = vec![];
 
     for set in field_sets {
         let mut field_views = vec![];
 
         for field in set.fields {
             let id = field.id;
+            //let field_label_string: String = field.label.to_string();
+            let label = field.label;
+            let required = field.required;
+
             let (field_signal, view) = render_field(field);
             field_views.push(view);
             signals.insert(id, field_signal);
+            if required {
+                required_fields.push(RequiredFields {
+                    label: label,
+                    field_signal: field_signal.get_float(),
+                });
+            }
         }
 
         set_views.push(
@@ -126,7 +161,7 @@ where
             .into_view(),
         );
     }
-    (signals, set_views)
+    (signals, set_views, required_fields)
 }
 
 fn render_field<ID>(field: Field<ID>) -> (FieldSignal, impl IntoView)
@@ -613,6 +648,8 @@ pub enum FieldType {
         options: Vec<SelectOption>,
     },
 }
+
+
 
 #[derive(Debug, Clone, Copy)]
 pub struct SelectOption {

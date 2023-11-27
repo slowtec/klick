@@ -24,12 +24,13 @@ use self::{
 
 const CHART_ELEMENT_ID: &str = "chart";
 
+
+
 #[component]
 #[allow(clippy::too_many_lines)]
 pub fn Tool() -> impl IntoView {
     let field_sets = field_sets();
-
-    let (signals, set_views) = forms::render_field_sets(field_sets);
+    let (signals, set_views, &required_fields) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
 
     let input_data = RwSignal::new(Option::<app::Input>::None);
@@ -98,9 +99,9 @@ pub fn Tool() -> impl IntoView {
                  }
                  if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
                  {
-                     None
+                   None
                  } else {
-                    Some((method, output_data))
+                   Some((method, output_data))
                  }
              })
              .collect::<Vec<_>>();
@@ -206,6 +207,23 @@ pub fn Tool() -> impl IntoView {
         </div>
         { set_views }
       </div>
+      // form field requirements helper widget
+      { move ||  {
+          if barchart_arguments.get().is_empty() {
+              Some(view! {
+
+              <div>
+                  <h3 class="my-8 text-xl font-bold">"Barchart/Sankey Diagramme"</h3>
+                  <p>"Bitte geben Sie Werte ein damit die Szenarien berechnet werden können."</p>
+                  <p>"Bei jeder Eingabe werden die Grafen automatisch neu berechnet solange alle benötigten Felder korrekt eingegeben wurden."</p>
+                  <forms::HelperWidget required_fields=required_fields/>
+              </div>
+              })
+          } else {
+              None
+          }
+          }
+      }
       // bar diagram
       { move ||
         {
