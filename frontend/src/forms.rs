@@ -128,9 +128,15 @@ pub fn HelperWidget(
             key = |e| e.label.to_string()
             let:e
         >
-        // document.getElementById('betriebsstoffe-kalk-22').scrollIntoView({ behavior: 'smooth' });
-        // document.getElementById('betriebsstoffe-kalk-22').focus();
-        <li><a href={format!("#focus-{}", e.field_id)}>{ e.label }</a></li>
+        <li><a href=""
+          on:click=move |_| {
+            use leptos::wasm_bindgen::JsCast;
+            let element: web_sys::HtmlInputElement = document().query_selector(&format!("#{}", &e.field_id)).unwrap().unwrap().unchecked_into();
+            // uses might have to click the list link twice because if they are in input editing the on:blur event needs to change the html first and
+            // this seems to interfere with this focus event
+            let _ = element.focus();
+          }
+        >{ e.label }</a></li>
         </For>
         </ul>
     }
@@ -457,7 +463,7 @@ fn NumberInput(
     let error = RwSignal::new(Option::<String>::None);
 
     view! {
-      <div id={ format!("focus-{}", field_id)}>
+      <div>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }
