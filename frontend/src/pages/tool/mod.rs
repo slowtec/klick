@@ -259,6 +259,36 @@ pub fn Tool() -> impl IntoView {
 
       </Show>
       <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
+      // handlungsempfehlungen
+        <div class="mt-8">
+            <h2 class="my-8 text-xl font-bold">Handlungsempfehlungen</h2>
+
+Die vorgestellten Handlungsempfehlungen stellen eine erste Auswahl an möglichen Minderungsmaßnahmen für Treibhausgasemissionen (THG) an Kläranlagen dar. Diese sollen Ihnen wichtige Mehrwerte bieten, um die Klimaauswirkungen Ihrer Kläranlage zu minimieren und deren Wettbewerbsfähigkeit langfristig zu sichern.
+THG treten an mehreren Prozessschritten auf. Die Minderungsmaßnahmen fokussieren sich auf Methan- und Lachgasemissionen sowie energiebedingte Emissionen. Für bestimmte Maßnahmen kann ein konkretes Minderungspotenzial (aus der Literatur) abgeleitet werden, für andere kann vorerst nur der Hinweis ausgegeben werden, ob sich die Klimabilanz dadurch qualitativ verbessert.
+Unter nachfolgenden Überschriften erhalten Sie weiterführende Informationen zu einzelnen Maßnahmen und können gegebenenfalls Ihre Klimabilanz neu berechnen/verbessern.
+
+            </div>
+
+        <div class="mt-8">
+            <h2 class="my-8 text-xl font-bold">Methanemissionen aus der Vorklärung</h2>
+
+            </div>
+        <div class="mt-8">
+            <h2 class="my-8 text-xl font-bold">Methanemissionen aus offenen Faultürmen</h2>
+
+            </div>
+        <div class="mt-8">
+            <h2 class="my-8 text-xl font-bold">Dichtigkeitsprüfung </h2>
+
+            </div>
+        <div class="mt-8">
+            <h2 class="my-8 text-xl font-bold">Lachgasemissionen bei der biologischen Reinigungsstufe</h2>
+
+            </div>
+        <div class="mt-8">
+            <h2 class="my-8 text-xl font-bold">Kläranlagen-Monitoring und THG-Messungen</h2>
+
+            </div>
     }
 }
 
