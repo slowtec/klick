@@ -1,32 +1,30 @@
-use std::{collections::HashMap, rc::Rc};
+use std::rc::Rc;
 
 use gloo_file::{Blob, File, ObjectUrl};
-use leptos::{ev::MouseEvent, *};
+use leptos::*;
 use strum::IntoEnumIterator;
 
 use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
 use klick_svg_charts::BarChart;
 
-// use self::fields::RequiredField;
-
 use crate::{
     forms::{self, FieldSignal, MissingField},
     sankey,
 };
 
+mod action_panel;
 mod example_data;
 mod field_sets;
 mod fields;
 
 use self::{
+    action_panel::ActionPanel,
     field_sets::field_sets,
     fields::{load_fields, read_input_fields, read_scenario_fields, FieldId},
 };
 
 const CHART_ELEMENT_ID: &str = "chart";
-
-
 
 #[component]
 #[allow(clippy::too_many_lines)]
@@ -34,7 +32,7 @@ pub fn Tool() -> impl IntoView {
     let field_sets = field_sets();
     let (signals, set_views, required_fields) = forms::render_field_sets(field_sets);
     let signals = Rc::new(signals);
-    let missing_fields: RwSignal::<Vec::<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
+    let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
     let input_data = RwSignal::new(Option::<app::Input>::None);
 
@@ -43,8 +41,6 @@ pub fn Tool() -> impl IntoView {
     let selected_scenario_name = RwSignal::new(String::new());
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
-
-    let show_upload_input = RwSignal::new(false);
 
     let s = Rc::clone(&signals);
     create_effect(move |_| {
@@ -127,88 +123,66 @@ pub fn Tool() -> impl IntoView {
         }
     });
 
-    let download_link: NodeRef<leptos::html::A> = create_node_ref();
-    let upload_input: NodeRef<leptos::html::Input> = create_node_ref();
-
     let upload_action = create_action({
         let signals = Rc::clone(&signals);
-        move |_: &()| {
+        move |file: &File| {
             let signals = Rc::clone(&signals);
+            let file = file.clone();
             async move {
-                if let Err(err) = upload_and_load(signals, upload_input).await {
-                    log::warn!("Unable to upload data: {err}");
+                match gloo_file::futures::read_as_bytes(&file).await {
+                    Ok(bytes) => match import_from_slice(&bytes) {
+                        Ok((input, scenario)) => {
+                            load_fields(&signals, input, scenario);
+                        }
+                        Err(err) => {
+                            log::warn!("Unable to import data: {err}");
+                        }
+                    },
+                    Err(err) => {
+                        log::warn!("Unable to upload data: {err}");
+                    }
                 }
-                show_upload_input.set(false);
             }
         }
     });
 
+    let clear_signals = {
+        let signals = Rc::clone(&signals);
+        move || {
+            for s in signals.values() {
+                s.clear();
+            }
+        }
+    };
+
+    let load_example_values = {
+        let signals = Rc::clone(&signals);
+        move || {
+            example_data::load_example_field_signal_values(&signals);
+        }
+    };
+
+    let save_input_values = {
+        let signals = Rc::clone(&signals);
+        move || {
+            let (input, _) = read_input_fields(&signals, &vec![]);
+            let szenario = read_scenario_fields(&signals);
+            let json_bytes = export_to_vec_pretty(&input, &szenario);
+
+            let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
+            let object_url = ObjectUrl::from(blob);
+            object_url
+        }
+    };
+
     view! {
       <div class="space-y-12">
-        <div class="flex items-center justify-end gap-x-6">
-          <Button
-            label = "Werte zurücksetzen"
-            on_click = {
-              let signals = Rc::clone(&signals);
-              move |_| {
-                for s in signals.values() { s.clear(); }
-              }
-            }
-          />
-          <Button
-            label = "Beispielwerte laden"
-            on_click = {
-              let signals = Rc::clone(&signals);
-              move |_| {
-                example_data::load_example_field_signal_values(&signals);
-              }
-            }
-          />
-          <Button
-            label = "Projekt speichern"
-            on_click = {
-              let signals = Rc::clone(&signals);
-              move |ev| {
-                ev.prevent_default();
-
-                let (input, _) = read_input_fields(&signals, &vec![]);
-                let szenario = read_scenario_fields(&signals);
-                let json_bytes = export_to_vec_pretty(&input, &szenario);
-
-                let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
-                let object_url = ObjectUrl::from(blob);
-
-                let link = download_link.get().expect("<a> to exist");
-                link.set_attribute("href", &object_url).unwrap();
-                link.set_attribute("download", "klimabilanzklaeranlage.json").unwrap();
-                link.click();
-                link.remove_attribute("href").unwrap();
-              }
-            }
-          />
-          <Button
-            label = "Projekt laden"
-            on_click = {
-              move |ev| {
-                ev.prevent_default();
-                show_upload_input.set(true);
-              }
-            }
-          />
-          <input
-            class = "block text-sm bg-gray-50 rounded-md shadow-sm file:bg-primary file:rounded-md file:border-0 file:mr-4 file:py-1 file:px-2 file:font-semibold"
-            type="file"
-            style = move || if show_upload_input.get() { None } else { Some("display:none;") }
-            accept="application/json"
-            node_ref=upload_input
-            on:change = move |ev| {
-                ev.prevent_default();
-                upload_action.dispatch(());
-            }
-          />
-          // Hidden download anchor
-          <a style="display:none;" node_ref=download_link></a>
-        </div>
+        <ActionPanel
+          clear = clear_signals
+          load = load_example_values
+          save_project = save_input_values
+          upload_action
+        />
         { set_views }
       </div>
       // form field requirements helper widget
@@ -271,43 +245,5 @@ const fn label_of_n2o_emission_factor_calc_method(
         N2oEmissionFactorCalcMethod::Pesimistic => "Pessimistisch",
         N2oEmissionFactorCalcMethod::Ipcc2019 => "IPCC 2019",
         N2oEmissionFactorCalcMethod::CustomFactor => "Benutzerdefiniert",
-    }
-}
-
-async fn upload_and_load(
-    signals: Rc<HashMap<FieldId, FieldSignal>>,
-    upload_input: NodeRef<leptos::html::Input>,
-) -> anyhow::Result<()> {
-    let Some(file_list) = get_file_list(upload_input) else {
-        log::debug!("No file list");
-        return Ok(());
-    };
-    let Some(file) = file_list.item(0) else {
-        log::debug!("No file selected");
-        return Ok(());
-    };
-    let gloo_file = File::from(file);
-    let bytes = gloo_file::futures::read_as_bytes(&gloo_file).await?;
-    let (input, scenario) = import_from_slice(&bytes)?;
-    load_fields(&signals, input, scenario);
-    Ok(())
-}
-
-fn get_file_list(upload_input: NodeRef<leptos::html::Input>) -> Option<web_sys::FileList> {
-    upload_input.get().expect("<input /> to exist").files()
-}
-
-#[component]
-fn Button<F>(label: &'static str, on_click: F) -> impl IntoView
-where
-    F: Fn(MouseEvent) + 'static,
-{
-    view! {
-      <button
-        type="button"
-        on:click = on_click
-        class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-        { label }
-      </button>
     }
 }

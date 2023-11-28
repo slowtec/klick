@@ -43,29 +43,30 @@ pub enum FieldId {
     CustomN2oScenarioValue,
 }
 
-pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>, required_fields: & Vec<RequiredField>) -> (InputData, Vec<MissingField>) {
-    let missing_fields: Vec<MissingField> = required_fields.iter().fold(vec![], | mut acc, field| {
-
-        if field.id == FieldId::Name {
-            if s.get(&field.id).and_then(FieldSignal::get_text).is_none()
-            {
-                let x = MissingField::new(field.field_id.clone(), field.label);
-                acc.push(x);
-                acc
+pub fn read_input_fields(
+    s: &HashMap<FieldId, FieldSignal>,
+    required_fields: &Vec<RequiredField>,
+) -> (InputData, Vec<MissingField>) {
+    let missing_fields: Vec<MissingField> =
+        required_fields.iter().fold(vec![], |mut acc, field| {
+            if field.id == FieldId::Name {
+                if s.get(&field.id).and_then(FieldSignal::get_text).is_none() {
+                    let x = MissingField::new(field.field_id.clone(), field.label);
+                    acc.push(x);
+                    acc
+                } else {
+                    acc
+                }
             } else {
-                acc
+                if s.get(&field.id).and_then(FieldSignal::get_float).is_none() {
+                    let x = MissingField::new(field.field_id.clone(), field.label);
+                    acc.push(x);
+                    acc
+                } else {
+                    acc
+                }
             }
-        } else {
-            if s.get(&field.id).and_then(FieldSignal::get_float).is_none()
-            {
-                let x = MissingField::new(field.field_id.clone(), field.label);
-                acc.push(x);
-                acc
-            }else {
-                acc
-            }
-        }
-    });
+        });
 
     let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
     let population_equivalent = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
@@ -128,17 +129,19 @@ pub fn read_input_fields(s: &HashMap<FieldId, FieldSignal>, required_fields: & V
             .and_then(FieldSignal::get_float),
     };
 
-    (InputData {
-        plant_name,
-        population_equivalent,
-        wastewater,
-        influent_average,
-        effluent_average,
-        energy_consumption,
-        sewage_sludge_treatment,
-        operating_materials,
-    },
-    missing_fields)
+    (
+        InputData {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        },
+        missing_fields,
+    )
 }
 
 pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {

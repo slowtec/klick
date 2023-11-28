@@ -10,7 +10,7 @@ pub fn bar_chart(
     data: Vec<BarChartArguments>,
     width: f64,
     height: f64,
-    selected: Option<u64>,`
+    selected: Option<u64>,
 ) -> String {
     let rt = create_runtime();
     let data = RwSignal::new(data);

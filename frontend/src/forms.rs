@@ -94,8 +94,10 @@ impl FieldSignal {
 }
 
 #[derive(Clone)]
-pub struct RequiredField<ID> where
-    ID: AsRef<str> + Copy + Hash + Eq, {
+pub struct RequiredField<ID>
+where
+    ID: AsRef<str> + Copy + Hash + Eq,
+{
     pub id: ID,
     pub field_id: String,
     pub label: &'static str,
@@ -109,17 +111,12 @@ pub struct MissingField {
 
 impl MissingField {
     pub fn new(field_id: String, label: &'static str) -> Self {
-        Self {
-            field_id,
-            label,
-        }
+        Self { field_id, label }
     }
 }
 
 #[component]
-pub fn HelperWidget(
-    missing_fields: Vec<MissingField>,
-) -> impl IntoView {
+pub fn HelperWidget(missing_fields: Vec<MissingField>) -> impl IntoView {
     let missing_fields = missing_fields.clone();
     view! {
         <ul class="list-disc list-inside">
@@ -144,7 +141,11 @@ pub fn HelperWidget(
 
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
-) -> (HashMap<ID, FieldSignal>, Vec<impl IntoView>, Vec<RequiredField<ID>>)
+) -> (
+    HashMap<ID, FieldSignal>,
+    Vec<impl IntoView>,
+    Vec<RequiredField<ID>>,
+)
 where
     ID: AsRef<str> + Copy + Hash + Eq,
 {
@@ -672,8 +673,6 @@ pub enum FieldType {
         options: Vec<SelectOption>,
     },
 }
-
-
 
 #[derive(Debug, Clone, Copy)]
 pub struct SelectOption {
