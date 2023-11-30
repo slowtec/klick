@@ -1,7 +1,7 @@
 use crate::{
     constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CO2Equivalents, EnergyConsumption,
     Factor, Input, Mass, MilligramsPerLiter, OperatingMaterials, Output, Qubicmeters,
-    SewageSludgeTreatment, Tons,
+    SewageSludgeTreatment, Tons, Kilowatthours,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -74,6 +74,7 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
         n2o_emission_factor,
     );
 
+
     let ch4_sewage_treatment =
         population_equivalent * EMISSION_FACTOR_CH4_PLANT / f64::from(10_i32.pow(6)); // [t CH4/a]
     let ch4_water = f64::from(*chemical_oxygen_demand_effluent * *wastewater) / 1000.0
@@ -112,7 +113,8 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
         + ch4_water
         + ch4_combined_heat_and_power_plant;
 
-    let external_energy = *total_power_consumption - *on_site_power_generation; // [kwh/a]
+    let max = |a: Kilowatthours, b: Kilowatthours| if a > b { a } else { b };
+    let external_energy = max( Kilowatthours::new(0.0), *total_power_consumption - *on_site_power_generation); // [kwh/a]
 
     let divisor6 = f64::from(10_i32.pow(6));
     let electricity_mix =

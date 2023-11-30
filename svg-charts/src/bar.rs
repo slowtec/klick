@@ -1,4 +1,5 @@
 use leptos::*;
+use log::info;
 
 #[derive(Debug, Clone)]
 pub struct Arguments {
@@ -77,11 +78,14 @@ fn Bars(
         }
         key=|(i,_,_,_)| *i
         children = move |(i,label,co2_value, n2o_factor)| {
-          let bar_height = (height - 4.0 * gap) * co2_value/co2_value_max;
-          let dx = gap + (bar_width + gap) * i as f64;
-          let dy = (height - gap) - bar_height;
+            info!("co2_value= {}, co2_value_max = {} ", co2_value, co2_value_max);
+          let f64_max = |a: f64, b: f64| if a > b { a } else { b };
+          let bar_height = f64_max(0.01, (height - 4.0 * gap) * co2_value/co2_value_max);
+          let dx = f64_max(0.01, gap + (bar_width + gap) * i as f64);
+          let dy = f64_max(0.01, (height - gap) - bar_height);
 
-          let selected_rect_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
+          let selected_rect_dx = f64_max(0.01,(gap / 2.0) + ((bar_width + gap) * i as f64));
+          info!("selected_rect_dx = {}, i = {}, bar_width = {}, dx={}, dy={}, height={}, width={}, bar_height={}, bar_width={}", selected_rect_dx, i, bar_width, dx, dy, height, width, bar_height, bar_width);
           view! {
             // background for selected bar
             <Show when= move || { selected_bar.get() == Some(i as u64)}>
