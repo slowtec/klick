@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.4 (2023-11-30)
+
+- Changed: 
+  - Fixing typos, #66 
+
 ## v0.1.3 (2023-11-28)
 
 - New: 
