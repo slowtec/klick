@@ -191,10 +191,10 @@ pub fn Tool() -> impl IntoView {
               Some(view! {
 
               <div>
-                  <h3 class="my-8 text-xl font-bold">"Barchart/Sankey Diagramme"</h3>
-                  <p>"Bitte ergenzen Sie folgende Werte, ein damit die Szenarien berechnet werden können:"</p>
+                  <h3 class="my-8 text-xl font-bold">"Auswertung Ihrer Daten (via Barchart / Sankey-Diagramm)"</h3>
+                  <p>"Bitte ergänzen Sie folgende Werte, damit die Gesamtemissionen Ihrer Kläranlage, anhand verschiedener Szenarien, berechnet werden können:"</p>
                   <forms::HelperWidget missing_fields=missing_fields.get()/>
-                  <p>"Bei jeder Eingabe werden die Grafen automatisch neu berechnet solange alle benötigten Felder korrekt eingegeben wurden."</p>
+                  <p>"Bei jeder Eingabe werden die Graphen automatisch neu berechnet."</p>
               </div>
               })
           } else {

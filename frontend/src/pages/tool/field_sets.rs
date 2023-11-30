@@ -18,7 +18,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 description: Some(
                     "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Text {
                     initial_value: None,
                     placeholder: Some(
@@ -534,7 +534,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: "Szenario Benutzerdefiniert: N₂O-Emissionsfaktors",
+        title: "Szenario Benutzerdefiniert",
         fields: vec![
             Field {
                 id: Id::CustomN2oScenarioValue,
