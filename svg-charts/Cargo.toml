@@ -7,7 +7,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-leptos = "0.5.2"
+leptos = "0.5.4"
 log = "0.4.20"
 
 [features]

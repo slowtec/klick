@@ -17,10 +17,9 @@ pub async fn run(addr: SocketAddr) -> anyhow::Result<()> {
     log::info!("Start KlicK server");
     let app = Router::new().fallback(static_handler);
 
-    log::info!("Start listening on {addr}");
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await?;
+    log::info!("Start listening on http://{addr}");
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    axum::serve(listener, app.into_make_service()).await?;
     Ok(())
 }
 
