@@ -413,7 +413,7 @@ fn TextInput(
 }
 
 fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
-    let float = input.replace('.', "").replace(',', ".").parse::<f64>();
+    let float = input.replace('.', "").replace(',', ".").trim().parse::<f64>();
     match float {
         Ok(v) => Ok(v),
         Err(e) => Err(format!("{e}")),
@@ -687,6 +687,16 @@ mod tests {
     #[test]
     fn parse_a_german_input_string_as_f64() {
         let result = parse_de_str_as_f64("1.100.100,23");
+        assert_eq!(result, Ok(1_100_100.23));
+    }
+    #[test]
+    fn parse_a_german_input_string_as_f64_trailing_space() {
+        let result = parse_de_str_as_f64("1.100.100,23 ");
+        assert_eq!(result, Ok(1_100_100.23));
+    }
+    #[test]
+    fn parse_a_german_input_string_as_f64_leading_space() {
+        let result = parse_de_str_as_f64(" 1.100.100,23");
         assert_eq!(result, Ok(1_100_100.23));
     }
 
