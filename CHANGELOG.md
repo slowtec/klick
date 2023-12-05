@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.5 (2023-12-05)
+
+- Changed:
+  - Fixing "Werte zurücksetzen" functionality #68
+  - Fixing input field spaces handling, by using trunc, before float parsing #70
+
 ## v0.1.4 (2023-11-30)
 
 - Changed: 
