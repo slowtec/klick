@@ -3,7 +3,7 @@ use leptos::*;
 const LOGO: &str = include_str!("../assets/logo_BMWK_NKI.svg");
 const FOOTER_MD: &str = include_str!("../content/footer.md");
 
-use crate::{Markdown, Page, VERSION};
+use crate::{Markdown, Page, CHANGELOG_URL, VERSION};
 
 #[component]
 pub fn Footer() -> impl IntoView {
@@ -37,7 +37,7 @@ pub fn Footer() -> impl IntoView {
               <a href="https://slowtec.de">"slowtec GmbH"</a>
             </p>
             <p class="mt-10 text-center text-xs leading-5 text-gray-400">
-              "v" { VERSION }
+              <a class="no-underline hover:underline" href= { CHANGELOG_URL} >"v" { VERSION }</a>
             </p>
           </div>
         </div>
