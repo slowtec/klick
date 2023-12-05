@@ -502,8 +502,8 @@ fn NumberInput(
             }
             prop:value = move || {
                 let Some(v) = input_value.get() else {
-                    // do not reset error because on:focusout could have set it
                     output_value.set(None);
+                    error.set(None);
                     return String::new();
                 };
                 let Ok(t) = parse_de_str_as_f64(&v) else {
