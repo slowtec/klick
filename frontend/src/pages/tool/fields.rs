@@ -57,14 +57,12 @@ pub fn read_input_fields(
                 } else {
                     acc
                 }
+            } else if s.get(&field.id).and_then(FieldSignal::get_float).is_none() {
+                let x = MissingField::new(field.field_id.clone(), field.label);
+                acc.push(x);
+                acc
             } else {
-                if s.get(&field.id).and_then(FieldSignal::get_float).is_none() {
-                    let x = MissingField::new(field.field_id.clone(), field.label);
-                    acc.push(x);
-                    acc
-                } else {
-                    acc
-                }
+                acc
             }
         });
 

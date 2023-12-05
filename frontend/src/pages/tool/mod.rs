@@ -14,23 +14,34 @@ use crate::{
 };
 
 mod action_panel;
+mod breadcrumbs;
 mod example_data;
 mod field_sets;
 mod fields;
+mod input_data_list;
 
 use self::{
     action_panel::ActionPanel,
+    breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
     fields::{load_fields, read_input_fields, read_scenario_fields, FieldId},
+    input_data_list::InputDataList,
 };
 
 const CHART_ELEMENT_ID: &str = "chart";
+
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub enum PageSection {
+    #[default]
+    DataCollection,
+    OptimizationOptions,
+}
 
 #[component]
 #[allow(clippy::too_many_lines)]
 pub fn Tool() -> impl IntoView {
     let field_sets = field_sets();
-    let (signals, set_views, required_fields) = forms::render_field_sets(field_sets);
+    let (signals, set_views, required_fields) = forms::render_field_sets(field_sets.clone());
     let signals = Rc::new(signals);
     let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
@@ -42,7 +53,10 @@ pub fn Tool() -> impl IntoView {
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
 
+    let current_section = RwSignal::new(PageSection::default());
+
     let s = Rc::clone(&signals);
+
     create_effect(move |_| {
         let (data, filtered_required_fields) = read_input_fields(&s, &required_fields);
         missing_fields.set(filtered_required_fields);
@@ -170,10 +184,18 @@ pub fn Tool() -> impl IntoView {
             let json_bytes = export_to_vec_pretty(&input, &szenario);
 
             let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
-            let object_url = ObjectUrl::from(blob);
-            object_url
+
+            ObjectUrl::from(blob)
         }
     };
+
+    let breadcrumps_entries = vec![
+        ("Datenerfassung", PageSection::DataCollection),
+        (
+            "Auswertung & Handlungsempfehlungen",
+            PageSection::OptimizationOptions,
+        ),
+    ];
 
     view! {
       <div class="space-y-12">
@@ -183,25 +205,48 @@ pub fn Tool() -> impl IntoView {
           save_project = save_input_values
           upload_action
         />
-        { set_views }
+        <Breadcrumbs entries = { breadcrumps_entries } current = current_section />
+        <div
+          class = move || {
+            if current_section.get() == PageSection::DataCollection {
+                None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
+         { set_views }
+        </div>
+        <div
+          class = move || {
+            if current_section.get() == PageSection::DataCollection {
+                Some("hidden")
+            } else {
+                None
+            }
+          }
+        >
+          <InputDataList field_sets signals />
+        </div>
       </div>
-      // form field requirements helper widget
-      { move ||  {
+      { move ||
           if barchart_arguments.get().is_empty() {
               Some(view! {
-
-              <div>
-                  <h3 class="my-8 text-xl font-bold">"Auswertung Ihrer Daten (via Barchart / Sankey-Diagramm)"</h3>
+                <div class="mt-5">
                   <p>"Bitte ergänzen Sie folgende Werte, damit die Gesamtemissionen Ihrer Kläranlage, anhand verschiedener Szenarien, berechnet werden können:"</p>
-                  <forms::HelperWidget missing_fields=missing_fields.get()/>
+                    <forms::HelperWidget
+                      missing_fields=missing_fields.get()
+                      before_focus = move || current_section.set(PageSection::DataCollection)
+                    />
                   <p>"Bei jeder Eingabe werden die Graphen automatisch neu berechnet."</p>
-              </div>
+                </div>
               })
           } else {
               None
           }
-          }
       }
+      <h3 class="my-8 text-xl font-bold">"Auswertung Ihrer Daten (via Barchart / Sankey-Diagramm)"</h3>
+
       // bar diagram
       { move ||
         {
@@ -218,7 +263,9 @@ pub fn Tool() -> impl IntoView {
                   selected_bar = selected_scenario
                 />
               </div>
-                <p>"Es ist das Szenario \""{selected_scenario_name.get()}"\" ausgewählt. Durch Anklicken kann ein anderes Szenario ausgewählt werden."</p>
+              <p>
+                "Es ist das Szenario \""{selected_scenario_name.get()}"\" ausgewählt. Durch Anklicken kann ein anderes Szenario ausgewählt werden."
+              </p>
             })
           }
         }

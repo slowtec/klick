@@ -18,7 +18,6 @@ where
 
     // Format the u64 as a string with a comma
     let formatted_string = format!("{u:0}");
-    log::debug!("formatted_string {formatted_string}");
 
     // Insert a comma at the appropriate position
     let comma_separated_string = formatted_string

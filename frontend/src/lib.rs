@@ -27,6 +27,7 @@ const CHANGELOG_URL: &str = concat!(
 );
 
 #[component]
+#[must_use]
 pub fn App() -> impl IntoView {
     provide_meta_context();
 

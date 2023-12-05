@@ -6,6 +6,7 @@ use std::{
 };
 
 use inflector::cases::kebabcase::to_kebab_case;
+use leptos::wasm_bindgen::JsCast;
 use leptos::*;
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
@@ -91,6 +92,15 @@ impl FieldSignal {
             Self::Selection(s) => s.set(None),
         }
     }
+
+    pub fn as_formatted_string(&self) -> Option<String> {
+        match self {
+            Self::Float { input, .. } => input.get(),
+            Self::Text(s) => s.get(),
+            Self::Bool(s) => Some(if s.get() { "Ja" } else { "Nein" }.to_string()),
+            Self::Selection(_) => todo!(),
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -116,26 +126,36 @@ impl MissingField {
 }
 
 #[component]
-pub fn HelperWidget(missing_fields: Vec<MissingField>) -> impl IntoView {
+pub fn HelperWidget<F>(missing_fields: Vec<MissingField>, before_focus: F) -> impl IntoView
+where
+    F: Fn() + Copy + 'static,
+{
     let missing_fields = missing_fields.clone();
     view! {
-        <ul class="list-disc list-inside">
+      <ul class="ml-5 my-4 list-disc list-inside">
         <For
-            each = move || missing_fields.clone()
-            key = |e| e.label.to_string()
-            let:e
+          each = move || missing_fields.clone()
+          key = |e| e.label.to_string()
+          let:e
         >
-        <li><a href=""
-          on:click=move |_| {
-            use leptos::wasm_bindgen::JsCast;
-            let element: web_sys::HtmlInputElement = document().query_selector(&format!("#{}", &e.field_id)).unwrap().unwrap().unchecked_into();
-            // uses might have to click the list link twice because if they are in input editing the on:blur event needs to change the html first and
-            // this seems to interfere with this focus event
-            let _ = element.focus();
-          }
-        >{ e.label }</a></li>
+          <li>
+            <a
+              class = "cursor-pointer"
+              on:click=move |_| {
+                let field_id = &e.field_id;
+                let element_id = format!("#{field_id}");
+                let element: web_sys::HtmlInputElement = document().query_selector(&element_id).unwrap().unwrap().unchecked_into();
+                // uses might have to click the list link twice because if they are in input editing the on:blur event needs to change the html first and
+                // this seems to interfere with this focus event
+                before_focus();
+                let _ = element.focus();
+              }
+            >
+              { e.label }
+            </a>
+          </li>
         </For>
-        </ul>
+      </ul>
     }
 }
 
@@ -143,7 +163,7 @@ pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
 ) -> (
     HashMap<ID, FieldSignal>,
-    Vec<impl IntoView>,
+    Vec<impl IntoView + Clone>,
     Vec<RequiredField<ID>>,
 )
 where
@@ -167,9 +187,9 @@ where
             signals.insert(id, field_signal);
             if required {
                 required_fields.push(RequiredField {
-                    label,
                     id,
                     field_id,
+                    label,
                 });
             }
         }
@@ -384,7 +404,7 @@ fn TextInput(
 ) -> impl IntoView {
     let required_label = format!("{} {label}", if required { "*" } else { "" });
     view! {
-      <div id={format!("focus-{}", field_id)}>
+      <div id={format!("focus-{field_id}")}>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }
@@ -413,7 +433,11 @@ fn TextInput(
 }
 
 fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
-    let float = input.replace('.', "").replace(',', ".").trim().parse::<f64>();
+    let float = input
+        .replace('.', "")
+        .replace(',', ".")
+        .trim()
+        .parse::<f64>();
     match float {
         Ok(v) => Ok(v),
         Err(e) => Err(format!("{e}")),
@@ -630,13 +654,13 @@ fn Options(value: RwSignal<Option<usize>>, options: Vec<SelectOption>) -> impl I
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FieldSet<ID> {
     pub title: &'static str,
     pub fields: Vec<Field<ID>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Field<ID> {
     pub id: ID,
     pub label: &'static str,
@@ -645,13 +669,22 @@ pub struct Field<ID> {
     pub field_type: FieldType,
 }
 
+impl<ID> Field<ID> {
+    pub const fn unit(&self) -> Option<&'static str> {
+        match self.field_type {
+            FieldType::Float { unit, .. } => Some(unit),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct MinMax {
     pub min: Option<f64>,
     pub max: Option<f64>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub enum FieldType {
     Float {

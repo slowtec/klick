@@ -25,14 +25,14 @@ where
           label = "Werte zurücksetzen"
           on_click = move |ev| {
               ev.prevent_default();
-              clear()
+              clear();
           }
         />
         <Button
           label = "Beispielwerte laden"
           on_click = move |ev| {
               ev.prevent_default();
-              load()
+              load();
           }
         />
         <Button
