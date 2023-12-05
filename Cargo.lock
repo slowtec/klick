@@ -119,12 +119,12 @@ dependencies = [
 
 [[package]]
 name = "axum"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "810a80b128d70e6ed2bdf3fe8ed72c0ae56f5f5948d01c2753282dd92a84fce8"
+checksum = "202651474fe73c62d9e0a56c6133f7a0ff1dc1c8cf7a5b03381af2a26553ac9d"
 dependencies = [
  "async-trait",
- "axum-core 0.4.0",
+ "axum-core 0.4.1",
  "bytes",
  "futures-util",
  "http 1.0.0",
@@ -169,9 +169,9 @@ dependencies = [
 
 [[package]]
 name = "axum-core"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de0ddc355eab88f4955090a823715df47acf0b7660aab7a69ad5ce6301ee3b73"
+checksum = "77cb22c689c44d4c07b0ab44ebc25d69d8ae601a2f28fb8d672d344178fa17aa"
 dependencies = [
  "async-trait",
  "bytes",
@@ -375,9 +375,9 @@ dependencies = [
 
 [[package]]
 name = "derive-where"
-version = "1.2.5"
+version = "1.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "146398d62142a0f35248a608f17edf0dde57338354966d6e41d0eb2d16980ccb"
+checksum = "48d9b1fc2a6d7e19c89e706a3769e31ee862ac7a4c810c7c0ff3910e1a42a4ce"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -902,7 +902,7 @@ dependencies = [
 
 [[package]]
 name = "klick"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "anyhow",
  "env_logger",
@@ -921,7 +921,7 @@ name = "klick-backend"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "axum 0.7.1",
+ "axum 0.7.2",
  "klick-application",
  "klick-boundary",
  "klick-svg-charts",
@@ -2419,9 +2419,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
 [[package]]
 name = "winnow"
-version = "0.5.19"
+version = "0.5.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "829846f3e3db426d4cee4510841b71a8e58aa2a76b1132579487ae430ccd9c7b"
+checksum = "b7e87b8dfbe3baffbe687eef2e164e32286eff31a5ee16463ce03d991643ec94"
 dependencies = [
  "memchr",
 ]

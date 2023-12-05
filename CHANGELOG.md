@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.6 (2023-12-06)
+
+- New:
+  - Breadcumps tool navigation
+  - Table of input values
+  - Link version number in the footer with CHANGELOG.md
+
 ## v0.1.5 (2023-12-05)
 
 - Changed:
@@ -8,12 +15,12 @@
 
 ## v0.1.4 (2023-11-30)
 
-- Changed: 
-  - Fixing typos, #66 
+- Changed:
+  - Fixing typos, #66
 
 ## v0.1.3 (2023-11-28)
 
-- New: 
+- New:
   - Implemented form field validation with hints which still need to be filled out, see #13
 
 ## v0.1.2 (2023-11-27)
