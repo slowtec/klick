@@ -3,7 +3,7 @@ name = "klick-frontend"
 version = "0.1.7"
 edition = "2021"
 publish = false
-rust-version = "1.74.0"
+rust-version = "1.74"
 
 [dependencies]
 # Project dependencies
