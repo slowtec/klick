@@ -3,6 +3,7 @@ use std::rc::Rc;
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 use strum::IntoEnumIterator;
+use log::info;
 
 use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
@@ -68,6 +69,10 @@ pub fn Tool() -> impl IntoView {
     let n2o_emission_factor_method =
         RwSignal::new(Option::<app::N2oEmissionFactorCalcMethod>::None);
 
+    let nitrogen_io_warning = RwSignal::new(Option::<String>::None);
+    let chemical_oxygen_io_warning = RwSignal::new(Option::<String>::None);
+    let phosphorus_io_warning = RwSignal::new(Option::<String>::None);
+
     let s = Rc::clone(&signals);
 
     create_effect(move |_| {
@@ -106,6 +111,7 @@ pub fn Tool() -> impl IntoView {
     let s = Rc::clone(&signals);
 
     create_effect(move |_| {
+        let mut input_data_validation_error = false;
         if let Some(input_data) = input_data.get() {
             let custom_factor_value = s
                 .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
@@ -114,56 +120,87 @@ pub fn Tool() -> impl IntoView {
             if !use_custom_factor && selected_scenario.get() == Some(4) {
                 selected_scenario.set(Some(0));
             }
+
+            if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
+                nitrogen_io_warning.set(Some(format!("Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!", input_data.effluent_average.nitrogen, input_data.influent_average.nitrogen)));
+                input_data_validation_error = true;
+            } else {
+                nitrogen_io_warning.set(None);
+            }
+            if let Some(chemical_oxygen_demand_influent) = input_data.influent_average.chemical_oxygen_demand {
+                if input_data.effluent_average.chemical_oxygen_demand > chemical_oxygen_demand_influent {
+                    chemical_oxygen_io_warning.set(Some(format!("Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!", input_data.effluent_average.chemical_oxygen_demand, chemical_oxygen_demand_influent)));
+                    input_data_validation_error = true;
+                } else {
+                    chemical_oxygen_io_warning.set(None);
+                }
+            }
+
+            if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
+                if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
+                    if phosphorus_effluent > phosphorus_influent {
+                        phosphorus_io_warning.set(Some(format!("Ablauf Phosphor {} größer als dessen Zulauf {}!", phosphorus_effluent, phosphorus_influent)));
+                        input_data_validation_error = true;
+                    } else {
+                        phosphorus_io_warning.set(None);
+                    }
+                }
+            }
+
             log::debug!("Calculating with {input_data:#?}");
             let szenario_calculations = N2oEmissionFactorCalcMethod::iter()
-            .enumerate()
-            .filter_map(|(i, method)| {
+                .enumerate()
+                .filter_map(|(i, method)| {
+                    if input_data_validation_error {
+                        // prevent sankey or barchart from rendering
+                        sankey::clear(CHART_ELEMENT_ID);
+                        return None
+                    }
+                    let n2o_emission_factor = match method {
+                        N2oEmissionFactorCalcMethod::CustomFactor => {
+                            app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
+                        }
+                        N2oEmissionFactorCalcMethod::ExtrapolatedParravicini => app::N2oEmissionFactorCalcMethod::ExtrapolatedParravicini,
+                        N2oEmissionFactorCalcMethod::Optimistic => app::N2oEmissionFactorCalcMethod::Optimistic,
+                        N2oEmissionFactorCalcMethod::Pesimistic => app::N2oEmissionFactorCalcMethod::Pesimistic,
+                        N2oEmissionFactorCalcMethod::Ipcc2019 => app::N2oEmissionFactorCalcMethod::Ipcc2019,
+                    };
 
-                  let n2o_emission_factor = match method {
-                      N2oEmissionFactorCalcMethod::CustomFactor => {
-                          app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
-                      }
-                      N2oEmissionFactorCalcMethod::ExtrapolatedParravicini=>  app::N2oEmissionFactorCalcMethod::ExtrapolatedParravicini,
-                      N2oEmissionFactorCalcMethod::Optimistic             =>  app::N2oEmissionFactorCalcMethod::Optimistic,
-                      N2oEmissionFactorCalcMethod::Pesimistic             =>  app::N2oEmissionFactorCalcMethod::Pesimistic,
-                      N2oEmissionFactorCalcMethod::Ipcc2019               =>  app::N2oEmissionFactorCalcMethod::Ipcc2019,
-                  };
-
-                 let scenario = app::Scenario {
+                    let scenario = app::Scenario {
                     n2o_emission_factor,
                     ch4_chp_emission_factor: None,
                  };
 
                  let output_data = klick_application::calculate_emissions(&input_data, scenario);
 
-                 if selected_scenario.get() == Some(i as u64) {
-                     let name_ka: String = s
-                         .get(&FieldId::Name)
-                         .and_then(FieldSignal::get_text)
-                         .unwrap_or_else(|| "Kläranlage".to_string());
+                    if selected_scenario.get() == Some(i as u64) {
+                        let name_ka: String = s
+                            .get(&FieldId::Name)
+                            .and_then(FieldSignal::get_text)
+                            .unwrap_or_else(|| "Kläranlage".to_string());
 
-                     let ew = s
-                         .get(&FieldId::Ew)
-                         .and_then(FieldSignal::get_float)
-                         .unwrap_or_default();
+                        let ew = s
+                            .get(&FieldId::Ew)
+                            .and_then(FieldSignal::get_float)
+                            .unwrap_or_default();
 
-                     let einheit = "t CO₂ Äquivalente/Jahr";
-                     let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
-                     selected_scenario_name.set(szenario_name.to_string().clone());
-                     let title = format!(
-                         "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
-                     );
-                     sankey_header.set(title);
-                     sankey::render(output_data.clone(), CHART_ELEMENT_ID);
-                 }
-                 if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
-                 {
-                   None
-                 } else {
-                   Some((method, output_data))
-                 }
-             })
-             .collect::<Vec<_>>();
+                        let einheit = "t CO₂ Äquivalente/Jahr";
+                        let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
+                        selected_scenario_name.set(szenario_name.to_string().clone());
+                        let title = format!(
+                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
+                        );
+                        sankey_header.set(title);
+                        sankey::render(output_data.clone(), CHART_ELEMENT_ID);
+                    }
+                    if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
+                    {
+                        None
+                    } else {
+                        Some((method, output_data))
+                    }
+                })
+                .collect::<Vec<_>>();
 
             barchart_arguments.set(
                 szenario_calculations
@@ -179,6 +216,9 @@ pub fn Tool() -> impl IntoView {
             sankey_header.set(String::new());
             barchart_arguments.update(Vec::clear);
             sankey::clear(CHART_ELEMENT_ID);
+            nitrogen_io_warning.set(None);
+            chemical_oxygen_io_warning.set(None);
+            phosphorus_io_warning.set(None);
         }
     });
 
@@ -300,6 +340,15 @@ pub fn Tool() -> impl IntoView {
                         current_section.set(Some(PageSection::DataCollection));
                       }
                     />
+                  <Show when= move || nitrogen_io_warning.get().is_some()>
+                  <p><ul class="ml-5 my-4 list-disc list-inside"><li>{nitrogen_io_warning.get()}</li></ul></p>
+                  </Show>
+                  <Show when= move || chemical_oxygen_io_warning.get().is_some()>
+                  <p><ul class="ml-5 my-4 list-disc list-inside"><li>{chemical_oxygen_io_warning.get()}</li></ul></p>
+                  </Show>
+                  <Show when= move || phosphorus_io_warning.get().is_some()>
+                  <p><ul class="ml-5 my-4 list-disc list-inside"><li>{phosphorus_io_warning.get()}</li></ul></p>
+                  </Show>
                   <p>"Bei jeder Eingabe werden die Graphen automatisch neu berechnet."</p>
                 </div>
               })
