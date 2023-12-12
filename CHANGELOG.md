@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.7 (2023-12-12)
+
+- Changed:
+  - Updated example #72  
+
 ## v0.1.6 (2023-12-06)
 
 - New:
