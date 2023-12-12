@@ -3,9 +3,29 @@ use anyhow::bail;
 use klick_application as app;
 
 use crate::{
-    AnnualAverage, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
-    N2oEmissionFactorScenario, OperatingMaterials, SewageSludgeTreatment,
+    AnnualAverage, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
+    InputData, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
+    Scenario, SewageSludgeTreatment,
 };
+
+impl TryFrom<Scenario> for app::Scenario {
+    type Error = anyhow::Error;
+
+    fn try_from(from: Scenario) -> Result<Self, Self::Error> {
+        let Scenario {
+            n2o_emission_factor,
+            ch4_chp_emission_factor,
+        } = from;
+
+        let n2o_emission_factor = n2o_emission_factor.try_into()?;
+        let ch4_chp_emission_factor = ch4_chp_emission_factor.map(TryInto::try_into).transpose()?;
+
+        Ok(app::Scenario {
+            n2o_emission_factor,
+            ch4_chp_emission_factor,
+        })
+    }
+}
 
 impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
     type Error = anyhow::Error;
@@ -30,30 +50,25 @@ impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
     }
 }
 
-impl From<app::N2oEmissionFactorCalcMethod> for N2oEmissionFactorScenario {
-    fn from(from: app::N2oEmissionFactorCalcMethod) -> Self {
-        use app::N2oEmissionFactorCalcMethod as A;
-        use N2oEmissionFactorCalcMethod as M;
+impl TryFrom<CH4ChpEmissionFactorScenario> for app::CH4ChpEmissionFactorCalcMethod {
+    type Error = anyhow::Error;
 
-        let calculation_method = match from {
-            A::ExtrapolatedParravicini => M::ExtrapolatedParravicini,
-            A::Optimistic => M::Optimistic,
-            A::Pesimistic => M::Pesimistic,
-            A::Ipcc2019 => M::Ipcc2019,
-            A::Custom(_) => M::CustomFactor,
+    fn try_from(from: CH4ChpEmissionFactorScenario) -> Result<Self, Self::Error> {
+        use app::CH4ChpEmissionFactorCalcMethod as A;
+        use CH4ChpEmissionFactorCalcMethod as M;
+
+        let f = match from.calculation_method {
+            M::MicroGasTurbines => A::MicroGasTurbines,
+            M::GasolineEngine => A::GasolineEngine,
+            M::JetEngine => A::JetEngine,
+            M::CustomFactor => {
+                let Some(factor) = from.custom_factor else {
+                    bail!("custom N2O emission factor is missing");
+                };
+                A::Custom(app::Factor::new(factor))
+            }
         };
-
-        let custom_factor = if let A::Custom(factor) = from {
-            Some(factor)
-        } else {
-            None
-        }
-        .map(f64::from);
-
-        Self {
-            calculation_method,
-            custom_factor,
-        }
+        Ok(f)
     }
 }
 

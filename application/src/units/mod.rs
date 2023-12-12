@@ -1,6 +1,6 @@
 use std::{
     fmt,
-    ops::{Add, Div, Mul, Sub},
+    ops::{Add, Div, Mul, Sub, SubAssign},
 };
 
 mod conversion;
@@ -71,6 +71,12 @@ macro_rules! quantity {
 
                 fn sub(self, rhs: $unit) -> Self::Output  {
                     Self::new(self.0 - rhs.0)
+                }
+            }
+
+            impl SubAssign<$unit> for $unit {
+                fn sub_assign(&mut self, rhs: Self) {
+                    self.0 = self.0 - rhs.0;
                 }
             }
 

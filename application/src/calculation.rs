@@ -1,21 +1,13 @@
 use crate::{
-    constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CO2Equivalents, EnergyConsumption,
-    Factor, Input, Mass, MilligramsPerLiter, OperatingMaterials, Output, Qubicmeters,
+    constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
+    CO2Equivalents, EnergyConsumption, Factor, Input, Mass, MilligramsPerLiter,
+    N2oEmissionFactorCalcMethod, OperatingMaterials, Output, Qubicmeters, Scenario,
     SewageSludgeTreatment, Tons,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum N2oEmissionFactorCalcMethod {
-    ExtrapolatedParravicini,
-    Optimistic,
-    Pesimistic,
-    Ipcc2019,
-    Custom(Factor),
-}
-
 #[must_use]
 #[allow(clippy::too_many_lines)]
-pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMethod) -> Output {
+pub fn calculate_emissions(input: &Input, scenario: Scenario) -> Output {
     let Input {
         plant_name: _,
         population_equivalent,
@@ -63,8 +55,11 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
         synthetic_polymers,
     } = operating_materials;
 
-    let n2o_emission_factor =
-        calculate_n2o_emission_factor(calc_method, *nitrogen_influent, *nitrogen_effluent);
+    let n2o_emission_factor = calculate_n2o_emission_factor(
+        scenario.n2o_emission_factor,
+        *nitrogen_influent,
+        *nitrogen_effluent,
+    );
     debug_assert!(n2o_emission_factor < Factor::new(1.0));
 
     let (n2o_plant, n2o_water) = calculate_nitrous_oxide(
@@ -78,6 +73,7 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
         population_equivalent * EMISSION_FACTOR_CH4_PLANT / f64::from(10_i32.pow(6)); // [t CH4/a]
     let ch4_water = f64::from(*chemical_oxygen_demand_effluent * *wastewater) / 1000.0
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
+
     let ch4_bhkw =
         f64::from(*on_site_power_generation * EMISSION_FACTOR_CH4_CHP) / f64::from(10_i32.pow(6)); // [t CH4/a]
 
@@ -105,7 +101,20 @@ pub fn calculate_emissions(input: &Input, calc_method: N2oEmissionFactorCalcMeth
     let ch4_sludge_storage_containers = Tons::new(ch4_slippage_sludge_storage * GWP_CH4);
     let ch4_sludge_bags = Tons::new(ch4_slippage_sludge_bags * GWP_CH4);
     let ch4_water = Tons::new(ch4_water * GWP_CH4);
-    let ch4_combined_heat_and_power_plant = Tons::new(ch4_bhkw * GWP_CH4);
+
+    let mut ch4_combined_heat_and_power_plant = Tons::new(ch4_bhkw * GWP_CH4);
+
+    if let Some(ef) = scenario.ch4_chp_emission_factor {
+        let ef = match ef {
+            CH4ChpEmissionFactorCalcMethod::MicroGasTurbines
+            | CH4ChpEmissionFactorCalcMethod::GasolineEngine => Factor::new(0.015),
+            CH4ChpEmissionFactorCalcMethod::JetEngine => Factor::new(0.025),
+            CH4ChpEmissionFactorCalcMethod::Custom(f) => f,
+        };
+
+        ch4_combined_heat_and_power_plant -= ch4_combined_heat_and_power_plant * ef;
+    }
+
     let ch4_emissions = ch4_sewage_treatment
         + ch4_sludge_storage_containers
         + ch4_sludge_bags

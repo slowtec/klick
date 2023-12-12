@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-pub type RequiredField = crate::forms::RequiredField<FieldId>;
 
 use leptos::*;
 use serde::{Deserialize, Serialize};
@@ -10,7 +9,9 @@ use klick_boundary::{
     N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
 };
 
-use crate::forms::{format_f64_into_de_string, FieldSignal, MissingField};
+use crate::forms::{self, format_f64_into_de_string, FieldSignal, MissingField};
+
+pub type RequiredField = forms::RequiredField<FieldId>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum FieldId {
@@ -38,9 +39,14 @@ pub enum FieldId {
     BetriebsstoffeFeso4,
     BetriebsstoffeKalk,
     BetriebsstoffePoly,
-    N2oSzenario,
-    CustomN2oScenarioSupport,
-    CustomN2oScenarioValue,
+    Scenario(ScenarioFieldId),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
+pub enum ScenarioFieldId {
+    N2oCustomFactor,
+    CH4ChpCalculationMethod,
+    CH4ChpCustomFactor,
 }
 
 pub fn read_input_fields(
@@ -144,14 +150,25 @@ pub fn read_input_fields(
 
 pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {
     let custom_factor = s
-        .get(&FieldId::CustomN2oScenarioValue)
+        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
         .and_then(FieldSignal::get_float);
+
     let calculation_method = N2oEmissionFactorCalcMethod::Ipcc2019; // TODO: read from signal
+    let n2o_emission_factor = N2oEmissionFactorScenario {
+        calculation_method,
+        custom_factor,
+    };
+
+    let _custom_factor = s
+        .get(&FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor))
+        .and_then(FieldSignal::get_float);
+
+    // TODO:
+    let ch4_chp_emission_factor = None;
+
     Scenario {
-        n2o_emission_factor: N2oEmissionFactorScenario {
-            calculation_method,
-            custom_factor,
-        },
+        n2o_emission_factor,
+        ch4_chp_emission_factor,
     }
 }
 
@@ -174,6 +191,7 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
 
     let Scenario {
         n2o_emission_factor,
+        ch4_chp_emission_factor: _,
     } = scenario;
 
     let AnnualAverage {
@@ -334,7 +352,7 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         .unwrap()
         .set(float_to_sting_option(synthetic_polymers));
     signals
-        .get(&FieldId::CustomN2oScenarioValue)
+        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(n2o_emission_factor.custom_factor));

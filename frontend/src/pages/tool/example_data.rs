@@ -60,6 +60,7 @@ fn example_input_data() -> (InputData, Scenario) {
             custom_factor: None,
             calculation_method: N2oEmissionFactorCalcMethod::Ipcc2019,
         },
+        ch4_chp_emission_factor: None,
     };
 
     (input, scenario)

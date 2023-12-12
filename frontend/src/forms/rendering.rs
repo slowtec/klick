@@ -1,163 +1,8 @@
-use std::{
-    collections::HashMap,
-    fmt::Write,
-    hash::Hash,
-    sync::atomic::{AtomicUsize, Ordering},
-};
+use std::{collections::HashMap, fmt::Write, hash::Hash};
 
-use inflector::cases::kebabcase::to_kebab_case;
-use leptos::wasm_bindgen::JsCast;
 use leptos::*;
 
-static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
-
-fn unique_id() -> usize {
-    ID_COUNTER.fetch_add(1, Ordering::SeqCst)
-}
-
-pub fn form_field_id<ID>(field_id: &ID) -> String
-where
-    ID: Copy + AsRef<str>,
-{
-    // DOM element IDs needs to be locally unique
-    // within the HTML document.
-    let id = unique_id();
-
-    // The name is only for humans for better readability.
-    let name = to_kebab_case(field_id.as_ref());
-
-    format!("{name}-{id}")
-}
-
-#[derive(Clone, Copy)]
-pub enum FieldSignal {
-    Float {
-        input: RwSignal<Option<String>>,
-        output: RwSignal<Option<f64>>,
-    },
-    Text(RwSignal<Option<String>>),
-    Bool(RwSignal<bool>),
-    Selection(RwSignal<Option<usize>>),
-}
-
-impl FieldSignal {
-    pub fn get_float(&self) -> Option<f64> {
-        match self {
-            Self::Float { output, .. } => output.get(),
-            _ => None,
-        }
-    }
-
-    pub fn get_text(&self) -> Option<String> {
-        match self {
-            Self::Text(s) => s.get(),
-            _ => None,
-        }
-    }
-
-    pub fn get_bool(&self) -> Option<bool> {
-        match self {
-            Self::Bool(s) => Some(s.get()),
-            _ => None,
-        }
-    }
-
-    pub const fn get_float_signal(&self) -> Option<RwSignal<Option<String>>> {
-        // FIXME rename
-        match self {
-            Self::Float { input, .. } => Some(*input),
-            _ => None,
-        }
-    }
-
-    pub const fn get_text_signal(&self) -> Option<RwSignal<Option<String>>> {
-        match self {
-            Self::Text(s) => Some(*s),
-            _ => None,
-        }
-    }
-
-    pub const fn get_bool_signal(&self) -> Option<RwSignal<bool>> {
-        match self {
-            Self::Bool(s) => Some(*s),
-            _ => None,
-        }
-    }
-
-    pub fn clear(&self) {
-        match self {
-            Self::Float { input, .. } => input.set(None),
-            Self::Text(s) => s.set(None),
-            Self::Bool(s) => s.set(false),
-            Self::Selection(s) => s.set(None),
-        }
-    }
-
-    pub fn as_formatted_string(&self) -> Option<String> {
-        match self {
-            Self::Float { input, .. } => input.get(),
-            Self::Text(s) => s.get(),
-            Self::Bool(s) => Some(if s.get() { "Ja" } else { "Nein" }.to_string()),
-            Self::Selection(_) => todo!(),
-        }
-    }
-}
-
-#[derive(Clone)]
-pub struct RequiredField<ID>
-where
-    ID: AsRef<str> + Copy + Hash + Eq,
-{
-    pub id: ID,
-    pub field_id: String,
-    pub label: &'static str,
-}
-
-#[derive(Clone)]
-pub struct MissingField {
-    pub field_id: String,
-    pub label: &'static str,
-}
-
-impl MissingField {
-    pub fn new(field_id: String, label: &'static str) -> Self {
-        Self { field_id, label }
-    }
-}
-
-#[component]
-pub fn HelperWidget<F>(missing_fields: Vec<MissingField>, before_focus: F) -> impl IntoView
-where
-    F: Fn() + Copy + 'static,
-{
-    let missing_fields = missing_fields.clone();
-    view! {
-      <ul class="ml-5 my-4 list-disc list-inside">
-        <For
-          each = move || missing_fields.clone()
-          key = |e| e.label.to_string()
-          let:e
-        >
-          <li>
-            <a
-              class = "cursor-pointer"
-              on:click=move |_| {
-                let field_id = &e.field_id;
-                let element_id = format!("#{field_id}");
-                let element: web_sys::HtmlInputElement = document().query_selector(&element_id).unwrap().unwrap().unchecked_into();
-                // uses might have to click the list link twice because if they are in input editing the on:blur event needs to change the html first and
-                // this seems to interfere with this focus event
-                before_focus();
-                let _ = element.focus();
-              }
-            >
-              { e.label }
-            </a>
-          </li>
-        </For>
-      </ul>
-    }
-}
+use super::{Field, FieldSet, FieldSignal, FieldType, MinMax, RequiredField, SelectOption};
 
 pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
@@ -196,14 +41,18 @@ where
 
         set_views.push(
             view! {
-              <div class="border-b border-gray-900/10 pb-12">
-                <h3 class="text-lg font-semibold leading-7 text-gray-900">
-                  { set.title }
-                </h3>
+              <fieldset class="border-b border-gray-900/10 pb-12">
+                {
+                  set.title.map(|title| view! {
+                    <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">
+                      { title }
+                    </h3>
+                  })
+                }
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
                   { field_views }
                 </div>
-              </div>
+              </fieldset>
             }
             .into_view(),
         );
@@ -211,7 +60,7 @@ where
     (signals, set_views, required_fields)
 }
 
-fn render_field<ID>(field: Field<ID>, field_id: String) -> (FieldSignal, impl IntoView)
+pub fn render_field<ID>(field: Field<ID>, field_id: String) -> (FieldSignal, impl IntoView)
 where
     ID: AsRef<str> + Copy,
 {
@@ -298,8 +147,13 @@ where
             let signal = create_rw_signal(initial_value);
             let field_signal = FieldSignal::Selection(signal);
             let view = view! {
-              <SelectInput
-                label
+              // <SelectInput
+              //   label
+              //   field_id
+              //   value = signal
+              //   options
+              // />
+              <RadioInput
                 field_id
                 value = signal
                 options
@@ -311,6 +165,30 @@ where
     }
 }
 
+#[component]
+pub fn InfoIcon() -> impl IntoView {
+    view! {
+      <svg
+        aria-haspopup="true"
+        class="icon"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="#A0AEC0"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" />
+        <circle cx="12" cy="12" r="9" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+        <polyline points="11 12 12 12 12 16 13 16" />
+      </svg>
+    }
+}
+
+// TODO: don't render if description is None
 fn create_tooltip(
     label: &'static str,
     description: Option<&'static str>,
@@ -335,23 +213,7 @@ fn create_tooltip(
           }
         >
           <div class="cursor-pointer">
-            <svg
-              aria-haspopup="true"
-              class="icon icon-tabler icon-tabler-info-circle"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="#A0AEC0"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" />
-              <circle cx="12" cy="12" r="9" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-              <polyline points="11 12 12 12 12 16 13 16" />
-            </svg>
+            <InfoIcon />
           </div>
           <div
             role="tooltip"
@@ -654,95 +516,41 @@ fn Options(value: RwSignal<Option<usize>>, options: Vec<SelectOption>) -> impl I
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct FieldSet<ID> {
-    pub title: &'static str,
-    pub fields: Vec<Field<ID>>,
-}
+#[component]
+fn RadioInput(
+    field_id: String,
+    value: RwSignal<Option<usize>>,
+    options: Vec<SelectOption>,
+) -> impl IntoView {
+    let options: Vec<_> = options
+        .into_iter()
+        .map(|o| {
+            let option_id = format!("{field_id}-{}", o.value);
+            view! {
+              <div class="flex items-center ml-4 gap-x-2">
+                <input
+                  class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  id = { option_id.clone() }
+                  name = field_id.clone()
+                  type="radio"
+                  on:change = move |_| {
+                    value.set(Some(o.value));
+                  }
+                />
+                <label
+                  class="block text-sm font-semibold leading-6 text-gray-900"
+                  for = { option_id }
+                >
+                  { o.label }
+                </label>
+              </div>
+            }
+        })
+        .collect();
 
-#[derive(Debug, Clone)]
-pub struct Field<ID> {
-    pub id: ID,
-    pub label: &'static str,
-    pub description: Option<&'static str>,
-    pub required: bool,
-    pub field_type: FieldType,
-}
-
-impl<ID> Field<ID> {
-    pub const fn unit(&self) -> Option<&'static str> {
-        match self.field_type {
-            FieldType::Float { unit, .. } => Some(unit),
-            _ => None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct MinMax {
-    pub min: Option<f64>,
-    pub max: Option<f64>,
-}
-
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
-pub enum FieldType {
-    Float {
-        initial_value: Option<f64>,
-        placeholder: Option<&'static str>,
-        limits: MinMax,
-        unit: &'static str,
-    },
-    Text {
-        initial_value: Option<String>,
-        placeholder: Option<&'static str>,
-        max_len: Option<usize>,
-    },
-    Bool {
-        initial_value: Option<bool>,
-    },
-    Selection {
-        initial_value: Option<usize>,
-        options: Vec<SelectOption>,
-    },
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct SelectOption {
-    pub label: &'static str,
-    pub value: usize,
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn parse_a_german_input_string_as_f64() {
-        let result = parse_de_str_as_f64("1.100.100,23");
-        assert_eq!(result, Ok(1_100_100.23));
-    }
-    #[test]
-    fn parse_a_german_input_string_as_f64_trailing_space() {
-        let result = parse_de_str_as_f64("1.100.100,23 ");
-        assert_eq!(result, Ok(1_100_100.23));
-    }
-    #[test]
-    fn parse_a_german_input_string_as_f64_leading_space() {
-        let result = parse_de_str_as_f64(" 1.100.100,23");
-        assert_eq!(result, Ok(1_100_100.23));
-    }
-
-    #[test]
-    fn format_f64_as_german_string() {
-        assert_eq!(
-            format_f64_into_de_string(23_222_221_231.766_6),
-            "23.222.221.231,7666"
-        );
-        assert_eq!(
-            format_f64_into_de_string(23_222_221_231.0),
-            "23.222.221.231"
-        );
-        assert_eq!(format_f64_into_de_string(2.0), "2");
+    view! {
+      <div id = { field_id } class="mt-2 space-y-2">
+        { options }
+      </div>
     }
 }

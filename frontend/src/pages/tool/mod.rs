@@ -19,13 +19,15 @@ mod example_data;
 mod field_sets;
 mod fields;
 mod input_data_list;
+mod optimization_options;
 
 use self::{
     action_panel::ActionPanel,
     breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
-    fields::{load_fields, read_input_fields, read_scenario_fields, FieldId},
+    fields::{load_fields, read_input_fields, read_scenario_fields, FieldId, ScenarioFieldId},
     input_data_list::InputDataList,
+    optimization_options::OptimizationOptions,
 };
 
 const CHART_ELEMENT_ID: &str = "chart";
@@ -35,6 +37,15 @@ pub enum PageSection {
     #[default]
     DataCollection,
     OptimizationOptions,
+}
+
+impl PageSection {
+    const fn section_id(&self) -> &'static str {
+        match self {
+            PageSection::DataCollection => "data-collection",
+            PageSection::OptimizationOptions => "optimization-options",
+        }
+    }
 }
 
 #[component]
@@ -53,7 +64,9 @@ pub fn Tool() -> impl IntoView {
     let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
 
-    let current_section = RwSignal::new(PageSection::default());
+    let current_section = RwSignal::new(Option::<PageSection>::None);
+    let n2o_emission_factor_method =
+        RwSignal::new(Option::<app::N2oEmissionFactorCalcMethod>::None);
 
     let s = Rc::clone(&signals);
 
@@ -63,12 +76,39 @@ pub fn Tool() -> impl IntoView {
         input_data.set(data.try_into().ok());
     });
 
+    let custom_factor_value: RwSignal<Option<f64>> = signals
+        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
+        .and_then(FieldSignal::get_float_output_signal)
+        .unwrap();
+
+    create_effect(move |_| {
+        let Some(n) = selected_scenario.get() else {
+            n2o_emission_factor_method.set(None);
+            return;
+        };
+
+        let f = match n {
+            0 => app::N2oEmissionFactorCalcMethod::ExtrapolatedParravicini,
+            1 => app::N2oEmissionFactorCalcMethod::Optimistic,
+            2 => app::N2oEmissionFactorCalcMethod::Pesimistic,
+            3 => app::N2oEmissionFactorCalcMethod::Ipcc2019,
+            4 => app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(
+                custom_factor_value.get().unwrap_or_default() / 100.0,
+            )),
+            _ => {
+                n2o_emission_factor_method.set(None);
+                return;
+            }
+        };
+        n2o_emission_factor_method.set(Some(f));
+    });
+
     let s = Rc::clone(&signals);
 
     create_effect(move |_| {
         if let Some(input_data) = input_data.get() {
             let custom_factor_value = s
-                .get(&FieldId::CustomN2oScenarioValue)
+                .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
                 .and_then(FieldSignal::get_float);
             let use_custom_factor = custom_factor_value.is_some();
             if !use_custom_factor && selected_scenario.get() == Some(4) {
@@ -79,7 +119,7 @@ pub fn Tool() -> impl IntoView {
             .enumerate()
             .filter_map(|(i, method)| {
 
-                  let calc_method = match method {
+                  let n2o_emission_factor = match method {
                       N2oEmissionFactorCalcMethod::CustomFactor => {
                           app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
                       }
@@ -89,7 +129,12 @@ pub fn Tool() -> impl IntoView {
                       N2oEmissionFactorCalcMethod::Ipcc2019               =>  app::N2oEmissionFactorCalcMethod::Ipcc2019,
                   };
 
-                 let output_data = klick_application::calculate_emissions(&input_data, calc_method);
+                 let scenario = app::Scenario {
+                    n2o_emission_factor,
+                    ch4_chp_emission_factor: None,
+                 };
+
+                 let output_data = klick_application::calculate_emissions(&input_data, scenario);
 
                  if selected_scenario.get() == Some(i as u64) {
                      let name_ka: String = s
@@ -189,6 +234,16 @@ pub fn Tool() -> impl IntoView {
         }
     };
 
+    create_effect(move |_| {
+        if let Some(s) = current_section.get() {
+            let id = s.section_id();
+            window()
+                .location()
+                .set_href(&format!("{}#{id}", crate::Page::Tool.path()))
+                .unwrap();
+        }
+    });
+
     let breadcrumps_entries = vec![
         ("Datenerfassung", PageSection::DataCollection),
         (
@@ -205,10 +260,14 @@ pub fn Tool() -> impl IntoView {
           save_project = save_input_values
           upload_action
         />
-        <Breadcrumbs entries = { breadcrumps_entries } current = current_section />
+        <Breadcrumbs
+          entries = { breadcrumps_entries }
+          current = current_section
+        />
         <div
+          id = PageSection::DataCollection.section_id()
           class = move || {
-            if current_section.get() == PageSection::DataCollection {
+            if current_section.get() == Some(PageSection::DataCollection) {
                 None
             } else {
                 Some("hidden")
@@ -219,7 +278,7 @@ pub fn Tool() -> impl IntoView {
         </div>
         <div
           class = move || {
-            if current_section.get() == PageSection::DataCollection {
+            if current_section.get() == Some(PageSection::DataCollection) {
                 Some("hidden")
             } else {
                 None
@@ -229,6 +288,7 @@ pub fn Tool() -> impl IntoView {
           <InputDataList field_sets signals />
         </div>
       </div>
+
       { move ||
           if barchart_arguments.get().is_empty() {
               Some(view! {
@@ -236,7 +296,9 @@ pub fn Tool() -> impl IntoView {
                   <p>"Bitte ergänzen Sie folgende Werte, damit die Gesamtemissionen Ihrer Kläranlage, anhand verschiedener Szenarien, berechnet werden können:"</p>
                     <forms::HelperWidget
                       missing_fields=missing_fields.get()
-                      before_focus = move || current_section.set(PageSection::DataCollection)
+                      before_focus = move || {
+                        current_section.set(Some(PageSection::DataCollection));
+                      }
                     />
                   <p>"Bei jeder Eingabe werden die Graphen automatisch neu berechnet."</p>
                 </div>
@@ -245,41 +307,60 @@ pub fn Tool() -> impl IntoView {
               None
           }
       }
-      <h3 class="my-8 text-xl font-bold">"Auswertung Ihrer Daten (via Barchart / Sankey-Diagramm)"</h3>
 
-      // bar diagram
-      { move ||
-        {
-          if barchart_arguments.get().is_empty() {
-            None
-          } else {
-            Some(view! {
-              <h3 class="my-8 text-xl font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"</h3>
-              <div class="">
-                <BarChart
-                  width = 1200.0
-                  height = 400.0
-                  data  = barchart_arguments.into()
-                  selected_bar = selected_scenario
-                />
-              </div>
-              <p>
-                "Es ist das Szenario \""{selected_scenario_name.get()}"\" ausgewählt. Durch Anklicken kann ein anderes Szenario ausgewählt werden."
-              </p>
-            })
-          }
-        }
-      }
-      // sankey diagram
-      <Show when= move || { sankey_header.get() != ""}>
-      <h3 class="my-8 text-xl font-bold">
-      { move ||
-         sankey_header.get().to_string()
-      }
+      <h3 id = PageSection::OptimizationOptions.section_id() class="my-8 text-xl font-bold">
+        "Auswertung Ihrer Daten (via Barchart / Sankey-Diagramm)"
       </h3>
 
+      <Show
+        when = move || !barchart_arguments.get().is_empty()
+        fallback = || view! {
+          <p>
+            "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
+          </p>
+        }
+      >
+        // bar diagram
+        <h4 class="my-8 text-lg font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"</h4>
+        <div class="">
+          <BarChart
+            width = 1200.0
+            height = 400.0
+            data  = barchart_arguments.into()
+            selected_bar = selected_scenario
+          />
+        </div>
+        <p>
+          "Es ist das Szenario \"" { selected_scenario_name.get() } "\" ausgewählt.
+          Durch Anklicken kann ein anderes Szenario ausgewählt werden."
+        </p>
+
+        // sankey diagram
+        <h4 class="my-8 text-lg font-bold">
+          { move || sankey_header.get().to_string() }
+        </h4>
       </Show>
+
       <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
+
+      <div class="my-8 border-b border-gray-200 pb-5" >
+        <h3
+          class="text-xl font-semibold leading-6 text-gray-900 cursor-pointer"
+          on:click = move |_| {
+            current_section.set(Some(PageSection::OptimizationOptions));
+          }
+        >
+          "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
+        </h3>
+        <p class="mt-2 max-w-4xl text-lg text-gray-500">
+          "Die vorgestellten Handlungsempfehlungen stellen eine erste Auswahl
+          an möglichen Minderungsmaßnahmen für Treibhausgasemissionen (THG) an Kläranlagen dar.
+          Diese sollen Ihnen wichtige Mehrwerte bieten, um die Klimaauswirkungen Ihrer Kläranlage zu minimieren
+          und deren Wettbewerbsfähigkeit langfristig zu sichern."
+        </p>
+      </div>
+      <OptimizationOptions input_data = input_data.into() n2o_emission_factor_method = n2o_emission_factor_method.into() />
+
     }
 }
 

@@ -1,9 +1,7 @@
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::{v2, InputData, Scenario, CURRENT_VERSION};
-
-mod v1;
+use crate::{v1, v2, v3, InputData, Scenario, CURRENT_VERSION};
 
 mod migrate;
 
@@ -13,12 +11,16 @@ pub fn import_from_str(json: &str) -> Result<(InputData, Scenario)> {
 
 pub fn import_from_slice(slice: &[u8]) -> Result<(InputData, Scenario)> {
     let VersionInfo { version } = serde_json::from_slice(slice)?;
-    let v2::Import { input, scenario } = match version {
+    let v3::Import { input, scenario } = match version {
         1 => {
-            let data = import_v1(slice)?;
+            let data = import::<v1::Import>(slice)?;
             migrate::from_v1(data)
         }
-        2 => import_v2(slice)?,
+        2 => {
+            let data = import::<v2::Import>(slice)?;
+            migrate::from_v2(data)
+        }
+        3 => import(slice)?,
         _ => {
             return Err(Error::Version {
                 actual: version,
@@ -34,11 +36,10 @@ struct VersionInfo {
     version: u32,
 }
 
-fn import_v1(slice: &[u8]) -> Result<v1::Import> {
-    Ok(serde_json::from_slice(slice)?)
-}
-
-fn import_v2(slice: &[u8]) -> Result<v2::Import> {
+fn import<V>(slice: &[u8]) -> Result<V>
+where
+    for<'de> V: Deserialize<'de>,
+{
     Ok(serde_json::from_slice(slice)?)
 }
 

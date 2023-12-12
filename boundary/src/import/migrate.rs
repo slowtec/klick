@@ -1,10 +1,8 @@
-use crate::v2;
-
-use super::v1;
+use crate::{v1, v2, v3};
 
 const V1_OPERATING_MATERIALS_DIVISOR: f64 = 1_000.0;
 
-pub fn from_v1(data: v1::Import) -> v2::Import {
+pub fn from_v1(data: v1::Import) -> v3::Import {
     let v1::Import {
         input:
             v1::InputData {
@@ -79,5 +77,43 @@ pub fn from_v1(data: v1::Import) -> v2::Import {
         operating_materials,
     };
 
-    v2::Import { input, scenario }
+    from_v2(v2::Import { input, scenario })
+}
+
+pub fn from_v2(data: v2::Import) -> v3::Import {
+    let v2::Import {
+        input:
+            v2::InputData {
+                plant_name,
+                population_equivalent,
+                wastewater,
+                influent_average,
+                effluent_average,
+                energy_consumption,
+                sewage_sludge_treatment,
+                operating_materials,
+            },
+        scenario: v2::Scenario {
+            n2o_emission_factor,
+        },
+    } = data;
+
+    let scenario = v3::Scenario {
+        n2o_emission_factor,
+        ch4_chp_emission_factor: None,
+    };
+
+    v3::Import {
+        input: v3::InputData {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        },
+        scenario,
+    }
 }

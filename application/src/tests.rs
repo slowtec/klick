@@ -42,6 +42,7 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
         },
+        combined_heat_and_power_plant_ch4_emission_factor: None,
     };
 
     let method = N2oEmissionFactorCalcMethod::ExtrapolatedParravicini;

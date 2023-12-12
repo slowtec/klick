@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "input": {
+    "plant_name" : "Example Plant",
+    "population_equivalent" : 120000.0,
+    "wastewater" : 5000000.0,
+    "influent_average": {
+      "nitrogen" : 122.0,
+      "chemical_oxygen_demand" : 333.0,
+      "phosphorus" : 555.0
+    },
+    "effluent_average": {
+      "nitrogen" : 11.76,
+      "chemical_oxygen_demand" : 129.0,
+      "phosphorus" : 10.0
+    },
+    "energy_consumption": {
+      "sewage_gas_produced" : 1260000.0,
+      "methane_fraction" : 62.0,
+      "total_power_consumption" : 2683259.0,
+      "on_site_power_generation" : 2250897.0,
+      "emission_factor_electricity_mix" : 468.0,
+      "gas_supply" : 500,
+      "purchase_of_biogas": true
+    },
+    "sewage_sludge_treatment": {
+      "open_sludge_bags" : true,
+      "open_sludge_storage_containers" : true,
+      "sewage_sludge_for_disposal" : 3687.6,
+      "transport_distance" : 47.0
+    },
+    "operating_materials": {
+      "fecl3" : 12.345,
+      "feclso4" : 326.0,
+      "caoh2" : 326.26,
+      "synthetic_polymers" : 23.62
+    }
+  },
+  "scenario": {
+    "n2o_emission_factor": {
+      "calculation_method":"custom-factor",
+      "custom_factor": 1.5
+    },
+    "ch4_chp_emission_factor": {
+      "calculation_method":"custom-factor",
+      "custom_factor": 1.5
+    }
+  }
+}

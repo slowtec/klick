@@ -84,6 +84,8 @@ fn import_v1() {
         szenario.n2o_emission_factor.calculation_method,
         N2oEmissionFactorCalcMethod::CustomFactor
     );
+
+    assert_eq!(szenario.ch4_chp_emission_factor, None);
 }
 
 #[test]
@@ -154,4 +156,6 @@ fn import_v2() {
         szenario.n2o_emission_factor.calculation_method,
         N2oEmissionFactorCalcMethod::CustomFactor
     );
+
+    assert_eq!(szenario.ch4_chp_emission_factor, None);
 }

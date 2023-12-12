@@ -1,16 +1,16 @@
 use crate::forms::{self, FieldType, MinMax};
 
-use super::fields::FieldId;
-
+use super::fields::{FieldId, ScenarioFieldId};
 type Id = FieldId;
-type FieldSet = forms::FieldSet<Id>;
-type Field = forms::Field<Id>;
+
+pub type FieldSet = forms::FieldSet<Id>;
+pub type Field = forms::Field<Id>;
 
 #[allow(clippy::too_many_lines)]
 pub fn field_sets() -> Vec<FieldSet> {
     vec![
     FieldSet {
-        title: "Angaben zur Kläranlage",
+        title: Some("Angaben zur Kläranlage"),
         fields: vec![
             Field {
                 id: Id::Name,
@@ -76,7 +76,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: "Zulauf-Parameter (Jahresmittelwerte)",
+        title: Some("Zulauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
             Field {
                 id: Id::CsbZu,
@@ -150,7 +150,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: "Ablauf-Parameter (Jahresmittelwerte)",
+        title: Some("Ablauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
             Field {
                 id: Id::CsbAb,
@@ -224,7 +224,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: "Energiebedarf",
+        title: Some("Energiebedarf"),
         fields: vec![
             Field {
                 id: Id::Klaergas,
@@ -374,7 +374,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: "Klärschlammbehandlung",
+        title: Some("Klärschlammbehandlung"),
         fields: vec![
             Field {
                 id: Id::Schlammtaschen,
@@ -445,7 +445,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: "Eingesetzte Betriebsstoffe",
+        title: Some("Eingesetzte Betriebsstoffe"),
         fields: vec![
             Field {
                 id: Id::BetriebsstoffeFe3,
@@ -534,10 +534,10 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: "Szenario Benutzerdefiniert",
+        title: Some("Szenario Benutzerdefiniert"),
         fields: vec![
             Field {
-                id: Id::CustomN2oScenarioValue,
+                id: Id::Scenario(ScenarioFieldId::N2oCustomFactor),
                 label: "N₂O-Emissionsfaktor",
                 description: Some(
                     "N₂O-Emissionsfaktor für das Szenario Benutzerdefiniert.",
