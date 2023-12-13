@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.8 (2023-12-13)
+
+- New:
+  - Added zulauf/ablauf wertevergleich #16
+
 ## v0.1.7 (2023-12-12)
 
 - Changed:
