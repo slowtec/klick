@@ -1,12 +1,12 @@
 [package]
-name = "klick-application"
+name = "klick-convert-numbers"
 authors.workspace = true
-version.workspace = true
+license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+version.workspace = true
 
 [dependencies]
-klick-convert-numbers = "=0.0.0"
 
 [lints]
 workspace = true

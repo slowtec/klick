@@ -2,6 +2,7 @@ use std::{
     fmt,
     ops::{Add, Div, Mul, Sub, SubAssign},
 };
+use klick_convert_numbers::format_de_number;
 
 mod conversion;
 
@@ -104,7 +105,7 @@ macro_rules! quantity {
 
             impl fmt::Display for $unit {
                 fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                    write!(f, "{}{}", self.0, $abbreviation)
+                    write!(f, "{} {}", format_de_number(self.0, ","), $abbreviation)
                 }
             }
         )+

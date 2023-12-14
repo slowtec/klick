@@ -1,4 +1,5 @@
 use leptos::*;
+use klick_convert_numbers::format_with_thousands_seperator;
 
 #[derive(Debug, Clone)]
 pub struct Arguments {
@@ -223,13 +224,4 @@ fn Bar(
     }
 }
 
-fn format_with_thousands_seperator(value: f64, seperator: &str) -> String {
-    format!("{value:.0}")
-        .as_bytes()
-        .rchunks(3)
-        .rev()
-        .map(std::str::from_utf8)
-        .collect::<Result<Vec<&str>, _>>()
-        .unwrap()
-        .join(seperator)
-}
+

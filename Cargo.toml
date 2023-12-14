@@ -3,7 +3,8 @@ members = [
   "application",
   "backend",
   "boundary",
-  "svg-charts"
+  "svg-charts",
+  "convert-numbers"
 ]
 exclude = ["frontend"]
 resolver = "2"
@@ -17,10 +18,11 @@ rust-version = "1.74"
 
 [patch.crates-io]
 # Local paths to library crates in workspace
-klick-application = { path = "application" }
-klick-backend     = { path = "backend"     }
-klick-boundary    = { path = "boundary"    }
-klick-svg-charts  = { path = "svg-charts"  }
+klick-application = { path = "application"     }
+klick-backend     = { path = "backend"         }
+klick-boundary    = { path = "boundary"        }
+klick-svg-charts  = { path = "svg-charts"      }
+klick-convert-numbers   = { path = "convert-numbers" }
 
 [package]
 name = "klick"

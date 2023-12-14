@@ -902,7 +902,7 @@ dependencies = [
 
 [[package]]
 name = "klick"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "anyhow",
  "env_logger",
@@ -915,6 +915,9 @@ dependencies = [
 [[package]]
 name = "klick-application"
 version = "0.0.0"
+dependencies = [
+ "klick-convert-numbers",
+]
 
 [[package]]
 name = "klick-backend"
@@ -945,9 +948,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-convert-numbers"
+version = "0.0.0"
+
+[[package]]
 name = "klick-svg-charts"
 version = "0.0.0"
 dependencies = [
+ "klick-convert-numbers",
  "leptos",
  "log",
 ]

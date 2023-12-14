@@ -750,6 +750,9 @@ dependencies = [
 [[package]]
 name = "klick-application"
 version = "0.0.0"
+dependencies = [
+ "klick-convert-numbers",
+]
 
 [[package]]
 name = "klick-boundary"
@@ -764,8 +767,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-convert-numbers"
+version = "0.0.0"
+
+[[package]]
 name = "klick-frontend"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -775,6 +782,7 @@ dependencies = [
  "gloo-file",
  "klick-application",
  "klick-boundary",
+ "klick-convert-numbers",
  "klick-svg-charts",
  "leptos",
  "leptos_meta",
@@ -792,6 +800,7 @@ dependencies = [
 name = "klick-svg-charts"
 version = "0.0.0"
 dependencies = [
+ "klick-convert-numbers",
  "leptos",
  "log",
 ]
