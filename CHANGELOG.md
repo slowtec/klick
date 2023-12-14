@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.9 (2023-12-14)
+
+- Changed:
+  - Fixed number format for Ablauf/Zulauf warning #16
+
 ## v0.1.8 (2023-12-13)
 
 - New:

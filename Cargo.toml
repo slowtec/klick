@@ -26,7 +26,7 @@ klick-convert-numbers   = { path = "convert-numbers" }
 
 [package]
 name = "klick"
-version = "0.1.8"
+version = "0.1.9"
 edition.workspace = true
 rust-version.workspace = true
 publish = false
