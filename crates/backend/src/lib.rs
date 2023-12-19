@@ -10,7 +10,7 @@ use rust_embed::RustEmbed;
 static INDEX_HTML: &str = "index.html";
 
 #[derive(RustEmbed)]
-#[folder = "../frontend/dist/"]
+#[folder = "../../frontend/dist/"]
 struct Assets;
 
 pub async fn run(addr: SocketAddr) -> anyhow::Result<()> {

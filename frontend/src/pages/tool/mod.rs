@@ -3,7 +3,6 @@ use std::rc::Rc;
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 use strum::IntoEnumIterator;
-use log::info;
 
 use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
