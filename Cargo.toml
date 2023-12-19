@@ -24,6 +24,10 @@ klick-boundary        = { path = "crates/boundary"        }
 klick-convert-numbers = { path = "crates/convert-numbers" }
 klick-svg-charts      = { path = "crates/svg-charts"      }
 
+[patch.crates-io.rust-embed]
+git = "https://github.com/slowtec/rust-embed"
+branch = "update-axum"
+
 [package]
 name = "klick"
 version = "0.1.9"
@@ -42,7 +46,7 @@ env_logger = "0.10.1"
 log = "0.4.20"
 
 [dependencies.tokio]
-version = "1.35.0"
+version = "1.35.1"
 features = ["macros", "rt-multi-thread"]
 
 [build-dependencies]
