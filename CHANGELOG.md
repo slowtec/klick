@@ -9,11 +9,12 @@
 
 - New:
   - Added zulauf/ablauf wertevergleich #16
+  - Added first recommendations for action #69
 
 ## v0.1.7 (2023-12-12)
 
 - Changed:
-  - Updated example #72  
+  - Updated example #72
 
 ## v0.1.6 (2023-12-06)
 
