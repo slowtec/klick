@@ -121,14 +121,25 @@ pub fn Tool() -> impl IntoView {
             }
 
             if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
-                nitrogen_io_warning.set(Some(format!("Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!", input_data.effluent_average.nitrogen, input_data.influent_average.nitrogen)));
+                nitrogen_io_warning.set(Some(format!(
+                    "Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!",
+                    input_data.effluent_average.nitrogen, input_data.influent_average.nitrogen
+                )));
                 input_data_validation_error = true;
             } else {
                 nitrogen_io_warning.set(None);
             }
-            if let Some(chemical_oxygen_demand_influent) = input_data.influent_average.chemical_oxygen_demand {
-                if input_data.effluent_average.chemical_oxygen_demand > chemical_oxygen_demand_influent {
-                    chemical_oxygen_io_warning.set(Some(format!("Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!", input_data.effluent_average.chemical_oxygen_demand, chemical_oxygen_demand_influent)));
+            if let Some(chemical_oxygen_demand_influent) =
+                input_data.influent_average.chemical_oxygen_demand
+            {
+                if input_data.effluent_average.chemical_oxygen_demand
+                    > chemical_oxygen_demand_influent
+                {
+                    chemical_oxygen_io_warning.set(Some(format!(
+                        "Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!",
+                        input_data.effluent_average.chemical_oxygen_demand,
+                        chemical_oxygen_demand_influent
+                    )));
                     input_data_validation_error = true;
                 } else {
                     chemical_oxygen_io_warning.set(None);
@@ -138,7 +149,10 @@ pub fn Tool() -> impl IntoView {
             if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
                 if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
                     if phosphorus_effluent > phosphorus_influent {
-                        phosphorus_io_warning.set(Some(format!("Ablauf Phosphor {} größer als dessen Zulauf {}!", phosphorus_effluent, phosphorus_influent)));
+                        phosphorus_io_warning.set(Some(format!(
+                            "Ablauf Phosphor {} größer als dessen Zulauf {}!",
+                            phosphorus_effluent, phosphorus_influent
+                        )));
                         input_data_validation_error = true;
                     } else {
                         phosphorus_io_warning.set(None);

@@ -1,4 +1,5 @@
 use leptos::*;
+
 use klick_convert_numbers::format_with_thousands_seperator;
 
 #[derive(Debug, Clone)]
@@ -223,5 +224,3 @@ fn Bar(
       </g>
     }
 }
-
-

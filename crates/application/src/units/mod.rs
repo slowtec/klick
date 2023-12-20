@@ -2,6 +2,8 @@ use std::{
     fmt,
     ops::{Add, Div, Mul, Sub, SubAssign},
 };
+
+// TODO: move this to the view layer
 use klick_convert_numbers::format_de_number;
 
 mod conversion;
