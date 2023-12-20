@@ -10,7 +10,7 @@ use klick_svg_charts::BarChart;
 
 use crate::{
     forms::{self, FieldSignal, MissingField},
-    sankey,
+    sankey::Sankey,
 };
 
 mod action_panel;
@@ -29,8 +29,6 @@ use self::{
     input_data_list::InputDataList,
     optimization_options::OptimizationOptions,
 };
-
-const CHART_ELEMENT_ID: &str = "chart";
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum PageSection {
@@ -57,6 +55,7 @@ pub fn Tool() -> impl IntoView {
     let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
     let input_data = RwSignal::new(Option::<app::Input>::None);
+    let sankey_data = RwSignal::new(Option::<app::Output>::None);
 
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
@@ -166,7 +165,7 @@ pub fn Tool() -> impl IntoView {
                 .filter_map(|(i, method)| {
                     if input_data_validation_error {
                         // prevent sankey or barchart from rendering
-                        sankey::clear(CHART_ELEMENT_ID);
+                        sankey_data.set(None);
                         return None
                     }
                     let n2o_emission_factor = match method {
@@ -180,11 +179,11 @@ pub fn Tool() -> impl IntoView {
                     };
 
                     let scenario = app::Scenario {
-                    n2o_emission_factor,
-                    ch4_chp_emission_factor: None,
-                 };
+                      n2o_emission_factor,
+                      ch4_chp_emission_factor: None,
+                    };
 
-                 let output_data = klick_application::calculate_emissions(&input_data, scenario);
+                  let output_data = klick_application::calculate_emissions(&input_data, scenario);
 
                     if selected_scenario.get() == Some(i as u64) {
                         let name_ka: String = s
@@ -204,7 +203,7 @@ pub fn Tool() -> impl IntoView {
                             "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
                         );
                         sankey_header.set(title);
-                        sankey::render(output_data.clone(), CHART_ELEMENT_ID);
+                        sankey_data.set(Some(output_data.clone()));
                     }
                     if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
                     {
@@ -228,7 +227,7 @@ pub fn Tool() -> impl IntoView {
         } else {
             sankey_header.set(String::new());
             barchart_arguments.update(Vec::clear);
-            sankey::clear(CHART_ELEMENT_ID);
+            sankey_data.set(None);
             nitrogen_io_warning.set(None);
             chemical_oxygen_io_warning.set(None);
             phosphorus_io_warning.set(None);
@@ -401,9 +400,8 @@ pub fn Tool() -> impl IntoView {
         <h4 class="my-8 text-lg font-bold">
           { move || sankey_header.get().to_string() }
         </h4>
+        { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
       </Show>
-
-      <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
 
       <div class="my-8 border-b border-gray-200 pb-5" >
         <h3

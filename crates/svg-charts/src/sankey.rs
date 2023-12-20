@@ -43,6 +43,8 @@ impl Sankey {
         }
     }
 
+    // TODO: rename to `add_node`
+    // TODO: use for value N: Into<f64>
     pub fn node<S>(&mut self, value: f64, label: S, color: Option<S>) -> NodeId
     where
         S: Into<String>,
@@ -55,6 +57,7 @@ impl Sankey {
         id
     }
 
+    // TODO: rename to `add_edge`
     pub fn edge(&mut self, source: NodeId, target: NodeId) {
         self.edges.insert(Edge { source, target });
     }
@@ -69,7 +72,7 @@ pub fn Chart<F>(sankey: Sankey, width: f64, height: f64, number_format: F) -> im
 where
     F: Fn(f64) -> String,
 {
-    let margin_x = width * 0.05;
+    let margin_x = width * 0.08;
     let margin_y = height * 0.05;
 
     view! {
@@ -97,7 +100,7 @@ where
     F: Fn(f64) -> String,
 {
     let node_separation = height / 50.0;
-    let node_width = width / 100.0;
+    let node_width = width / 70.0; // TODO: make configurable
 
     let deps = dependencies(&sankey.edges);
     let layers = layers(&deps);
@@ -116,7 +119,7 @@ where
     let nodes = node_positions
         .iter()
         .map(|(id, (x, y, node_height))| {
-            let font_size = height / 40.0;
+            let font_size = height / 50.0; // TODO: make configurable
             let value = sankey.nodes[id].value;
             let label = sankey.nodes[id].label.as_ref().map(|label| {
                 view! {
@@ -370,6 +373,7 @@ fn node_positions(
     positions
 }
 
+// TODO: rename
 fn foo(
     layer_y: &mut [f64],
     id: &NodeId,
