@@ -48,6 +48,9 @@ struct SankeyItem {
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 pub fn render(output_data: app::Output, element_id: &str) {
+
+    log::debug!("Render sankey chart for {output_data:#?}");
+
     let app::Output {
         co2_equivalents,
         n2o_emission_factor: _,
