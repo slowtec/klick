@@ -4,6 +4,7 @@ use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 use strum::IntoEnumIterator;
 
+use klick_application as app;
 use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
     SavedProject,
@@ -16,7 +17,7 @@ use crate::{
     api::AuthorizedApi,
     forms::{self, FieldSignal, MissingField},
     message::{ErrorMessage, SuccessMessage},
-    sankey,
+    sankey::Sankey,
 };
 
 mod breadcrumbs;
@@ -35,8 +36,6 @@ use self::{
     optimization_options::OptimizationOptions,
     project_menu::ProjectMenu,
 };
-
-const CHART_ELEMENT_ID: &str = "chart";
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum PageSection {
@@ -68,6 +67,7 @@ pub fn Tool(
     let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
     let input_data = RwSignal::new(Option::<domain::PlantProfile>::None);
+    let sankey_data = RwSignal::new(Option::<app::Output>::None);
 
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
@@ -194,7 +194,7 @@ pub fn Tool(
                 .filter_map(|(i, method)| {
                     if input_data_validation_error {
                         // prevent sankey or barchart from rendering
-                        sankey::clear(CHART_ELEMENT_ID);
+                        sankey_data.set(None);
                         return None
                     }
                     let n2o_emission_factor = match method {
@@ -233,7 +233,7 @@ pub fn Tool(
                             "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (EF={ef}%)"
                         );
                         sankey_header.set(title);
-                        sankey::render(output_data.clone(), CHART_ELEMENT_ID);
+                        sankey_data.set(Some(output_data.clone()));
                     }
                     if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
                     {
@@ -257,7 +257,7 @@ pub fn Tool(
         } else {
             sankey_header.set(String::new());
             barchart_arguments.update(Vec::clear);
-            sankey::clear(CHART_ELEMENT_ID);
+            sankey_data.set(None);
             nitrogen_io_warning.set(None);
             chemical_oxygen_io_warning.set(None);
             phosphorus_io_warning.set(None);
@@ -570,9 +570,8 @@ pub fn Tool(
         <h4 class="my-8 text-lg font-bold">
           { move || sankey_header.get().to_string() }
         </h4>
+        { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
       </Show>
-
-      <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
 
       <Show
         when = move || current_section.get() == Some(PageSection::OptimizationOptions)
