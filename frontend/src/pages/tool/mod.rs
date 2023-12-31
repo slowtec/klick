@@ -6,6 +6,7 @@ use strum::IntoEnumIterator;
 
 use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
+use klick_format_numbers::Lng;
 use klick_svg_charts::BarChart;
 
 use crate::{
@@ -123,7 +124,8 @@ pub fn Tool() -> impl IntoView {
             if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
                 nitrogen_io_warning.set(Some(format!(
                     "Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!",
-                    input_data.effluent_average.nitrogen, input_data.influent_average.nitrogen
+                    Lng::De.format_number(input_data.effluent_average.nitrogen),
+                    Lng::De.format_number(input_data.influent_average.nitrogen)
                 )));
                 input_data_validation_error = true;
             } else {
@@ -137,8 +139,8 @@ pub fn Tool() -> impl IntoView {
                 {
                     chemical_oxygen_io_warning.set(Some(format!(
                         "Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!",
-                        input_data.effluent_average.chemical_oxygen_demand,
-                        chemical_oxygen_demand_influent
+                        Lng::De.format_number(input_data.effluent_average.chemical_oxygen_demand),
+                        Lng::De.format_number(chemical_oxygen_demand_influent)
                     )));
                     input_data_validation_error = true;
                 } else {
@@ -150,7 +152,9 @@ pub fn Tool() -> impl IntoView {
                 if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
                     if phosphorus_effluent > phosphorus_influent {
                         phosphorus_io_warning.set(Some(format!(
-                            "Ablauf Phosphor {phosphorus_effluent} größer als dessen Zulauf {phosphorus_influent}!"
+                            "Ablauf Phosphor {} größer als dessen Zulauf {}!",
+                            Lng::De.format_number(phosphorus_effluent),
+                            Lng::De.format_number(phosphorus_influent),
                         )));
                         input_data_validation_error = true;
                     } else {

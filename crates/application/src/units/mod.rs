@@ -3,9 +3,6 @@ use std::{
     ops::{Add, Div, Mul, Sub, SubAssign},
 };
 
-// TODO: move this to the view layer
-use klick_convert_numbers::format_de_number;
-
 mod conversion;
 
 #[cfg(test)]
@@ -107,7 +104,7 @@ macro_rules! quantity {
 
             impl fmt::Display for $unit {
                 fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                    write!(f, "{} {}", format_de_number(self.0, ","), $abbreviation)
+                    write!(f, "{}{}", self.0, $abbreviation)
                 }
             }
         )+

@@ -9,8 +9,8 @@ rust-version = "1.75"
 # Project dependencies
 klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
+klick-format-numbers = "=0.0.0"
 klick-svg-charts = "=0.0.0"
-klick-convert-numbers = "=0.0.0"
 
 # External dependencies
 anyhow = "1.0.78"
@@ -33,7 +33,7 @@ thiserror = "1.0.53"
 # Local paths to library crates in workspace
 klick-application      = { path = "../crates/application"     }
 klick-boundary         = { path = "../crates/boundary"        }
-klick-convert-numbers  = { path = "../crates/convert-numbers" }
+klick-format-numbers   = { path = "../crates/format-numbers"  }
 klick-svg-charts       = { path = "../crates/svg-charts"      }
 
 [patch.crates-io.charming]

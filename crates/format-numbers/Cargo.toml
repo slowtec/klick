@@ -1,5 +1,5 @@
 [package]
-name = "klick-convert-numbers"
+name = "klick-format-numbers"
 authors.workspace = true
 license.workspace = true
 edition.workspace = true

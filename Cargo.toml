@@ -3,7 +3,7 @@ members = [
   "crates/application",
   "crates/backend",
   "crates/boundary",
-  "crates/convert-numbers",
+  "crates/format-numbers",
   "crates/svg-charts",
   "crates/svg-charts/examples/*"
 ]
@@ -22,7 +22,7 @@ rust-version = "1.75"
 klick-application     = { path = "crates/application"     }
 klick-backend         = { path = "crates/backend"         }
 klick-boundary        = { path = "crates/boundary"        }
-klick-convert-numbers = { path = "crates/convert-numbers" }
+klick-format-numbers  = { path = "crates/format-numbers"  }
 klick-svg-charts      = { path = "crates/svg-charts"      }
 
 [package]
