@@ -15,7 +15,7 @@ authors = ["slowtec GmbH <post@slowtec.de>"]
 license = "AGPL-3.0-or-later"
 version = "0.0.0"
 edition = "2021"
-rust-version = "1.74"
+rust-version = "1.75"
 
 [patch.crates-io]
 # Local paths to library crates in workspace
@@ -24,10 +24,6 @@ klick-backend         = { path = "crates/backend"         }
 klick-boundary        = { path = "crates/boundary"        }
 klick-convert-numbers = { path = "crates/convert-numbers" }
 klick-svg-charts      = { path = "crates/svg-charts"      }
-
-[patch.crates-io.rust-embed]
-git = "https://github.com/slowtec/rust-embed"
-branch = "update-axum"
 
 [package]
 name = "klick"
@@ -42,7 +38,7 @@ build = "build.rs"
 klick-backend = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.75"
+anyhow = "1.0.78"
 env_logger = "0.10.1"
 log = "0.4.20"
 

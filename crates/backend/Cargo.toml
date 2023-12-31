@@ -12,11 +12,11 @@ klick-boundary = "=0.0.0"
 klick-svg-charts = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.75"
-axum = "0.7.2"
+anyhow = "1.0.78"
+axum = "0.7.3"
 log = "0.4.20"
 mime_guess = "2.0.4"
-rust-embed = { version = "8.1.0", features = ["axum"] }
+rust-embed = { version = "8.2.0", features = ["axum"] }
 tokio = { version = "1.35.1", features = ["net"] }
 
 [lints]
