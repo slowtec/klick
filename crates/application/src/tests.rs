@@ -42,14 +42,17 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
         },
-        combined_heat_and_power_plant_ch4_emission_factor: None,
     };
 
-    let method = N2oEmissionFactorCalcMethod::ExtrapolatedParravicini;
+    let scenario = Scenario {
+        n2o_emission_factor: N2oEmissionFactorCalcMethod::ExtrapolatedParravicini,
+        ch4_chp_emission_factor: None,
+    };
+
     let Output {
         co2_equivalents,
         n2o_emission_factor,
-    } = calculate_emissions(&input, method);
+    } = calculate_emissions(&input, scenario);
 
     let CO2Equivalents {
         n2o_plant,

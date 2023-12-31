@@ -40,7 +40,7 @@ pub enum PageSection {
 }
 
 impl PageSection {
-    const fn section_id(&self) -> &'static str {
+    const fn section_id(self) -> &'static str {
         match self {
             PageSection::DataCollection => "data-collection",
             PageSection::OptimizationOptions => "optimization-options",
@@ -150,8 +150,7 @@ pub fn Tool() -> impl IntoView {
                 if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
                     if phosphorus_effluent > phosphorus_influent {
                         phosphorus_io_warning.set(Some(format!(
-                            "Ablauf Phosphor {} größer als dessen Zulauf {}!",
-                            phosphorus_effluent, phosphorus_influent
+                            "Ablauf Phosphor {phosphorus_effluent} größer als dessen Zulauf {phosphorus_influent}!"
                         )));
                         input_data_validation_error = true;
                     } else {
@@ -338,7 +337,10 @@ pub fn Tool() -> impl IntoView {
             }
           }
         >
-          <InputDataList field_sets signals />
+          <InputDataList
+            field_sets = { &field_sets }
+            signals = { &signals }
+          />
         </div>
       </div>
 
@@ -354,13 +356,25 @@ pub fn Tool() -> impl IntoView {
                       }
                     />
                   <Show when= move || nitrogen_io_warning.get().is_some()>
-                  <p><ul class="ml-5 my-4 list-disc list-inside"><li>{nitrogen_io_warning.get()}</li></ul></p>
+                    <p>
+                      <ul class="ml-5 my-4 list-disc list-inside">
+                        <li>{ nitrogen_io_warning.get() }</li>
+                      </ul>
+                    </p>
                   </Show>
                   <Show when= move || chemical_oxygen_io_warning.get().is_some()>
-                  <p><ul class="ml-5 my-4 list-disc list-inside"><li>{chemical_oxygen_io_warning.get()}</li></ul></p>
+                    <p>
+                      <ul class="ml-5 my-4 list-disc list-inside">
+                        <li>{ chemical_oxygen_io_warning.get() }</li>
+                      </ul>
+                    </p>
                   </Show>
                   <Show when= move || phosphorus_io_warning.get().is_some()>
-                  <p><ul class="ml-5 my-4 list-disc list-inside"><li>{phosphorus_io_warning.get()}</li></ul></p>
+                    <p>
+                      <ul class="ml-5 my-4 list-disc list-inside">
+                        <li>{ phosphorus_io_warning.get() }</li>
+                      </ul>
+                    </p>
                   </Show>
                   <p>"Bei jeder Eingabe werden die Graphen automatisch neu berechnet."</p>
                 </div>
@@ -421,8 +435,10 @@ pub fn Tool() -> impl IntoView {
           und deren Wettbewerbsfähigkeit langfristig zu sichern."
         </p>
       </div>
-      <OptimizationOptions input_data = input_data.into() n2o_emission_factor_method = n2o_emission_factor_method.into() />
-
+      <OptimizationOptions
+        input_data = input_data.into()
+        n2o_emission_factor_method = n2o_emission_factor_method.into()
+      />
     }
 }
 

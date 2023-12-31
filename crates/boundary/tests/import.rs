@@ -61,13 +61,13 @@ fn import_v1() {
     assert_eq!(effluent_average.chemical_oxygen_demand, Some(129.0));
     assert_eq!(effluent_average.phosphorus, Some(10.0));
 
-    assert_eq!(sewage_gas_produced, Some(1260000.0));
+    assert_eq!(sewage_gas_produced, Some(1_260_000.0));
     assert_eq!(methane_fraction, Some(62.0));
-    assert_eq!(on_site_power_generation, Some(2250897.0));
+    assert_eq!(on_site_power_generation, Some(2_250_897.0));
     assert_eq!(emission_factor_electricity_mix, Some(468.0));
     assert_eq!(gas_supply, Some(500.0));
     assert_eq!(purchase_of_biogas, Some(true));
-    assert_eq!(total_power_consumption, Some(2683259.0));
+    assert_eq!(total_power_consumption, Some(2_683_259.0));
 
     assert_eq!(open_sludge_bags, Some(true));
     assert_eq!(open_sludge_storage_containers, Some(true));
@@ -133,13 +133,13 @@ fn import_v2() {
     assert_eq!(effluent_average.chemical_oxygen_demand, Some(129.0));
     assert_eq!(effluent_average.phosphorus, Some(10.0));
 
-    assert_eq!(sewage_gas_produced, Some(1260000.0));
+    assert_eq!(sewage_gas_produced, Some(1_260_000.0));
     assert_eq!(methane_fraction, Some(62.0));
-    assert_eq!(on_site_power_generation, Some(2250897.0));
+    assert_eq!(on_site_power_generation, Some(2_250_897.0));
     assert_eq!(emission_factor_electricity_mix, Some(468.0));
     assert_eq!(gas_supply, Some(500.0));
     assert_eq!(purchase_of_biogas, Some(true));
-    assert_eq!(total_power_consumption, Some(2683259.0));
+    assert_eq!(total_power_consumption, Some(2_683_259.0));
 
     assert_eq!(open_sludge_bags, Some(true));
     assert_eq!(open_sludge_storage_containers, Some(true));

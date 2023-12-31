@@ -5,9 +5,9 @@ use leptos::*;
 use crate::forms::{FieldSet, FieldSignal};
 
 #[component]
-pub fn InputDataList<ID>(
-    field_sets: Vec<FieldSet<ID>>,
-    signals: Rc<HashMap<ID, FieldSignal>>,
+pub fn InputDataList<'a, ID>(
+    field_sets: &'a [FieldSet<ID>],
+    signals: &'a Rc<HashMap<ID, FieldSignal>>,
 ) -> impl IntoView
 where
     ID: Hash + Eq + AsRef<str> + Copy + 'static,
@@ -28,7 +28,9 @@ where
 
         view!{
           <li class="px-3">
-            <div class="font-semibold text-lg border-solid border-b text-gray-400">{ fs.title }</div>
+            <div class="font-semibold text-lg border-solid border-b text-gray-400">
+              { fs.title }
+            </div>
             <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
               { values }
             </dl>

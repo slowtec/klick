@@ -145,7 +145,7 @@ pub struct MissingField {
 }
 
 impl MissingField {
-    pub fn new(field_id: String, label: &'static str) -> Self {
+    pub const fn new(field_id: String, label: &'static str) -> Self {
         Self { field_id, label }
     }
 }
@@ -155,7 +155,6 @@ pub fn HelperWidget<F>(missing_fields: Vec<MissingField>, before_focus: F) -> im
 where
     F: Fn() + Copy + 'static,
 {
-    let missing_fields = missing_fields.clone();
     view! {
       <ul class="ml-5 my-4 list-disc list-inside">
         <For

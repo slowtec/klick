@@ -25,57 +25,7 @@ pub fn options(
     input_data: Signal<Option<app::Input>>,
     n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
-    let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor);
-
-    let custom_factor_field = Field {
-        id,
-        label: "Benutzerdefiniert",
-        description: Some("z.B. nach Messung/Eigenberechnung"),
-        required: false,
-        field_type: FieldType::Float {
-            initial_value: None,
-            placeholder: None,
-            limits: MinMax {
-                min: Some(0.0),
-                max: Some(100.0),
-            },
-            unit: "%",
-        },
-    };
-
-    let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCalculationMethod);
-    let calc_method_field = Field {
-        id,
-        label: "BHKW Emmisionsfaktor",
-        description: None,
-        required: false,
-        field_type: FieldType::Selection {
-            initial_value: None,
-            options: vec![
-                SelectOption {
-                    label: "Mikrogasturbinen (EF <1%)",
-                    value: 1,
-                },
-                SelectOption {
-                    label: "Ottomotor (EF ~1–2%)",
-                    value: 2,
-                },
-                SelectOption {
-                    label: "Zündstrahlmotor (EF ~2–3%)",
-                    value: 3,
-                },
-                SelectOption {
-                    label: "BHKW EF Freiwählbar",
-                    value: 4,
-                },
-            ],
-        },
-    };
-
-    let field_set = FieldSet {
-        title: None,
-        fields: vec![calc_method_field, custom_factor_field],
-    };
+    let field_set = field_set();
 
     let (signals, chp_view, _required_fields) = render_field_sets(vec![field_set]);
 
@@ -83,6 +33,7 @@ pub fn options(
         .get(&FieldId::Scenario(ScenarioFieldId::CH4ChpCalculationMethod))
         .and_then(FieldSignal::get_selection_signal)
         .unwrap();
+
     let custom_factor = signals
         .get(&FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor))
         .and_then(FieldSignal::get_float_signal)
@@ -204,5 +155,60 @@ pub fn options(
         </div>
 
       </Card>
+    }
+}
+
+fn field_set() -> FieldSet {
+    let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor);
+    let custom_factor_field = Field {
+        id,
+        label: "Benutzerdefiniert",
+        description: Some("z.B. nach Messung/Eigenberechnung"),
+        required: false,
+        field_type: FieldType::Float {
+            initial_value: None,
+            placeholder: None,
+            limits: MinMax {
+                min: Some(0.0),
+                max: Some(100.0),
+            },
+            unit: "%",
+        },
+    };
+
+    let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCalculationMethod);
+    let calc_method_field = Field {
+        id,
+        label: "BHKW Emmisionsfaktor",
+        description: None,
+        required: false,
+        field_type: FieldType::Selection {
+            initial_value: None,
+            options: vec![
+                SelectOption {
+                    label: "Mikrogasturbinen (EF <1%)",
+                    value: 1,
+                },
+                SelectOption {
+                    label: "Ottomotor (EF ~1–2%)",
+                    value: 2,
+                },
+                SelectOption {
+                    label: "Zündstrahlmotor (EF ~2–3%)",
+                    value: 3,
+                },
+                SelectOption {
+                    label: "BHKW EF Freiwählbar",
+                    value: 4,
+                },
+            ],
+        },
+    };
+
+    let fields = vec![calc_method_field, custom_factor_field];
+
+    FieldSet {
+        title: None,
+        fields,
     }
 }
