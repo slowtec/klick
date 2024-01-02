@@ -5,6 +5,8 @@ mod v3;
 mod export;
 mod import;
 
+pub mod json_api;
+
 pub use self::{
     export::{export_to_string_pretty, export_to_vec_pretty},
     import::{import_from_slice, import_from_str, Error as ImportError},
