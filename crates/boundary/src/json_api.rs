@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Credentials {
     pub email: String,
     pub password: String,
@@ -19,4 +19,9 @@ pub struct ApiToken {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Error {
     pub message: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RequestPasswordReset {
+    pub email: String,
 }

@@ -1,9 +1,14 @@
 #![allow(clippy::wildcard_imports)]
 
+use gloo_storage::{LocalStorage, Storage};
 use leptos::*;
 use leptos_meta::provide_meta_context;
-use leptos_router::{Route, Router, Routes};
+use leptos_router::{use_navigate, Route, Router, Routes};
 
+use klick_boundary::json_api::UserInfo;
+
+mod api;
+mod credentials;
 mod footer;
 mod forms;
 mod nav;
@@ -13,7 +18,7 @@ mod sankey;
 use self::{
     footer::Footer,
     nav::Nav,
-    pages::{Faq, Page, Tool},
+    pages::{Faq, Login, Page, Register, ResetPassword, Tool},
 };
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -26,15 +31,98 @@ const CHANGELOG_URL: &str = concat!(
     "/CHANGELOG.md"
 );
 
+const DEFAULT_API_URL: &str = "/api";
+const API_TOKEN_STORAGE_KEY: &str = "api-token";
+
 #[component]
 #[must_use]
 pub fn App() -> impl IntoView {
     provide_meta_context();
 
+    // -- signals -- //
+
     let (current_page, set_current_page) = create_signal(Page::Home);
+    let authorized_api = RwSignal::new(None::<api::AuthorizedApi>);
+    let user_info = RwSignal::new(None::<UserInfo>);
+    let logged_in = Signal::derive(move || authorized_api.get().is_some());
+
+    // -- actions -- //
+
+    let fetch_user_info = create_action(move |_: &()| async move {
+        match authorized_api.get() {
+            Some(api) => match api.user_info().await {
+                Ok(info) => {
+                    user_info.update(|i| *i = Some(info));
+                }
+                Err(err) => {
+                    log::error!("Unable to fetch user info: {err}")
+                }
+            },
+            None => {
+                log::error!("Unable to fetch user info: not logged in")
+            }
+        }
+    });
+
+    let logout = create_action(move |_: &()| async move {
+        match authorized_api.get() {
+            Some(api) => match api.logout().await {
+                Ok(_) => {
+                    authorized_api.update(|a| *a = None);
+                    user_info.update(|i| *i = None);
+                }
+                Err(err) => {
+                    log::error!("Unable to logout: {err}")
+                }
+            },
+            None => {
+                log::error!("Unable to logout user: not logged in")
+            }
+        }
+    });
+
+    // -- callbacks -- //
+
+    let on_logout = move |_| {
+        logout.dispatch(());
+    };
+
+    // -- init API -- //
+
+    let unauthorized_api = api::UnauthorizedApi::new(DEFAULT_API_URL);
+    if let Ok(token) = LocalStorage::get(API_TOKEN_STORAGE_KEY) {
+        let api = api::AuthorizedApi::new(DEFAULT_API_URL, token);
+        authorized_api.update(|a| *a = Some(api));
+        fetch_user_info.dispatch(());
+    }
+
+    log::debug!("User is logged in: {}", logged_in.get_untracked());
+
+    // -- effects -- //
+
+    create_effect(move |_| {
+        log::debug!("API authorization state changed");
+        match authorized_api.get() {
+            Some(api) => {
+                log::debug!("API is now authorized: save token in LocalStorage");
+                LocalStorage::set(API_TOKEN_STORAGE_KEY, api.token()).expect("LocalStorage::set");
+            }
+            None => {
+                log::debug!(
+                    "API is no longer authorized: delete token from \
+                     LocalStorage"
+                );
+                LocalStorage::delete(API_TOKEN_STORAGE_KEY);
+            }
+        }
+    });
 
     view! {
-      <Nav current_page = current_page.into() />
+      <Nav
+        current_page = current_page.into()
+        user_info = user_info.into()
+        on_logout
+      />
       <Router>
         <Routes>
           <Route
@@ -59,7 +147,11 @@ pub fn App() -> impl IntoView {
                       "KlicK-Tool "
                       <span class="font-light text-xl text-gray-600">
                         "(Betaversion "
-                        <a class="font-light text-xl no-underline hover:underline" href= { CHANGELOG_URL} >"v" { VERSION } ")"</a>
+                        <a
+                          class="font-light text-xl no-underline hover:underline"
+                          href= { CHANGELOG_URL } >
+                          "v" { VERSION } ")"
+                        </a>
                       </span>
                     </h1>
                   </header>
@@ -103,6 +195,35 @@ pub fn App() -> impl IntoView {
                 </Main>
               }
             }
+          />
+          <Route
+              path=Page::Login.path()
+              view=move || {
+                  view! {
+                      <Login
+                          api=unauthorized_api
+                          on_success=move |api| {
+                              log::info!("Successfully logged in");
+                              authorized_api.update(|v| *v = Some(api));
+                              let navigate = use_navigate();
+                              navigate(Page::Home.path(), Default::default());
+                              fetch_user_info.dispatch(());
+                          }
+                      />
+                  }
+              }
+          />
+          <Route
+              path=Page::Register.path()
+              view=move || {
+                  view! { <Register api=unauthorized_api/> }
+              }
+          />
+          <Route
+              path=Page::ResetPassword.path()
+              view=move || {
+                  view! { <ResetPassword api=unauthorized_api/> }
+              }
           />
         </Routes>
       </Router>
