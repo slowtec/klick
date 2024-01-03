@@ -18,6 +18,8 @@ charming = { version = "0.2.5", features = ["wasm"] }
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
 gloo-file = { version = "0.3.0", features = ["futures"] }
+gloo-net = { version = "0.5.0", default-features = false, features = ["http", "json"] }
+gloo-storage = "0.3.0"
 Inflector = "0.11.4"
 leptos = { version = "0.5.4", features = ["csr"] }
 leptos_meta = { version = "0.5.4", features = ["csr"] }

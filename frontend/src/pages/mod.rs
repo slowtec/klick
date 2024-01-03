@@ -1,7 +1,10 @@
 mod faq;
+mod login;
+mod register;
+mod reset_password;
 mod tool;
 
-pub use self::{faq::*, tool::*};
+pub use self::{faq::*, login::*, register::*, reset_password::*, tool::*};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Page {
@@ -10,6 +13,9 @@ pub enum Page {
     Faq,
     Imprint,
     OpenSource,
+    Login,
+    Register,
+    ResetPassword,
 }
 
 impl Page {
@@ -20,6 +26,9 @@ impl Page {
             Self::Faq => "/faq",
             Self::Imprint => "/imprint",
             Self::OpenSource => "/open-source",
+            Self::Login => "/login",
+            Self::Register => "/register",
+            Self::ResetPassword => "/reset-password",
         }
     }
 }

@@ -140,7 +140,7 @@ async fn get_user_info(
 ) -> Result<json_api::UserInfo> {
     let user = state.read().authorize_user(auth.token())?;
     let CurrentUser { email, .. } = user;
-    Ok(Json(json_api::UserInfo {
-        email: email.into_string(),
-    }))
+    let email = email.into_string();
+    let user_info = json_api::UserInfo { email };
+    Ok(Json(user_info))
 }
