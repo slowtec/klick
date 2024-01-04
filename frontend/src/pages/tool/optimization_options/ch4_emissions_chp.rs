@@ -90,15 +90,6 @@ pub fn options(
     });
 
     view! {
-      <p class="mt-2">
-        "THG treten an mehreren Prozessschritten auf.
-        Die Minderungsmaßnahmen fokussieren sich auf Methan- und Lachgasemissionen sowie energiebedingte Emissionen.
-        Für bestimmte Maßnahmen kann ein konkretes Minderungspotenzial (aus der Literatur) abgeleitet werden,
-        für andere kann vorerst nur der Hinweis ausgegeben werden,
-        ob sich die Klimabilanz dadurch qualitativ verbessert.
-        Unter nachfolgenden Abschnitten erhalten Sie weiterführende Informationen zu einzelnen Maßnahmen
-        und können gegebenenfalls Ihre Klimabilanz neu berechnen/verbessern."
-      </p>
       <Card title = "Methanemissionen aus Blockheizkraftwerken (BHKW)" >
         <InfoBox text = "BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
