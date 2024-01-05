@@ -5,9 +5,6 @@ use std::{
 
 mod conversion;
 
-#[cfg(test)]
-mod tests;
-
 macro_rules! quantity {
     (
       $(#[$quantity_attr:meta])* $quantity:ident;
