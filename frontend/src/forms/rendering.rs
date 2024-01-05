@@ -294,7 +294,7 @@ fn TextInput(
     }
 }
 
-fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
+pub fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
     let float = input
         .replace('.', "")
         .replace(',', ".")
