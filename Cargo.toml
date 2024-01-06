@@ -3,6 +3,8 @@ members = [
   "crates/application",
   "crates/backend",
   "crates/boundary",
+  "crates/db-sqlite",
+  "crates/domain",
   "crates/format-numbers",
   "crates/svg-charts",
   "crates/svg-charts/examples/*"
@@ -22,6 +24,8 @@ rust-version = "1.75"
 klick-application     = { path = "crates/application"     }
 klick-backend         = { path = "crates/backend"         }
 klick-boundary        = { path = "crates/boundary"        }
+klick-db-sqlite       = { path = "crates/db-sqlite"       }
+klick-domain          = { path = "crates/domain"          }
 klick-format-numbers  = { path = "crates/format-numbers"  }
 klick-svg-charts      = { path = "crates/svg-charts"      }
 

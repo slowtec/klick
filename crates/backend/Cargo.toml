@@ -9,6 +9,8 @@ publish = false
 # Project dependencies
 klick-application = "=0.0.0"
 klick-boundary = "=0.0.0"
+klick-db-sqlite = "=0.0.0"
+klick-domain = "=0.0.0"
 klick-svg-charts = "=0.0.0"
 
 # External dependencies
@@ -17,10 +19,8 @@ axum = "0.7.3"
 axum-extra = { version = "0.9.1", features = ["typed-header"] }
 headers = "0.4.0"
 log = "0.4.20"
-mailparse = "0.14.0"
 mime_guess = "2.0.4"
 parking_lot = "0.12.1"
-pwhash = "1.0.0"
 rust-embed = { version = "8.2.0", features = ["axum"] }
 thiserror = "1.0.56"
 tokio = { version = "1.35.1", features = ["net"] }

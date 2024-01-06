@@ -1,14 +1,15 @@
 [package]
-name = "klick-application"
+name = "klick-domain"
 authors.workspace = true
+license.workspace = true
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+publish = false
 
 [dependencies]
-klick-domain = "=0.0.0"
-
-anyhow = "1.0.79"
+mailparse = "0.14.0"
+pwhash = "1.0.0"
 thiserror = "1.0.56"
 
 [lints]

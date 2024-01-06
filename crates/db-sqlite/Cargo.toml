@@ -1,0 +1,26 @@
+[package]
+name = "klick-db-sqlite"
+authors.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+klick-application = "=0.0.0"
+klick-domain = "=0.0.0"
+
+anyhow = "1.0.79"
+diesel = { version = "2.1.4", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
+# Bundle SQLite code to prevent dynamic linking.
+# The pinned version must be compatible with diesel! Try to update it
+# manually or by `cargo upgrade --pinned` after updating diesel.
+libsqlite3-sys = { version = "0.27.0", features = ["bundled"] }
+log = "0.4.20"
+parking_lot = "0.12.1"
+thiserror = "1.0.56"
+
+[lints]
+workspace = true
