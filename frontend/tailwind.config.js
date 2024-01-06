@@ -46,7 +46,8 @@ module.exports = {
         800: colors.gray['800'],
         900: utbw.colors.black,
         950: utbw.colors.black,
-      }
+      },
+      green: colors.green,
     }
   }
 }

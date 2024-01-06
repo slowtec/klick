@@ -46,7 +46,8 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
         }
     });
 
-    let disabled = Signal::derive(move || wait_for_response.get());
+    let disabled = Signal::derive( move || wait_for_response.get() || register_response.get().is_some());
+    let success = Signal::derive( move || register_response.get().is_some());
 
     view! {
       <section>
@@ -64,7 +65,7 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
                           initial_credentials = Default::default()
                           action=register_action
                           error = register_error.into()
-                          disabled
+                          disabled = { disabled }
                       />
                       <div class="flex items-center justify-between pb-6">
                         <p class="mb-0 mr-2 text-gray-600">"Sie haben bereits ein Konto?"</p>
@@ -77,31 +78,46 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
                       </div>
                     </div>
                   </div>
-                  <div class="lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-gray-100">
-                    <div class="px-4 py-6 md:p-12 md:mx-6">{move || match register_response.get() {
-                        Some(()) => view!{
-                          <h4 class="text-xl font-semibold mb-6">"Successfully registered"</h4>
-                          <p class="text-sm">
-                            "Congratulations! You've successfully registered your OpenFairDB account."
-                          </p>
-                          <p class="text-sm">
-                            "Now check your email inbox and confirm the validity of your email address."
-                          </p>
-                        }.into_view(),
-                        None => view!{
-                          <h4 class="text-xl font-semibold mb-6">"Was bietet Ihnen ein Benutzer*innenkonto?"</h4>
-                          <p class="text-sm">
-                            "Mit einem Konto können Sie Ihre Daten online verwalten."
-                          </p>
-                        }.into_view()
-                      }}
-                    </div>
-                  </div>
+                  <InfoBox success />
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+    }
+}
+
+#[component]
+fn InfoBox(
+  success : Signal<bool>
+) -> impl IntoView {
+
+    const DEFAULT_CLASS : &str = "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-gray-100";
+    const SUCCESS_CLASS : &str = "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-green-100";
+
+    view! {
+      <div class = move || if success.get() { SUCCESS_CLASS } else { DEFAULT_CLASS } >
+        <div class="px-4 py-6 md:p-12 md:mx-6">
+          <Show
+            when = move || success.get()
+            fallback = ||
+              view! {
+                <h4 class="text-xl font-semibold mb-6">"Was bietet Ihnen ein Benutzer*innenkonto?"</h4>
+                <p class="text-sm">
+                  "Mit einem Konto können Sie Ihre Daten online verwalten."
+                </p>
+              }
+          >
+            <h4 class="text-xl font-semibold mb-6">"Erfolgreich registriert"</h4>
+            <p class="text-sm">
+              "Herzlichen Glückwunsch! Sie haben Ihr Konto erfolgreich registriert."
+            </p>
+            <p class="text-sm">
+              "Überprüfen Sie nun Ihren E-Mail-Posteingang und bestätigen Sie die Gültigkeit Ihrer E-Mail-Adresse."
+            </p>
+          </Show>
+        </div>
+      </div>
     }
 }
