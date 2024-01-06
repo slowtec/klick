@@ -2,7 +2,12 @@ use leptos::{ev, *};
 
 use klick_boundary::json_api;
 
+const DEFAULT_INPUT_CLASS: &str = "form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:outline-none";
+const DISABLED_INPUT_CLASS: &str = "form-control block w-full px-3 py-1.5 text-base font-normal text-gray-400 bg-gray-50 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:outline-none";
+const DEFAULT_BUTTON_CLASS: &str = "cursor-pointer inline-block px-6 py-2.5 font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3 bg-highlight";
+const DISABLED_BUTTON_CLASS: &str = "inline-block px-6 py-2.5 font-medium text-xs leading-tight uppercase rounded shadow-md focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full mb-3 bg-gray-200";
 #[component]
+
 pub fn CredentialsForm(
     title: &'static str,
     description: &'static str,
@@ -34,7 +39,7 @@ pub fn CredentialsForm(
             <div class="mb-4">
               <input
                   type="email"
-                  class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-highlight focus:outline-none"
+                  class=move || if disabled.get() { DISABLED_INPUT_CLASS } else { DEFAULT_INPUT_CLASS }
                   required
                   placeholder="E-Mail Adresse"
                   prop:disabled=move || disabled.get()
@@ -51,7 +56,7 @@ pub fn CredentialsForm(
             <div class="mb-4">
               <input
                   type="password"
-                  class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-highlight focus:outline-none"
+                  class=move || if disabled.get() { DISABLED_INPUT_CLASS } else { DEFAULT_INPUT_CLASS }
                   required
                   placeholder="Passwort"
                   prop:disabled=move || disabled.get()
@@ -76,7 +81,7 @@ pub fn CredentialsForm(
               <button
                 prop:disabled=move || button_is_disabled.get()
                 on:click=move |_| dispatch_action()
-                class="cursor-pointer inline-block px-6 py-2.5 font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3 bg-highlight"
+                class=move || if disabled.get() { DISABLED_BUTTON_CLASS } else { DEFAULT_BUTTON_CLASS }
               >
                 { action_label }
               </button>
