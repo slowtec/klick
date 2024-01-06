@@ -35,6 +35,7 @@ thiserror = "1.0.56"
 # Local paths to library crates in workspace
 klick-application      = { path = "../crates/application"     }
 klick-boundary         = { path = "../crates/boundary"        }
+klick-domain           = { path = "../crates/domain"          }
 klick-format-numbers   = { path = "../crates/format-numbers"  }
 klick-svg-charts       = { path = "../crates/svg-charts"      }
 

@@ -2,81 +2,57 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Json, Response},
 };
+use thiserror::Error;
 
+use klick_application::usecases;
 use klick_boundary::json_api;
-//use api_boundary as json;
-//use thiserror::Error;
+use klick_domain::{EmailAddress, EmailAddressParseError, Password, PasswordParseError};
 
-use crate::{application::*, Error};
-
-impl From<InvalidEmailAddress> for json_api::Error {
-    fn from(_: InvalidEmailAddress) -> Self {
-        Self {
-            message: "Invalid email address".to_string(),
-        }
-    }
+/// API error
+#[derive(Error, Debug)]
+#[non_exhaustive]
+pub enum ApiError {
+    #[error(transparent)]
+    CreateUser(#[from] usecases::CreateUserError),
+    #[error(transparent)]
+    CreateUserEmail(EmailAddressParseError),
+    #[error(transparent)]
+    CreateUserPassword(PasswordParseError),
+    #[error(transparent)]
+    Login(#[from] usecases::LoginError),
+    #[error(transparent)]
+    LoginEmail(EmailAddressParseError),
+    #[error(transparent)]
+    LoginPassword(PasswordParseError),
+    #[error(transparent)]
+    Logout(#[from] LogoutError),
+    #[error(transparent)]
+    Auth(#[from] AuthError),
 }
 
-impl From<InvalidPassword> for json_api::Error {
-    fn from(err: InvalidPassword) -> Self {
-        let InvalidPassword::TooShort(min_len) = err;
-        Self {
-            message: format!("Invalid password (min. length = {min_len})"),
-        }
-    }
+pub struct Credentials {
+    pub email: EmailAddress,
+    pub password: Password,
 }
 
-impl From<CreateUserError> for json_api::Error {
-    fn from(err: CreateUserError) -> Self {
-        let message = match err {
-            CreateUserError::UserExists => "User already exits".to_string(),
-        };
-        Self { message }
-    }
+#[derive(Debug, Error)]
+pub enum LogoutError {
+    #[error("you are not logged in")]
+    NotLoggedIn,
 }
 
-impl From<LoginError> for json_api::Error {
-    fn from(err: LoginError) -> Self {
-        let message = match err {
-            LoginError::InvalidEmailOrPassword => "Invalid email or password".to_string(),
-        };
-        Self { message }
-    }
-}
-
-impl From<LogoutError> for json_api::Error {
-    fn from(err: LogoutError) -> Self {
-        let message = match err {
-            LogoutError::NotLoggedIn => "No user is logged in".to_string(),
-        };
-        Self { message }
-    }
-}
-
-impl From<AuthError> for json_api::Error {
-    fn from(err: AuthError) -> Self {
-        let message = match err {
-            AuthError::NotAuthorized => "Not authorized".to_string(),
-        };
-        Self { message }
-    }
-}
-
-impl From<CredentialParsingError> for json_api::Error {
-    fn from(err: CredentialParsingError) -> Self {
-        match err {
-            CredentialParsingError::EmailAddress(err) => err.into(),
-            CredentialParsingError::Password(err) => err.into(),
-        }
-    }
+#[derive(Debug, Error)]
+pub enum AuthError {
+    #[error("you are not authorized")]
+    NotAuthorized,
 }
 
 #[derive(Debug, Error)]
 pub enum CredentialParsingError {
     #[error(transparent)]
-    EmailAddress(#[from] InvalidEmailAddress),
+    EmailAddress(#[from] EmailAddressParseError),
     #[error(transparent)]
-    Password(#[from] InvalidPassword),
+    Password(#[from] PasswordParseError),
 }
 
 impl TryFrom<json_api::Credentials> for Credentials {
@@ -84,21 +60,39 @@ impl TryFrom<json_api::Credentials> for Credentials {
     fn try_from(
         json_api::Credentials { email, password }: json_api::Credentials,
     ) -> Result<Self, Self::Error> {
-        let email: EmailAddress = email.parse()?;
-        let password = Password::try_from(password)?;
+        let email = email.parse::<EmailAddress>()?;
+        let password = password.parse::<Password>()?;
         Ok(Self { email, password })
     }
 }
 
-impl IntoResponse for Error {
+impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        let (code, value) = match self {
-            Self::Logout(err) => (StatusCode::BAD_REQUEST, json_api::Error::from(err)),
-            Self::Login(err) => (StatusCode::BAD_REQUEST, json_api::Error::from(err)),
-            Self::Credentials(err) => (StatusCode::BAD_REQUEST, json_api::Error::from(err)),
-            Self::CreateUser(err) => (StatusCode::BAD_REQUEST, json_api::Error::from(err)),
-            Self::Auth(err) => (StatusCode::UNAUTHORIZED, json_api::Error::from(err)),
+        let (code, message) = match self {
+            Self::CreateUser(err) => match err {
+                usecases::CreateUserError::AlreadyExists => {
+                    (StatusCode::BAD_REQUEST, err.to_string())
+                }
+                usecases::CreateUserError::Repo(err) => {
+                    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
+                }
+            },
+            Self::CreateUserEmail(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::CreateUserPassword(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::Login(err) => match err {
+                usecases::LoginError::Credentials => (StatusCode::BAD_REQUEST, err.to_string()),
+                usecases::LoginError::Repo(err) => {
+                    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
+                }
+            },
+            Self::LoginEmail(_) | Self::LoginPassword(_) => (
+                StatusCode::BAD_REQUEST,
+                "invalid email or password".to_string(),
+            ),
+            Self::Logout(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::Auth(err) => (StatusCode::UNAUTHORIZED, err.to_string()),
         };
-        (code, Json(value)).into_response()
+        let err = json_api::Error { message };
+        (code, Json(err)).into_response()
     }
 }
