@@ -1,20 +1,20 @@
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 
-use klick_application::UserRecord;
+use klick_application::AccountRecord;
 use klick_domain::EmailAddress;
 
-use crate::user::{models, schema};
+use crate::account::{models, schema};
 
-pub fn fetch_user_from_db(
+pub fn fetch_account_from_db(
     conn: &mut SqliteConnection,
     email: &EmailAddress,
-) -> anyhow::Result<Option<UserRecord>> {
-    use schema::users::dsl;
+) -> anyhow::Result<Option<AccountRecord>> {
+    use schema::accounts::dsl;
 
-    let results = dsl::users
+    let results = dsl::accounts
         .filter(dsl::email.eq(email.as_str()))
-        .select(models::User::as_select())
+        .select(models::Account::as_select())
         .load(conn);
 
     let results = match results {
@@ -23,34 +23,35 @@ pub fn fetch_user_from_db(
         Err(err) => return Err(err.into()),
     };
     debug_assert!(results.len() <= 1);
-    let Some(user) = results.into_iter().next() else {
+    let Some(account) = results.into_iter().next() else {
         return Ok(None);
     };
-    let user = UserRecord::try_from(user).expect("Valid user record");
-    Ok(Some(user))
+    let account = AccountRecord::try_from(account).expect("Valid account record");
+    Ok(Some(account))
 }
 
-pub fn insert_or_update_user(
+pub fn insert_or_update_account(
     conn: &mut SqliteConnection,
-    user: models::SaveUser<'_>,
+    account: models::SaveAccount<'_>,
 ) -> anyhow::Result<()> {
-    use schema::users::dsl;
+    use schema::accounts::dsl;
 
-    diesel::insert_into(dsl::users)
-        .values(user.clone())
+    diesel::insert_into(dsl::accounts)
+        .values(account.clone())
         .on_conflict(dsl::email)
         .do_update()
-        .set(user)
+        .set(account)
         .execute(conn)?;
     Ok(())
 }
 
-pub fn delete_user_from_db(
+pub fn delete_account_from_db(
     conn: &mut SqliteConnection,
     email: &EmailAddress,
 ) -> anyhow::Result<()> {
-    use schema::users::dsl;
-    diesel::delete(dsl::users)
+    use schema::accounts::dsl;
+
+    diesel::delete(dsl::accounts)
         .filter(dsl::email.eq(email.as_str()))
         .execute(conn)?;
     Ok(())

@@ -1,0 +1,12 @@
+address = "127.0.0.1"
+port = 3000
+base-url = "https://example.org/"
+db-connection = "db.sqlite"
+
+[smtp]
+username = "no-reply@example.org"
+password = "very-secret"
+server = "smpt.example.org"
+from = "Klimabilanzkläranlage <no-reply@example.org>"
+encryption = "STARTTLS",
+port = 1143

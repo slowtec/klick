@@ -1,7 +1,7 @@
-mod create_user;
+mod create_account;
 mod login;
 
 pub use self::{
-    create_user::{create_user, Error as CreateUserError},
+    create_account::{create_account, Error as CreateAccountError},
     login::{login, Error as LoginError},
 };

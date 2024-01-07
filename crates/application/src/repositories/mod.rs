@@ -1,3 +1,3 @@
-mod user;
+mod account;
 
-pub use self::user::{Record as UserRecord, Repo as UserRepo};
+pub use self::account::{Record as AccountRecord, Repo as AccountRepo};

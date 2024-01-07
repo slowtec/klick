@@ -46,8 +46,9 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
         }
     });
 
-    let disabled = Signal::derive( move || wait_for_response.get() || register_response.get().is_some());
-    let success = Signal::derive( move || register_response.get().is_some());
+    let disabled =
+        Signal::derive(move || wait_for_response.get() || register_response.get().is_some());
+    let success = Signal::derive(move || register_response.get().is_some());
 
     view! {
       <section>
@@ -89,12 +90,11 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
 }
 
 #[component]
-fn InfoBox(
-  success : Signal<bool>
-) -> impl IntoView {
-
-    const DEFAULT_CLASS : &str = "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-gray-100";
-    const SUCCESS_CLASS : &str = "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-green-100";
+fn InfoBox(success: Signal<bool>) -> impl IntoView {
+    const DEFAULT_CLASS: &str =
+        "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-gray-100";
+    const SUCCESS_CLASS: &str =
+        "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-green-100";
 
     view! {
       <div class = move || if success.get() { SUCCESS_CLASS } else { DEFAULT_CLASS } >

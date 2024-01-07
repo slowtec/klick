@@ -17,6 +17,9 @@ pub async fn main() -> Result<()> {
         }
     }
     env_logger::init();
-    let addr = "0.0.0.0:3000".parse()?;
-    klick_backend::run(addr).await
+    let config_path = "config.toml";
+    let config = klick_backend::Config::from_file(config_path)
+        .map_err(|err| anyhow!("Could not read config from {config_path}: {err}"))?;
+    log::debug!("Run with this config: {config:#?}");
+    klick_backend::run(config).await
 }
