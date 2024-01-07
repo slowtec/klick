@@ -2,6 +2,7 @@
 
 mod calculation;
 mod constants;
+mod gateways;
 mod input;
 mod output;
 mod repositories;
@@ -11,7 +12,8 @@ mod units;
 pub mod usecases;
 
 pub use self::{
-    calculation::*, constants::*, input::*, output::*, repositories::*, scenario::*, units::*,
+    calculation::*, constants::*, gateways::*, input::*, output::*, repositories::*, scenario::*,
+    units::*,
 };
 
 #[cfg(test)]

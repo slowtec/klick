@@ -1,9 +1,9 @@
-mod email_address;
+mod account;
+mod email;
 mod password;
-mod user;
 
 pub use self::{
-    email_address::{EmailAddress, ParseError as EmailAddressParseError},
+    account::*,
+    email::{EmailAddress, ParseError as EmailAddressParseError},
     password::{HashedPassword, ParseError as PasswordParseError, Password},
-    user::*,
 };

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, net::SocketAddr, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 
 use axum::{
     extract::State,
@@ -18,10 +18,15 @@ use uuid::Uuid;
 use klick_application::usecases;
 use klick_boundary::json_api;
 use klick_db_sqlite::Connection;
-use klick_domain::{EmailAddress, Password, User};
+use klick_domain::{Account, EmailAddress, Password};
 
 mod adapters;
+mod config;
+mod notification_gateway;
+
 use self::adapters::*;
+
+pub use self::config::Config;
 
 static INDEX_HTML: &str = "index.html";
 
@@ -29,13 +34,15 @@ static INDEX_HTML: &str = "index.html";
 #[folder = "../../frontend/dist/"]
 struct Assets;
 
-pub async fn run(addr: SocketAddr) -> anyhow::Result<()> {
+pub async fn run(config: Config) -> anyhow::Result<()> {
     log::info!("Start KlicK server");
 
-    let db = Connection::establish("db.sqlite")?;
+    let db = Connection::establish(&config.db_connection)?;
     db.run_embedded_database_migrations()?;
 
-    let shared_state = AppState::new(db);
+    let notification_gw = notification_gateway::Gateway::new(&config);
+
+    let shared_state = AppState::new(db, notification_gw);
 
     let cors_layer = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
@@ -44,15 +51,15 @@ pub async fn run(addr: SocketAddr) -> anyhow::Result<()> {
     let api = Router::new()
         .route("/login", post(login))
         .route("/logout", post(logout))
-        .route("/users", post(create_user))
-        .route("/users", get(get_user_info))
+        .route("/users", post(create_account))
+        .route("/users", get(get_account_info))
         .route_layer(cors_layer)
         .with_state(shared_state);
 
     let app = Router::new().nest("/api", api).fallback(static_handler);
 
-    log::info!("Start listening on http://{addr}");
-    let listener = TcpListener::bind(addr).await?;
+    log::info!("Start listening on http://{}", config.address);
+    let listener = TcpListener::bind(config.address).await?;
     axum::serve(listener, app.into_make_service()).await?;
     Ok(())
 }
@@ -90,32 +97,34 @@ fn not_found() -> Response {
 #[derive(Clone)]
 pub struct AppState {
     db: Connection,
-    tokens: Arc<RwLock<HashMap<Uuid, User>>>,
+    tokens: Arc<RwLock<HashMap<Uuid, Account>>>,
+    notification_gw: notification_gateway::Gateway,
 }
 
 impl AppState {
-    pub fn new(db: Connection) -> Self {
+    pub fn new(db: Connection, notification_gw: notification_gateway::Gateway) -> Self {
         Self {
             db,
             tokens: Default::default(),
+            notification_gw,
         }
     }
 }
 
 type Result<T> = std::result::Result<Json<T>, ApiError>;
 
-async fn create_user(
+async fn create_account(
     State(state): State<AppState>,
     Json(credentials): Json<json_api::Credentials>,
 ) -> Result<()> {
     let json_api::Credentials { email, password } = credentials;
     let email = email
         .parse::<EmailAddress>()
-        .map_err(ApiError::CreateUserEmail)?;
+        .map_err(ApiError::CreateAccountEmail)?;
     let password = password
         .parse::<Password>()
-        .map_err(ApiError::CreateUserPassword)?;
-    usecases::create_user(state.db, email, &password)?;
+        .map_err(ApiError::CreateAccountPassword)?;
+    usecases::create_account(state.db, state.notification_gw, email, &password)?;
     Ok(Json(()))
 }
 
@@ -131,10 +140,10 @@ async fn login(
     let password = password
         .parse::<Password>()
         .map_err(ApiError::LoginPassword)?;
-    let user = usecases::login(state.db, &email, &password)?;
-    debug_assert_eq!(user.email, email);
+    let account = usecases::login(state.db, &email, &password)?;
+    debug_assert_eq!(account.email, email);
     let token = Uuid::new_v4();
-    state.tokens.write().insert(token, user);
+    state.tokens.write().insert(token, account);
     Ok(Json(json_api::ApiToken {
         token: token.to_string(),
     }))
@@ -152,7 +161,7 @@ async fn logout(
     Ok(Json(()))
 }
 
-async fn get_user_info(
+async fn get_account_info(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::UserInfo> {
@@ -164,7 +173,7 @@ async fn get_user_info(
         .tokens
         .read()
         .get(&token)
-        .map(|user| user.email.clone())
+        .map(|account| account.email.clone())
         .ok_or(AuthError::NotAuthorized)?;
     let email = email.into_string();
     let user_info = json_api::UserInfo { email };

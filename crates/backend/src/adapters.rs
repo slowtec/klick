@@ -13,11 +13,11 @@ use klick_domain::{EmailAddress, EmailAddressParseError, Password, PasswordParse
 #[non_exhaustive]
 pub enum ApiError {
     #[error(transparent)]
-    CreateUser(#[from] usecases::CreateUserError),
+    CreateAccount(#[from] usecases::CreateAccountError),
     #[error(transparent)]
-    CreateUserEmail(EmailAddressParseError),
+    CreateAccountEmail(EmailAddressParseError),
     #[error(transparent)]
-    CreateUserPassword(PasswordParseError),
+    CreateAccountPassword(PasswordParseError),
     #[error(transparent)]
     Login(#[from] usecases::LoginError),
     #[error(transparent)]
@@ -69,16 +69,16 @@ impl TryFrom<json_api::Credentials> for Credentials {
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let (code, message) = match self {
-            Self::CreateUser(err) => match err {
-                usecases::CreateUserError::AlreadyExists => {
+            Self::CreateAccount(err) => match err {
+                usecases::CreateAccountError::AlreadyExists => {
                     (StatusCode::BAD_REQUEST, err.to_string())
                 }
-                usecases::CreateUserError::Repo(err) => {
+                usecases::CreateAccountError::Repo(err) => {
                     (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
                 }
             },
-            Self::CreateUserEmail(err) => (StatusCode::BAD_REQUEST, err.to_string()),
-            Self::CreateUserPassword(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::CreateAccountEmail(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::CreateAccountPassword(err) => (StatusCode::BAD_REQUEST, err.to_string()),
             Self::Login(err) => match err {
                 usecases::LoginError::Credentials => (StatusCode::BAD_REQUEST, err.to_string()),
                 usecases::LoginError::Repo(err) => {

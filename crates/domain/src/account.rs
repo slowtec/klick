@@ -1,7 +1,7 @@
 use crate::EmailAddress;
 
 #[derive(Debug, Clone)]
-pub struct User {
+pub struct Account {
     pub email: EmailAddress,
     pub email_confirmed: bool,
 }

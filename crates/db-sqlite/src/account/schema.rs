@@ -1,5 +1,5 @@
 diesel::table! {
-    users (email) {
+    accounts (email) {
         email -> Text,
         email_confirmed -> Bool,
         password -> Text,

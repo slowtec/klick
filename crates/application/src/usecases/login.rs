@@ -1,20 +1,20 @@
 use thiserror::Error;
 
-use klick_domain::{EmailAddress, Password, User};
+use klick_domain::{Account, EmailAddress, Password};
 
-use crate::UserRepo;
+use crate::AccountRepo;
 
-pub fn login<R>(repo: R, email: &EmailAddress, password: &Password) -> Result<User, Error>
+pub fn login<R>(repo: R, email: &EmailAddress, password: &Password) -> Result<Account, Error>
 where
-    R: UserRepo,
+    R: AccountRepo,
 {
-    let Some(record) = repo.find_user(email)? else {
+    let Some(record) = repo.find_account(email)? else {
         return Err(Error::Credentials);
     };
     if !record.password.verify(password) {
         return Err(Error::Credentials);
     }
-    Ok(record.user)
+    Ok(record.account)
 }
 
 #[derive(Debug, Error)]

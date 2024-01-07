@@ -6,10 +6,10 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use parking_lot::Mutex;
 use thiserror::Error;
 
-use klick_application::{UserRecord, UserRepo};
+use klick_application::{AccountRecord, AccountRepo};
 use klick_domain::EmailAddress;
 
-use crate::user;
+use crate::account;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -37,22 +37,22 @@ impl Connection {
     }
 
     pub fn run_embedded_database_migrations(&self) -> anyhow::Result<()> {
-        log::info!("Running embedded user database migrations");
+        log::info!("Running embedded account database migrations");
         run_embedded_database_migrations(self, MIGRATIONS)
     }
 }
 
-impl UserRepo for Connection {
-    fn find_user(&self, email: &EmailAddress) -> anyhow::Result<Option<UserRecord>> {
-        user::queries::fetch_user_from_db(&mut self.0.lock(), email)
+impl AccountRepo for Connection {
+    fn find_account(&self, email: &EmailAddress) -> anyhow::Result<Option<AccountRecord>> {
+        account::queries::fetch_account_from_db(&mut self.0.lock(), email)
     }
 
-    fn save_user(&self, record: &UserRecord) -> anyhow::Result<()> {
-        user::queries::insert_or_update_user(&mut self.0.lock(), record.try_into()?)
+    fn save_account(&self, record: &AccountRecord) -> anyhow::Result<()> {
+        account::queries::insert_or_update_account(&mut self.0.lock(), record.try_into()?)
     }
 
-    fn delete_user(&self, email: &EmailAddress) -> anyhow::Result<()> {
-        user::queries::delete_user_from_db(&mut self.0.lock(), email)
+    fn delete_account(&self, email: &EmailAddress) -> anyhow::Result<()> {
+        account::queries::delete_account_from_db(&mut self.0.lock(), email)
     }
 }
 
