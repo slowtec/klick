@@ -6,8 +6,8 @@ use super::*;
 const EPSILON: f64 = 0.000_000_000_001;
 
 fn assert_approx_eq<T>(a: T, b: f64)
-    where
-        T: Into<f64> + fmt::Display,
+where
+    T: Into<f64> + fmt::Display,
 {
     let a = a.into();
     assert!(
