@@ -7,7 +7,7 @@ use lettre::{
 use url::Url;
 
 use klick_application::{NotificationEvent, NotificationGateway};
-use klick_domain::EmailAddress;
+use klick_domain::{EmailAddress, EmailNonce};
 
 use crate::config::{Config, Encryption};
 
@@ -48,6 +48,10 @@ fn mailer_from_cfg(config: &Config) -> anyhow::Result<Mailer> {
         transport = transport.port(port);
     }
     let transport = transport.build();
+    let is_ok = transport.test_connection()?;
+    if !is_ok {
+        log::warn!("SMTP connection does not work");
+    };
     let mailer = Mailer { from, transport };
     Ok(mailer)
 }
@@ -55,7 +59,7 @@ fn mailer_from_cfg(config: &Config) -> anyhow::Result<Mailer> {
 impl NotificationGateway for Gateway {
     fn notify(&self, event: NotificationEvent) {
         match event {
-            NotificationEvent::AccountWasCreated(email_address) => {
+            NotificationEvent::AccountWasCreated(email_address, nonce) => {
                 log::info!("A new account ({email_address:?}) was created.");
 
                 let Some(mailer) = &self.mailer else {
@@ -64,7 +68,7 @@ impl NotificationGateway for Gateway {
                 };
 
                 if let Err(err) =
-                    send_address_confirmation_mail(email_address, &self.base_url, mailer)
+                    send_address_confirmation_mail(email_address, &nonce, &self.base_url, mailer)
                 {
                     log::warn!("Unable to send confirmation e-mail: {err}");
                 }
@@ -73,10 +77,9 @@ impl NotificationGateway for Gateway {
     }
 }
 
-const CONFIRM_EMAIL_PAGE_PATH: &str = "confirm-email-address";
-
 fn send_address_confirmation_mail(
     email_address: EmailAddress,
+    nonce: &EmailNonce,
     base_url: &Url,
     mailer: &Mailer,
 ) -> anyhow::Result<()> {
@@ -84,11 +87,11 @@ fn send_address_confirmation_mail(
 
     let subject = "Bestätigen Sie Ihre E-Mail Addresse".to_string();
 
-    let link = base_url.join(CONFIRM_EMAIL_PAGE_PATH)?;
+    let link = confirmation_url(nonce, base_url)?;
     let body = vec![
         "Bitte bestätigen Sie Ihre E-Mail Addresse ",
         "indem Sie auf folgenden Link klicken:\n\n",
-        &link.to_string(),
+        &link,
     ]
     .join("");
 
@@ -101,4 +104,28 @@ fn send_address_confirmation_mail(
     mailer.transport.send(&email)?;
 
     Ok(())
+}
+
+const CONFIRM_EMAIL_PAGE_PATH: &str = "confirm-email-address";
+
+fn confirmation_url(token: &EmailNonce, base_url: &Url) -> anyhow::Result<String> {
+    let token = token.encode_to_string();
+    let link = base_url.join(CONFIRM_EMAIL_PAGE_PATH)?;
+    Ok(format!("{link}/{token}"))
+}
+
+#[test]
+fn create_confirmation_url() {
+    let nonce = klick_domain::Nonce::new();
+    let email_nonce = EmailNonce {
+        email: "foo@bar.com".parse().unwrap(),
+        nonce: nonce.clone(),
+    };
+    let base_url = "http://localhost:3000/".parse().unwrap();
+    let url = confirmation_url(&email_nonce, &base_url).unwrap();
+    let expected = format!(
+        "http://localhost:3000/confirm-email-address/{}",
+        email_nonce.encode_to_string()
+    );
+    assert_eq!(url.to_string(), expected);
 }

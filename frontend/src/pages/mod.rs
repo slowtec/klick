@@ -1,10 +1,13 @@
+mod confirm_email_address;
 mod faq;
 mod login;
 mod register;
 mod reset_password;
 mod tool;
 
-pub use self::{faq::*, login::*, register::*, reset_password::*, tool::*};
+pub use self::{
+    confirm_email_address::*, faq::*, login::*, register::*, reset_password::*, tool::*,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Page {
@@ -16,6 +19,7 @@ pub enum Page {
     Login,
     Register,
     ResetPassword,
+    ConfirmEmailAddress,
 }
 
 impl Page {
@@ -29,6 +33,7 @@ impl Page {
             Self::Login => "/login",
             Self::Register => "/register",
             Self::ResetPassword => "/reset-password",
+            Self::ConfirmEmailAddress => "/confirm-email-address/:token",
         }
     }
 }

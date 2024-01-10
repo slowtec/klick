@@ -18,7 +18,7 @@ use uuid::Uuid;
 use klick_application::usecases;
 use klick_boundary::json_api;
 use klick_db_sqlite::Connection;
-use klick_domain::{Account, EmailAddress, Password};
+use klick_domain::{Account, EmailAddress, EmailNonce, Password};
 
 mod adapters;
 mod config;
@@ -52,7 +52,8 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         .route("/login", post(login))
         .route("/logout", post(logout))
         .route("/users", post(create_account))
-        .route("/users", get(get_account_info))
+        .route("/users", get(account_info))
+        .route("/users/confirm-email-address", post(confirm_email_address))
         .route_layer(cors_layer)
         .with_state(shared_state);
 
@@ -161,7 +162,7 @@ async fn logout(
     Ok(Json(()))
 }
 
-async fn get_account_info(
+async fn account_info(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::UserInfo> {
@@ -178,4 +179,14 @@ async fn get_account_info(
     let email = email.into_string();
     let user_info = json_api::UserInfo { email };
     Ok(Json(user_info))
+}
+
+async fn confirm_email_address(
+    State(state): State<AppState>,
+    Json(data): Json<json_api::ConfirmEmailAddress>,
+) -> Result<()> {
+    let json_api::ConfirmEmailAddress { token } = data;
+    let email_nonce = EmailNonce::decode_from_str(&token)?;
+    usecases::confirm_email_address(state.db, &email_nonce)?;
+    Ok(Json(()))
 }

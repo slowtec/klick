@@ -252,6 +252,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bs58"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5353f36341f7451062466f0b755b96ac3a9547e4d7f6b70d603fc721a7d7896"
+dependencies = [
+ "tinyvec",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1192,9 +1201,11 @@ dependencies = [
 name = "klick-domain"
 version = "0.0.0"
 dependencies = [
+ "bs58",
  "mailparse",
  "pwhash",
  "thiserror",
+ "uuid",
 ]
 
 [[package]]
@@ -1373,6 +1384,7 @@ dependencies = [
  "email-encoding",
  "email_address",
  "fastrand",
+ "futures-util",
  "httpdate",
  "idna",
  "mime",

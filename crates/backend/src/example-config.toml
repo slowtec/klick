@@ -8,5 +8,5 @@ username = "no-reply@example.org"
 password = "very-secret"
 server = "smpt.example.org"
 from = "Klimabilanzkläranlage <no-reply@example.org>"
-encryption = "STARTTLS",
+encryption = "STARTTLS"
 port = 1143

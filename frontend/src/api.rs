@@ -2,7 +2,9 @@ use gloo_net::http::{Request, RequestBuilder, Response};
 use serde::de::DeserializeOwned;
 use thiserror::Error;
 
-use klick_boundary::json_api::{self, ApiToken, Credentials, RequestPasswordReset, UserInfo};
+use klick_boundary::json_api::{
+    self, ApiToken, ConfirmEmailAddress, Credentials, RequestPasswordReset, UserInfo,
+};
 
 #[derive(Clone, Copy)]
 pub struct UnauthorizedApi {
@@ -37,6 +39,15 @@ impl UnauthorizedApi {
         let url = format!("{}/users/reset-password-request", self.url);
         let response = Request::post(&url)
             .json(&RequestPasswordReset { email })?
+            .send()
+            .await?;
+        into_json(response).await
+    }
+
+    pub async fn confirm_email_address(&self, token: String) -> Result<()> {
+        let url = format!("{}/users/confirm-email-address", self.url);
+        let response = Request::post(&url)
+            .json(&ConfirmEmailAddress { token })?
             .send()
             .await?;
         into_json(response).await

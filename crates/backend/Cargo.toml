@@ -18,7 +18,7 @@ anyhow = "1.0.79"
 axum = "0.7.3"
 axum-extra = { version = "0.9.1", features = ["typed-header"] }
 headers = "0.4.0"
-lettre = { version = "0.11.3", default-features = false, features = ["rustls-tls", "builder", "smtp-transport"] }
+lettre = { version = "0.11.3", default-features = false, features = ["rustls-tls", "builder", "smtp-transport", "pool"] }
 log = "0.4.20"
 mime_guess = "2.0.4"
 parking_lot = "0.12.1"

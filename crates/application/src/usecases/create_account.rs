@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use klick_domain::{Account, EmailAddress, Password};
+use klick_domain::{Account, EmailAddress, EmailNonce, Nonce, Password};
 
 use crate::{AccountRecord, AccountRepo, NotificationEvent, NotificationGateway};
 
@@ -24,7 +24,11 @@ where
     let password = password.to_hashed();
     let record = AccountRecord { account, password };
     repo.save_account(&record)?;
-    let event = NotificationEvent::AccountWasCreated(email);
+    let token = EmailNonce {
+        email: email.clone(),
+        nonce: Nonce::new(),
+    };
+    let event = NotificationEvent::AccountWasCreated(email, token);
     notification_gateway.notify(event);
     Ok(())
 }

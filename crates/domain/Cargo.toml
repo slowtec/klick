@@ -8,9 +8,11 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+bs58 = "0.5.0"
 mailparse = "0.14.0"
 pwhash = "1.0.0"
 thiserror = "1.0.56"
+uuid = { version = "1.6.1", features = ["v4"] }
 
 [lints]
 workspace = true

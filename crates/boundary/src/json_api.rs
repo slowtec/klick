@@ -25,3 +25,8 @@ pub struct Error {
 pub struct RequestPasswordReset {
     pub email: String,
 }
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct ConfirmEmailAddress {
+    pub token: String,
+}

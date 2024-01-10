@@ -6,7 +6,9 @@ use thiserror::Error;
 
 use klick_application::usecases;
 use klick_boundary::json_api;
-use klick_domain::{EmailAddress, EmailAddressParseError, Password, PasswordParseError};
+use klick_domain::{
+    EmailAddress, EmailAddressParseError, EmailNonceDecodingError, Password, PasswordParseError,
+};
 
 /// API error
 #[derive(Error, Debug)]
@@ -28,6 +30,10 @@ pub enum ApiError {
     Logout(#[from] LogoutError),
     #[error(transparent)]
     Auth(#[from] AuthError),
+    #[error(transparent)]
+    EmailNonce(#[from] EmailNonceDecodingError),
+    #[error(transparent)]
+    ConfirmEmail(#[from] usecases::ConfirmEmailAddressError),
 }
 
 pub struct Credentials {
@@ -91,6 +97,8 @@ impl IntoResponse for ApiError {
             ),
             Self::Logout(err) => (StatusCode::BAD_REQUEST, err.to_string()),
             Self::Auth(err) => (StatusCode::UNAUTHORIZED, err.to_string()),
+            Self::EmailNonce(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::ConfirmEmail(err) => (StatusCode::BAD_REQUEST, err.to_string()),
         };
         let err = json_api::Error { message };
         (code, Json(err)).into_response()
