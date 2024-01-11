@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.0 (2024-01-24)
+
+- New:
+    - Added Jenkinsfile for jenkins support
+    - Eigenstromerzeugung und Bilanzierung #61 fixes
+
+- Changed:
+   - Added 4 more test cases to 'just test' #29
+   - Fixed "Handlungsempfehlungen"
+
 ## v0.1.9 (2023-12-14)
 
 - Changed:
