@@ -54,6 +54,11 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         .route("/users", post(create_account))
         .route("/users", get(account_info))
         .route("/users/confirm-email-address", post(confirm_email_address))
+        .route(
+            "/users/reset-password-request",
+            post(request_password_reset),
+        )
+        .route("/users/reset-password", post(reset_password))
         .route_layer(cors_layer)
         .with_state(shared_state);
 
@@ -188,5 +193,38 @@ async fn confirm_email_address(
     let json_api::ConfirmEmailAddress { token } = data;
     let email_nonce = EmailNonce::decode_from_str(&token)?;
     usecases::confirm_email_address(state.db, &email_nonce)?;
+    Ok(Json(()))
+}
+
+async fn request_password_reset(
+    State(state): State<AppState>,
+    Json(data): Json<json_api::RequestPasswordReset>,
+) -> Result<()> {
+    let json_api::RequestPasswordReset { email } = data;
+    let email = email
+        .parse::<EmailAddress>()
+        .map_err(ApiError::LoginEmail)?;
+    if let Err(err) = usecases::request_password_reset(state.db, state.notification_gw, email) {
+        // We do not report any error to the user here,
+        // but we create a log statement.
+        log::warn!("Unable to request password reset: {err}");
+    }
+    Ok(Json(()))
+}
+
+async fn reset_password(
+    State(state): State<AppState>,
+    Json(data): Json<json_api::ResetPassword>,
+) -> Result<()> {
+    let json_api::ResetPassword {
+        token,
+        new_password,
+    } = data;
+    let password = new_password
+        .parse::<Password>()
+        .map(|pw| pw.to_hashed())
+        .map_err(ApiError::LoginPassword)?;
+    let email_nonce = EmailNonce::decode_from_str(&token)?;
+    usecases::reset_password(state.db, email_nonce, password)?;
     Ok(Json(()))
 }

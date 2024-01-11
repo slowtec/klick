@@ -2,10 +2,13 @@ use leptos::{ev, *};
 
 use klick_boundary::json_api;
 
-const DEFAULT_INPUT_CLASS: &str = "form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:outline-none";
-const DISABLED_INPUT_CLASS: &str = "form-control block w-full px-3 py-1.5 text-base font-normal text-gray-400 bg-gray-50 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:outline-none";
-const DEFAULT_BUTTON_CLASS: &str = "cursor-pointer inline-block px-6 py-2.5 font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3 bg-highlight";
-const DISABLED_BUTTON_CLASS: &str = "inline-block px-6 py-2.5 font-medium text-xs leading-tight uppercase rounded shadow-md focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full mb-3 bg-gray-200";
+pub const DEFAULT_INPUT_CLASS: &str = "form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:outline-none";
+
+pub const DISABLED_INPUT_CLASS: &str = "form-control block w-full px-3 py-1.5 text-base font-normal text-gray-400 bg-gray-50 bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:outline-none";
+
+pub const DEFAULT_BUTTON_CLASS: &str = "cursor-pointer inline-block px-6 py-2.5 font-medium text-xs leading-tight uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3 bg-highlight";
+
+pub const DISABLED_BUTTON_CLASS: &str = "inline-block px-6 py-2.5 font-medium text-xs leading-tight uppercase rounded shadow-md focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full mb-3 bg-gray-200";
 #[component]
 
 pub fn CredentialsForm(

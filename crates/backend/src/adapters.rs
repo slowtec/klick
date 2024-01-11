@@ -34,6 +34,8 @@ pub enum ApiError {
     EmailNonce(#[from] EmailNonceDecodingError),
     #[error(transparent)]
     ConfirmEmail(#[from] usecases::ConfirmEmailAddressError),
+    #[error(transparent)]
+    ResetPassword(#[from] usecases::ResetPasswordError),
 }
 
 pub struct Credentials {
@@ -99,6 +101,15 @@ impl IntoResponse for ApiError {
             Self::Auth(err) => (StatusCode::UNAUTHORIZED, err.to_string()),
             Self::EmailNonce(err) => (StatusCode::BAD_REQUEST, err.to_string()),
             Self::ConfirmEmail(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::ResetPassword(err) => match err {
+                usecases::ResetPasswordError::InvalidToken
+                | usecases::ResetPasswordError::NotFound => {
+                    (StatusCode::BAD_REQUEST, err.to_string())
+                }
+                usecases::ResetPasswordError::Repo(err) => {
+                    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
+                }
+            },
         };
         let err = json_api::Error { message };
         (code, Json(err)).into_response()

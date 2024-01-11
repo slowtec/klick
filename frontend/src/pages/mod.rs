@@ -3,10 +3,12 @@ mod faq;
 mod login;
 mod register;
 mod reset_password;
+mod reset_password_request;
 mod tool;
 
 pub use self::{
-    confirm_email_address::*, faq::*, login::*, register::*, reset_password::*, tool::*,
+    confirm_email_address::*, faq::*, login::*, register::*, reset_password::*,
+    reset_password_request::*, tool::*,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -18,6 +20,7 @@ pub enum Page {
     OpenSource,
     Login,
     Register,
+    ResetPasswordRequest,
     ResetPassword,
     ConfirmEmailAddress,
 }
@@ -32,8 +35,9 @@ impl Page {
             Self::OpenSource => "/open-source",
             Self::Login => "/login",
             Self::Register => "/register",
+            Self::ResetPasswordRequest => "/reset-password-request",
             Self::ResetPassword => "/reset-password",
-            Self::ConfirmEmailAddress => "/confirm-email-address/:token",
+            Self::ConfirmEmailAddress => "/confirm-email-address",
         }
     }
 }

@@ -23,12 +23,12 @@ pub fn Login(
         let password = password.to_string();
         let credentials = json_api::Credentials { email, password };
         async move {
-            set_wait_for_response.update(|w| *w = true);
+            set_wait_for_response.set(true);
             let result = api.login(&credentials).await;
-            set_wait_for_response.update(|w| *w = false);
+            set_wait_for_response.set(false);
             match result {
                 Ok(res) => {
-                    set_login_error.update(|e| *e = None);
+                    set_login_error.set(None);
                     on_success.call(res);
                 }
                 Err(err) => {
@@ -67,7 +67,7 @@ pub fn Login(
                       />
                       <div class="text-center pt-1 mb-6 pb-1">
                         <A
-                          href=Page::ResetPassword.path()
+                          href=Page::ResetPasswordRequest.path()
                           class="text-gray-500".to_string()>
                           "Passwort vergessen?"
                         </A>

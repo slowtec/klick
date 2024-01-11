@@ -1,10 +1,9 @@
-use diesel::prelude::*;
-use diesel::sqlite::SqliteConnection;
+use diesel::{prelude::*, sqlite::SqliteConnection};
 
 use klick_application::AccountRecord;
 use klick_domain::EmailAddress;
 
-use crate::account::{models, schema};
+use crate::{account::models, schema};
 
 pub fn fetch_account_from_db(
     conn: &mut SqliteConnection,
@@ -32,7 +31,7 @@ pub fn fetch_account_from_db(
 
 pub fn insert_or_update_account(
     conn: &mut SqliteConnection,
-    account: models::SaveAccount<'_>,
+    account: models::NewAccount<'_>,
 ) -> anyhow::Result<()> {
     use schema::accounts::dsl;
 

@@ -3,7 +3,7 @@ use diesel::prelude::*;
 use klick_application as app;
 use klick_domain as domain;
 
-use crate::account::{models, schema};
+use crate::{account::models, schema};
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = schema::accounts)]
@@ -17,7 +17,7 @@ pub struct Account {
 #[derive(Debug, Clone, AsChangeset, Insertable)]
 #[diesel(table_name = schema::accounts)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct SaveAccount<'a> {
+pub struct NewAccount<'a> {
     pub email: &'a str,
     pub email_confirmed: bool,
     pub password: &'a str,
@@ -43,7 +43,7 @@ impl TryFrom<Account> for app::AccountRecord {
     }
 }
 
-impl<'a> TryFrom<&'a app::AccountRecord> for SaveAccount<'a> {
+impl<'a> TryFrom<&'a app::AccountRecord> for NewAccount<'a> {
     type Error = anyhow::Error;
 
     fn try_from(record: &'a app::AccountRecord) -> Result<Self, Self::Error> {
@@ -52,7 +52,7 @@ impl<'a> TryFrom<&'a app::AccountRecord> for SaveAccount<'a> {
             email,
             email_confirmed,
         } = account;
-        let account = models::SaveAccount {
+        let account = models::NewAccount {
             email: email.as_str(),
             email_confirmed: *email_confirmed,
             password: password.as_str(),

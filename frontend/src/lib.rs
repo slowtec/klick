@@ -11,6 +11,7 @@ mod api;
 mod credentials;
 mod footer;
 mod forms;
+mod message;
 mod nav;
 mod pages;
 mod sankey;
@@ -18,7 +19,9 @@ mod sankey;
 use self::{
     footer::Footer,
     nav::Nav,
-    pages::{ConfirmEmailAddress, Faq, Login, Page, Register, ResetPassword, Tool},
+    pages::{
+        ConfirmEmailAddress, Faq, Login, Page, Register, ResetPassword, ResetPasswordRequest, Tool,
+    },
 };
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -217,6 +220,12 @@ pub fn App() -> impl IntoView {
               path=Page::Register.path()
               view=move || {
                   view! { <Register api=unauthorized_api /> }
+              }
+          />
+          <Route
+              path=Page::ResetPasswordRequest.path()
+              view=move || {
+                  view! { <ResetPasswordRequest api=unauthorized_api /> }
               }
           />
           <Route

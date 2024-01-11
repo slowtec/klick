@@ -30,3 +30,9 @@ pub struct RequestPasswordReset {
 pub struct ConfirmEmailAddress {
     pub token: String,
 }
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct ResetPassword {
+    pub token: String,
+    pub new_password: String,
+}

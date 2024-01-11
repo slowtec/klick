@@ -1139,7 +1139,9 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "klick-domain",
+ "log",
  "thiserror",
+ "time",
 ]
 
 [[package]]
@@ -1195,6 +1197,7 @@ dependencies = [
  "log",
  "parking_lot",
  "thiserror",
+ "time",
 ]
 
 [[package]]
@@ -1205,6 +1208,7 @@ dependencies = [
  "mailparse",
  "pwhash",
  "thiserror",
+ "time",
  "uuid",
 ]
 

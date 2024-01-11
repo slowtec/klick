@@ -1,6 +1,7 @@
 use std::{fmt, str::FromStr, string::FromUtf8Error};
 
 use thiserror::Error;
+use time::OffsetDateTime;
 use uuid::Uuid;
 
 use crate::{EmailAddress, EmailAddressParseError};
@@ -82,6 +83,12 @@ impl EmailNonce {
         let email = concat.parse()?;
         Ok(Self { email, nonce })
     }
+}
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct AccountToken {
+    pub email_nonce: EmailNonce,
+    pub expires_at: OffsetDateTime,
 }
 
 #[cfg(test)]

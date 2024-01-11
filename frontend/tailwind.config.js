@@ -48,6 +48,8 @@ module.exports = {
         950: utbw.colors.black,
       },
       green: colors.green,
+      red: colors.red,
+      blue: colors.blue,
     }
   }
 }

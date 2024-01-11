@@ -1,4 +1,4 @@
-use leptos::{logging::log, *};
+use leptos::*;
 use leptos_router::*;
 
 use klick_boundary::json_api;
@@ -19,7 +19,7 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
         let email = email.to_string();
         let password = password.to_string();
         let credentials = json_api::Credentials { email, password };
-        log!("Try to register new account for {}", credentials.email);
+        log::debug!("Try to register new account for {}", credentials.email);
         async move {
             set_wait_for_response.update(|w| *w = true);
             let result = api.register(&credentials).await;
@@ -79,7 +79,14 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
                       </div>
                     </div>
                   </div>
-                  <InfoBox success />
+                  <InfoBox
+                    success
+                    info_title = "Was bietet Ihnen ein Benutzer*innenkonto?"
+                    info_description = "Mit einem Konto können Sie Ihre Daten online verwalten."
+                    success_title = "Erfolgreich registriert"
+                    // TODO: pass children like <p>
+                    success_description = "Herzlichen Glückwunsch! Sie haben Ihr Konto erfolgreich registriert. Überprüfen Sie nun Ihren E-Mail-Posteingang und bestätigen Sie die Gültigkeit Ihrer E-Mail-Adresse."
+                  />
                 </div>
               </div>
             </div>
@@ -90,7 +97,13 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
 }
 
 #[component]
-fn InfoBox(success: Signal<bool>) -> impl IntoView {
+pub fn InfoBox(
+    success: Signal<bool>,
+    info_title: &'static str,
+    info_description: &'static str,
+    success_title: &'static str,
+    success_description: &'static str,
+) -> impl IntoView {
     const DEFAULT_CLASS: &str =
         "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-gray-100";
     const SUCCESS_CLASS: &str =
@@ -101,20 +114,21 @@ fn InfoBox(success: Signal<bool>) -> impl IntoView {
         <div class="px-4 py-6 md:p-12 md:mx-6">
           <Show
             when = move || success.get()
-            fallback = ||
+            fallback = move ||
               view! {
-                <h4 class="text-xl font-semibold mb-6">"Was bietet Ihnen ein Benutzer*innenkonto?"</h4>
+                <h4 class="text-xl font-semibold mb-6">
+                  { info_title }
+                </h4>
                 <p class="text-sm">
-                  "Mit einem Konto können Sie Ihre Daten online verwalten."
+                  { info_description }
                 </p>
               }
           >
-            <h4 class="text-xl font-semibold mb-6">"Erfolgreich registriert"</h4>
+            <h4 class="text-xl font-semibold mb-6">
+              { success_title }
+            </h4>
             <p class="text-sm">
-              "Herzlichen Glückwunsch! Sie haben Ihr Konto erfolgreich registriert."
-            </p>
-            <p class="text-sm">
-              "Überprüfen Sie nun Ihren E-Mail-Posteingang und bestätigen Sie die Gültigkeit Ihrer E-Mail-Adresse."
+              { success_description }
             </p>
           </Show>
         </div>

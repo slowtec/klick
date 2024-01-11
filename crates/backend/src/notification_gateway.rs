@@ -7,7 +7,7 @@ use lettre::{
 use url::Url;
 
 use klick_application::{NotificationEvent, NotificationGateway};
-use klick_domain::{EmailAddress, EmailNonce};
+use klick_domain::EmailNonce;
 
 use crate::config::{Config, Encryption};
 
@@ -58,17 +58,27 @@ fn mailer_from_cfg(config: &Config) -> anyhow::Result<Mailer> {
 
 impl NotificationGateway for Gateway {
     fn notify(&self, event: NotificationEvent) {
+        let Some(mailer) = &self.mailer else {
+            log::warn!("No mailer configured: No e-mails can be sent.");
+            return;
+        };
+
         match event {
-            NotificationEvent::AccountWasCreated(email_address, nonce) => {
-                log::info!("A new account ({email_address:?}) was created.");
-
-                let Some(mailer) = &self.mailer else {
-                    log::warn!("No mailer configured: No confirmation e-mail can be sent.");
-                    return;
-                };
-
+            NotificationEvent::AccountWasCreated { email_nonce } => {
+                log::info!("A new account ({:?}) was created.", email_nonce.email);
                 if let Err(err) =
-                    send_address_confirmation_mail(email_address, &nonce, &self.base_url, mailer)
+                    send_address_confirmation_mail(&email_nonce, &self.base_url, mailer)
+                {
+                    log::warn!("Unable to send confirmation e-mail: {err}");
+                }
+            }
+            NotificationEvent::AccountResetPasswordRequested { email_nonce } => {
+                log::info!(
+                    "A password reset for ({:?}) was requested.",
+                    email_nonce.email
+                );
+                if let Err(err) =
+                    send_reset_password_request_mail(&email_nonce, &self.base_url, mailer)
                 {
                     log::warn!("Unable to send confirmation e-mail: {err}");
                 }
@@ -78,7 +88,6 @@ impl NotificationGateway for Gateway {
 }
 
 fn send_address_confirmation_mail(
-    email_address: EmailAddress,
     nonce: &EmailNonce,
     base_url: &Url,
     mailer: &Mailer,
@@ -87,7 +96,7 @@ fn send_address_confirmation_mail(
 
     let subject = "Bestätigen Sie Ihre E-Mail Addresse".to_string();
 
-    let link = confirmation_url(nonce, base_url)?;
+    let link = email_confirmation_url(nonce, base_url)?;
     let body = vec![
         "Bitte bestätigen Sie Ihre E-Mail Addresse ",
         "indem Sie auf folgenden Link klicken:\n\n",
@@ -97,7 +106,7 @@ fn send_address_confirmation_mail(
 
     let email = Message::builder()
         .from(mailer.from.clone())
-        .to(email_address.as_str().parse()?)
+        .to(nonce.email.as_str().parse()?)
         .subject(subject)
         .header(ContentType::TEXT_PLAIN)
         .body(body)?;
@@ -106,25 +115,63 @@ fn send_address_confirmation_mail(
     Ok(())
 }
 
+fn send_reset_password_request_mail(
+    nonce: &EmailNonce,
+    base_url: &Url,
+    mailer: &Mailer,
+) -> anyhow::Result<()> {
+    // TODO: use templates
+
+    let subject = "Passwort zurücksetzen".to_string();
+
+    let link = email_confirmation_and_password_reset_url(nonce, base_url)?;
+    let body = vec![
+        "Sie können ihr Passwort zurück setzen,",
+        "indem Sie auf folgenden Link klicken:\n\n",
+        &link,
+    ]
+    .join("");
+
+    let email = Message::builder()
+        .from(mailer.from.clone())
+        .to(nonce.email.as_str().parse()?)
+        .subject(subject)
+        .header(ContentType::TEXT_PLAIN)
+        .body(body)?;
+    mailer.transport.send(&email)?;
+    Ok(())
+}
+
 const CONFIRM_EMAIL_PAGE_PATH: &str = "confirm-email-address";
 
-fn confirmation_url(token: &EmailNonce, base_url: &Url) -> anyhow::Result<String> {
-    let token = token.encode_to_string();
+fn email_confirmation_url(nonce: &EmailNonce, base_url: &Url) -> anyhow::Result<String> {
+    let token = nonce.encode_to_string();
     let link = base_url.join(CONFIRM_EMAIL_PAGE_PATH)?;
-    Ok(format!("{link}/{token}"))
+    Ok(format!("{link}?token={token}"))
+}
+
+const CONFIRM_EMAIL_AND_PW_RESET_PAGE_PATH: &str = "reset-password";
+
+fn email_confirmation_and_password_reset_url(
+    nonce: &EmailNonce,
+    base_url: &Url,
+) -> anyhow::Result<String> {
+    let token = nonce.encode_to_string();
+    let link = base_url.join(CONFIRM_EMAIL_AND_PW_RESET_PAGE_PATH)?;
+    Ok(format!("{link}?token={token}"))
 }
 
 #[test]
-fn create_confirmation_url() {
+fn create_email_confirmation_url() {
     let nonce = klick_domain::Nonce::new();
     let email_nonce = EmailNonce {
         email: "foo@bar.com".parse().unwrap(),
         nonce: nonce.clone(),
     };
     let base_url = "http://localhost:3000/".parse().unwrap();
-    let url = confirmation_url(&email_nonce, &base_url).unwrap();
+    let url = email_confirmation_url(&email_nonce, &base_url).unwrap();
     let expected = format!(
-        "http://localhost:3000/confirm-email-address/{}",
+        "http://localhost:3000/confirm-email-address?token={}",
         email_nonce.encode_to_string()
     );
     assert_eq!(url.to_string(), expected);

@@ -3,7 +3,7 @@ use serde::de::DeserializeOwned;
 use thiserror::Error;
 
 use klick_boundary::json_api::{
-    self, ApiToken, ConfirmEmailAddress, Credentials, RequestPasswordReset, UserInfo,
+    self, ApiToken, ConfirmEmailAddress, Credentials, RequestPasswordReset, ResetPassword, UserInfo,
 };
 
 #[derive(Clone, Copy)]
@@ -39,6 +39,18 @@ impl UnauthorizedApi {
         let url = format!("{}/users/reset-password-request", self.url);
         let response = Request::post(&url)
             .json(&RequestPasswordReset { email })?
+            .send()
+            .await?;
+        into_json(response).await
+    }
+
+    pub async fn reset_password(&self, token: String, new_password: String) -> Result<()> {
+        let url = format!("{}/users/reset-password", self.url);
+        let response = Request::post(&url)
+            .json(&ResetPassword {
+                token,
+                new_password,
+            })?
             .send()
             .await?;
         into_json(response).await
