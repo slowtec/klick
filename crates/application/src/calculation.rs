@@ -1,6 +1,6 @@
 use crate::{
     constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
-    CO2Equivalents, EnergyConsumption, Factor, Input, Mass, MilligramsPerLiter,
+    CO2Equivalents, EnergyConsumption, Factor, Input, Kilowatthours, Mass, MilligramsPerLiter,
     N2oEmissionFactorCalcMethod, OperatingMaterials, Output, Qubicmeters, Scenario,
     SewageSludgeTreatment, Tons,
 };
@@ -121,9 +121,20 @@ pub fn calculate_emissions(input: &Input, scenario: Scenario) -> Output {
         + ch4_water
         + ch4_combined_heat_and_power_plant;
 
-    let external_energy = *total_power_consumption - *on_site_power_generation; // [kwh/a]
-
     let divisor6 = f64::from(10_i32.pow(6));
+
+    let t = *total_power_consumption - *on_site_power_generation;
+    let external_energy = if t >= Kilowatthours::new(0.0) {
+        t
+    } else {
+        Kilowatthours::new(0.0)
+    }; // [kwh/a]]
+    let excess_energy_co2_equivalent = if t <= Kilowatthours::new(0.0) {
+        Tons::new(-1.0 * f64::from(t * *emission_factor_electricity_mix) / divisor6)
+    } else {
+        Tons::new(0.0)
+    }; // [kwh/a]]
+
     let electricity_mix =
         Tons::new(f64::from(external_energy * *emission_factor_electricity_mix) / divisor6);
 
@@ -174,6 +185,7 @@ pub fn calculate_emissions(input: &Input, scenario: Scenario) -> Output {
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
+        excess_energy_co2_equivalent,
     };
 
     Output {

@@ -1,12 +1,11 @@
-use leptos::*;
-
-use klick_application as app;
-
 use crate::forms::InfoIcon;
+use klick_application as app;
+use leptos::*;
 
 mod ch4_emissions_chp;
 mod ch4_emissions_open_digesters;
 mod ch4_emissions_pre_treatment;
+mod excess_energy_co2_equivalent;
 
 const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";
@@ -17,6 +16,7 @@ pub fn OptimizationOptions(
     n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     view! {
+      { excess_energy_co2_equivalent::options(input_data, n2o_emission_factor_method) }
       { ch4_emissions_pre_treatment::options() }
       { ch4_emissions_chp::options(input_data, n2o_emission_factor_method) }
       { ch4_emissions_open_digesters::options(input_data, n2o_emission_factor_method) }

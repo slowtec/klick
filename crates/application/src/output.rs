@@ -28,4 +28,5 @@ pub struct CO2Equivalents {
     pub direct_emissions: Tons,
     pub indirect_emissions: Tons,
     pub other_indirect_emissions: Tons,
+    pub excess_energy_co2_equivalent: Tons,
 }

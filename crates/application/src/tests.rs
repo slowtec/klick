@@ -86,6 +86,7 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
+        excess_energy_co2_equivalent,
     } = co2_equivalents;
 
     assert_approx_eq(n2o_plant, 327.970_500_000_001_83);
@@ -109,6 +110,7 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
     assert_approx_eq(emissions, 2_172.584_161_124_002);
     assert_approx_eq(n2o_emission_factor, 0.001_253_278_688_524_597_2);
+    assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
 
 #[test]
@@ -181,6 +183,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
+        excess_energy_co2_equivalent,
     } = co2_equivalents;
 
     assert_approx_eq(n2o_plant, 785.07);
@@ -204,6 +207,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
     assert_approx_eq(emissions, 2_629.683_661_124_000_5);
     assert_approx_eq(n2o_emission_factor, 0.003);
+    assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
 
 #[test]
@@ -276,6 +280,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
+        excess_energy_co2_equivalent,
     } = co2_equivalents;
 
     assert_approx_eq(n2o_plant, 2_093.52);
@@ -299,6 +304,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
     assert_approx_eq(emissions, 3_938.133_661_124_000_4);
     assert_approx_eq(n2o_emission_factor, 0.008);
+    assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
 
 #[test]
@@ -371,6 +377,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
+        excess_energy_co2_equivalent,
     } = co2_equivalents;
 
     assert_approx_eq(n2o_plant, 4_187.04);
@@ -394,6 +401,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
     assert_approx_eq(emissions, 6_031.653_661_124_001);
     assert_approx_eq(n2o_emission_factor, 0.016);
+    assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
 
 #[test]
@@ -466,6 +474,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
+        excess_energy_co2_equivalent,
     } = co2_equivalents;
 
     assert_approx_eq(n2o_plant, 2_616.900_000_000_000_5);
@@ -489,4 +498,5 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
     assert_approx_eq(emissions, 4_461.513_661_124_000_5);
     assert_approx_eq(n2o_emission_factor, 0.01);
+    assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
