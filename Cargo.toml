@@ -38,7 +38,7 @@ build = "build.rs"
 klick-backend = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.78"
+anyhow = "1.0.79"
 env_logger = "0.10.1"
 log = "0.4.20"
 

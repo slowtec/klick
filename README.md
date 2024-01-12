@@ -34,6 +34,6 @@ just
 
 ## License
 
-Copyright (c) 2023 [slowtec GmbH](https://slowtec.de)
+Copyright (c) 2023 - 2024 [slowtec GmbH](https://slowtec.de)
 
 This project is licensed unter the [AGPLv3 license](https://www.gnu.org/licenses/agpl-3.0.html).
