@@ -323,7 +323,7 @@ pub fn Tool() -> impl IntoView {
         <div
           id = PageSection::DataCollection.section_id()
           class = move || {
-            if current_section.get() == Some(PageSection::DataCollection) {
+            if current_section.get() == Some(PageSection::DataCollection) || current_section.get() == None {
                 None
             } else {
                 Some("hidden")
