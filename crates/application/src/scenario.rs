@@ -8,7 +8,7 @@ pub struct Scenario {
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum N2oEmissionFactorCalcMethod {
-    TUWien2016,
+    TuWien2016,
     Optimistic,
     Pesimistic,
     Ipcc2019,

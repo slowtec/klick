@@ -84,7 +84,6 @@ fn import_v1() {
         szenario.n2o_emission_factor.calculation_method,
         N2oEmissionFactorCalcMethod::CustomFactor
     );
-
     assert_eq!(szenario.ch4_chp_emission_factor, None);
 }
 
@@ -155,6 +154,19 @@ fn import_v2() {
     assert_eq!(
         szenario.n2o_emission_factor.calculation_method,
         N2oEmissionFactorCalcMethod::CustomFactor
+    );
+
+    assert_eq!(szenario.ch4_chp_emission_factor, None);
+}
+
+#[test]
+fn import_v3() {
+    let json = include_str!("example_data_v3.json");
+    let (_input, szenario) = import_from_str(json).unwrap();
+
+    assert_eq!(
+        szenario.n2o_emission_factor.calculation_method,
+        N2oEmissionFactorCalcMethod::TuWien2016
     );
 
     assert_eq!(szenario.ch4_chp_emission_factor, None);

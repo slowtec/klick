@@ -201,7 +201,7 @@ pub fn calculate_n2o_emission_factor(
     nitrogen_effluent: MilligramsPerLiter,
 ) -> Factor {
     match calc_method {
-        N2oEmissionFactorCalcMethod::TUWien2016 => {
+        N2oEmissionFactorCalcMethod::TuWien2016 => {
             extrapolate_according_to_tu_wien_2016(nitrogen_influent, nitrogen_effluent)
         }
         N2oEmissionFactorCalcMethod::Optimistic => EMISSION_FACTOR_N2O_OPTIMISTIC.into(),

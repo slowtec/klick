@@ -56,7 +56,7 @@ fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
     };
 
     let scenario = Scenario {
-        n2o_emission_factor: N2oEmissionFactorCalcMethod::TUWien2016,
+        n2o_emission_factor: N2oEmissionFactorCalcMethod::TuWien2016,
         ch4_chp_emission_factor: None,
     };
 

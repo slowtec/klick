@@ -36,7 +36,7 @@ pub struct InputData {
     pub operating_materials: OperatingMaterials,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct Scenario {
     pub n2o_emission_factor: N2oEmissionFactorScenario,

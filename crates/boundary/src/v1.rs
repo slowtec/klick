@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use strum::EnumIter;
 
 #[derive(Deserialize)]
 pub struct Import {
@@ -80,14 +79,14 @@ pub struct Scenario {
     pub n2o_emission_factor: N2oEmissionFactorScenario,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct N2oEmissionFactorScenario {
     pub calculation_method: N2oEmissionFactorCalcMethod,
     pub custom_factor: Option<f64>,
 }
 
-#[derive(Serialize, Deserialize, EnumIter)]
+#[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(
     feature = "extra-derive",
@@ -95,7 +94,7 @@ pub struct N2oEmissionFactorScenario {
 )]
 pub enum N2oEmissionFactorCalcMethod {
     #[cfg_attr(feature = "extra-derive", default)]
-    TUWien2016,
+    ExtrapolatedParravicini,
     Optimistic,
     Pesimistic,
     Ipcc2019,

@@ -1,7 +1,9 @@
-use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
+use leptos::*;
+
 use klick_application as app;
 use klick_format_numbers::Lng;
-use leptos::*;
+
+use super::Card;
 
 pub fn options(
     input_data: Signal<Option<app::Input>>,
@@ -12,7 +14,7 @@ pub fn options(
     let indirect_emissions = RwSignal::new(0.0);
 
     create_effect(move |_| {
-        let Some(mut input_data) = input_data.get() else {
+        let Some(input_data) = input_data.get() else {
             log::debug!("No input data");
             excess_energy_co2_equivalent.set(0.0);
             emissions.set(0.0);

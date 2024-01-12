@@ -38,7 +38,7 @@
   },
   "scenario": {
     "n2o_emission_factor": {
-      "calculation_method":"custom-factor",
+      "calculation_method":"extrapolated-parravicini",
       "custom_factor": 1.5
     },
     "ch4_chp_emission_factor": {

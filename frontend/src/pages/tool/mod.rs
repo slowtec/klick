@@ -93,7 +93,7 @@ pub fn Tool() -> impl IntoView {
         };
 
         let f = match n {
-            0 => app::N2oEmissionFactorCalcMethod::TUWien2016,
+            0 => app::N2oEmissionFactorCalcMethod::TuWien2016,
             1 => app::N2oEmissionFactorCalcMethod::Optimistic,
             2 => app::N2oEmissionFactorCalcMethod::Pesimistic,
             3 => app::N2oEmissionFactorCalcMethod::Ipcc2019,
@@ -176,7 +176,7 @@ pub fn Tool() -> impl IntoView {
                         N2oEmissionFactorCalcMethod::CustomFactor => {
                             app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
                         }
-                        N2oEmissionFactorCalcMethod::TUWien2016 => app::N2oEmissionFactorCalcMethod::TUWien2016,
+                        N2oEmissionFactorCalcMethod::TuWien2016 => app::N2oEmissionFactorCalcMethod::TuWien2016,
                         N2oEmissionFactorCalcMethod::Optimistic => app::N2oEmissionFactorCalcMethod::Optimistic,
                         N2oEmissionFactorCalcMethod::Pesimistic => app::N2oEmissionFactorCalcMethod::Pesimistic,
                         N2oEmissionFactorCalcMethod::Ipcc2019 => app::N2oEmissionFactorCalcMethod::Ipcc2019,
@@ -450,7 +450,7 @@ const fn label_of_n2o_emission_factor_calc_method(
     method: &N2oEmissionFactorCalcMethod,
 ) -> &'static str {
     match method {
-        N2oEmissionFactorCalcMethod::TUWien2016 => "TU Wien 2016",
+        N2oEmissionFactorCalcMethod::TuWien2016 => "TU Wien 2016",
         N2oEmissionFactorCalcMethod::Optimistic => "Optimistisch",
         N2oEmissionFactorCalcMethod::Pesimistic => "Pessimistisch",
         N2oEmissionFactorCalcMethod::Ipcc2019 => "IPCC 2019",
