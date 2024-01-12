@@ -17,7 +17,7 @@ where
 }
 
 #[test]
-fn calculate_with_n2o_emission_factor_method_by_parravicini() {
+fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
     let input = Input {
         plant_name: None,
         population_equivalent: 120_000.0,
@@ -56,7 +56,7 @@ fn calculate_with_n2o_emission_factor_method_by_parravicini() {
     };
 
     let scenario = Scenario {
-        n2o_emission_factor: N2oEmissionFactorCalcMethod::ExtrapolatedParravicini,
+        n2o_emission_factor: N2oEmissionFactorCalcMethod::TUWien2016,
         ch4_chp_emission_factor: None,
     };
 

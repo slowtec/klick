@@ -95,7 +95,7 @@ pub struct N2oEmissionFactorScenario {
 )]
 pub enum N2oEmissionFactorCalcMethod {
     #[cfg_attr(feature = "extra-derive", default)]
-    ExtrapolatedParravicini,
+    TUWien2016,
     Optimistic,
     Pesimistic,
     Ipcc2019,

@@ -35,7 +35,7 @@ impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
         use N2oEmissionFactorCalcMethod as M;
 
         let f = match from.calculation_method {
-            M::ExtrapolatedParravicini => A::ExtrapolatedParravicini,
+            M::TUWien2016 => A::TUWien2016,
             M::Optimistic => A::Optimistic,
             M::Pesimistic => A::Pesimistic,
             M::Ipcc2019 => A::Ipcc2019,

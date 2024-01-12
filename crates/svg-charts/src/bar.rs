@@ -204,7 +204,7 @@ fn Bar(
           >
             { co2_value_label }
           </text>
-          // label, i.e.: Extrapoliert, Optimistisch, IPCC 2019, Pessimistisch, ...
+          // label, i.e.: TUWien2016, Optimistisch, IPCC 2019, Pessimistisch, ...
           {
             label.and_then(|_| {
               view! {

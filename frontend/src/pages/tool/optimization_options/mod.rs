@@ -105,8 +105,8 @@ fn ScenarioHint(
                 let ef = format!("(N₂O EF = {f:.2}%)");
 
                 let scenario = match x {
-                    app::N2oEmissionFactorCalcMethod::ExtrapolatedParravicini => {
-                        format!("Extrapoliert {ef}")
+                    app::N2oEmissionFactorCalcMethod::TUWien2016 => {
+                        format!("TU Wien 2016 {ef}")
                     }
                     app::N2oEmissionFactorCalcMethod::Optimistic => format!("Optimistisch {ef}"),
                     app::N2oEmissionFactorCalcMethod::Pesimistic => format!("Pesimistisch {ef}"),
