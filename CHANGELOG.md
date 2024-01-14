@@ -1,6 +1,12 @@
 # Changelog
 
-## v0.2.0 (2024-01-24)
+## v0.2.1 (2024-01-14)
+
+- Changed:
+  - Fixed links on landing page #73
+  - Rename the "extrapoliert" scenario #82
+
+## v0.2.0 (2024-01-11)
 
 - New:
     - Added Jenkinsfile for jenkins support
