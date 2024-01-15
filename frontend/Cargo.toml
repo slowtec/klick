@@ -9,6 +9,7 @@ rust-version = "1.75"
 # Project dependencies
 klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
+klick-domain = "=0.0.0"
 klick-format-numbers = "=0.0.0"
 klick-svg-charts = "=0.0.0"
 

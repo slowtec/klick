@@ -1,6 +1,7 @@
 use anyhow::bail;
 
 use klick_application as app;
+use klick_domain as domain;
 
 use crate::{
     AnnualAverage, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
@@ -43,7 +44,7 @@ impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
                 let Some(factor) = from.custom_factor else {
                     bail!("custom N2O emission factor is missing");
                 };
-                A::Custom(app::Factor::new(factor))
+                A::Custom(domain::Factor::new(factor))
             }
         };
         Ok(f)
@@ -65,7 +66,7 @@ impl TryFrom<CH4ChpEmissionFactorScenario> for app::CH4ChpEmissionFactorCalcMeth
                 let Some(factor) = from.custom_factor else {
                     bail!("custom N2O emission factor is missing");
                 };
-                A::Custom(app::Factor::new(factor))
+                A::Custom(domain::Factor::new(factor))
             }
         };
         Ok(f)
@@ -101,7 +102,7 @@ impl TryFrom<InputData> for app::Input {
         let sewage_sludge_treatment = sewage_sludge_treatment.try_into()?;
         let operating_materials = operating_materials.try_into()?;
 
-        let wastewater = app::Qubicmeters::new(wastewater);
+        let wastewater = domain::Qubicmeters::new(wastewater);
 
         Ok(Self {
             plant_name,
@@ -146,13 +147,13 @@ impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
             bail!("missing emission_factor_electricity_mix");
         };
 
-        let methane_fraction = app::Percent::new(methane_fraction);
-        let sewage_gas_produced = app::Qubicmeters::new(sewage_gas_produced);
-        let on_site_power_generation = app::Kilowatthours::new(on_site_power_generation);
-        let total_power_consumption = app::Kilowatthours::new(total_power_consumption);
-        let gas_supply = gas_supply.map(app::Kilowatthours::new);
+        let methane_fraction = domain::Percent::new(methane_fraction);
+        let sewage_gas_produced = domain::Qubicmeters::new(sewage_gas_produced);
+        let on_site_power_generation = domain::Kilowatthours::new(on_site_power_generation);
+        let total_power_consumption = domain::Kilowatthours::new(total_power_consumption);
+        let gas_supply = gas_supply.map(domain::Kilowatthours::new);
         let emission_factor_electricity_mix =
-            app::GramsPerKilowatthour::new(emission_factor_electricity_mix);
+            domain::GramsPerKilowatthour::new(emission_factor_electricity_mix);
 
         Ok(Self {
             sewage_gas_produced,
@@ -189,8 +190,8 @@ impl TryFrom<SewageSludgeTreatment> for app::SewageSludgeTreatment {
             bail!("missing transport_distance");
         };
 
-        let sewage_sludge_for_disposal = app::Tons::new(sewage_sludge_for_disposal);
-        let transport_distance = app::Kilometers::new(transport_distance);
+        let sewage_sludge_for_disposal = domain::Tons::new(sewage_sludge_for_disposal);
+        let transport_distance = domain::Kilometers::new(transport_distance);
         Ok(Self {
             open_sludge_bags,
             open_sludge_storage_containers,
@@ -223,10 +224,10 @@ impl TryFrom<OperatingMaterials> for app::OperatingMaterials {
             bail!("missing synthetic_polymers");
         };
 
-        let fecl3 = app::Tons::new(fecl3);
-        let feclso4 = app::Tons::new(feclso4);
-        let caoh2 = app::Tons::new(caoh2);
-        let synthetic_polymers = app::Tons::new(synthetic_polymers);
+        let fecl3 = domain::Tons::new(fecl3);
+        let feclso4 = domain::Tons::new(feclso4);
+        let caoh2 = domain::Tons::new(caoh2);
+        let synthetic_polymers = domain::Tons::new(synthetic_polymers);
 
         Ok(Self {
             fecl3,
@@ -251,9 +252,9 @@ impl TryFrom<AnnualAverage> for app::AnnualAverageInfluent {
             bail!("missing inflow nitrogen");
         };
 
-        let phosphorus = phosphorus.map(app::MilligramsPerLiter::new);
-        let chemical_oxygen_demand = chemical_oxygen_demand.map(app::MilligramsPerLiter::new);
-        let nitrogen = app::MilligramsPerLiter::new(nitrogen);
+        let phosphorus = phosphorus.map(domain::MilligramsPerLiter::new);
+        let chemical_oxygen_demand = chemical_oxygen_demand.map(domain::MilligramsPerLiter::new);
+        let nitrogen = domain::MilligramsPerLiter::new(nitrogen);
 
         Ok(Self {
             nitrogen,
@@ -280,9 +281,9 @@ impl TryFrom<AnnualAverage> for app::AnnualAverageEffluent {
             bail!("missing effluent chemical_oxygen_demand");
         };
 
-        let phosphorus = phosphorus.map(app::MilligramsPerLiter::new);
-        let chemical_oxygen_demand = app::MilligramsPerLiter::new(chemical_oxygen_demand);
-        let nitrogen = app::MilligramsPerLiter::new(nitrogen);
+        let phosphorus = phosphorus.map(domain::MilligramsPerLiter::new);
+        let chemical_oxygen_demand = domain::MilligramsPerLiter::new(chemical_oxygen_demand);
+        let nitrogen = domain::MilligramsPerLiter::new(nitrogen);
 
         Ok(Self {
             nitrogen,

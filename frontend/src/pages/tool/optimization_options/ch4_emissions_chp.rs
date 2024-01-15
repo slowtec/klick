@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 use klick_application as app;
+use klick_domain as domain;
 
 use crate::{
     forms::{render_field_sets, FieldType, MinMax, SelectOption},
@@ -70,7 +71,7 @@ pub fn options(
                     output.set(None);
                     return;
                 };
-                app::CH4ChpEmissionFactorCalcMethod::Custom(app::Factor::new(f / 100.0))
+                app::CH4ChpEmissionFactorCalcMethod::Custom(domain::Factor::new(f / 100.0))
             }
             _ => {
                 output.set(None);

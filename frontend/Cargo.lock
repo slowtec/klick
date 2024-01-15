@@ -913,6 +913,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "klick-application",
+ "klick-domain",
  "serde",
  "serde_json",
  "strum",
@@ -949,6 +950,7 @@ dependencies = [
  "gloo-storage",
  "klick-application",
  "klick-boundary",
+ "klick-domain",
  "klick-format-numbers",
  "klick-svg-charts",
  "leptos",

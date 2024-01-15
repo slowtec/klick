@@ -1,5 +1,7 @@
 use std::fmt;
 
+use klick_domain::*;
+
 use super::*;
 
 // TODO: What precision is required?

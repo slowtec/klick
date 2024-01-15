@@ -1,8 +1,9 @@
+use klick_domain::{Factor, Kilowatthours, Mass, MilligramsPerLiter, Qubicmeters, Tons};
+
 use crate::{
     constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
-    CO2Equivalents, EnergyConsumption, Factor, Input, Kilowatthours, Mass, MilligramsPerLiter,
-    N2oEmissionFactorCalcMethod, OperatingMaterials, Output, Qubicmeters, Scenario,
-    SewageSludgeTreatment, Tons,
+    CO2Equivalents, EnergyConsumption, Input, N2oEmissionFactorCalcMethod, OperatingMaterials,
+    Output, Scenario, SewageSludgeTreatment,
 };
 
 #[must_use]

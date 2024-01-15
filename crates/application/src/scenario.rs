@@ -1,4 +1,4 @@
-use crate::Factor;
+use klick_domain::Factor;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Scenario {

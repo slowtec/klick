@@ -1,4 +1,4 @@
-use crate::{
+use klick_domain::{
     GramsPerKilowatthour, KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent,
 };
 

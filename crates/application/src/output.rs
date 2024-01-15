@@ -1,4 +1,4 @@
-use crate::{Factor, Tons};
+use klick_domain::{Factor, Tons};
 
 #[derive(Debug, Clone)]
 pub struct Output {

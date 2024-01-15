@@ -1178,6 +1178,7 @@ dependencies = [
  "anyhow",
  "klick-application",
  "klick-boundary",
+ "klick-domain",
  "serde",
  "serde_json",
  "strum",

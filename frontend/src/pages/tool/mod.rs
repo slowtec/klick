@@ -6,6 +6,7 @@ use strum::IntoEnumIterator;
 
 use klick_application as app;
 use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
+use klick_domain as domain;
 use klick_format_numbers::Lng;
 use klick_svg_charts::BarChart;
 
@@ -97,7 +98,7 @@ pub fn Tool() -> impl IntoView {
             1 => app::N2oEmissionFactorCalcMethod::Optimistic,
             2 => app::N2oEmissionFactorCalcMethod::Pesimistic,
             3 => app::N2oEmissionFactorCalcMethod::Ipcc2019,
-            4 => app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(
+            4 => app::N2oEmissionFactorCalcMethod::Custom(domain::Factor::new(
                 custom_factor_value.get().unwrap_or_default() / 100.0,
             )),
             _ => {
@@ -174,7 +175,7 @@ pub fn Tool() -> impl IntoView {
                     }
                     let n2o_emission_factor = match method {
                         N2oEmissionFactorCalcMethod::CustomFactor => {
-                            app::N2oEmissionFactorCalcMethod::Custom(app::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
+                            app::N2oEmissionFactorCalcMethod::Custom(domain::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
                         }
                         N2oEmissionFactorCalcMethod::TuWien2016 => app::N2oEmissionFactorCalcMethod::TuWien2016,
                         N2oEmissionFactorCalcMethod::Optimistic => app::N2oEmissionFactorCalcMethod::Optimistic,
