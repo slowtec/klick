@@ -16,7 +16,7 @@ const DWA_MERKBLATT_URL: &str =
 #[component]
 pub fn OptimizationOptions(
     input_data: Signal<Option<domain::PlantProfile>>,
-    n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
+    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     view! {
       { excess_energy_co2_equivalent::options(input_data, n2o_emission_factor_method) }
@@ -99,7 +99,7 @@ fn Cite(source: &'static str, url: &'static str, children: Children) -> impl Int
 #[component]
 fn ScenarioHint(
     output: Signal<Option<app::Output>>,
-    n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
+    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     move || {
         n2o_emission_factor_method.get().and_then(|x| {
@@ -108,13 +108,13 @@ fn ScenarioHint(
                 let ef = format!("(N₂O EF = {f:.2}%)");
 
                 let scenario = match x {
-                    app::N2oEmissionFactorCalcMethod::TuWien2016 => {
+                    domain::N2oEmissionFactorCalcMethod::TuWien2016 => {
                         format!("TU Wien 2016 {ef}")
                     }
-                    app::N2oEmissionFactorCalcMethod::Optimistic => format!("Optimistisch {ef}"),
-                    app::N2oEmissionFactorCalcMethod::Pesimistic => format!("Pesimistisch {ef}"),
-                    app::N2oEmissionFactorCalcMethod::Ipcc2019 => format!("IPCC 2019 {ef}"),
-                    app::N2oEmissionFactorCalcMethod::Custom(f) => {
+                    domain::N2oEmissionFactorCalcMethod::Optimistic => format!("Optimistisch {ef}"),
+                    domain::N2oEmissionFactorCalcMethod::Pesimistic => format!("Pesimistisch {ef}"),
+                    domain::N2oEmissionFactorCalcMethod::Ipcc2019 => format!("IPCC 2019 {ef}"),
+                    domain::N2oEmissionFactorCalcMethod::Custom(f) => {
                         format!("Benutzerdefiniert ({:.1})", f64::from(f) * 100.0)
                     }
                 };

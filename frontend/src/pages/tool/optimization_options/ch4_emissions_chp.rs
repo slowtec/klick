@@ -24,7 +24,7 @@ use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
 
 pub fn options(
     input_data: Signal<Option<domain::PlantProfile>>,
-    n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
+    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let field_set = field_set();
 
@@ -57,9 +57,9 @@ pub fn options(
         };
 
         let ch4_chp_emission_factor = match sel {
-            1 => app::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines,
-            2 => app::CH4ChpEmissionFactorCalcMethod::GasolineEngine,
-            3 => app::CH4ChpEmissionFactorCalcMethod::JetEngine,
+            1 => domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines,
+            2 => domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine,
+            3 => domain::CH4ChpEmissionFactorCalcMethod::JetEngine,
             4 => {
                 let Some(f) = custom_factor.get() else {
                     log::warn!("No custom factor defined");
@@ -71,7 +71,7 @@ pub fn options(
                     output.set(None);
                     return;
                 };
-                app::CH4ChpEmissionFactorCalcMethod::Custom(domain::Factor::new(f / 100.0))
+                domain::CH4ChpEmissionFactorCalcMethod::Custom(domain::Factor::new(f / 100.0))
             }
             _ => {
                 output.set(None);
@@ -80,10 +80,10 @@ pub fn options(
         };
 
         log::debug!("Calculate with CH4 CHP emission factor {ch4_chp_emission_factor:?}");
-        let scenario = app::Scenario {
+        let scenario = domain::OptimizationScenario {
             n2o_emission_factor: n2o_emission_factor_method
                 .get()
-                .unwrap_or(app::N2oEmissionFactorCalcMethod::Ipcc2019),
+                .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
             ch4_chp_emission_factor: Some(ch4_chp_emission_factor),
         };
         let output_data = app::calculate_emissions(&input_data, scenario);

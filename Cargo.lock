@@ -1176,7 +1176,6 @@ name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "klick-application",
  "klick-boundary",
  "klick-domain",
  "serde",

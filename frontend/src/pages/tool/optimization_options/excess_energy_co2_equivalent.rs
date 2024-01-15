@@ -8,7 +8,7 @@ use super::Card;
 
 pub fn options(
     input_data: Signal<Option<domain::PlantProfile>>,
-    n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
+    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let excess_energy_co2_equivalent = RwSignal::new(0.0);
     let emissions = RwSignal::new(0.0);
@@ -25,9 +25,9 @@ pub fn options(
 
         let n2o_emission_factor = n2o_emission_factor_method
             .get()
-            .unwrap_or(app::N2oEmissionFactorCalcMethod::Ipcc2019);
+            .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019);
 
-        let scenario = app::Scenario {
+        let scenario = domain::OptimizationScenario {
             n2o_emission_factor,
             ch4_chp_emission_factor: None,
         };

@@ -12,10 +12,6 @@ serde_json = "1.0.111"
 strum = { version = "0.25.0", features = ["derive"] }
 thiserror = "1.0.56"
 
-[dependencies.klick-application]
-version = "=0.0.0"
-optional = true
-
 [dependencies.klick-domain]
 version = "=0.0.0"
 optional = true
@@ -25,7 +21,7 @@ version = "*"
 features = ["extra-derive"]
 
 [features]
-conversion = ["dep:klick-application", "dep:klick-domain"]
+conversion = ["dep:klick-domain"]
 extra-derive = []
 
 [lints]

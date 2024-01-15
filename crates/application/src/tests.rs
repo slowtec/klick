@@ -57,7 +57,7 @@ fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
         },
     };
 
-    let scenario = Scenario {
+    let scenario = OptimizationScenario {
         n2o_emission_factor: N2oEmissionFactorCalcMethod::TuWien2016,
         ch4_chp_emission_factor: None,
     };
@@ -154,7 +154,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         },
     };
 
-    let scenario = Scenario {
+    let scenario = OptimizationScenario {
         n2o_emission_factor: N2oEmissionFactorCalcMethod::Optimistic,
         ch4_chp_emission_factor: None,
     };
@@ -251,7 +251,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         },
     };
 
-    let scenario = Scenario {
+    let scenario = OptimizationScenario {
         n2o_emission_factor: N2oEmissionFactorCalcMethod::Pesimistic,
         ch4_chp_emission_factor: None,
     };
@@ -348,7 +348,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         },
     };
 
-    let scenario = Scenario {
+    let scenario = OptimizationScenario {
         n2o_emission_factor: N2oEmissionFactorCalcMethod::Ipcc2019,
         ch4_chp_emission_factor: None,
     };
@@ -445,7 +445,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         },
     };
 
-    let scenario = Scenario {
+    let scenario = OptimizationScenario {
         n2o_emission_factor: N2oEmissionFactorCalcMethod::Custom(Factor::new(1.0 / 100.0)),
         ch4_chp_emission_factor: None,
     };

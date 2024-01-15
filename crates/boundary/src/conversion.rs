@@ -1,6 +1,5 @@
 use anyhow::bail;
 
-use klick_application as app;
 use klick_domain as domain;
 
 use crate::{
@@ -9,7 +8,7 @@ use crate::{
     Scenario, SewageSludgeTreatment,
 };
 
-impl TryFrom<Scenario> for app::Scenario {
+impl TryFrom<Scenario> for domain::OptimizationScenario {
     type Error = anyhow::Error;
 
     fn try_from(from: Scenario) -> Result<Self, Self::Error> {
@@ -21,52 +20,52 @@ impl TryFrom<Scenario> for app::Scenario {
         let n2o_emission_factor = n2o_emission_factor.try_into()?;
         let ch4_chp_emission_factor = ch4_chp_emission_factor.map(TryInto::try_into).transpose()?;
 
-        Ok(app::Scenario {
+        Ok(domain::OptimizationScenario {
             n2o_emission_factor,
             ch4_chp_emission_factor,
         })
     }
 }
 
-impl TryFrom<N2oEmissionFactorScenario> for app::N2oEmissionFactorCalcMethod {
+impl TryFrom<N2oEmissionFactorScenario> for domain::N2oEmissionFactorCalcMethod {
     type Error = anyhow::Error;
 
     fn try_from(from: N2oEmissionFactorScenario) -> Result<Self, Self::Error> {
-        use app::N2oEmissionFactorCalcMethod as A;
+        use domain::N2oEmissionFactorCalcMethod as D;
         use N2oEmissionFactorCalcMethod as M;
 
         let f = match from.calculation_method {
-            M::TuWien2016 => A::TuWien2016,
-            M::Optimistic => A::Optimistic,
-            M::Pesimistic => A::Pesimistic,
-            M::Ipcc2019 => A::Ipcc2019,
+            M::TuWien2016 => D::TuWien2016,
+            M::Optimistic => D::Optimistic,
+            M::Pesimistic => D::Pesimistic,
+            M::Ipcc2019 => D::Ipcc2019,
             M::CustomFactor => {
                 let Some(factor) = from.custom_factor else {
                     bail!("custom N2O emission factor is missing");
                 };
-                A::Custom(domain::Factor::new(factor))
+                D::Custom(domain::Factor::new(factor))
             }
         };
         Ok(f)
     }
 }
 
-impl TryFrom<CH4ChpEmissionFactorScenario> for app::CH4ChpEmissionFactorCalcMethod {
+impl TryFrom<CH4ChpEmissionFactorScenario> for domain::CH4ChpEmissionFactorCalcMethod {
     type Error = anyhow::Error;
 
     fn try_from(from: CH4ChpEmissionFactorScenario) -> Result<Self, Self::Error> {
-        use app::CH4ChpEmissionFactorCalcMethod as A;
+        use domain::CH4ChpEmissionFactorCalcMethod as D;
         use CH4ChpEmissionFactorCalcMethod as M;
 
         let f = match from.calculation_method {
-            M::MicroGasTurbines => A::MicroGasTurbines,
-            M::GasolineEngine => A::GasolineEngine,
-            M::JetEngine => A::JetEngine,
+            M::MicroGasTurbines => D::MicroGasTurbines,
+            M::GasolineEngine => D::GasolineEngine,
+            M::JetEngine => D::JetEngine,
             M::CustomFactor => {
                 let Some(factor) = from.custom_factor else {
                     bail!("custom N2O emission factor is missing");
                 };
-                A::Custom(domain::Factor::new(factor))
+                D::Custom(domain::Factor::new(factor))
             }
         };
         Ok(f)
