@@ -67,3 +67,13 @@ module_name_repetitions = "allow"
 
 # This is a matter of taste... and I just like it that way ;-P
 mod_module_files = "allow"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
