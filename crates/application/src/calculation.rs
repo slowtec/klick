@@ -1,15 +1,17 @@
-use klick_domain::{Factor, Kilowatthours, Mass, MilligramsPerLiter, Qubicmeters, Tons};
+use klick_domain::{
+    AnnualAverageEffluent, AnnualAverageInfluent, EnergyConsumption, Factor, Kilowatthours, Mass,
+    MilligramsPerLiter, OperatingMaterials, PlantProfile, Qubicmeters, SewageSludgeTreatment, Tons,
+};
 
 use crate::{
-    constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
-    CO2Equivalents, EnergyConsumption, Input, N2oEmissionFactorCalcMethod, OperatingMaterials,
-    Output, Scenario, SewageSludgeTreatment,
+    constants::*, CH4ChpEmissionFactorCalcMethod, CO2Equivalents, N2oEmissionFactorCalcMethod,
+    Output, Scenario,
 };
 
 #[must_use]
 #[allow(clippy::too_many_lines)]
-pub fn calculate_emissions(input: &Input, scenario: Scenario) -> Output {
-    let Input {
+pub fn calculate_emissions(input: &PlantProfile, scenario: Scenario) -> Output {
+    let PlantProfile {
         plant_name: _,
         population_equivalent,
         wastewater,

@@ -1,9 +1,9 @@
-use klick_domain::{
+use crate::{
     GramsPerKilowatthour, Kilometers, Kilowatthours, MilligramsPerLiter, Percent, Qubicmeters, Tons,
 };
 
 #[derive(Debug, Clone)]
-pub struct Input {
+pub struct PlantProfile {
     pub plant_name: Option<String>,
     pub population_equivalent: f64,
     pub wastewater: Qubicmeters,

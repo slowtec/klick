@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 use klick_application as app;
+use klick_domain as domain;
 
 use crate::{
     forms::{render_field_sets, Field, FieldSet, FieldType},
@@ -18,7 +19,7 @@ enum Id {
 }
 
 pub fn options(
-    input_data: Signal<Option<app::Input>>,
+    input_data: Signal<Option<domain::PlantProfile>>,
     n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let open_sludge_bags = Field {

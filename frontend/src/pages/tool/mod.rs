@@ -58,7 +58,7 @@ pub fn Tool() -> impl IntoView {
     let signals = Rc::new(signals);
     let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
-    let input_data = RwSignal::new(Option::<app::Input>::None);
+    let input_data = RwSignal::new(Option::<domain::PlantProfile>::None);
 
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));

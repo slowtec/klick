@@ -1,12 +1,13 @@
 use leptos::*;
 
 use klick_application as app;
+use klick_domain as domain;
 use klick_format_numbers::Lng;
 
 use super::Card;
 
 pub fn options(
-    input_data: Signal<Option<app::Input>>,
+    input_data: Signal<Option<domain::PlantProfile>>,
     n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let excess_energy_co2_equivalent = RwSignal::new(0.0);

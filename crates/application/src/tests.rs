@@ -20,7 +20,7 @@ where
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
-    let input = Input {
+    let profile = PlantProfile {
         plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
@@ -65,7 +65,7 @@ fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
-    } = calculate_emissions(&input, scenario);
+    } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -117,7 +117,7 @@ fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_optimistic() {
-    let input = Input {
+    let profile = PlantProfile {
         plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
@@ -162,7 +162,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
-    } = calculate_emissions(&input, scenario);
+    } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -214,7 +214,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_pesimistic() {
-    let input = Input {
+    let profile = PlantProfile {
         plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
@@ -259,7 +259,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
-    } = calculate_emissions(&input, scenario);
+    } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -311,7 +311,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_ipcc2019() {
-    let input = Input {
+    let profile = PlantProfile {
         plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
@@ -356,7 +356,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
-    } = calculate_emissions(&input, scenario);
+    } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -408,7 +408,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_custom_factor() {
-    let input = Input {
+    let profile = PlantProfile {
         plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
@@ -453,7 +453,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
-    } = calculate_emissions(&input, scenario);
+    } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,

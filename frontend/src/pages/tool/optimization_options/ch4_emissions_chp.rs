@@ -23,7 +23,7 @@ enum Id {
 use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
 
 pub fn options(
-    input_data: Signal<Option<app::Input>>,
+    input_data: Signal<Option<domain::PlantProfile>>,
     n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let field_set = field_set();

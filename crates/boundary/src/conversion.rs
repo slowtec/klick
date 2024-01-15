@@ -73,7 +73,7 @@ impl TryFrom<CH4ChpEmissionFactorScenario> for app::CH4ChpEmissionFactorCalcMeth
     }
 }
 
-impl TryFrom<InputData> for app::Input {
+impl TryFrom<InputData> for domain::PlantProfile {
     type Error = anyhow::Error;
 
     fn try_from(from: InputData) -> Result<Self, Self::Error> {
@@ -117,7 +117,7 @@ impl TryFrom<InputData> for app::Input {
     }
 }
 
-impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
+impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
     type Error = anyhow::Error;
 
     fn try_from(from: EnergyConsumption) -> Result<Self, Self::Error> {
@@ -167,7 +167,7 @@ impl TryFrom<EnergyConsumption> for app::EnergyConsumption {
     }
 }
 
-impl TryFrom<SewageSludgeTreatment> for app::SewageSludgeTreatment {
+impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
     type Error = anyhow::Error;
 
     fn try_from(from: SewageSludgeTreatment) -> Result<Self, Self::Error> {
@@ -201,7 +201,7 @@ impl TryFrom<SewageSludgeTreatment> for app::SewageSludgeTreatment {
     }
 }
 
-impl TryFrom<OperatingMaterials> for app::OperatingMaterials {
+impl TryFrom<OperatingMaterials> for domain::OperatingMaterials {
     type Error = anyhow::Error;
 
     fn try_from(from: OperatingMaterials) -> Result<Self, Self::Error> {
@@ -238,7 +238,7 @@ impl TryFrom<OperatingMaterials> for app::OperatingMaterials {
     }
 }
 
-impl TryFrom<AnnualAverage> for app::AnnualAverageInfluent {
+impl TryFrom<AnnualAverage> for domain::AnnualAverageInfluent {
     type Error = anyhow::Error;
 
     fn try_from(from: AnnualAverage) -> Result<Self, Self::Error> {
@@ -264,7 +264,7 @@ impl TryFrom<AnnualAverage> for app::AnnualAverageInfluent {
     }
 }
 
-impl TryFrom<AnnualAverage> for app::AnnualAverageEffluent {
+impl TryFrom<AnnualAverage> for domain::AnnualAverageEffluent {
     type Error = anyhow::Error;
 
     fn try_from(from: AnnualAverage) -> Result<Self, Self::Error> {

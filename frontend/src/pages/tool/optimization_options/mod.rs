@@ -1,6 +1,9 @@
-use crate::forms::InfoIcon;
-use klick_application as app;
 use leptos::*;
+
+use klick_application as app;
+use klick_domain as domain;
+
+use crate::forms::InfoIcon;
 
 mod ch4_emissions_chp;
 mod ch4_emissions_open_digesters;
@@ -12,7 +15,7 @@ const DWA_MERKBLATT_URL: &str =
 
 #[component]
 pub fn OptimizationOptions(
-    input_data: Signal<Option<app::Input>>,
+    input_data: Signal<Option<domain::PlantProfile>>,
     n2o_emission_factor_method: Signal<Option<app::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     view! {
