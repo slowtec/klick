@@ -4,6 +4,7 @@ mod nonce;
 mod optimization_scenario;
 mod password;
 mod plant_profile;
+mod project;
 mod units;
 
 pub use self::{
@@ -15,5 +16,6 @@ pub use self::{
     },
     password::{HashedPassword, ParseError as PasswordParseError, Password},
     plant_profile::*,
+    project::{Id as ProjectId, IdParseError as ProjectIdParseError, Project},
     units::*,
 };
