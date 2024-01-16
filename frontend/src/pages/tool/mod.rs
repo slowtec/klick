@@ -4,7 +4,9 @@ use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 use strum::IntoEnumIterator;
 
-use klick_boundary::{export_to_vec_pretty, import_from_slice, N2oEmissionFactorCalcMethod};
+use klick_boundary::{
+    export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, UnsavedProject,
+};
 use klick_domain as domain;
 use klick_format_numbers::Lng;
 use klick_svg_charts::BarChart;
@@ -26,7 +28,9 @@ use self::{
     action_panel::ActionPanel,
     breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
-    fields::{load_fields, read_input_fields, read_scenario_fields, FieldId, ScenarioFieldId},
+    fields::{
+        load_project_fields, read_input_fields, read_scenario_fields, FieldId, ScenarioFieldId,
+    },
     input_data_list::InputDataList,
     optimization_options::OptimizationOptions,
 };
@@ -244,19 +248,21 @@ pub fn Tool() -> impl IntoView {
             let signals = Rc::clone(&signals);
             let file = file.clone();
             async move {
-                match gloo_file::futures::read_as_bytes(&file).await {
-                    Ok(bytes) => match import_from_slice(&bytes) {
-                        Ok((input, scenario)) => {
-                            load_fields(&signals, input, scenario);
-                        }
-                        Err(err) => {
-                            log::warn!("Unable to import data: {err}");
-                        }
-                    },
+                let bytes = match gloo_file::futures::read_as_bytes(&file).await {
+                    Ok(bytes) => bytes,
                     Err(err) => {
                         log::warn!("Unable to upload data: {err}");
+                        return;
                     }
-                }
+                };
+                let project = match import_from_slice(&bytes) {
+                    Ok(project) => project,
+                    Err(err) => {
+                        log::warn!("Unable to import data: {err}");
+                        return;
+                    }
+                };
+                load_project_fields(&signals, project);
             }
         }
     });
@@ -280,9 +286,15 @@ pub fn Tool() -> impl IntoView {
     let save_input_values = {
         let signals = Rc::clone(&signals);
         move || {
-            let (input, _) = read_input_fields(&signals, &vec![]);
-            let szenario = read_scenario_fields(&signals);
-            let json_bytes = export_to_vec_pretty(&input, &szenario);
+            let (plant_profile, _) = read_input_fields(&signals, &vec![]);
+            let optimization_scenario = read_scenario_fields(&signals);
+            let project = UnsavedProject {
+                plant_profile,
+                optimization_scenario,
+            }
+            .into();
+            let data = Data { project };
+            let json_bytes = export_to_vec_pretty(&data);
 
             let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
 

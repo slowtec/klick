@@ -4,21 +4,22 @@ use klick_boundary::*;
 
 use crate::forms::FieldSignal;
 
-use super::fields::{load_fields, FieldId};
+use super::fields::{load_project_fields, FieldId};
 
 pub fn load_example_field_signal_values(signals: &HashMap<FieldId, FieldSignal>) {
-    let (input, scenario) = example_input_data();
-    load_fields(signals, input, scenario);
+    let project = example_input_data();
+    load_project_fields(signals, project.into());
 }
 
-fn example_input_data() -> (InputData, Scenario) {
+// TODO: rename to example_project
+fn example_input_data() -> UnsavedProject {
     // TODO: let csb_zu = 1045.0;
     // TODO: let p_zu = 9.9;
     // TODO: let p_ab = 0.4;
     // TODO: let gas_zusatz = 1_300_000.0;
     // TODO: let biogas = false;
 
-    let input = InputData {
+    let plant_profile = PlantProfile {
         plant_name: Some("Muster Klärwerk".to_string()),
         population_equivalent: Some(50_000.0),
         wastewater: Some(2_135_250.0),
@@ -55,7 +56,7 @@ fn example_input_data() -> (InputData, Scenario) {
         },
     };
 
-    let scenario = Scenario {
+    let optimization_scenario = OptimizationScenario {
         n2o_emission_factor: N2oEmissionFactorScenario {
             custom_factor: None,
             calculation_method: N2oEmissionFactorCalcMethod::Ipcc2019,
@@ -63,5 +64,8 @@ fn example_input_data() -> (InputData, Scenario) {
         ch4_chp_emission_factor: None,
     };
 
-    (input, scenario)
+    UnsavedProject {
+        plant_profile,
+        optimization_scenario,
+    }
 }

@@ -5,8 +5,9 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 use klick_boundary::{
-    AnnualAverage, EnergyConsumption, InputData, N2oEmissionFactorCalcMethod,
-    N2oEmissionFactorScenario, OperatingMaterials, Scenario, SewageSludgeTreatment,
+    AnnualAverage, EnergyConsumption, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
+    OperatingMaterials, OptimizationScenario, PlantProfile, Project, SavedProject,
+    SewageSludgeTreatment, UnsavedProject,
 };
 
 use crate::forms::{self, format_f64_into_de_string, FieldSignal, MissingField};
@@ -52,7 +53,7 @@ pub enum ScenarioFieldId {
 pub fn read_input_fields(
     s: &HashMap<FieldId, FieldSignal>,
     required_fields: &Vec<RequiredField>,
-) -> (InputData, Vec<MissingField>) {
+) -> (PlantProfile, Vec<MissingField>) {
     let missing_fields: Vec<MissingField> =
         required_fields.iter().fold(vec![], |mut acc, field| {
             if field.id == FieldId::Name {
@@ -134,7 +135,7 @@ pub fn read_input_fields(
     };
 
     (
-        InputData {
+        PlantProfile {
             plant_name,
             population_equivalent,
             wastewater,
@@ -148,7 +149,7 @@ pub fn read_input_fields(
     )
 }
 
-pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {
+pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> OptimizationScenario {
     let custom_factor = s
         .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
         .and_then(FieldSignal::get_float);
@@ -166,7 +167,7 @@ pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> Scenario {
     // TODO:
     let ch4_chp_emission_factor = None;
 
-    Scenario {
+    OptimizationScenario {
         n2o_emission_factor,
         ch4_chp_emission_factor,
     }
@@ -177,8 +178,21 @@ fn float_to_sting_option(f: Option<f64>) -> Option<String> {
 }
 
 #[allow(clippy::too_many_lines)]
-pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, scenario: Scenario) {
-    let InputData {
+pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Project) {
+    let (plant_profile, optimization_scenario) = match project {
+        Project::Unsaved(UnsavedProject {
+            plant_profile,
+            optimization_scenario,
+        }) => (plant_profile, optimization_scenario),
+        Project::Saved(SavedProject {
+            id: _,
+            title: _,
+            plant_profile,
+            optimization_scenario,
+        }) => (plant_profile, optimization_scenario),
+    };
+
+    let PlantProfile {
         plant_name,
         population_equivalent,
         wastewater,
@@ -187,12 +201,12 @@ pub fn load_fields(signals: &HashMap<FieldId, FieldSignal>, input: InputData, sc
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
-    } = input;
+    } = plant_profile;
 
-    let Scenario {
+    let OptimizationScenario {
         n2o_emission_factor,
         ch4_chp_emission_factor: _,
-    } = scenario;
+    } = optimization_scenario;
 
     let AnnualAverage {
         nitrogen: nitrogen_influent,

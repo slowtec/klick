@@ -1,6 +1,6 @@
 use klick_boundary::{
-    import_from_str, EnergyConsumption, ImportError, InputData, N2oEmissionFactorCalcMethod,
-    SewageSludgeTreatment, CURRENT_VERSION,
+    import_from_str, EnergyConsumption, ImportError, N2oEmissionFactorCalcMethod, PlantProfile,
+    Project, SewageSludgeTreatment, UnsavedProject, CURRENT_VERSION,
 };
 
 #[test]
@@ -19,9 +19,15 @@ fn check_version() {
 #[test]
 fn import_v1() {
     let json = include_str!("example_data_v1.json");
-    let (input, szenario) = import_from_str(json).unwrap();
+    let Project::Unsaved(UnsavedProject {
+        plant_profile,
+        optimization_scenario,
+    }) = import_from_str(json).unwrap()
+    else {
+        panic!("expected unsaved project");
+    };
 
-    let InputData {
+    let PlantProfile {
         plant_name,
         population_equivalent,
         wastewater,
@@ -30,7 +36,7 @@ fn import_v1() {
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
-    } = input;
+    } = plant_profile;
 
     let EnergyConsumption {
         sewage_gas_produced,
@@ -79,20 +85,30 @@ fn import_v1() {
     assert_eq!(operating_materials.caoh2, Some(326.26));
     assert_eq!(operating_materials.synthetic_polymers, Some(23.62));
 
-    assert_eq!(szenario.n2o_emission_factor.custom_factor, Some(1.5));
     assert_eq!(
-        szenario.n2o_emission_factor.calculation_method,
+        optimization_scenario.n2o_emission_factor.custom_factor,
+        Some(1.5)
+    );
+    assert_eq!(
+        optimization_scenario.n2o_emission_factor.calculation_method,
         N2oEmissionFactorCalcMethod::CustomFactor
     );
-    assert_eq!(szenario.ch4_chp_emission_factor, None);
+    assert_eq!(optimization_scenario.ch4_chp_emission_factor, None);
 }
 
 #[test]
 fn import_v2() {
     let json = include_str!("example_data_v2.json");
-    let (input, szenario) = import_from_str(json).unwrap();
 
-    let InputData {
+    let Project::Unsaved(UnsavedProject {
+        plant_profile,
+        optimization_scenario,
+    }) = import_from_str(json).unwrap()
+    else {
+        panic!("expected unsaved project");
+    };
+
+    let PlantProfile {
         plant_name,
         population_equivalent,
         wastewater,
@@ -101,7 +117,7 @@ fn import_v2() {
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
-    } = input;
+    } = plant_profile;
 
     let EnergyConsumption {
         sewage_gas_produced,
@@ -150,24 +166,33 @@ fn import_v2() {
     assert_eq!(operating_materials.caoh2, Some(326.26));
     assert_eq!(operating_materials.synthetic_polymers, Some(23.62));
 
-    assert_eq!(szenario.n2o_emission_factor.custom_factor, Some(1.5));
     assert_eq!(
-        szenario.n2o_emission_factor.calculation_method,
+        optimization_scenario.n2o_emission_factor.custom_factor,
+        Some(1.5)
+    );
+    assert_eq!(
+        optimization_scenario.n2o_emission_factor.calculation_method,
         N2oEmissionFactorCalcMethod::CustomFactor
     );
 
-    assert_eq!(szenario.ch4_chp_emission_factor, None);
+    assert_eq!(optimization_scenario.ch4_chp_emission_factor, None);
 }
 
 #[test]
 fn import_v3() {
     let json = include_str!("example_data_v3.json");
-    let (_input, szenario) = import_from_str(json).unwrap();
+
+    let Project::Unsaved(project) = import_from_str(json).unwrap() else {
+        panic!("expected unsaved project");
+    };
 
     assert_eq!(
-        szenario.n2o_emission_factor.calculation_method,
+        project
+            .optimization_scenario
+            .n2o_emission_factor
+            .calculation_method,
         N2oEmissionFactorCalcMethod::TuWien2016
     );
 
-    assert_eq!(szenario.ch4_chp_emission_factor, None);
+    assert_eq!(project.optimization_scenario.ch4_chp_emission_factor, None);
 }

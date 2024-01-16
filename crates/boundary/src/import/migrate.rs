@@ -1,4 +1,4 @@
-use crate::{v1, v2, v3, v4};
+use crate::{v1, v2, v3, v4, v5};
 
 const V1_OPERATING_MATERIALS_DIVISOR: f64 = 1_000.0;
 
@@ -177,4 +177,18 @@ pub fn from_v3(data: v3::Import) -> v4::Import {
         },
         scenario,
     }
+}
+
+pub fn from_v4(data: v4::Import) -> v5::Data {
+    let v4::Import { input, scenario } = data;
+
+    let plant_profile = input;
+    let optimization_scenario = scenario;
+
+    let project = v5::Project::Unsaved(v5::UnsavedProject {
+        plant_profile,
+        optimization_scenario,
+    });
+
+    v5::Data { project }
 }

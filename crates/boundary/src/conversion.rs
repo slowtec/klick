@@ -4,15 +4,16 @@ use klick_domain as domain;
 
 use crate::{
     AnnualAverage, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
-    InputData, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
-    Scenario, SewageSludgeTreatment,
+    N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
+    OptimizationScenario, PlantProfile, Project, ProjectId, SavedProject, SewageSludgeTreatment,
+    UnsavedProject,
 };
 
-impl TryFrom<Scenario> for domain::OptimizationScenario {
+impl TryFrom<OptimizationScenario> for domain::OptimizationScenario {
     type Error = anyhow::Error;
 
-    fn try_from(from: Scenario) -> Result<Self, Self::Error> {
-        let Scenario {
+    fn try_from(from: OptimizationScenario) -> Result<Self, Self::Error> {
+        let OptimizationScenario {
             n2o_emission_factor,
             ch4_chp_emission_factor,
         } = from;
@@ -20,10 +21,27 @@ impl TryFrom<Scenario> for domain::OptimizationScenario {
         let n2o_emission_factor = n2o_emission_factor.try_into()?;
         let ch4_chp_emission_factor = ch4_chp_emission_factor.map(TryInto::try_into).transpose()?;
 
-        Ok(domain::OptimizationScenario {
+        Ok(Self {
             n2o_emission_factor,
             ch4_chp_emission_factor,
         })
+    }
+}
+
+impl From<domain::OptimizationScenario> for OptimizationScenario {
+    fn from(from: domain::OptimizationScenario) -> Self {
+        let domain::OptimizationScenario {
+            n2o_emission_factor,
+            ch4_chp_emission_factor,
+        } = from;
+
+        let n2o_emission_factor = n2o_emission_factor.into();
+        let ch4_chp_emission_factor = ch4_chp_emission_factor.map(Into::into);
+
+        Self {
+            n2o_emission_factor,
+            ch4_chp_emission_factor,
+        }
     }
 }
 
@@ -50,6 +68,29 @@ impl TryFrom<N2oEmissionFactorScenario> for domain::N2oEmissionFactorCalcMethod 
     }
 }
 
+impl From<domain::N2oEmissionFactorCalcMethod> for N2oEmissionFactorScenario {
+    fn from(from: domain::N2oEmissionFactorCalcMethod) -> Self {
+        use domain::N2oEmissionFactorCalcMethod as D;
+        use N2oEmissionFactorCalcMethod as M;
+
+        let calculation_method = match from {
+            D::TuWien2016 => M::TuWien2016,
+            D::Optimistic => M::Optimistic,
+            D::Pesimistic => M::Pesimistic,
+            D::Ipcc2019 => M::Ipcc2019,
+            D::Custom(_) => M::CustomFactor,
+        };
+        let custom_factor = match from {
+            D::Custom(f) => Some(f.into()),
+            _ => None,
+        };
+        Self {
+            calculation_method,
+            custom_factor,
+        }
+    }
+}
+
 impl TryFrom<CH4ChpEmissionFactorScenario> for domain::CH4ChpEmissionFactorCalcMethod {
     type Error = anyhow::Error;
 
@@ -72,11 +113,33 @@ impl TryFrom<CH4ChpEmissionFactorScenario> for domain::CH4ChpEmissionFactorCalcM
     }
 }
 
-impl TryFrom<InputData> for domain::PlantProfile {
+impl From<domain::CH4ChpEmissionFactorCalcMethod> for CH4ChpEmissionFactorScenario {
+    fn from(from: domain::CH4ChpEmissionFactorCalcMethod) -> Self {
+        use domain::CH4ChpEmissionFactorCalcMethod as D;
+        use CH4ChpEmissionFactorCalcMethod as M;
+
+        let calculation_method = match from {
+            D::MicroGasTurbines => M::MicroGasTurbines,
+            D::GasolineEngine => M::GasolineEngine,
+            D::JetEngine => M::JetEngine,
+            D::Custom(_) => M::CustomFactor,
+        };
+        let custom_factor = match from {
+            D::Custom(f) => Some(f.into()),
+            _ => None,
+        };
+        Self {
+            calculation_method,
+            custom_factor,
+        }
+    }
+}
+
+impl TryFrom<PlantProfile> for domain::PlantProfile {
     type Error = anyhow::Error;
 
-    fn try_from(from: InputData) -> Result<Self, Self::Error> {
-        let InputData {
+    fn try_from(from: PlantProfile) -> Result<Self, Self::Error> {
+        let PlantProfile {
             plant_name,
             population_equivalent,
             wastewater,
@@ -113,6 +176,41 @@ impl TryFrom<InputData> for domain::PlantProfile {
             sewage_sludge_treatment,
             operating_materials,
         })
+    }
+}
+
+impl From<domain::PlantProfile> for PlantProfile {
+    fn from(from: domain::PlantProfile) -> Self {
+        let domain::PlantProfile {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        } = from;
+
+        let influent_average = influent_average.into();
+        let effluent_average = effluent_average.into();
+        let energy_consumption = energy_consumption.into();
+        let sewage_sludge_treatment = sewage_sludge_treatment.into();
+        let operating_materials = operating_materials.into();
+
+        let population_equivalent = Some(population_equivalent);
+        let wastewater = Some(wastewater.into());
+
+        Self {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        }
     }
 }
 
@@ -166,6 +264,39 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
     }
 }
 
+impl From<domain::EnergyConsumption> for EnergyConsumption {
+    fn from(from: domain::EnergyConsumption) -> Self {
+        let domain::EnergyConsumption {
+            sewage_gas_produced,
+            methane_fraction,
+            gas_supply,
+            purchase_of_biogas,
+            total_power_consumption,
+            on_site_power_generation,
+            emission_factor_electricity_mix,
+        } = from;
+
+        let sewage_gas_produced = Some(sewage_gas_produced.into());
+        let methane_fraction = Some(methane_fraction.into());
+
+        let total_power_consumption = Some(total_power_consumption.into());
+        let on_site_power_generation = Some(on_site_power_generation.into());
+        let emission_factor_electricity_mix = Some(emission_factor_electricity_mix.into());
+
+        let gas_supply = gas_supply.map(Into::into);
+
+        Self {
+            sewage_gas_produced,
+            methane_fraction,
+            gas_supply,
+            purchase_of_biogas,
+            total_power_consumption,
+            on_site_power_generation,
+            emission_factor_electricity_mix,
+        }
+    }
+}
+
 impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
     type Error = anyhow::Error;
 
@@ -197,6 +328,29 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
             sewage_sludge_for_disposal,
             transport_distance,
         })
+    }
+}
+
+impl From<domain::SewageSludgeTreatment> for SewageSludgeTreatment {
+    fn from(from: domain::SewageSludgeTreatment) -> Self {
+        let domain::SewageSludgeTreatment {
+            open_sludge_bags,
+            open_sludge_storage_containers,
+            sewage_sludge_for_disposal,
+            transport_distance,
+        } = from;
+
+        let open_sludge_bags = Some(open_sludge_bags.into());
+        let open_sludge_storage_containers = Some(open_sludge_storage_containers.into());
+        let sewage_sludge_for_disposal = Some(sewage_sludge_for_disposal.into());
+        let transport_distance = Some(transport_distance.into());
+
+        Self {
+            open_sludge_bags,
+            open_sludge_storage_containers,
+            sewage_sludge_for_disposal,
+            transport_distance,
+        }
     }
 }
 
@@ -237,6 +391,29 @@ impl TryFrom<OperatingMaterials> for domain::OperatingMaterials {
     }
 }
 
+impl From<domain::OperatingMaterials> for OperatingMaterials {
+    fn from(from: domain::OperatingMaterials) -> Self {
+        let domain::OperatingMaterials {
+            fecl3,
+            feclso4,
+            caoh2,
+            synthetic_polymers,
+        } = from;
+
+        let fecl3 = Some(fecl3.into());
+        let feclso4 = Some(feclso4.into());
+        let caoh2 = Some(caoh2.into());
+        let synthetic_polymers = Some(synthetic_polymers.into());
+
+        Self {
+            fecl3,
+            feclso4,
+            caoh2,
+            synthetic_polymers,
+        }
+    }
+}
+
 impl TryFrom<AnnualAverage> for domain::AnnualAverageInfluent {
     type Error = anyhow::Error;
 
@@ -260,6 +437,27 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageInfluent {
             chemical_oxygen_demand,
             phosphorus,
         })
+    }
+}
+
+impl From<domain::AnnualAverageInfluent> for AnnualAverage {
+    fn from(from: domain::AnnualAverageInfluent) -> Self {
+        let domain::AnnualAverageInfluent {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        } = from;
+
+        let nitrogen = Some(nitrogen.into());
+
+        let phosphorus = phosphorus.map(Into::into);
+        let chemical_oxygen_demand = chemical_oxygen_demand.map(Into::into);
+
+        Self {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        }
     }
 }
 
@@ -289,5 +487,115 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageEffluent {
             chemical_oxygen_demand,
             phosphorus,
         })
+    }
+}
+
+impl From<domain::AnnualAverageEffluent> for AnnualAverage {
+    fn from(from: domain::AnnualAverageEffluent) -> Self {
+        let domain::AnnualAverageEffluent {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        } = from;
+
+        let nitrogen = Some(nitrogen.into());
+        let chemical_oxygen_demand = Some(chemical_oxygen_demand.into());
+
+        let phosphorus = phosphorus.map(Into::into);
+
+        Self {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        }
+    }
+}
+
+impl From<ProjectId> for domain::ProjectId {
+    fn from(from: ProjectId) -> Self {
+        Self::from_uuid(from.0)
+    }
+}
+
+impl From<domain::ProjectId> for ProjectId {
+    fn from(from: domain::ProjectId) -> Self {
+        Self(from.to_uuid())
+    }
+}
+
+impl TryFrom<Project> for domain::Project {
+    type Error = anyhow::Error;
+
+    fn try_from(from: Project) -> Result<Self, Self::Error> {
+        match from {
+            Project::Saved(p) => p.try_into(),
+            Project::Unsaved(_) => bail!("conversion from unsaved project not possible"),
+        }
+    }
+}
+
+impl From<domain::Project> for Project {
+    fn from(from: domain::Project) -> Self {
+        Self::Saved(from.into())
+    }
+}
+
+impl TryFrom<SavedProject> for domain::Project {
+    type Error = anyhow::Error;
+
+    fn try_from(from: SavedProject) -> Result<Self, Self::Error> {
+        let SavedProject {
+            id,
+            title,
+            optimization_scenario,
+            plant_profile,
+        } = from;
+        let id = domain::ProjectId::from(id);
+
+        let optimization_scenario = optimization_scenario.try_into()?;
+        let plant_profile = plant_profile.try_into()?;
+        Ok(Self {
+            id,
+            title,
+            optimization_scenario,
+            plant_profile,
+        })
+    }
+}
+
+impl From<domain::Project> for SavedProject {
+    fn from(from: domain::Project) -> Self {
+        let domain::Project {
+            id,
+            title,
+            optimization_scenario,
+            plant_profile,
+        } = from;
+
+        let id = id.into();
+        let optimization_scenario = optimization_scenario.into();
+        let plant_profile = plant_profile.into();
+
+        Self {
+            id,
+            title,
+            optimization_scenario,
+            plant_profile,
+        }
+    }
+}
+
+impl UnsavedProject {
+    pub fn into_saved(self, id: ProjectId, title: String) -> SavedProject {
+        let UnsavedProject {
+            plant_profile,
+            optimization_scenario,
+        } = self;
+        SavedProject {
+            id,
+            title,
+            plant_profile,
+            optimization_scenario,
+        }
     }
 }

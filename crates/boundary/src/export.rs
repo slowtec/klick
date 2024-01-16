@@ -1,33 +1,31 @@
 use serde::Serialize;
 
-use crate::{InputData, Scenario, CURRENT_VERSION};
+use crate::{Data, CURRENT_VERSION};
 
 #[derive(Serialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
 struct Export<'a> {
     pub version: u32,
-    pub input: &'a InputData,
-    pub scenario: &'a Scenario,
+    #[serde(flatten)]
+    pub data: &'a Data,
 }
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
-pub fn export_to_string_pretty(input: &InputData, scenario: &Scenario) -> String {
+pub fn export_to_string_pretty(data: &Data) -> String {
     let export = Export {
         version: CURRENT_VERSION,
-        input,
-        scenario,
+        data,
     };
     serde_json::to_string_pretty(&export).expect("Valid input data")
 }
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
-pub fn export_to_vec_pretty(input: &InputData, scenario: &Scenario) -> Vec<u8> {
+pub fn export_to_vec_pretty(data: &Data) -> Vec<u8> {
     let export = Export {
         version: CURRENT_VERSION,
-        input,
-        scenario,
+        data,
     };
     serde_json::to_vec_pretty(&export).expect("Valid input data")
 }

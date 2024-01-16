@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "input": {
     "plant_name" : "Example Plant",
     "population_equivalent" : 120000.0,
@@ -38,7 +38,7 @@
   },
   "scenario": {
     "n2o_emission_factor": {
-      "calculation_method":"extrapolated-parravicini",
+      "calculation_method":"tu-wien2016",
       "custom_factor": 1.5
     },
     "ch4_chp_emission_factor": null
