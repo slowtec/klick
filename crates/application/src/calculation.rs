@@ -90,7 +90,7 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
     let ch4_slippage_sludge_storage = if *open_sludge_storage_containers {
         let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_STORAGE;
         let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
-        f64::from(mass) / 10_000.0
+        f64::from(mass) / 1_000.0
     } else {
         0.0
     }; // [t CH4 / a]
