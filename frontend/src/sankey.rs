@@ -212,7 +212,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         name: format!("CH₄ Gewässer {}", format_large_number(ch4_water)),
         item_style: style_red.clone(),
     };
-    let ch4_bhkw: SankeyItem = SankeyItem {
+    let ch4_chp: SankeyItem = SankeyItem {
         value: ch4_combined_heat_and_power_plant.into(),
         name: format!(
             "CH₄ BHKW {}",
@@ -234,7 +234,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         (ch4_schlupf_schlammstapel.clone(), methan_em.clone()),
         (ch4_schlupf_schlammtasche.clone(), methan_em.clone()),
         (ch4_gewaesser.clone(), methan_em.clone()),
-        (ch4_bhkw.clone(), methan_em.clone()),
+        (ch4_chp.clone(), methan_em.clone()),
         (methan_em.clone(), dir_em.clone()),
         (strommix.clone(), indir_em.clone()),
         (betriebsstoffe.clone(), wei_indir_em.clone()),

@@ -7,9 +7,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'ls'
                 sh 'nix-shell --command "just build"'
-                archiveArtifacts artifacts: 'frontend/dist/*', fingerprint: true 
             }
         }
         stage('Test') {
@@ -27,22 +25,20 @@ pipeline {
         }
     }
     post {
-         changed {
+        always {
             script {
-                if (currentBuild.currentResult == 'FAILURE') { 
+                if (currentBuild.currentResult == 'FAILURE') {
                     emailext subject: '$DEFAULT_SUBJECT',
-                        body: '$DEFAULT_CONTENT',
+                        body: "<b>FAILURE</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}",
                         recipientProviders: [
                             [$class: 'CulpritsRecipientProvider'],
                             [$class: 'DevelopersRecipientProvider'],
-                            [$class: 'RequesterRecipientProvider'] 
-                        ], 
+                            [$class: 'RequesterRecipientProvider']
+                        ],
                         replyTo: '$DEFAULT_REPLYTO',
                         to: '$DEFAULT_RECIPIENTS'
                 }
             }
-        }
-        always {
             cleanWs(cleanWhenNotBuilt: false,
                     deleteDirs: true,
                     disableDeferredWipeout: true,

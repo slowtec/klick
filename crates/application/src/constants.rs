@@ -1,5 +1,5 @@
 use klick_domain::{
-    GramsPerKilowatthour, KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent,
+    KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent,
 };
 
 /// `[g ch4 / (population values * year)]`
@@ -8,8 +8,8 @@ pub const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0;
 /// 0,9 `[%]` of chemical oxygen demand effluent
 pub const EMISSION_FACTOR_CH4_WATER: Percent = Percent::new(0.9);
 
-/// `[g ch4 / kwh]`
-pub const EMISSION_FACTOR_CH4_CHP: GramsPerKilowatthour = GramsPerKilowatthour::new(1.124);
+/// 1,0 `[%]` ch4 factor
+pub const EMISSION_FACTOR_CH4_CHP: Percent = Percent::new(1.0);
 
 /// 0,5 `[%]` nitrogen effulent
 pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);

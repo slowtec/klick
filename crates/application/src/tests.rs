@@ -95,11 +95,11 @@ fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
     assert_approx_eq(n2o_water, 126.125_999_999_999_99);
     assert_approx_eq(n2o_emissions, 454.096_500_000_001);
     assert_approx_eq(ch4_sewage_treatment, 772.8);
-    assert_approx_eq(ch4_sludge_storage_containers, 26.680_323_6);
+    assert_approx_eq(ch4_sludge_storage_containers, 266.803_235_999_999_97);
     assert_approx_eq(ch4_sludge_bags, 47.082_924);
     assert_approx_eq(ch4_water, 162.54);
-    assert_approx_eq(ch4_combined_heat_and_power_plant, 70.840_230_384);
-    assert_approx_eq(ch4_emissions, 1_079.943_477_984);
+    assert_approx_eq(ch4_combined_heat_and_power_plant, 156.943_08);
+    assert_approx_eq(ch4_emissions, 1_406.169_24);
     assert_approx_eq(fecl3, 0.0);
     assert_approx_eq(feclso4, 24.776);
     assert_approx_eq(caoh2, 344.302_177_999_999_97);
@@ -107,10 +107,10 @@ fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
     assert_approx_eq(electricity_mix, 202.345_416);
     assert_approx_eq(operating_materials, 421.042_178);
     assert_approx_eq(sewage_sludge_transport, 15.156_589_14);
-    assert_approx_eq(direct_emissions, 1_534.039_977_984_002);
+    assert_approx_eq(direct_emissions, 1_860.265_740_000_001_9);
     assert_approx_eq(indirect_emissions, 202.345_416);
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
-    assert_approx_eq(emissions, 2_172.584_161_124_002);
+    assert_approx_eq(emissions, 2_498.809_923_140_002);
     assert_approx_eq(n2o_emission_factor, 0.001_253_278_688_524_597_2);
     assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
@@ -192,11 +192,11 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_approx_eq(n2o_water, 126.125_999_999_999_99);
     assert_approx_eq(n2o_emissions, 911.196);
     assert_approx_eq(ch4_sewage_treatment, 772.8);
-    assert_approx_eq(ch4_sludge_storage_containers, 26.680_323_6);
+    assert_approx_eq(ch4_sludge_storage_containers, 266.803_235_999_999_97);
     assert_approx_eq(ch4_sludge_bags, 47.082_924);
     assert_approx_eq(ch4_water, 162.54);
-    assert_approx_eq(ch4_combined_heat_and_power_plant, 70.840_230_384);
-    assert_approx_eq(ch4_emissions, 1_079.943_477_984);
+    assert_approx_eq(ch4_combined_heat_and_power_plant, 156.943_08);
+    assert_approx_eq(ch4_emissions, 1_406.169_24);
     assert_approx_eq(fecl3, 0.0);
     assert_approx_eq(feclso4, 24.776);
     assert_approx_eq(caoh2, 344.302_177_999_999_97);
@@ -204,10 +204,10 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_approx_eq(electricity_mix, 202.345_416);
     assert_approx_eq(operating_materials, 421.042_178);
     assert_approx_eq(sewage_sludge_transport, 15.156_589_14);
-    assert_approx_eq(direct_emissions, 1_991.139_477_984_000_2);
+    assert_approx_eq(direct_emissions, 2_317.365_239_999_999_6);
     assert_approx_eq(indirect_emissions, 202.345_416);
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
-    assert_approx_eq(emissions, 2_629.683_661_124_000_5);
+    assert_approx_eq(emissions, 2_955.909_423_139_999_5);
     assert_approx_eq(n2o_emission_factor, 0.003);
     assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
@@ -289,11 +289,11 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_approx_eq(n2o_water, 126.125_999_999_999_99);
     assert_approx_eq(n2o_emissions, 2_219.646);
     assert_approx_eq(ch4_sewage_treatment, 772.8);
-    assert_approx_eq(ch4_sludge_storage_containers, 26.680_323_6);
+    assert_approx_eq(ch4_sludge_storage_containers, 266.803_235_999_999_97);
     assert_approx_eq(ch4_sludge_bags, 47.082_924);
     assert_approx_eq(ch4_water, 162.54);
-    assert_approx_eq(ch4_combined_heat_and_power_plant, 70.840_230_384);
-    assert_approx_eq(ch4_emissions, 1_079.943_477_984);
+    assert_approx_eq(ch4_combined_heat_and_power_plant, 156.943_08);
+    assert_approx_eq(ch4_emissions, 1_406.169_24);
     assert_approx_eq(fecl3, 0.0);
     assert_approx_eq(feclso4, 24.776);
     assert_approx_eq(caoh2, 344.302_177_999_999_97);
@@ -301,10 +301,10 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_approx_eq(electricity_mix, 202.345_416);
     assert_approx_eq(operating_materials, 421.042_178);
     assert_approx_eq(sewage_sludge_transport, 15.156_589_14);
-    assert_approx_eq(direct_emissions, 3_299.589_477_984);
+    assert_approx_eq(direct_emissions, 3_625.815_240_000_000_4);
     assert_approx_eq(indirect_emissions, 202.345_416);
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
-    assert_approx_eq(emissions, 3_938.133_661_124_000_4);
+    assert_approx_eq(emissions, 4_264.359_423_14);
     assert_approx_eq(n2o_emission_factor, 0.008);
     assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
@@ -386,11 +386,11 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_approx_eq(n2o_water, 126.125_999_999_999_99);
     assert_approx_eq(n2o_emissions, 4_313.166);
     assert_approx_eq(ch4_sewage_treatment, 772.8);
-    assert_approx_eq(ch4_sludge_storage_containers, 26.680_323_6);
+    assert_approx_eq(ch4_sludge_storage_containers, 266.803_235_999_999_97);
     assert_approx_eq(ch4_sludge_bags, 47.082_924);
     assert_approx_eq(ch4_water, 162.54);
-    assert_approx_eq(ch4_combined_heat_and_power_plant, 70.840_230_384);
-    assert_approx_eq(ch4_emissions, 1_079.943_477_984);
+    assert_approx_eq(ch4_combined_heat_and_power_plant, 156.943_08);
+    assert_approx_eq(ch4_emissions, 1_406.169_24);
     assert_approx_eq(fecl3, 0.0);
     assert_approx_eq(feclso4, 24.776);
     assert_approx_eq(caoh2, 344.302_177_999_999_97);
@@ -398,10 +398,10 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_approx_eq(electricity_mix, 202.345_416);
     assert_approx_eq(operating_materials, 421.042_178);
     assert_approx_eq(sewage_sludge_transport, 15.156_589_14);
-    assert_approx_eq(direct_emissions, 5_393.109_477_984_000_5);
+    assert_approx_eq(direct_emissions, 5_719.335_24);
     assert_approx_eq(indirect_emissions, 202.345_416);
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
-    assert_approx_eq(emissions, 6_031.653_661_124_001);
+    assert_approx_eq(emissions, 6_357.879_423_140_001);
     assert_approx_eq(n2o_emission_factor, 0.016);
     assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
@@ -483,11 +483,11 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_approx_eq(n2o_water, 126.125_999_999_999_99);
     assert_approx_eq(n2o_emissions, 2_743.026_000_000_000_7);
     assert_approx_eq(ch4_sewage_treatment, 772.8);
-    assert_approx_eq(ch4_sludge_storage_containers, 26.680_323_6);
+    assert_approx_eq(ch4_sludge_storage_containers, 266.803_235_999_999_97);
     assert_approx_eq(ch4_sludge_bags, 47.082_924);
     assert_approx_eq(ch4_water, 162.54);
-    assert_approx_eq(ch4_combined_heat_and_power_plant, 70.840_230_384);
-    assert_approx_eq(ch4_emissions, 1_079.943_477_984);
+    assert_approx_eq(ch4_combined_heat_and_power_plant, 156.943_08);
+    assert_approx_eq(ch4_emissions, 1_406.169_24);
     assert_approx_eq(fecl3, 0.0);
     assert_approx_eq(feclso4, 24.776);
     assert_approx_eq(caoh2, 344.302_177_999_999_97);
@@ -495,10 +495,10 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_approx_eq(electricity_mix, 202.345_416);
     assert_approx_eq(operating_materials, 421.042_178);
     assert_approx_eq(sewage_sludge_transport, 15.156_589_14);
-    assert_approx_eq(direct_emissions, 3_822.969_477_984_000_6);
+    assert_approx_eq(direct_emissions, 4_149.195_240_000_001);
     assert_approx_eq(indirect_emissions, 202.345_416);
     assert_approx_eq(other_indirect_emissions, 436.198_767_14);
-    assert_approx_eq(emissions, 4_461.513_661_124_000_5);
+    assert_approx_eq(emissions, 4_787.739_423_140_001);
     assert_approx_eq(n2o_emission_factor, 0.01);
     assert_approx_eq(excess_energy_co2_equivalent, 0.0);
 }
