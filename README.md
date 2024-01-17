@@ -15,15 +15,10 @@ This tool is used at https://klimabilanzklaeranlage.de/
 
 ### Install Rust
 
-Install Rust by following the instructions on the
-[Getting started](https://www.rust-lang.org/learn/get-started) page.
-
-### Install just
-
-We use [just](https://github.com/casey/just) as a command runner to automate common tasks:
+On NixOS run:
 
 ```sh
-cargo install just
+nix develop
 ```
 
 For a list of available tasks (named _recipes_) run the following command:

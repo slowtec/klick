@@ -7,7 +7,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'nix-shell --command "just build"'
+                sh 'nix-shell --command "just build-release"'
             }
         }
         stage('Test') {
@@ -29,7 +29,7 @@ pipeline {
             script {
                 if (currentBuild.currentResult == 'FAILURE') {
                     emailext subject: '$DEFAULT_SUBJECT',
-                        body: "<b>FAILURE</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}",
+                        body: "FAILURE: Project: ${env.JOB_NAME} - Build Number: ${env.BUILD_NUMBER} - URL de build: ${env.BUILD_URL}",
                         recipientProviders: [
                             [$class: 'CulpritsRecipientProvider'],
                             [$class: 'DevelopersRecipientProvider'],

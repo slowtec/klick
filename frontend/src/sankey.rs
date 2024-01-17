@@ -76,7 +76,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
-        excess_energy_co2_equivalent,
+        excess_energy_co2_equivalent: _,
     } = co2_equivalents;
 
     let style_red = ItemStyle::new().color("red").border_color("black");

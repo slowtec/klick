@@ -53,12 +53,12 @@ pub fn options(
       <Card title ="Strombilanz">
         <p>
           <Show when= move || (excess_energy_co2_equivalent.get() > 0.0)>
-          "Das Klärwerk selbst produziert mehr Strom, als es benötigt: Dies entspricht: "
-          { Lng::De.format_number_with_thousands_seperator(excess_energy_co2_equivalent.get()) } " t CO₂ Äquivalente/Jahr, was von den Gesammtemissionen von "
+          "Das Klärwerk selbst produziert mehr Strom, als es verbraucht: Dies entspricht einer Einsparung von: "
+          { Lng::De.format_number_with_thousands_seperator(excess_energy_co2_equivalent.get()) } " t CO₂ Äquivalente/Jahr, was theoretisch von den Gesammtemissionen von "
           { Lng::De.format_number_with_thousands_seperator(emissions.get()) } " t CO₂ Äquivalente/Jahr noch abgezogen werden kann."
           </Show>
           <Show when= move || (excess_energy_co2_equivalent.get() <= 0.0)>
-          "Das Klärwerk selbst benötigt externen Strom in höhe von "
+          "Das Klärwerk selbst benötigt externen Strom in Höhe von "
           { Lng::De.format_number_with_thousands_seperator(indirect_emissions.get()) } " t CO₂ Äquivalente/Jahr."
           </Show>
         </p>
