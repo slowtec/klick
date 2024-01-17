@@ -15,8 +15,8 @@ klick-svg-charts = "=0.0.0"
 
 # External dependencies
 anyhow = "1.0.79"
-axum = "0.7.3"
-axum-extra = { version = "0.9.1", features = ["typed-header"] }
+axum = "0.7.4"
+axum-extra = { version = "0.9.2", features = ["typed-header"] }
 headers = "0.4.0"
 lettre = { version = "0.11.3", default-features = false, features = ["rustls-tls", "builder", "smtp-transport", "pool"] }
 log = "0.4.20"
@@ -27,7 +27,7 @@ serde = { version = "1.0.195", features = ["derive"] }
 thiserror = "1.0.56"
 tokio = { version = "1.35.1", features = ["net"] }
 toml = "0.8.8"
-tower-http = { version = "0.5.0", features = ["cors"] }
+tower-http = { version = "0.5.1", features = ["cors"] }
 url = { version = "2.5.0", features = ["serde"] }
 uuid = { version = "1.6.1", features = ["v4"] }
 
