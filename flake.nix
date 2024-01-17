@@ -16,15 +16,19 @@
           pkgs = import nixpkgs {
             inherit system overlays;
           };
+          rust = pkgs.rust-bin.stable.latest.default.override {
+            extensions = [ "rustfmt" "clippy" ];
+            targets = [ "wasm32-unknown-unknown" ];
+          };
         in
         with pkgs;
         rec {
           packages.mytrunk = pkgs.callPackage ./trunk/default.nix {};
           devShells.default = mkShell {
-            buildInputs = [ 
-              cargo 
-              rustc 
-              packages.mytrunk 
+            buildInputs = [
+              cargo
+              rust
+              packages.mytrunk
               git
               tig
               pkg-config
