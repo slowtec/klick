@@ -1,3 +1,5 @@
+use std::fmt;
+
 use gloo_net::http::{Request, RequestBuilder, Response};
 use serde::de::DeserializeOwned;
 use thiserror::Error;
@@ -17,6 +19,15 @@ pub struct AuthorizedApi {
     token: ApiToken,
 }
 
+impl fmt::Debug for AuthorizedApi {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("AuthorizedApi")
+            .field("url", &self.url)
+            .field("token", &"***")
+            .finish()
+    }
+}
+
 impl UnauthorizedApi {
     pub const fn new(url: &'static str) -> Self {
         Self { url }
@@ -29,6 +40,7 @@ impl UnauthorizedApi {
     }
 
     pub async fn login(&self, credentials: &Credentials) -> Result<AuthorizedApi> {
+        log::debug!("Try to login ({})", credentials.email);
         let url = format!("{}/login", self.url);
         let response = Request::post(&url).json(credentials)?.send().await?;
         let token = into_json(response).await?;
@@ -120,6 +132,7 @@ where
     if response.ok() {
         Ok(response.json().await?)
     } else {
+        log::warn!("Response status: {}", response.status());
         Err(response.json::<json_api::Error>().await?.into())
     }
 }

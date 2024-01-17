@@ -1,6 +1,14 @@
-use std::{fmt, net::SocketAddr, path::Path};
+use std::{
+    fmt,
+    net::{IpAddr, Ipv4Addr, SocketAddr},
+    path::Path,
+};
 
 use url::Url;
+
+const DEFAULT_PORT: u16 = 3000;
+const DEFAULT_IP_ADDRESS: IpAddr = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1));
+const DEFAULT_DB_URL: &str = "db.sqlite";
 
 #[derive(Debug, Clone)]
 pub struct Config {
@@ -8,6 +16,21 @@ pub struct Config {
     pub base_url: Url,
     pub db_connection: String,
     pub smtp: Option<SmtpConfig>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        let address = (DEFAULT_IP_ADDRESS, DEFAULT_PORT).into();
+        let base_url = format!("http://{address}").parse().expect("valid base URL");
+        let db_connection = DEFAULT_DB_URL.to_string();
+        let smtp = None;
+        Self {
+            address,
+            base_url,
+            db_connection,
+            smtp,
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -47,18 +70,12 @@ impl Config {
 }
 
 mod raw {
-    use std::{
-        fs,
-        net::{IpAddr, Ipv4Addr},
-        path::Path,
-    };
+    use std::{fs, path::Path};
 
+    use super::{DEFAULT_DB_URL, DEFAULT_IP_ADDRESS, DEFAULT_PORT};
     use anyhow::bail;
     use serde::Deserialize;
     use url::Url;
-
-    const DEFAULT_PORT: u16 = 3000;
-    const DEFAULT_IP_ADDRESS: IpAddr = IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1));
 
     #[derive(Deserialize)]
     #[serde(rename_all = "kebab-case")]
@@ -104,7 +121,7 @@ mod raw {
             };
             let port = port.unwrap_or(DEFAULT_PORT);
             let address = (ip_address, port).into();
-            let db_connection = db_connection.unwrap_or_else(|| "db.sqlite".to_string());
+            let db_connection = db_connection.unwrap_or_else(|| DEFAULT_DB_URL.to_string());
             let smtp = smtp.map(super::SmtpConfig::try_from).transpose()?;
             Ok(Self {
                 address,

@@ -15,7 +15,7 @@ use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
-use klick_application::usecases;
+use klick_application::{usecases, AccountRepo as _};
 use klick_boundary::json_api;
 use klick_db_sqlite::Connection;
 use klick_domain::{Account, EmailAddress, EmailNonce, Password};
@@ -34,20 +34,31 @@ static INDEX_HTML: &str = "index.html";
 #[folder = "../../frontend/dist/"]
 struct Assets;
 
-pub async fn run(config: Config) -> anyhow::Result<()> {
+pub async fn run(config: &Config) -> anyhow::Result<()> {
     log::info!("Start KlicK server");
+    let db = create_db_connection(config)?;
+    let router = create_router(db, config)?;
+    log::info!("Start listening on http://{}", config.address);
+    let listener = TcpListener::bind(config.address).await?;
+    axum::serve(listener, router.into_make_service()).await?;
+    Ok(())
+}
 
+pub fn create_db_connection(config: &Config) -> anyhow::Result<Connection> {
     let db = Connection::establish(&config.db_connection)?;
     db.run_embedded_database_migrations()?;
+    Ok(db)
+}
 
+pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> {
     let notification_gw = notification_gateway::Gateway::new(&config);
-
     let shared_state = AppState::new(db, notification_gw);
 
     let cors_layer = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any);
 
+    // TODO: rename users -> account
     let api = Router::new()
         .route("/login", post(login))
         .route("/logout", post(logout))
@@ -62,12 +73,8 @@ pub async fn run(config: Config) -> anyhow::Result<()> {
         .route_layer(cors_layer)
         .with_state(shared_state);
 
-    let app = Router::new().nest("/api", api).fallback(static_handler);
-
-    log::info!("Start listening on http://{}", config.address);
-    let listener = TcpListener::bind(config.address).await?;
-    axum::serve(listener, app.into_make_service()).await?;
-    Ok(())
+    let router = Router::new().nest("/api", api).fallback(static_handler);
+    Ok(router)
 }
 
 async fn static_handler(uri: Uri) -> impl IntoResponse {
@@ -171,17 +178,8 @@ async fn account_info(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::UserInfo> {
-    let token = auth
-        .token()
-        .parse::<Uuid>()
-        .map_err(|_| AuthError::NotAuthorized)?;
-    let email = state
-        .tokens
-        .read()
-        .get(&token)
-        .map(|account| account.email.clone())
-        .ok_or(AuthError::NotAuthorized)?;
-    let email = email.into_string();
+    let account = account_from_token(&state, auth)?;
+    let email = account.email.into_string();
     let user_info = json_api::UserInfo { email };
     Ok(Json(user_info))
 }
@@ -227,4 +225,33 @@ async fn reset_password(
     let email_nonce = EmailNonce::decode_from_str(&token)?;
     usecases::reset_password(state.db, email_nonce, password)?;
     Ok(Json(()))
+}
+
+fn account_from_token(
+    state: &AppState,
+    auth: Authorization<Bearer>,
+) -> std::result::Result<Account, ApiError> {
+    let token = auth
+        .token()
+        .parse::<Uuid>()
+        .map_err(|_| AuthError::NotAuthorized)?;
+    let account = state
+        .tokens
+        .read()
+        .get(&token)
+        .cloned()
+        .ok_or(AuthError::NotAuthorized)?;
+
+    // check if account still exits
+    let Some(record) = state.db.find_account(&account.email).map_err(|err| {
+        log::warn!("Unable to find account: {err}");
+        ApiError::InternalServerError
+    })?
+    else {
+        return Err(AuthError::NotAuthorized.into());
+    };
+    if !record.account.email_confirmed {
+        return Err(AuthError::EmailNotConfirmed.into());
+    }
+    Ok(account)
 }

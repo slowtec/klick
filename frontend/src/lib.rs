@@ -47,22 +47,22 @@ pub fn App() -> impl IntoView {
     let (current_page, set_current_page) = create_signal(Page::Home);
     let authorized_api = RwSignal::new(None::<api::AuthorizedApi>);
     let user_info = RwSignal::new(None::<UserInfo>);
-    let logged_in = Signal::derive(move || authorized_api.get().is_some());
+    let logged_in = Signal::derive(move || user_info.get().is_some());
 
     // -- actions -- //
 
-    let fetch_user_info = create_action(move |_: &()| async move {
-        match authorized_api.get() {
-            Some(api) => match api.user_info().await {
+    let fetch_user_info = create_action(move |api: &api::AuthorizedApi| {
+        let api = api.clone();
+        async move {
+            match api.user_info().await {
                 Ok(info) => {
                     user_info.update(|i| *i = Some(info));
                 }
                 Err(err) => {
-                    log::error!("Unable to fetch user info: {err}")
+                    log::error!("Unable to fetch user info: {err}");
+                    user_info.set(None);
+                    authorized_api.set(None);
                 }
-            },
-            None => {
-                log::error!("Unable to fetch user info: not logged in")
             }
         }
     });
@@ -95,28 +95,25 @@ pub fn App() -> impl IntoView {
     let unauthorized_api = api::UnauthorizedApi::new(DEFAULT_API_URL);
     if let Ok(token) = LocalStorage::get(API_TOKEN_STORAGE_KEY) {
         let api = api::AuthorizedApi::new(DEFAULT_API_URL, token);
+        fetch_user_info.dispatch(api.clone());
         authorized_api.update(|a| *a = Some(api));
-        fetch_user_info.dispatch(());
     }
 
     log::debug!("User is logged in: {}", logged_in.get_untracked());
 
     // -- effects -- //
 
-    create_effect(move |_| {
-        log::debug!("API authorization state changed");
-        match authorized_api.get() {
-            Some(api) => {
-                log::debug!("API is now authorized: save token in LocalStorage");
-                LocalStorage::set(API_TOKEN_STORAGE_KEY, api.token()).expect("LocalStorage::set");
-            }
-            None => {
-                log::debug!(
-                    "API is no longer authorized: delete token from \
+    create_effect(move |_| match authorized_api.get() {
+        Some(api) => {
+            log::debug!("API is now authorized: save token in LocalStorage");
+            LocalStorage::set(API_TOKEN_STORAGE_KEY, api.token()).expect("LocalStorage::set");
+        }
+        None => {
+            log::debug!(
+                "API is no longer authorized: delete token from \
                      LocalStorage"
-                );
-                LocalStorage::delete(API_TOKEN_STORAGE_KEY);
-            }
+            );
+            LocalStorage::delete(API_TOKEN_STORAGE_KEY);
         }
     });
 
@@ -205,12 +202,12 @@ pub fn App() -> impl IntoView {
                   view! {
                       <Login
                           api=unauthorized_api
-                          on_success=move |api| {
+                          on_success=move |api: api::AuthorizedApi| {
                               log::info!("Successfully logged in");
-                              authorized_api.update(|v| *v = Some(api));
+                              authorized_api.update(|v| *v = Some(api.clone()));
                               let navigate = use_navigate();
                               navigate(Page::Home.path(), Default::default());
-                              fetch_user_info.dispatch(());
+                              fetch_user_info.dispatch(api);
                           }
                       />
                   }

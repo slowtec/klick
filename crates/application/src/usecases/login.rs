@@ -14,6 +14,9 @@ where
     if !record.password.verify(password) {
         return Err(Error::Credentials);
     }
+    if !record.account.email_confirmed {
+        return Err(Error::EmailNotConfirmed);
+    }
     Ok(record.account)
 }
 
@@ -21,6 +24,8 @@ where
 pub enum Error {
     #[error("invalid email or password")]
     Credentials,
+    #[error("your email is not confirmed yet")]
+    EmailNotConfirmed,
     #[error(transparent)]
     Repo(#[from] anyhow::Error),
 }

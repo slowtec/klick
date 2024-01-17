@@ -36,6 +36,8 @@ pub enum ApiError {
     ConfirmEmail(#[from] usecases::ConfirmEmailAddressError),
     #[error(transparent)]
     ResetPassword(#[from] usecases::ResetPasswordError),
+    #[error("internal server error")]
+    InternalServerError,
 }
 
 pub struct Credentials {
@@ -53,6 +55,8 @@ pub enum LogoutError {
 pub enum AuthError {
     #[error("you are not authorized")]
     NotAuthorized,
+    #[error("your email is not confirmed yet")]
+    EmailNotConfirmed,
 }
 
 #[derive(Debug, Error)]
@@ -89,6 +93,9 @@ impl IntoResponse for ApiError {
             Self::CreateAccountPassword(err) => (StatusCode::BAD_REQUEST, err.to_string()),
             Self::Login(err) => match err {
                 usecases::LoginError::Credentials => (StatusCode::BAD_REQUEST, err.to_string()),
+                usecases::LoginError::EmailNotConfirmed => {
+                    (StatusCode::UNAUTHORIZED, err.to_string())
+                }
                 usecases::LoginError::Repo(err) => {
                     (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
                 }
@@ -110,6 +117,7 @@ impl IntoResponse for ApiError {
                     (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
                 }
             },
+            Self::InternalServerError => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
         };
         let err = json_api::Error { message };
         (code, Json(err)).into_response()

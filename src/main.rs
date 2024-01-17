@@ -19,7 +19,12 @@ pub async fn main() -> Result<()> {
     env_logger::init();
     let config_path = "config.toml";
     let config = klick_backend::Config::from_file(config_path)
-        .map_err(|err| anyhow!("Could not read config from {config_path}: {err}"))?;
+        .map_err(|err| {
+            log::info!(
+                "Could not read config from {config_path} ({err}): use default config instead."
+            )
+        })
+        .unwrap_or_default();
     log::debug!("Run with this config: {config:#?}");
-    klick_backend::run(config).await
+    klick_backend::run(&config).await
 }
