@@ -19,7 +19,7 @@ where
 }
 
 #[test]
-fn calculate_with_n2o_emission_factor_method_by_tw_wine_2016() {
+fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     let profile = PlantProfile {
         plant_name: None,
         population_equivalent: 120_000.0,
