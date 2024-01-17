@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.0 (2024-01-17)
+
+- New: 
+  - Added login functionality
+  - Adapted flake.nix schema
+  - #91 #92 new EF and new formula, BHKW cleanup
+  - #90 sludge storage - correction in conversion factor
+  - Added SMTP functionality in backend
+  - Added sqlite database support
+
 ## v0.2.1 (2024-01-14)
 
 - Changed:
