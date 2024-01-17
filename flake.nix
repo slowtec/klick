@@ -18,7 +18,10 @@
           };
           rust = pkgs.rust-bin.stable.latest.default.override {
             extensions = [ "rustfmt" "clippy" ];
-            targets = [ "wasm32-unknown-unknown" ];
+            targets = [
+              "x86_64-unknown-linux-musl" # used for the backend
+              "wasm32-unknown-unknown"    # used for the frontend
+            ];
           };
         in
         with pkgs;
@@ -26,8 +29,8 @@
           packages.mytrunk = pkgs.callPackage ./trunk/default.nix {};
           devShells.default = mkShell {
             buildInputs = [
-              cargo
               rust
+              cargo-zigbuild           # required for static musl builds
               packages.mytrunk
               git
               tig

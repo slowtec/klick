@@ -42,7 +42,7 @@ build: frontend
 
 # Build the server in release mode (musl)
 build-release: frontend-release
-  cargo build --release --target x86_64-unknown-linux-musl
+  cargo zigbuild --release --target x86_64-unknown-linux-musl
 
 # Set up (and update) tooling
 setup:

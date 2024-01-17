@@ -5,8 +5,8 @@ let
   rust = pkgs.rust-bin.stable.latest.default.override {
     extensions = [ "rustfmt" "clippy" ];
     targets = [
-      "x86_64-unknown-linux-musl"
-      "wasm32-unknown-unknown"
+      "x86_64-unknown-linux-musl" # used for the backend
+      "wasm32-unknown-unknown"    # used for the frontend
     ];
   };
   myRustPlatform = pkgs.makeRustPlatform {
@@ -20,13 +20,11 @@ in
     buildInputs = [
       mytrunk
       rust
+      cargo-zigbuild           # required for static musl builds
       git
       pkg-config
       just                     # task runner
       nodePackages.tailwindcss # build CSS files
       nodejs                   # required to install tailwind plugins
     ];
-    SQLITE3_DIR = "${sqlite.dev}";
-    SQLITE3_LIB_DIR = "${sqlite.out}/lib";
-    SQLITE3_INCLUDE_LIB_DIR = "${sqlite.out}/include";
 }
