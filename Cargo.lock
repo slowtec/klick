@@ -980,6 +980,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-serde"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7fb7239a6d49eda628c2dfdd7e982c59b0c3f0fb99ce45c4237f02a520030688"
+dependencies = [
+ "http 1.0.0",
+ "serde",
+]
+
+[[package]]
 name = "httparse"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1188,7 +1198,10 @@ name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "axum",
  "derive_more",
+ "http 1.0.0",
+ "http-serde",
  "klick-boundary",
  "klick-domain",
  "serde",

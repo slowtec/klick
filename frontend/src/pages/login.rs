@@ -16,16 +16,22 @@ pub fn Login(
 ) -> impl IntoView {
     let (login_error, set_login_error) = create_signal(None::<String>);
     let (wait_for_response, set_wait_for_response) = create_signal(false);
+    let show_resent_confirmation_button = RwSignal::new(false);
+
+    let last_typed_credentials = RwSignal::new(None);
 
     let login_action = create_action(move |(email, password): &(String, String)| {
         log::debug!("Try to login with {email}");
         let email = email.to_string();
         let password = password.to_string();
         let credentials = json_api::Credentials { email, password };
+        last_typed_credentials.set(Some(credentials.clone()));
         async move {
             set_wait_for_response.set(true);
             let result = api.login(&credentials).await;
             set_wait_for_response.set(false);
+
+            // TODO: clean up result handling
             match result {
                 Ok(res) => {
                     set_login_error.set(None);
@@ -34,13 +40,42 @@ pub fn Login(
                 Err(err) => {
                     let msg = match err {
                         api::Error::Fetch(js_err) => {
-                            format!("{js_err:?}")
+                            log::error!("{js_err:?}");
+                            show_resent_confirmation_button.set(false);
+                            "Ein Kommunikationsfehler ist aufgetreten".to_string()
                         }
-                        api::Error::Api(err) => err.message,
+                        api::Error::Api(err) => match err.details {
+                            Some(json_api::login::Error::Credentials) => {
+                                show_resent_confirmation_button.set(false);
+                                "Email-Addresse oder Passwort ungültig".to_string()
+                            }
+                            Some(json_api::login::Error::EmailNotConfirmed) => {
+                                show_resent_confirmation_button.set(true);
+                                "Sie haben Ihre Email-Addresse noch nicht bestätigt".to_string()
+                            }
+                            None => {
+                                show_resent_confirmation_button.set(false);
+                                "Tut uns leid, irgend etwas ist schief gelaufen".to_string()
+                            }
+                        },
                     };
                     log::error!("Unable to login with {}: {msg}", credentials.email);
                     set_login_error.update(|e| *e = Some(msg));
                 }
+            }
+        }
+    });
+
+    let resend_confirmation_mail = create_action(move |_: &()| {
+        show_resent_confirmation_button.set(false);
+        set_login_error.set(None);
+
+        async move {
+            let Some(credentials) = last_typed_credentials.get() else {
+                return;
+            };
+            if let Err(err) = api.resend_confirmation_mail(&credentials).await {
+                log::warn!("{err}");
             }
         }
     });
@@ -65,6 +100,15 @@ pub fn Login(
                           error = login_error.into()
                           disabled
                       />
+                      <Show when = move || show_resent_confirmation_button.get() >
+                        <div class="text-center pt-1 mb-6 pb-1">
+                          <button
+                            on:click = move |_| resend_confirmation_mail.dispatch(())
+                            class="bg-red-200 text-xs px-6 py-2.5 rounded cursor-pointer">
+                            "Email zur Bestätigung erneut senden"
+                          </button>
+                        </div>
+                      </Show>
                       <div class="text-center pt-1 mb-6 pb-1">
                         <A
                           href=Page::ResetPasswordRequest.path()

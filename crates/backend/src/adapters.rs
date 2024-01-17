@@ -1,6 +1,6 @@
 use axum::{
     http::StatusCode,
-    response::{IntoResponse, Json, Response},
+    response::{IntoResponse, Response},
 };
 use thiserror::Error;
 
@@ -78,48 +78,64 @@ impl TryFrom<json_api::Credentials> for Credentials {
     }
 }
 
+// TODO: tidy up and uwe json_api::Error directly
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        let (code, message) = match self {
+        use json_api::Error as E;
+        match self {
             Self::CreateAccount(err) => match err {
                 usecases::CreateAccountError::AlreadyExists => {
-                    (StatusCode::BAD_REQUEST, err.to_string())
+                    let message = Some(err.to_string());
+                    let status = StatusCode::BAD_REQUEST;
+                    let details = Some(json_api::register::Error::AlreadyExists);
+                    json_api::Error {
+                        message,
+                        status,
+                        details,
+                    }
+                    .into_response()
                 }
-                usecases::CreateAccountError::Repo(err) => {
-                    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
-                }
+                usecases::CreateAccountError::Repo(_) => internal(),
             },
-            Self::CreateAccountEmail(err) => (StatusCode::BAD_REQUEST, err.to_string()),
-            Self::CreateAccountPassword(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::CreateAccountEmail(err) => bad_request(err),
+            Self::CreateAccountPassword(err) => bad_request(err),
             Self::Login(err) => match err {
-                usecases::LoginError::Credentials => (StatusCode::BAD_REQUEST, err.to_string()),
-                usecases::LoginError::EmailNotConfirmed => {
-                    (StatusCode::UNAUTHORIZED, err.to_string())
-                }
-                usecases::LoginError::Repo(err) => {
-                    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
-                }
+                usecases::LoginError::Credentials => E::bad_request()
+                    .details(json_api::login::Error::Credentials)
+                    .message(err)
+                    .into_response(),
+                usecases::LoginError::EmailNotConfirmed => E::unauthorized()
+                    .details(json_api::login::Error::EmailNotConfirmed)
+                    .message(err)
+                    .into_response(),
+                usecases::LoginError::Repo(_) => internal(),
             },
-            Self::LoginEmail(_) | Self::LoginPassword(_) => (
-                StatusCode::BAD_REQUEST,
-                "invalid email or password".to_string(),
-            ),
-            Self::Logout(err) => (StatusCode::BAD_REQUEST, err.to_string()),
-            Self::Auth(err) => (StatusCode::UNAUTHORIZED, err.to_string()),
-            Self::EmailNonce(err) => (StatusCode::BAD_REQUEST, err.to_string()),
-            Self::ConfirmEmail(err) => (StatusCode::BAD_REQUEST, err.to_string()),
+            Self::LoginEmail(_) | Self::LoginPassword(_) => E::<()>::bad_request()
+                .message("invalid email or password")
+                .into_response(),
+            Self::Logout(err) => bad_request(err),
+            Self::Auth(_) => E::<()>::unauthorized().into_response(),
+            Self::EmailNonce(err) => bad_request(err).into_response(),
+            Self::ConfirmEmail(err) => bad_request(err).into_response(),
             Self::ResetPassword(err) => match err {
                 usecases::ResetPasswordError::InvalidToken
-                | usecases::ResetPasswordError::NotFound => {
-                    (StatusCode::BAD_REQUEST, err.to_string())
-                }
-                usecases::ResetPasswordError::Repo(err) => {
-                    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
-                }
+                | usecases::ResetPasswordError::NotFound => bad_request(err),
+                usecases::ResetPasswordError::Repo(_) => internal(),
             },
-            Self::InternalServerError => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
-        };
-        let err = json_api::Error { message };
-        (code, Json(err)).into_response()
+            Self::InternalServerError => internal(),
+        }
     }
+}
+
+fn internal() -> Response {
+    json_api::Error::<()>::internal().into_response()
+}
+
+fn bad_request<S>(msg: S) -> Response
+where
+    S: ToString,
+{
+    json_api::Error::<()>::bad_request()
+        .message(msg)
+        .into_response()
 }

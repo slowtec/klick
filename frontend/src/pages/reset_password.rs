@@ -55,7 +55,9 @@ pub fn ResetPassword(api: UnauthorizedApi) -> impl IntoView {
                             log::error!("{js_err:?}");
                             "Ein Kommunikationsfehler ist aufgetreten".to_string()
                         }
-                        api::Error::Api(err) => err.message,
+                        api::Error::Api(err) => err
+                            .message
+                            .unwrap_or_else(|| "Unbekannter fehler".to_string()),
                     };
                     log::error!("Unable to reset password: {msg}");
                     error.set(Some(msg));

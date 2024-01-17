@@ -64,6 +64,10 @@ pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> 
         .route("/logout", post(logout))
         .route("/users", post(create_account))
         .route("/users", get(account_info))
+        .route(
+            "/users/resent-confirmation-email",
+            post(resent_confirmation_email),
+        )
         .route("/users/confirm-email-address", post(confirm_email_address))
         .route(
             "/users/reset-password-request",
@@ -137,7 +141,7 @@ async fn create_account(
     let password = password
         .parse::<Password>()
         .map_err(ApiError::CreateAccountPassword)?;
-    usecases::create_account(state.db, state.notification_gw, email, &password)?;
+    usecases::create_account(&state.db, &state.notification_gw, email, &password)?;
     Ok(Json(()))
 }
 
@@ -153,7 +157,7 @@ async fn login(
     let password = password
         .parse::<Password>()
         .map_err(ApiError::LoginPassword)?;
-    let account = usecases::login(state.db, &email, &password)?;
+    let account = usecases::login(&state.db, &email, &password)?;
     debug_assert_eq!(account.email, email);
     let token = Uuid::new_v4();
     state.tokens.write().insert(token, account);
@@ -194,6 +198,26 @@ async fn confirm_email_address(
     Ok(Json(()))
 }
 
+async fn resent_confirmation_email(
+    State(state): State<AppState>,
+    Json(credentials): Json<json_api::Credentials>,
+) -> Result<()> {
+    let json_api::Credentials { email, password } = credentials;
+    log::debug!("{email} requests a new email to confirm");
+    let email = email
+        .parse::<EmailAddress>()
+        .map_err(ApiError::LoginEmail)?;
+    let password = password
+        .parse::<Password>()
+        .map_err(ApiError::LoginPassword)?;
+    usecases::resend_confirmation_email(&state.db, &state.notification_gw, email, &password)
+        .map_err(|err| {
+            log::warn!("Unable to resent confirmation email: {err}");
+            ApiError::InternalServerError
+        })?;
+    Ok(Json(()))
+}
+
 async fn request_password_reset(
     State(state): State<AppState>,
     Json(data): Json<json_api::RequestPasswordReset>,
@@ -202,7 +226,7 @@ async fn request_password_reset(
     let email = email
         .parse::<EmailAddress>()
         .map_err(ApiError::LoginEmail)?;
-    if let Err(err) = usecases::request_password_reset(state.db, state.notification_gw, email) {
+    if let Err(err) = usecases::request_password_reset(&state.db, &state.notification_gw, email) {
         // We do not report any error to the user here,
         // but we create a log statement.
         log::warn!("Unable to request password reset: {err}");

@@ -1,17 +1,17 @@
 use thiserror::Error;
 
-use klick_domain::{Account, EmailAddress, EmailNonce, Nonce, Password};
+use klick_domain::{Account, EmailAddress, Password};
 
-use crate::{AccountRecord, AccountRepo, NotificationEvent, NotificationGateway};
+use crate::{usecases, AccountRecord, AccountRepo, AccountTokenRepo, NotificationGateway};
 
 pub fn create_account<R, N>(
-    repo: R,
-    notification_gateway: N,
+    repo: &R,
+    notification_gateway: &N,
     email_address: EmailAddress,
     password: &Password,
 ) -> Result<(), Error>
 where
-    R: AccountRepo,
+    R: AccountRepo + AccountTokenRepo,
     N: NotificationGateway,
 {
     if repo.find_account(&email_address)?.is_some() {
@@ -24,12 +24,7 @@ where
     let password = password.to_hashed();
     let record = AccountRecord { account, password };
     repo.save_account(&record)?;
-    let email_nonce = EmailNonce {
-        email: email_address,
-        nonce: Nonce::new(),
-    };
-    let event = NotificationEvent::AccountWasCreated { email_nonce };
-    notification_gateway.notify(event);
+    usecases::send_confirmation_email(repo, notification_gateway, email_address)?;
     Ok(())
 }
 

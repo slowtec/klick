@@ -28,7 +28,9 @@ pub fn ResetPasswordRequest(api: UnauthorizedApi) -> impl IntoView {
                         api::Error::Fetch(js_err) => {
                             format!("{js_err:?}")
                         }
-                        api::Error::Api(err) => err.message,
+                        api::Error::Api(err) => err
+                            .message
+                            .unwrap_or_else(|| "Unbekannter fehler".to_string()),
                     };
                     log::warn!("Unable to request password reset for: {msg}");
                     set_request_error.update(|e| *e = Some(msg));
