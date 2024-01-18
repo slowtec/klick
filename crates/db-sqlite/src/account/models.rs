@@ -17,6 +17,7 @@ pub struct Account {
 #[derive(Debug, Clone, AsChangeset, Insertable)]
 #[diesel(table_name = schema::accounts)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+//TODO: rename to AccountChangeset
 pub struct NewAccount<'a> {
     pub email: &'a str,
     pub email_confirmed: bool,

@@ -22,6 +22,16 @@ pub fn export_to_string_pretty(data: &Data) -> String {
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
+pub fn export_to_string(data: &Data) -> String {
+    let export = Export {
+        version: CURRENT_VERSION,
+        data,
+    };
+    serde_json::to_string(&export).expect("Valid input data")
+}
+
+#[must_use]
+#[allow(clippy::missing_panics_doc)]
 pub fn export_to_vec_pretty(data: &Data) -> Vec<u8> {
     let export = Export {
         version: CURRENT_VERSION,

@@ -7,10 +7,10 @@ use parking_lot::Mutex;
 use thiserror::Error;
 use time::OffsetDateTime;
 
-use klick_application::{AccountRecord, AccountRepo, AccountTokenRepo};
-use klick_domain::{AccountToken, EmailAddress, EmailNonce};
+use klick_application::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
+use klick_domain::{AccountToken, EmailAddress, EmailNonce, Project, ProjectId};
 
-use crate::{account, account_token};
+use crate::{account, account_token, project};
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -93,5 +93,23 @@ impl AccountTokenRepo for Connection {
 
     fn get_account_token_by_email(&self, email: &EmailAddress) -> anyhow::Result<AccountToken> {
         account_token::queries::account_token_by_email(&mut self.0.lock(), email)
+    }
+}
+
+impl ProjectRepo for Connection {
+    fn find_project(&self, id: &ProjectId) -> Result<Option<Project>, anyhow::Error> {
+        project::queries::find_project(&mut self.0.lock(), id)
+    }
+
+    fn all_projects_by_owner(&self, email: &EmailAddress) -> Result<Vec<Project>, anyhow::Error> {
+        project::queries::all_projects_by_owner(&mut self.0.lock(), email)
+    }
+
+    fn save_project(&self, project: Project, owner: &EmailAddress) -> Result<(), anyhow::Error> {
+        project::queries::save_project(&mut self.0.lock(), project, owner)
+    }
+
+    fn delete_project(&self, id: &ProjectId) -> Result<(), anyhow::Error> {
+        project::queries::delete_project(&mut self.0.lock(), id)
     }
 }

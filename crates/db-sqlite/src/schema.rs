@@ -1,8 +1,8 @@
 use diesel::{allow_tables_to_appear_in_same_query, joinable, table};
 
 table! {
-    accounts (id) {
-        id -> BigInt,
+    accounts (rowid) {
+        rowid -> BigInt,
         email -> Text,
         email_confirmed -> Bool,
         password -> Text,
@@ -10,14 +10,24 @@ table! {
 }
 
 table! {
-    account_tokens (id) {
-        id -> BigInt,
-        account_id -> BigInt,
+    account_tokens (rowid) {
+        rowid -> BigInt,
+        account_rowid -> BigInt,
         expires_at -> BigInt,
         nonce -> Text,
     }
 }
 
-joinable!(account_tokens -> accounts (account_id));
+table! {
+    projects (rowid) {
+        rowid -> BigInt,
+        project_id -> Text,
+        account_rowid -> BigInt,
+        data -> Text,
+    }
+}
 
-allow_tables_to_appear_in_same_query!(accounts, account_tokens,);
+joinable!(account_tokens -> accounts (account_rowid));
+joinable!(projects -> accounts (account_rowid));
+
+allow_tables_to_appear_in_same_query!(accounts, account_tokens, projects);

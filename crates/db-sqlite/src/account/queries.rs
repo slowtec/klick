@@ -55,3 +55,16 @@ pub fn delete_account_from_db(
         .execute(conn)?;
     Ok(())
 }
+
+pub fn resolve_account_rowid_created_by_email(
+    conn: &mut SqliteConnection,
+    email: &EmailAddress,
+) -> anyhow::Result<i64> {
+    use schema::accounts::dsl;
+
+    let id = dsl::accounts
+        .select(dsl::rowid)
+        .filter(dsl::email.eq(email.as_str()))
+        .first(conn)?;
+    Ok(id)
+}

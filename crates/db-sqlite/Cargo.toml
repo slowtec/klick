@@ -9,6 +9,7 @@ publish = false
 
 [dependencies]
 klick-application = "=0.0.0"
+klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = "=0.0.0"
 
 anyhow = "1.0.79"
@@ -20,8 +21,10 @@ diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
 libsqlite3-sys = { version = "0.27.0", features = ["bundled"] }
 log = "0.4.20"
 parking_lot = "0.12.1"
+serde_json = "1.0.111"
 thiserror = "1.0.56"
 time = "0.3.31"
+uuid = "1.6.1"
 
 [lints]
 workspace = true

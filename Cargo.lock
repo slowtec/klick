@@ -1219,12 +1219,15 @@ dependencies = [
  "diesel",
  "diesel_migrations",
  "klick-application",
+ "klick-boundary",
  "klick-domain",
  "libsqlite3-sys",
  "log",
  "parking_lot",
+ "serde_json",
  "thiserror",
  "time",
+ "uuid",
 ]
 
 [[package]]
