@@ -1,14 +1,27 @@
 # Changelog
 
+## v0.3.1 (2024-01-18)
+
+- New:
+  - Add method to re-send email confirmation link
+
+- Changed:
+  - Deny login to accounts with unconfirmed e-mail addresses
+  - #61 tiny fixes, typos, ...
+  - #29 Added more `ch4_combined_heat_and_power_plant` tests
+  - #29 simplified tests so errors point to the correct line number
+
 ## v0.3.0 (2024-01-17)
 
-- New: 
+- New:
   - Added login functionality
   - Adapted flake.nix schema
-  - #91 #92 new EF and new formula, BHKW cleanup
-  - #90 sludge storage - correction in conversion factor
   - Added SMTP functionality in backend
   - Added sqlite database support
+
+- Changed:
+  - #91 #92 new EF and new formula, BHKW cleanup
+  - #90 sludge storage - correction in conversion factor
 
 ## v0.2.1 (2024-01-14)
 
