@@ -38,6 +38,8 @@ pub enum ApiError {
     ResetPassword(#[from] usecases::ResetPasswordError),
     #[error("internal server error")]
     InternalServerError,
+    #[error(transparent)]
+    Other(#[from] anyhow::Error),
 }
 
 pub struct Credentials {
@@ -123,6 +125,7 @@ impl IntoResponse for ApiError {
                 usecases::ResetPasswordError::Repo(_) => internal(),
             },
             Self::InternalServerError => internal(),
+            Self::Other(err) => bad_request(err),
         }
     }
 }

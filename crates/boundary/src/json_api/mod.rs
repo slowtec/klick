@@ -88,3 +88,10 @@ pub struct ResetPassword {
     pub token: String,
     pub new_password: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct NewProject {
+    pub title: Option<String>,
+    #[serde(flatten)]
+    pub project: crate::UnsavedProject,
+}

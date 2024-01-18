@@ -151,6 +151,8 @@ mod auth {
         let req = client.post(endpoint).json(&json);
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 400);
+        let data = res.json::<Value>().await.unwrap();
+        assert_eq!(data["status"], 400);
         let record = db.find_account(&email).unwrap().unwrap();
         assert_eq!(record.account.email_confirmed, false);
     }
@@ -165,6 +167,8 @@ mod auth {
         let req = client.post(endpoint).json(&credentials);
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 401);
+        let data = res.json::<Value>().await.unwrap();
+        assert_eq!(data["status"], 401);
     }
 
     #[tokio::test]
@@ -190,5 +194,29 @@ mod auth {
         let req = client.post(endpoint).bearer_auth(token).json(&());
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 200);
+        let data = res.json::<Value>().await.unwrap();
+        assert_eq!(data, Value::Null);
+    }
+}
+
+mod projects {
+    use super::*;
+
+    const EXAMPLE_PROJECT: &str = include_str!("unsaved_example_project_v5.json");
+
+    #[tokio::test]
+    async fn create() {
+        let (addr, db) = run_server().await;
+        let token = register_and_login_test_account(&db, addr).await;
+        set_email_address_as_confirmed(&db, TEST_ACCOUNT_EMAIL);
+        let client = reqwest::Client::new();
+        let endpoint = endpoint(addr, "/project");
+        let json: Value = serde_json::from_str(EXAMPLE_PROJECT).unwrap();
+        let project = &json["project"];
+        let req = client.post(endpoint).bearer_auth(token).json(&project);
+        let res = req.send().await.unwrap();
+        assert_eq!(res.status(), 200);
+        let data = res.json::<Value>().await.unwrap();
+        assert_eq!(data, Value::Null);
     }
 }

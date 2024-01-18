@@ -1,24 +1,26 @@
 use std::{collections::HashMap, sync::Arc};
 
+use anyhow::anyhow;
 use axum::{
-    extract::State,
+    extract::{Path, State},
     http::{header, Method, StatusCode, Uri},
     response::{Html, IntoResponse, Json, Response},
-    routing::{get, post},
+    routing::{delete, get, post, put},
     Router,
 };
 use axum_extra::TypedHeader;
 use headers::{authorization::Bearer, Authorization};
 use parking_lot::RwLock;
 use rust_embed::RustEmbed;
+use time::OffsetDateTime;
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
-use klick_application::{usecases, AccountRepo as _};
-use klick_boundary::json_api;
+use klick_application::{usecases, AccountRepo as _, ProjectRepo as _};
+use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
-use klick_domain::{Account, EmailAddress, EmailNonce, Password};
+use klick_domain::{Account, EmailAddress, EmailNonce, Password, Project, ProjectId};
 
 mod adapters;
 mod config;
@@ -55,7 +57,7 @@ pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> 
     let shared_state = AppState::new(db, notification_gw);
 
     let cors_layer = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
+        .allow_methods([Method::GET, Method::DELETE, Method::PUT, Method::POST])
         .allow_origin(Any);
 
     // TODO: rename users -> account
@@ -74,6 +76,11 @@ pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> 
             post(request_password_reset),
         )
         .route("/users/reset-password", post(reset_password))
+        .route("/projects", get(get_all_projects))
+        .route("/project", post(new_project))
+        .route("/project/:id", put(update_project))
+        .route("/project/:id", get(get_project))
+        .route("/project/:id", delete(delete_project))
         .route_layer(cors_layer)
         .with_state(shared_state);
 
@@ -248,6 +255,81 @@ async fn reset_password(
         .map_err(ApiError::LoginPassword)?;
     let email_nonce = EmailNonce::decode_from_str(&token)?;
     usecases::reset_password(state.db, email_nonce, password)?;
+    Ok(Json(()))
+}
+
+async fn new_project(
+    State(state): State<AppState>,
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(data): Json<json_api::NewProject>,
+) -> Result<()> {
+    let account = account_from_token(&state, auth)?;
+    let json_api::NewProject { title, project } = data;
+    let boundary::UnsavedProject {
+        plant_profile,
+        optimization_scenario,
+    } = project;
+    let plant_profile = plant_profile.try_into()?;
+    let optimization_scenario = optimization_scenario.try_into()?;
+    let title = title.unwrap_or_else(new_unknown_title);
+    let id = ProjectId::new();
+    let project = Project {
+        id,
+        title,
+        optimization_scenario,
+        plant_profile,
+    };
+    state.db.save_project(project, &account.email)?;
+    Ok(Json(()))
+}
+
+fn new_unknown_title() -> String {
+    let now = OffsetDateTime::now_utc();
+    format!("Unbenannt ({now})")
+}
+
+async fn update_project(
+    State(state): State<AppState>,
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    Json(data): Json<boundary::SavedProject>,
+) -> Result<()> {
+    let account = account_from_token(&state, auth)?;
+    let project = Project::try_from(data)?;
+    state.db.save_project(project, &account.email)?;
+    Ok(Json(()))
+}
+
+async fn get_project(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>,
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+) -> Result<boundary::SavedProject> {
+    account_from_token(&state, auth)?;
+    let id = ProjectId::from_uuid(uuid);
+    let Some(project) = state.db.find_project(&id)? else {
+        return Err(anyhow!("project not found").into());
+    };
+    Ok(Json(project.into()))
+}
+
+async fn get_all_projects(
+    State(state): State<AppState>,
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+) -> Result<Vec<boundary::SavedProject>> {
+    let account = account_from_token(&state, auth)?;
+    let projects = state.db.all_projects_by_owner(&account.email)?;
+    let projects = projects.into_iter().map(Into::into).collect();
+    Ok(Json(projects))
+}
+
+async fn delete_project(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>,
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+) -> Result<()> {
+    account_from_token(&state, auth)?;
+    let id = ProjectId::from_uuid(uuid);
+    state.db.delete_project(&id)?;
     Ok(Json(()))
 }
 
