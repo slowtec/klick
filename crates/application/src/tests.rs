@@ -1,5 +1,18 @@
 use klick_domain::*;
 use super::*;
+use klick_domain as domain;
+
+fn ch4_combined_heat_and_power_plant_computation_helper(scenario: OptimizationScenario, profile: PlantProfile, ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod>) -> f64 {
+
+    let mut s2 = scenario;
+    s2.ch4_chp_emission_factor = ch4_chp_emission_factor;
+    let Output {
+        co2_equivalents,
+        n2o_emission_factor: _,
+    } = calculate_emissions(&profile, s2);
+
+    f64::from(co2_equivalents.ch4_combined_heat_and_power_plant)
+}
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
@@ -81,7 +94,6 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(ch4_sludge_storage_containers), 266.803_235_999_999_97);
     assert_eq!(f64::from(ch4_sludge_bags), 47.082_924);
     assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08);
     assert_eq!(f64::from(ch4_emissions), 1_406.169_24);
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
@@ -97,10 +109,9 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(n2o_emission_factor), 0.001_253_278_688_524_597_2);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
-    let Output {
-        co2_equivalents,
-        n2o_emission_factor,
-    } = calculate_emissions(&profile, scenario);
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)), 154.588_933_8);
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)), 153.019_503_000_000_01);
 }
 
 #[test]
@@ -183,7 +194,6 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(f64::from(ch4_sludge_storage_containers), 266.803_235_999_999_97);
     assert_eq!(f64::from(ch4_sludge_bags), 47.082_924);
     assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08);
     assert_eq!(f64::from(ch4_emissions), 1_406.169_24);
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
@@ -198,6 +208,10 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(f64::from(emissions), 2_955.909_423_139_999_5);
     assert_eq!(f64::from(n2o_emission_factor), 0.003);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)), 154.588_933_8);
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)), 153.019_503_000_000_01);
 }
 
 #[test]
@@ -280,7 +294,6 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(f64::from(ch4_sludge_storage_containers), 266.803_235_999_999_97);
     assert_eq!(f64::from(ch4_sludge_bags), 47.082_924);
     assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08);
     assert_eq!(f64::from(ch4_emissions), 1_406.169_24);
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
@@ -295,6 +308,10 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(f64::from(emissions), 4_264.359_423_14);
     assert_eq!(f64::from(n2o_emission_factor), 0.008);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)), 154.588_933_8);
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)), 153.019_503_000_000_01);
 }
 
 #[test]
@@ -377,7 +394,6 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(f64::from(ch4_sludge_storage_containers), 266.803_235_999_999_97);
     assert_eq!(f64::from(ch4_sludge_bags), 47.082_924);
     assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08);
     assert_eq!(f64::from(ch4_emissions), 1_406.169_24);
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
@@ -392,6 +408,10 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(f64::from(emissions), 6_357.879_423_140_001);
     assert_eq!(f64::from(n2o_emission_factor), 0.016);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)), 154.588_933_8);
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)), 153.019_503_000_000_01);
 }
 
 #[test]
@@ -474,7 +494,6 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_eq!(f64::from(ch4_sludge_storage_containers), 266.803_235_999_999_97);
     assert_eq!(f64::from(ch4_sludge_bags), 47.082_924);
     assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08);
     assert_eq!(f64::from(ch4_emissions), 1_406.169_24);
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
@@ -489,4 +508,8 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_eq!(f64::from(emissions), 4_787.739_423_140_001);
     assert_eq!(f64::from(n2o_emission_factor), 0.01);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)), 154.588_933_8);
+    assert_eq!(ch4_combined_heat_and_power_plant_computation_helper(scenario.clone(), profile.clone(), Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)), 153.019_503_000_000_01);
 }
