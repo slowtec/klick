@@ -54,7 +54,7 @@ setup:
     trunk
 
 # Upgrade (and update) dependencies and tools
-upgrade: setup
+upgrade:
   cargo upgrade --incompatible
   cargo update
   cd frontend && cargo upgrade --incompatible
