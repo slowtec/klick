@@ -181,11 +181,14 @@ fn float_to_sting_option(f: Option<f64>) -> Option<String> {
 pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Project) {
     let (plant_profile, optimization_scenario) = match project {
         Project::Unsaved(UnsavedProject {
+            title: _,
             plant_profile,
             optimization_scenario,
         }) => (plant_profile, optimization_scenario),
         Project::Saved(SavedProject {
             id: _,
+            created_at: _,
+            modified_at: _,
             title: _,
             plant_profile,
             optimization_scenario,

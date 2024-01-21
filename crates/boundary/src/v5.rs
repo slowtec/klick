@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 use uuid::Uuid;
 
 use derive_more::From;
@@ -27,6 +28,8 @@ pub enum Project {
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct SavedProject {
     pub id: ProjectId,
+    pub created_at: OffsetDateTime,
+    pub modified_at: Option<OffsetDateTime>,
     pub title: String,
     pub plant_profile: PlantProfile,
     pub optimization_scenario: OptimizationScenario,
@@ -35,6 +38,7 @@ pub struct SavedProject {
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct UnsavedProject {
+    pub title: Option<String>,
     pub plant_profile: PlantProfile,
     pub optimization_scenario: OptimizationScenario,
 }

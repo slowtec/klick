@@ -185,10 +185,13 @@ pub fn from_v4(data: v4::Import) -> v5::Data {
     let plant_profile = input;
     let optimization_scenario = scenario;
 
-    let project = v5::Project::Unsaved(v5::UnsavedProject {
+    let unsaved_project = v5::UnsavedProject {
+        title: None,
         plant_profile,
         optimization_scenario,
-    });
+    };
+
+    let project = v5::Project::from(unsaved_project);
 
     v5::Data { project }
 }

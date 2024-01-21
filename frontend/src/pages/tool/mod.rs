@@ -289,6 +289,7 @@ pub fn Tool() -> impl IntoView {
             let (plant_profile, _) = read_input_fields(&signals, &vec![]);
             let optimization_scenario = read_scenario_fields(&signals);
             let project = UnsavedProject {
+                title: None,
                 plant_profile,
                 optimization_scenario,
             }

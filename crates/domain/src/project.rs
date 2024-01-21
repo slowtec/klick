@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use thiserror::Error;
+use time::OffsetDateTime;
 use uuid::Uuid;
 
 use crate::{OptimizationScenario, PlantProfile};
@@ -8,6 +9,8 @@ use crate::{OptimizationScenario, PlantProfile};
 #[derive(Debug, Clone)]
 pub struct Project {
     pub id: Id,
+    pub created_at: OffsetDateTime,
+    pub modified_at: Option<OffsetDateTime>,
     pub title: String,
     pub plant_profile: PlantProfile,
     pub optimization_scenario: OptimizationScenario,

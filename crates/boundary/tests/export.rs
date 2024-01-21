@@ -1,3 +1,4 @@
+use time::OffsetDateTime;
 use uuid::Uuid;
 
 use klick_boundary::{
@@ -28,6 +29,8 @@ fn export() {
     let project = SavedProject {
         id,
         title: "Project".into(),
+        created_at: OffsetDateTime::now_utc(),
+        modified_at: None,
         plant_profile,
         optimization_scenario,
     }
@@ -88,6 +91,8 @@ fn roundtrip() {
     let project = Project::Saved(SavedProject {
         id,
         title: "Project".into(),
+        created_at: OffsetDateTime::now_utc(),
+        modified_at: None,
         plant_profile,
         optimization_scenario,
     });

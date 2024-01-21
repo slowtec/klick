@@ -65,6 +65,7 @@ fn example_input_data() -> UnsavedProject {
     };
 
     UnsavedProject {
+        title: None,
         plant_profile,
         optimization_scenario,
     }

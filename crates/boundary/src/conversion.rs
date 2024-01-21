@@ -6,7 +6,6 @@ use crate::{
     AnnualAverage, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
     N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
     OptimizationScenario, PlantProfile, Project, ProjectId, SavedProject, SewageSludgeTreatment,
-    UnsavedProject,
 };
 
 impl TryFrom<OptimizationScenario> for domain::OptimizationScenario {
@@ -546,6 +545,8 @@ impl TryFrom<SavedProject> for domain::Project {
     fn try_from(from: SavedProject) -> Result<Self, Self::Error> {
         let SavedProject {
             id,
+            created_at,
+            modified_at,
             title,
             optimization_scenario,
             plant_profile,
@@ -556,6 +557,8 @@ impl TryFrom<SavedProject> for domain::Project {
         let plant_profile = plant_profile.try_into()?;
         Ok(Self {
             id,
+            created_at,
+            modified_at,
             title,
             optimization_scenario,
             plant_profile,
@@ -567,6 +570,8 @@ impl From<domain::Project> for SavedProject {
     fn from(from: domain::Project) -> Self {
         let domain::Project {
             id,
+            created_at,
+            modified_at,
             title,
             optimization_scenario,
             plant_profile,
@@ -578,24 +583,11 @@ impl From<domain::Project> for SavedProject {
 
         Self {
             id,
+            created_at,
+            modified_at,
             title,
             optimization_scenario,
             plant_profile,
-        }
-    }
-}
-
-impl UnsavedProject {
-    pub fn into_saved(self, id: ProjectId, title: String) -> SavedProject {
-        let UnsavedProject {
-            plant_profile,
-            optimization_scenario,
-        } = self;
-        SavedProject {
-            id,
-            title,
-            plant_profile,
-            optimization_scenario,
         }
     }
 }

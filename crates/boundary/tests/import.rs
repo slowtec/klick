@@ -20,6 +20,7 @@ fn check_version() {
 fn import_v1() {
     let json = include_str!("example_data_v1.json");
     let Project::Unsaved(UnsavedProject {
+        title: _,
         plant_profile,
         optimization_scenario,
     }) = import_from_str(json).unwrap()
@@ -101,6 +102,7 @@ fn import_v2() {
     let json = include_str!("example_data_v2.json");
 
     let Project::Unsaved(UnsavedProject {
+        title: _,
         plant_profile,
         optimization_scenario,
     }) = import_from_str(json).unwrap()

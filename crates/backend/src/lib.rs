@@ -261,26 +261,31 @@ async fn reset_password(
 async fn new_project(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-    Json(data): Json<json_api::NewProject>,
-) -> Result<()> {
+    Json(data): Json<boundary::UnsavedProject>,
+) -> Result<boundary::ProjectId> {
     let account = account_from_token(&state, auth)?;
-    let json_api::NewProject { title, project } = data;
     let boundary::UnsavedProject {
+        title,
         plant_profile,
         optimization_scenario,
-    } = project;
+    } = data;
     let plant_profile = plant_profile.try_into()?;
     let optimization_scenario = optimization_scenario.try_into()?;
     let title = title.unwrap_or_else(new_unknown_title);
     let id = ProjectId::new();
+    let created_at = OffsetDateTime::now_utc();
+    let modified_at = None;
     let project = Project {
         id,
         title,
+        created_at,
+        modified_at,
         optimization_scenario,
         plant_profile,
     };
     state.db.save_project(project, &account.email)?;
-    Ok(Json(()))
+    let id = boundary::ProjectId::from(id);
+    Ok(Json(id))
 }
 
 fn new_unknown_title() -> String {
@@ -306,9 +311,10 @@ async fn get_project(
 ) -> Result<boundary::SavedProject> {
     account_from_token(&state, auth)?;
     let id = ProjectId::from_uuid(uuid);
-    let Some(project) = state.db.find_project(&id)? else {
+    let Some(mut project) = state.db.find_project(&id)? else {
         return Err(anyhow!("project not found").into());
     };
+    project.modified_at = Some(OffsetDateTime::now_utc());
     Ok(Json(project.into()))
 }
 
