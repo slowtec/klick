@@ -6,8 +6,8 @@ use strum::AsRefStr;
 
 use klick_boundary::{
     AnnualAverage, EnergyConsumption, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
-    OperatingMaterials, OptimizationScenario, PlantProfile, Project, SavedProject,
-    SewageSludgeTreatment, UnsavedProject,
+    OperatingMaterials, OptimizationScenario, PlantProfile, Project, ProjectData, SavedProject,
+    SewageSludgeTreatment,
 };
 
 use crate::forms::{self, format_f64_into_de_string, FieldSignal, MissingField};
@@ -180,7 +180,7 @@ fn float_to_sting_option(f: Option<f64>) -> Option<String> {
 #[allow(clippy::too_many_lines)]
 pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Project) {
     let (plant_profile, optimization_scenario) = match project {
-        Project::Unsaved(UnsavedProject {
+        Project::Unsaved(ProjectData {
             title: _,
             plant_profile,
             optimization_scenario,
@@ -189,9 +189,12 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
             id: _,
             created_at: _,
             modified_at: _,
-            title: _,
-            plant_profile,
-            optimization_scenario,
+            data:
+                ProjectData {
+                    title: _,
+                    plant_profile,
+                    optimization_scenario,
+                },
         }) => (plant_profile, optimization_scenario),
     };
 

@@ -12,7 +12,7 @@ pub fn load_example_field_signal_values(signals: &HashMap<FieldId, FieldSignal>)
 }
 
 // TODO: rename to example_project
-fn example_input_data() -> UnsavedProject {
+fn example_input_data() -> ProjectData {
     // TODO: let csb_zu = 1045.0;
     // TODO: let p_zu = 9.9;
     // TODO: let p_ab = 0.4;
@@ -64,7 +64,7 @@ fn example_input_data() -> UnsavedProject {
         ch4_chp_emission_factor: None,
     };
 
-    UnsavedProject {
+    ProjectData {
         title: None,
         plant_profile,
         optimization_scenario,

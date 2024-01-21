@@ -1,7 +1,7 @@
 use time::OffsetDateTime;
 
 use klick_boundary::{
-    export_to_string_pretty, import_from_str, Data, Project, SavedProject, UnsavedProject,
+    export_to_string_pretty, import_from_str, Data, Project, ProjectData, SavedProject,
 };
 use klick_domain as domain;
 
@@ -17,22 +17,25 @@ fn roundtrip() {
     let Project::Unsaved(unsaved) = import_from_str(json).unwrap() else {
         panic!("Unexpected project data");
     };
-    let UnsavedProject {
+    let ProjectData {
         title: _,
         optimization_scenario,
         plant_profile,
     } = unsaved;
 
     let id = domain::ProjectId::new().into();
-    let title = "Test".to_string();
+    let title = Some("Test".to_string());
     let created_at = OffsetDateTime::now_utc();
-    let saved = SavedProject {
-        id,
+    let data = ProjectData {
         title,
-        created_at,
-        modified_at: None,
         optimization_scenario,
         plant_profile,
+    };
+    let saved = SavedProject {
+        id,
+        created_at,
+        modified_at: None,
+        data,
     };
     let boundary_project = Project::from(saved);
     let data = Data {
@@ -40,7 +43,6 @@ fn roundtrip() {
     };
     let json_string = export_to_string_pretty(&data);
     let re_imported_project = import_from_str(&json_string).unwrap();
-    let domain_project = domain::Project::try_from(re_imported_project).unwrap();
 
-    assert_eq!(boundary_project, Project::from(domain_project));
+    assert_eq!(boundary_project, re_imported_project);
 }

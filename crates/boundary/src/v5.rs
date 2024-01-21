@@ -21,7 +21,7 @@ pub struct Data {
 #[serde(untagged)]
 pub enum Project {
     Saved(SavedProject),
-    Unsaved(UnsavedProject),
+    Unsaved(ProjectData),
 }
 
 #[derive(Serialize, Deserialize)]
@@ -30,14 +30,13 @@ pub struct SavedProject {
     pub id: ProjectId,
     pub created_at: OffsetDateTime,
     pub modified_at: Option<OffsetDateTime>,
-    pub title: String,
-    pub plant_profile: PlantProfile,
-    pub optimization_scenario: OptimizationScenario,
+    #[serde(flatten)]
+    pub data: ProjectData,
 }
 
 #[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
-pub struct UnsavedProject {
+#[cfg_attr(feature = "extra-derive", derive(Default, Debug, Clone, PartialEq))]
+pub struct ProjectData {
     pub title: Option<String>,
     pub plant_profile: PlantProfile,
     pub optimization_scenario: OptimizationScenario,

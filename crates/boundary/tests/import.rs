@@ -1,6 +1,6 @@
 use klick_boundary::{
     import_from_str, EnergyConsumption, ImportError, N2oEmissionFactorCalcMethod, PlantProfile,
-    Project, SewageSludgeTreatment, UnsavedProject, CURRENT_VERSION,
+    Project, ProjectData, SewageSludgeTreatment, CURRENT_VERSION,
 };
 
 #[test]
@@ -19,7 +19,7 @@ fn check_version() {
 #[test]
 fn import_v1() {
     let json = include_str!("example_data_v1.json");
-    let Project::Unsaved(UnsavedProject {
+    let Project::Unsaved(ProjectData {
         title: _,
         plant_profile,
         optimization_scenario,
@@ -101,7 +101,7 @@ fn import_v1() {
 fn import_v2() {
     let json = include_str!("example_data_v2.json");
 
-    let Project::Unsaved(UnsavedProject {
+    let Project::Unsaved(ProjectData {
         title: _,
         plant_profile,
         optimization_scenario,

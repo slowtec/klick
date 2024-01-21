@@ -5,7 +5,7 @@ use leptos::*;
 use strum::IntoEnumIterator;
 
 use klick_boundary::{
-    export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, UnsavedProject,
+    export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, ProjectData,
 };
 use klick_domain as domain;
 use klick_format_numbers::Lng;
@@ -288,7 +288,7 @@ pub fn Tool() -> impl IntoView {
         move || {
             let (plant_profile, _) = read_input_fields(&signals, &vec![]);
             let optimization_scenario = read_scenario_fields(&signals);
-            let project = UnsavedProject {
+            let project = ProjectData {
                 title: None,
                 plant_profile,
                 optimization_scenario,

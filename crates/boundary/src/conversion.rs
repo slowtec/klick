@@ -5,7 +5,8 @@ use klick_domain as domain;
 use crate::{
     AnnualAverage, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
     N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
-    OptimizationScenario, PlantProfile, Project, ProjectId, SavedProject, SewageSludgeTreatment,
+    OptimizationScenario, PlantProfile, Project, ProjectData, ProjectId, SavedProject,
+    SewageSludgeTreatment,
 };
 
 impl TryFrom<OptimizationScenario> for domain::OptimizationScenario {
@@ -522,72 +523,47 @@ impl From<domain::ProjectId> for ProjectId {
     }
 }
 
-impl TryFrom<Project> for domain::Project {
-    type Error = anyhow::Error;
-
-    fn try_from(from: Project) -> Result<Self, Self::Error> {
-        match from {
-            Project::Saved(p) => p.try_into(),
-            Project::Unsaved(_) => bail!("conversion from unsaved project not possible"),
-        }
-    }
-}
-
-impl From<domain::Project> for Project {
-    fn from(from: domain::Project) -> Self {
+impl From<domain::Project<ProjectData>> for Project {
+    fn from(from: domain::Project<ProjectData>) -> Self {
         Self::Saved(from.into())
     }
 }
 
-impl TryFrom<SavedProject> for domain::Project {
-    type Error = anyhow::Error;
-
-    fn try_from(from: SavedProject) -> Result<Self, Self::Error> {
+impl From<SavedProject> for domain::Project<ProjectData> {
+    fn from(from: SavedProject) -> Self {
         let SavedProject {
             id,
             created_at,
             modified_at,
-            title,
-            optimization_scenario,
-            plant_profile,
+            data,
         } = from;
         let id = domain::ProjectId::from(id);
-
-        let optimization_scenario = optimization_scenario.try_into()?;
-        let plant_profile = plant_profile.try_into()?;
-        Ok(Self {
-            id,
-            created_at,
-            modified_at,
-            title,
-            optimization_scenario,
-            plant_profile,
-        })
-    }
-}
-
-impl From<domain::Project> for SavedProject {
-    fn from(from: domain::Project) -> Self {
-        let domain::Project {
-            id,
-            created_at,
-            modified_at,
-            title,
-            optimization_scenario,
-            plant_profile,
-        } = from;
-
-        let id = id.into();
-        let optimization_scenario = optimization_scenario.into();
-        let plant_profile = plant_profile.into();
 
         Self {
             id,
             created_at,
             modified_at,
-            title,
-            optimization_scenario,
-            plant_profile,
+            data,
+        }
+    }
+}
+
+impl From<domain::Project<ProjectData>> for SavedProject {
+    fn from(from: domain::Project<ProjectData>) -> Self {
+        let domain::Project {
+            id,
+            created_at,
+            modified_at,
+            data,
+        } = from;
+
+        let id = id.into();
+
+        Self {
+            id,
+            created_at,
+            modified_at,
+            data,
         }
     }
 }

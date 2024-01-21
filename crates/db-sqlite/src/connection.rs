@@ -8,9 +8,12 @@ use thiserror::Error;
 use time::OffsetDateTime;
 
 use klick_application::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
-use klick_domain::{AccountToken, EmailAddress, EmailNonce, Project, ProjectId};
+use klick_boundary as boundary;
+use klick_domain::{self as domain, AccountToken, EmailAddress, EmailNonce, ProjectId};
 
 use crate::{account, account_token, project};
+
+type Project = domain::Project<boundary::ProjectData>;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -96,7 +99,7 @@ impl AccountTokenRepo for Connection {
     }
 }
 
-impl ProjectRepo for Connection {
+impl ProjectRepo<boundary::ProjectData> for Connection {
     fn find_project(&self, id: &ProjectId) -> Result<Option<Project>, anyhow::Error> {
         project::queries::find_project(&mut self.0.lock(), id)
     }

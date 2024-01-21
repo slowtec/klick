@@ -5,6 +5,7 @@ use tokio::net::TcpListener;
 
 use klick_application::{AccountRepo as _, AccountTokenRepo};
 use klick_backend::Config;
+use klick_boundary as boundary;
 use klick_db_sqlite::Connection;
 use klick_domain::{EmailAddress, EmailNonce, Nonce};
 
@@ -205,7 +206,21 @@ mod projects {
     const EXAMPLE_PROJECT: &str = include_str!("unsaved_example_project_v5.json");
 
     #[tokio::test]
-    async fn create() {
+    async fn create_new() {
+        let (addr, db) = run_server().await;
+        let token = register_and_login_test_account(&db, addr).await;
+        set_email_address_as_confirmed(&db, TEST_ACCOUNT_EMAIL);
+        let client = reqwest::Client::new();
+        let endpoint = endpoint(addr, "/project");
+        let project = boundary::ProjectData::default();
+        let req = client.post(endpoint).bearer_auth(token).json(&project);
+        let res = req.send().await.unwrap();
+        assert_eq!(res.status(), 200);
+        res.json::<uuid::Uuid>().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn create_with_data() {
         let (addr, db) = run_server().await;
         let token = register_and_login_test_account(&db, addr).await;
         set_email_address_as_confirmed(&db, TEST_ACCOUNT_EMAIL);
@@ -216,7 +231,6 @@ mod projects {
         let req = client.post(endpoint).bearer_auth(token).json(&project);
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 200);
-        let data = res.json::<Value>().await.unwrap();
-        assert_eq!(data, Value::Null);
+        res.json::<uuid::Uuid>().await.unwrap();
     }
 }

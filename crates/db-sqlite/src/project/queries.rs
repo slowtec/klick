@@ -1,6 +1,9 @@
 use diesel::{prelude::*, sqlite::SqliteConnection};
 
-use klick_domain::{EmailAddress, Project, ProjectId};
+use klick_boundary as boundary;
+use klick_domain::{self as domain, EmailAddress, ProjectId};
+
+type Project = domain::Project<boundary::ProjectData>;
 
 use crate::{account, project::models, schema};
 
@@ -13,7 +16,7 @@ pub fn find_project(
     let id = id.to_string();
     let results = dsl::projects
         .filter(dsl::project_id.eq(&id))
-        .select(models::Project::as_select())
+        .select(models::ProjectQuery::as_select())
         .load(conn);
 
     let results = match results {
@@ -38,7 +41,7 @@ pub fn all_projects_by_owner(
     let account_rowid = account::queries::resolve_account_rowid_created_by_email(conn, &owner)?;
     let results = dsl::projects
         .filter(dsl::account_rowid.eq(account_rowid))
-        .select(models::Project::as_select())
+        .select(models::ProjectQuery::as_select())
         .load(conn);
     let results = match results {
         Ok(results) => results,
@@ -60,7 +63,7 @@ pub fn save_project(
     use schema::projects::dsl;
 
     let project_id = project.id.to_string();
-    let data = models::project_to_json_string(project);
+    let data = models::project_to_json_string(project)?;
     let account_rowid = account::queries::resolve_account_rowid_created_by_email(conn, &owner)?;
 
     let changeset = models::ProjectChangeset {

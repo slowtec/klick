@@ -4,7 +4,8 @@ use uuid::Uuid;
 use klick_boundary::{
     export_to_string_pretty, import_from_str, AnnualAverage, CH4ChpEmissionFactorCalcMethod,
     CH4ChpEmissionFactorScenario, Data, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
-    OptimizationScenario, PlantProfile, Project, ProjectId, SavedProject, CURRENT_VERSION,
+    OptimizationScenario, PlantProfile, Project, ProjectData, ProjectId, SavedProject,
+    CURRENT_VERSION,
 };
 
 #[test]
@@ -26,13 +27,16 @@ fn export() {
     };
 
     let id = ProjectId(Uuid::new_v4());
-    let project = SavedProject {
-        id,
-        title: "Project".into(),
-        created_at: OffsetDateTime::now_utc(),
-        modified_at: None,
+    let data = ProjectData {
+        title: Some("Project".into()),
         plant_profile,
         optimization_scenario,
+    };
+    let project = SavedProject {
+        id,
+        created_at: OffsetDateTime::now_utc(),
+        modified_at: None,
+        data,
     }
     .into();
     let data = Data { project };
@@ -90,11 +94,13 @@ fn roundtrip() {
     let id = ProjectId(Uuid::new_v4());
     let project = Project::Saved(SavedProject {
         id,
-        title: "Project".into(),
         created_at: OffsetDateTime::now_utc(),
         modified_at: None,
-        plant_profile,
-        optimization_scenario,
+        data: ProjectData {
+            title: Some("Project".into()),
+            plant_profile,
+            optimization_scenario,
+        },
     });
     let data = Data {
         project: project.clone(),
