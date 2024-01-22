@@ -1,7 +1,8 @@
 use std::{collections::HashMap, sync::Arc};
 
+use anyhow::anyhow;
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::{header, Method, StatusCode, Uri},
     response::{Html, IntoResponse, Json, Response},
     routing::{delete, get, post, put},
@@ -11,18 +12,20 @@ use axum_extra::TypedHeader;
 use headers::{authorization::Bearer, Authorization};
 use parking_lot::RwLock;
 use rust_embed::RustEmbed;
+use serde::Deserialize;
 use time::{Duration, OffsetDateTime};
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
-use klick_application::{usecases, AccountRepo as _};
+use klick_application::{usecases, AccountRepo as _, ProjectRepo};
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
 use klick_domain::{
     authentication::{Account, EmailAddress, EmailNonce, Password},
     ProjectId,
 };
+use klick_pdf_export::export_to_pdf;
 
 mod adapters;
 mod config;
@@ -87,6 +90,7 @@ pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> 
         .route("/project/:id", put(update_project))
         .route("/project/:id", get(get_project))
         .route("/project/:id", delete(delete_project))
+        .route("/project/:id/export", get(get_export))
         .route_layer(cors_layer)
         .with_state(shared_state);
 
@@ -296,6 +300,59 @@ async fn get_project(
     let id = ProjectId::from_uuid(uuid);
     let project = usecases::read_project(&state.db, id)?;
     Ok(Json(project.into()))
+}
+
+#[derive(Deserialize)]
+struct Export {
+    format: Format,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum Format {
+    Json,
+    Pdf,
+}
+
+async fn get_export(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>,
+    Query(params): Query<Export>,
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+) -> std::result::Result<Response, ApiError> {
+    account_from_token(&state, auth)?;
+    let id = ProjectId::from_uuid(uuid);
+    log::debug!("Export project {id:?}");
+    let Some(project) = state.db.find_project(&id)? else {
+        return Err(ApiError::from(anyhow!("project not found")));
+    };
+    let project = boundary::Project::from(project);
+    match params.format {
+        Format::Json => {
+            let data = boundary::Data { project };
+            let json_string = boundary::export_to_string_pretty(&data);
+            let headers = [
+                (header::CONTENT_TYPE, "application/json; charset=utf-8"),
+                (
+                    header::CONTENT_DISPOSITION,
+                    "attachment; filename=report.json",
+                ),
+            ];
+            Ok((headers, json_string).into_response())
+        }
+        Format::Pdf => {
+            let project_data = project.into_project_data();
+            let bytes = export_to_pdf(project_data)?;
+            let headers = [
+                (header::CONTENT_TYPE, "application/pdf"),
+                (
+                    header::CONTENT_DISPOSITION,
+                    "attachment; filename=report.pdf",
+                ),
+            ];
+            Ok((headers, bytes).into_response())
+        }
+    }
 }
 
 async fn get_all_projects(

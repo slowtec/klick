@@ -1,5 +1,6 @@
 use std::net::SocketAddr;
 
+use reqwest::header;
 use serde_json::{json, Value};
 use tokio::net::TcpListener;
 
@@ -200,10 +201,19 @@ mod auth {
     }
 }
 
+const EXAMPLE_PROJECT: &str = include_str!("unsaved_example_project_v6.json");
+
+#[test]
+fn use_actual_data_version_for_tests() {
+    let data = serde_json::from_str::<Value>(EXAMPLE_PROJECT).unwrap();
+    assert_eq!(
+        data["version"].as_i64().unwrap() as u32,
+        boundary::CURRENT_VERSION
+    );
+}
+
 mod projects {
     use super::*;
-
-    const EXAMPLE_PROJECT: &str = include_str!("unsaved_example_project_v5.json");
 
     #[tokio::test]
     async fn create_new() {
@@ -232,5 +242,50 @@ mod projects {
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 200);
         res.json::<uuid::Uuid>().await.unwrap();
+    }
+}
+
+mod export {
+    use super::*;
+
+    #[ignore]
+    // TODO:
+    // PDF creation takes too much time for frequent tests.
+    // In addition, the test sometimes explodes. Presumably because external programs are involved.
+    // One solution would be to provide a dummy PDF for the tests.
+    #[tokio::test]
+    async fn export_pdf_report() {
+        let (addr, db) = run_server().await;
+        let token = register_and_login_test_account(&db, addr).await;
+        set_email_address_as_confirmed(&db, TEST_ACCOUNT_EMAIL);
+        let client = reqwest::Client::new();
+
+        let project = &serde_json::from_str::<Value>(EXAMPLE_PROJECT).unwrap()["project"];
+        let project_id = client
+            .post(endpoint(addr, "/project"))
+            .bearer_auth(token.clone())
+            .json(&project)
+            .send()
+            .await
+            .unwrap()
+            .json::<uuid::Uuid>()
+            .await
+            .unwrap();
+
+        let endpoint = endpoint(addr, &format!("/project/{project_id}/export?format=pdf"));
+        let res = client
+            .get(endpoint)
+            .bearer_auth(token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(res.status(), 200);
+        assert_eq!(res.headers()[header::CONTENT_TYPE], "application/pdf");
+    }
+
+    #[ignore]
+    #[tokio::test]
+    async fn export_json_report() {
+        let (_addr, _db) = run_server().await;
     }
 }
