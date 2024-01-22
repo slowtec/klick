@@ -9,7 +9,7 @@ rust-version.workspace = true
 [dependencies]
 klick-format-numbers = "=0.0.0"
 
-leptos = "0.6.0-beta"
+leptos = "0.5.7"
 log = "0.4.20"
 
 [features]
