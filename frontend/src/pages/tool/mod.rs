@@ -18,21 +18,21 @@ use crate::{
     sankey,
 };
 
-mod action_panel;
 mod breadcrumbs;
 mod example_data;
 mod field_sets;
 mod fields;
 mod input_data_list;
 mod optimization_options;
+mod project_menu;
 
 use self::{
-    action_panel::ActionPanel,
     breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
     fields::{load_project_fields, read_input_fields, FieldId, ScenarioFieldId},
     input_data_list::InputDataList,
     optimization_options::OptimizationOptions,
+    project_menu::ProjectMenu,
 };
 
 const CHART_ELEMENT_ID: &str = "chart";
@@ -287,7 +287,7 @@ pub fn Tool(
 
     let clear_signals = {
         let signals = Rc::clone(&signals);
-        move || {
+        move |_| {
             for s in signals.values() {
                 s.clear();
             }
@@ -297,7 +297,7 @@ pub fn Tool(
 
     let load_example_values = {
         let signals = Rc::clone(&signals);
-        move || {
+        move |_| {
             current_project.set(None);
             example_data::load_example_field_signal_values(&signals);
         }
@@ -424,12 +424,12 @@ pub fn Tool(
 
     view! {
       <div class="space-y-12">
-        <ActionPanel
-          is_logged_in
+        <ProjectMenu
+          logged_in = is_logged_in
           clear = clear_signals
           load = load_example_values
-          download
           save = save_project
+          download
           upload_action
         />
         { move || save_result_message.get().map(|res| match res {
