@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "project": {
     "plant_profile": {
       "plant_name": "Muster Klärwerk",
@@ -24,10 +24,11 @@
         "emission_factor_electricity_mix": 420.0
       },
       "sewage_sludge_treatment": {
-        "open_sludge_bags": true,
-        "open_sludge_storage_containers": false,
+        "sludge_bags_are_open": true,
+        "sludge_storage_containers_are_open": true,
         "sewage_sludge_for_disposal": 3016.5,
-        "transport_distance": 150.0
+        "transport_distance": 150.0,
+        "digester_count": 3
       },
       "operating_materials": {
         "fecl3": 310.5,

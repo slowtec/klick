@@ -1463,6 +1463,7 @@ dependencies = [
  "klick-boundary",
  "klick-db-sqlite",
  "klick-domain",
+ "klick-pdf-export",
  "lettre",
  "log",
  "mime_guess",

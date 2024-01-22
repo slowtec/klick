@@ -5,7 +5,7 @@ use lazy_static::lazy_static;
 use pandoc::{InputKind, OutputFormat, OutputKind, PandocOutput};
 use serde::Serialize;
 use tera::{Context, Tera};
-use time::{format_description::FormatItem, macros::format_description, OffsetDateTime};
+use time::{format_description::FormatItem, macros::format_description, OffsetDateTime, UtcOffset};
 
 use klick_app_charts as charts;
 use klick_application::usecases;
@@ -162,12 +162,15 @@ fn render_pdf(markdown: String) -> anyhow::Result<Vec<u8>> {
 
 const DATE_FORMAT_DESCRIPTION: &[FormatItem<'_>] = format_description!("[day].[month].[year]");
 
+const DEFAULT_OFFSET_HOURS: i8 = 1;
+
 fn current_date_as_string() -> anyhow::Result<String> {
     let now_utc = OffsetDateTime::now_utc();
     // FIXME:
     // This offset depends on the location of the system.
     // Use German offset but also check the Sommer-/Winterzeit.
-    let local_offset = time::UtcOffset::current_local_offset()?;
+    let local_offset = UtcOffset::current_local_offset()
+        .or_else(|_| UtcOffset::from_hms(DEFAULT_OFFSET_HOURS, 0, 0))?;
     let local_date_time = now_utc.to_offset(local_offset);
     let date = local_date_time.format(DATE_FORMAT_DESCRIPTION)?;
     Ok(date)
