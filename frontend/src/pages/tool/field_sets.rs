@@ -10,6 +10,22 @@ pub type Field = forms::Field<Id>;
 pub fn field_sets() -> Vec<FieldSet> {
     vec![
     FieldSet {
+        title: None,
+        fields: vec![
+            Field {
+                id: Id::ProjectName,
+                label: "Projektname",
+                description: None,
+                required: false,
+                field_type: FieldType::Text {
+                    initial_value: None,
+                    placeholder: Some("Projektname"),
+                    max_len: None,
+                },
+            },
+        ]
+    },
+    FieldSet {
         title: Some("Angaben zur Kläranlage"),
         fields: vec![
             Field {

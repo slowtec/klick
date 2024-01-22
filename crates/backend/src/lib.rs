@@ -281,11 +281,14 @@ async fn new_project(
 async fn update_project(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-    Json(data): Json<boundary::SavedProject>,
+    Json(updated): Json<boundary::SavedProject>,
 ) -> Result<()> {
     let account = account_from_token(&state, auth)?;
-    let mut project = Project::from(data);
+    let Some(mut project) = state.db.find_project(&updated.id.into())? else {
+        return Err(anyhow!("project not found").into());
+    };
     project.modified_at = Some(OffsetDateTime::now_utc());
+    project.data = updated.data;
     state.db.save_project(project, &account.email)?;
     Ok(Json(()))
 }

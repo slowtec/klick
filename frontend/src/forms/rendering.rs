@@ -25,7 +25,7 @@ where
             let id = field.id;
             let label = field.label;
             let required = field.required;
-            let field_id: String = crate::forms::form_field_id(&field.id);
+            let field_id = crate::forms::form_field_id(&field.id);
 
             let (field_signal, view) = render_field(field, field_id.clone());
             field_views.push(view);

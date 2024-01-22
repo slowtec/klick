@@ -5,13 +5,15 @@ use leptos::*;
 use strum::IntoEnumIterator;
 
 use klick_boundary::{
-    export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, ProjectData,
+    export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
+    SavedProject,
 };
 use klick_domain as domain;
 use klick_format_numbers::Lng;
 use klick_svg_charts::BarChart;
 
 use crate::{
+    api::AuthorizedApi,
     forms::{self, FieldSignal, MissingField},
     sankey,
 };
@@ -28,9 +30,7 @@ use self::{
     action_panel::ActionPanel,
     breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
-    fields::{
-        load_project_fields, read_input_fields, read_scenario_fields, FieldId, ScenarioFieldId,
-    },
+    fields::{load_project_fields, read_input_fields, FieldId, ScenarioFieldId},
     input_data_list::InputDataList,
     optimization_options::OptimizationOptions,
 };
@@ -55,7 +55,10 @@ impl PageSection {
 
 #[component]
 #[allow(clippy::too_many_lines)]
-pub fn Tool() -> impl IntoView {
+pub fn Tool(
+    api: Signal<Option<AuthorizedApi>>,
+    current_project: RwSignal<Option<Project>>,
+) -> impl IntoView {
     let field_sets = field_sets();
     let (signals, set_views, required_fields) = forms::render_field_sets(field_sets.clone());
     let signals = Rc::new(signals);
@@ -76,6 +79,7 @@ pub fn Tool() -> impl IntoView {
     let nitrogen_io_warning = RwSignal::new(Option::<String>::None);
     let chemical_oxygen_io_warning = RwSignal::new(Option::<String>::None);
     let phosphorus_io_warning = RwSignal::new(Option::<String>::None);
+    let is_logged_in = Signal::derive(move || api.get().is_some());
 
     let s = Rc::clone(&signals);
 
@@ -110,6 +114,20 @@ pub fn Tool() -> impl IntoView {
             }
         };
         n2o_emission_factor_method.set(Some(f));
+    });
+
+    let s = Rc::clone(&signals);
+    create_effect(move |_| {
+        let Some(project) = current_project.get() else {
+            return;
+        };
+        let (title, id) = match &project {
+            Project::Saved(p) => (p.data.title.clone(), p.id.0.to_string()),
+            Project::Unsaved(data) => (data.title.clone(), "<unsaved>".to_string()),
+        };
+        let title = title.unwrap_or_else(|| "<unsaved>".to_string());
+        log::info!("Load project '{}' (ID = {}) fields", title, id);
+        load_project_fields(&s, project.into());
     });
 
     let s = Rc::clone(&signals);
@@ -273,33 +291,116 @@ pub fn Tool() -> impl IntoView {
             for s in signals.values() {
                 s.clear();
             }
+            current_project.set(None);
         }
     };
 
     let load_example_values = {
         let signals = Rc::clone(&signals);
         move || {
+            current_project.set(None);
             example_data::load_example_field_signal_values(&signals);
         }
     };
 
-    let save_input_values = {
+    let download = {
         let signals = Rc::clone(&signals);
-        move || {
-            let (plant_profile, _) = read_input_fields(&signals, &vec![]);
-            let optimization_scenario = read_scenario_fields(&signals);
-            let project = ProjectData {
-                title: None,
-                plant_profile,
-                optimization_scenario,
-            }
-            .into();
+        move |_| {
+            let project_data = fields::read_all_project_fields(&signals);
+            let project = project_data.into();
             let data = Data { project };
             let json_bytes = export_to_vec_pretty(&data);
 
             let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
 
             ObjectUrl::from(blob)
+        }
+    };
+
+    let save_result_message = RwSignal::new(None);
+
+    let load_action = create_action({
+        let api = api.clone();
+        move |id: &ProjectId| {
+            let id = *id;
+            async move {
+                let Some(api) = api.get() else {
+                    log::warn!("No authorized API");
+                    return;
+                };
+                match api.read_project(&id).await {
+                    Ok(p) => {
+                        current_project.set(Some(p.into()));
+                    }
+                    Err(err) => {
+                        log::warn!("Unable to read project: {err}");
+                    }
+                }
+            }
+        }
+    });
+
+    let save_action = create_action({
+        let api = api.clone();
+        move |project: &Project| {
+            let project = project.clone();
+            async move {
+                let Some(api) = api.get() else {
+                    log::warn!("No authorized API");
+                    return;
+                };
+                let result_msg = match project {
+                    Project::Saved(ref p) => api
+                        .update_project(&p)
+                        .await
+                        .map(|_| {
+                            current_project.set(Some(project));
+                            "Das Projekt wurde gespeichert."
+                        })
+                        .map_err(|err| {
+                            log::warn!("Unable to update project: {err}");
+                            "Das Projekt konnte leider nicht gespeichert werden."
+                        }),
+                    Project::Unsaved(p) => api
+                        .create_project(&p)
+                        .await
+                        .map(|new_id| {
+                            load_action.dispatch(new_id);
+                            "Das Projekt wurde neu angelegt."
+                        })
+                        .map_err(|err| {
+                            log::warn!("Unable to create project: {err}");
+                            "Das Projekt konnte leider nicht gespeichert werden."
+                        }),
+                };
+                save_result_message.set(Some(result_msg));
+            }
+        }
+    });
+
+    let save_project = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            let project_data = fields::read_all_project_fields(&signals);
+            let project = match current_project.get() {
+                Some(Project::Saved(p)) => {
+                    let SavedProject {
+                        id,
+                        created_at,
+                        modified_at,
+                        ..
+                    } = p;
+                    let updated = SavedProject {
+                        id,
+                        created_at,
+                        modified_at,
+                        data: project_data,
+                    };
+                    Project::from(updated)
+                }
+                Some(Project::Unsaved(_)) | None => Project::from(project_data),
+            };
+            save_action.dispatch(project);
         }
     };
 
@@ -324,11 +425,30 @@ pub fn Tool() -> impl IntoView {
     view! {
       <div class="space-y-12">
         <ActionPanel
+          is_logged_in
           clear = clear_signals
           load = load_example_values
-          save_project = save_input_values
+          download
+          save = save_project
           upload_action
         />
+        { move || save_result_message.get().map(|res| match res {
+            Ok(msg) => {
+              view!{
+                <p class="">
+                 { msg }
+                </p>
+              }.into_view()
+            }
+            Err(msg) => {
+              view!{
+                <p class="">
+                 { msg }
+                </p>
+              }.into_view()
+            }
+            })
+        }
         <Breadcrumbs
           entries = { breadcrumps_entries }
           current = current_section

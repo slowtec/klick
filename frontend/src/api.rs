@@ -1,12 +1,16 @@
 use std::fmt;
 
 use gloo_net::http::{Request, RequestBuilder, Response};
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 
-use klick_boundary::json_api::{
-    self, ApiToken, ConfirmEmailAddress, Credentials, RequestPasswordReset, ResetPassword, UserInfo,
+use klick_boundary::{
+    json_api::{
+        self, ApiToken, ConfirmEmailAddress, Credentials, RequestPasswordReset, ResetPassword,
+        UserInfo,
+    },
+    ProjectData, ProjectId, SavedProject,
 };
 
 #[derive(Clone, Copy)]
@@ -17,7 +21,7 @@ pub struct UnauthorizedApi {
 #[derive(Clone)]
 pub struct AuthorizedApi {
     url: &'static str,
-    token: ApiToken,
+    token: ApiToken, // TODO: use something to make cloning cheap
 }
 
 impl fmt::Debug for AuthorizedApi {
@@ -96,9 +100,11 @@ impl AuthorizedApi {
     pub const fn new(url: &'static str, token: ApiToken) -> Self {
         Self { url, token }
     }
+
     fn auth_header_value(&self) -> String {
         format!("Bearer {}", self.token.token)
     }
+
     async fn send<T>(&self, req: RequestBuilder) -> Result<T, Value>
     where
         T: DeserializeOwned,
@@ -109,16 +115,57 @@ impl AuthorizedApi {
             .await?;
         into_json(response).await
     }
+
+    async fn send_with_json<D, T>(&self, req: RequestBuilder, data: &D) -> Result<T, Value>
+    where
+        T: DeserializeOwned,
+        D: Serialize,
+    {
+        let response = req
+            .header("Authorization", &self.auth_header_value())
+            .json(data)?
+            .send()
+            .await?;
+        into_json(response).await
+    }
+
     pub async fn logout(&self) -> Result<(), Value> {
         let url = format!("{}/logout", self.url);
         self.send(Request::post(&url)).await
     }
+
     pub async fn user_info(&self) -> Result<UserInfo, Value> {
         let url = format!("{}/users", self.url);
         self.send(Request::get(&url)).await
     }
+
     pub fn token(&self) -> &ApiToken {
         &self.token
+    }
+
+    pub async fn create_project(&self, project: &ProjectData) -> Result<ProjectId, Value> {
+        let url = format!("{}/project", self.url);
+        self.send_with_json(Request::post(&url), project).await
+    }
+
+    pub async fn read_project(&self, id: &ProjectId) -> Result<SavedProject, Value> {
+        let url = format!("{}/projec/{}", self.url, id.0.to_string());
+        self.send(Request::get(&url)).await
+    }
+
+    pub async fn update_project(&self, project: &SavedProject) -> Result<(), Value> {
+        let url = format!("{}/project/{}", self.url, project.id.0.to_string());
+        self.send_with_json(Request::put(&url), project).await
+    }
+
+    pub async fn all_projects(&self) -> Result<Vec<SavedProject>, Value> {
+        let url = format!("{}/projects", self.url);
+        self.send(Request::get(&url)).await
+    }
+
+    pub async fn delete_project(&self, id: ProjectId) -> Result<(), Value> {
+        let url = format!("{}/project/{}", self.url, id.0.to_string());
+        self.send(Request::delete(&url)).await
     }
 }
 

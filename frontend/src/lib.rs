@@ -5,7 +5,7 @@ use leptos::*;
 use leptos_meta::provide_meta_context;
 use leptos_router::{use_navigate, Route, Router, Routes};
 
-use klick_boundary::json_api::UserInfo;
+use klick_boundary::{self as boundary, json_api::UserInfo};
 
 mod api;
 mod credentials;
@@ -20,7 +20,8 @@ use self::{
     footer::Footer,
     nav::Nav,
     pages::{
-        ConfirmEmailAddress, Faq, Login, Page, Register, ResetPassword, ResetPasswordRequest, Tool,
+        ConfirmEmailAddress, Faq, Login, Page, Projects, Register, ResetPassword,
+        ResetPasswordRequest, Tool,
     },
 };
 
@@ -48,6 +49,7 @@ pub fn App() -> impl IntoView {
     let authorized_api = RwSignal::new(None::<api::AuthorizedApi>);
     let user_info = RwSignal::new(None::<UserInfo>);
     let logged_in = Signal::derive(move || user_info.get().is_some());
+    let current_project = RwSignal::new(None::<boundary::Project>);
 
     // -- actions -- //
 
@@ -155,7 +157,7 @@ pub fn App() -> impl IntoView {
                       </span>
                     </h1>
                   </header>
-                  <Tool />
+                  <Tool api = authorized_api.into() current_project />
                 </Main>
               }
             }
@@ -236,6 +238,21 @@ pub fn App() -> impl IntoView {
               view= move || {
                   view! { <ConfirmEmailAddress api=unauthorized_api /> }
               }
+          />
+          <Route
+              path=Page::Projects.path()
+              view = move || view!
+                {
+                  <Main>
+                    <header class="prose">
+                      <h1 class="mb-8">"Projekte"</h1>
+                    </header>
+                    <Projects
+                      api = authorized_api.into()
+                      current_project
+                    />
+                  </Main>
+                }
           />
         </Routes>
       </Router>

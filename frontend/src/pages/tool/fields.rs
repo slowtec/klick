@@ -16,6 +16,7 @@ pub type RequiredField = forms::RequiredField<FieldId>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum FieldId {
+    ProjectName,
     Name,
     Ew,
     Flow,
@@ -48,6 +49,21 @@ pub enum ScenarioFieldId {
     N2oCustomFactor,
     CH4ChpCalculationMethod,
     CH4ChpCustomFactor,
+}
+
+pub fn read_all_project_fields(signals: &HashMap<FieldId, FieldSignal>) -> ProjectData {
+    let (plant_profile, _) = read_input_fields(&signals, &vec![]);
+    let optimization_scenario = read_scenario_fields(&signals);
+    let title = read_title(&signals);
+    ProjectData {
+        title,
+        plant_profile,
+        optimization_scenario,
+    }
+}
+
+pub fn read_title(s: &HashMap<FieldId, FieldSignal>) -> Option<String> {
+    s.get(&FieldId::ProjectName).and_then(FieldSignal::get_text)
 }
 
 pub fn read_input_fields(
@@ -179,23 +195,23 @@ fn float_to_sting_option(f: Option<f64>) -> Option<String> {
 
 #[allow(clippy::too_many_lines)]
 pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Project) {
-    let (plant_profile, optimization_scenario) = match project {
+    let (title, plant_profile, optimization_scenario) = match project {
         Project::Unsaved(ProjectData {
-            title: _,
+            title,
             plant_profile,
             optimization_scenario,
-        }) => (plant_profile, optimization_scenario),
+        }) => (title, plant_profile, optimization_scenario),
         Project::Saved(SavedProject {
             id: _,
             created_at: _,
             modified_at: _,
             data:
                 ProjectData {
-                    title: _,
+                    title,
                     plant_profile,
                     optimization_scenario,
                 },
-        }) => (plant_profile, optimization_scenario),
+        }) => (title, plant_profile, optimization_scenario),
     };
 
     let PlantProfile {
@@ -250,6 +266,11 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         synthetic_polymers,
     } = operating_materials;
 
+    signals
+        .get(&FieldId::ProjectName)
+        .and_then(FieldSignal::get_text_signal)
+        .unwrap()
+        .set(title);
     signals
         .get(&FieldId::Name)
         .and_then(FieldSignal::get_text_signal)
