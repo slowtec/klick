@@ -984,7 +984,7 @@ version = "0.0.0"
 
 [[package]]
 name = "klick-frontend"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "Inflector",
  "anyhow",

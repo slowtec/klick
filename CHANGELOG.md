@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.2 (2024-01-24)
+
+- New:
+  - Add functionality to manage projects online
+
 ## v0.3.1 (2024-01-18)
 
 - New:
