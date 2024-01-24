@@ -52,7 +52,7 @@ fn InfoBox(text: &'static str, children: Children) -> impl IntoView {
 
 #[component]
 fn Card(title: &'static str, children: Children) -> impl IntoView {
-    let hide = RwSignal::<bool>::new(false);
+    let hide = RwSignal::<bool>::new(true);
     let children = children();
 
     view! {
@@ -65,7 +65,7 @@ fn Card(title: &'static str, children: Children) -> impl IntoView {
         >
           <h3 class="font-bold text-lg">{ title }</h3>
           <svg
-            class = move || if hide.get() { "w-3 h-3 shrink-0" } else { "w-3 h-3 rotate-180 shrink-0" }
+            class = move || if hide.get() { "w-3 h-3 rotate-180 shrink-0" } else { "w-3 h-3 shrink-0" }
             aria-hidden="true"
             fill="none"
             viewBox="0 0 10 6"
