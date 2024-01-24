@@ -1,9 +1,9 @@
 use time::{Duration, OffsetDateTime};
 
 use klick_application::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
-use klick_db_sqlite::Connection;
-use klick_domain::{Project, Account, AccountToken, EmailNonce, Nonce, Password, ProjectId};
 use klick_boundary::ProjectData;
+use klick_db_sqlite::Connection;
+use klick_domain::{Account, AccountToken, EmailNonce, Nonce, Password, Project, ProjectId};
 
 #[test]
 fn delete_outdated_unconfirmed_accounts() {
@@ -41,7 +41,6 @@ fn delete_outdated_unconfirmed_accounts() {
         .unwrap()
         .is_some());
 
-
     // -- add account token
     let email_nonce = EmailNonce {
         email: outdated_account.account.email_address.clone(),
@@ -65,7 +64,8 @@ fn delete_outdated_unconfirmed_accounts() {
         modified_at,
         data,
     };
-    db.save_project(project, &outdated_account.account.email_address).unwrap();
+    db.save_project(project, &outdated_account.account.email_address)
+        .unwrap();
 
     // -- delete outated
     let created_before = now - Duration::days(2);

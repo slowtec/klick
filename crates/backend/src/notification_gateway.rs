@@ -1,4 +1,4 @@
-use anyhow::bail;
+use anyhow::{anyhow, bail};
 use lettre::{
     message::{header::ContentType, Mailbox},
     transport::smtp::authentication::Credentials,
@@ -37,7 +37,10 @@ fn mailer_from_cfg(config: &Config) -> anyhow::Result<Mailer> {
     let Some(smtp) = &config.smtp else {
         bail!("no SMTP configuration found");
     };
-    let from = smtp.from.parse::<Mailbox>()?;
+    let from = smtp
+        .from
+        .parse::<Mailbox>()
+        .map_err(|err| anyhow!("Invalid 'from' address: {err}"))?;
     let creds = Credentials::new(smtp.username.clone(), smtp.password.clone());
     let transport = match smtp.encryption {
         Encryption::TLS => SmtpTransport::relay(&smtp.server)?,
@@ -48,6 +51,7 @@ fn mailer_from_cfg(config: &Config) -> anyhow::Result<Mailer> {
         transport = transport.port(port);
     }
     let transport = transport.build();
+    log::debug!("Test SMTP connection");
     let is_ok = transport.test_connection()?;
     if !is_ok {
         log::warn!("SMTP connection does not work");
