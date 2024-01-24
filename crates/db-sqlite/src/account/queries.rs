@@ -1,4 +1,5 @@
 use diesel::{prelude::*, sqlite::SqliteConnection};
+use time::OffsetDateTime;
 
 use klick_application::AccountRecord;
 use klick_domain::EmailAddress;
@@ -31,7 +32,7 @@ pub fn fetch_account_from_db(
 
 pub fn insert_or_update_account(
     conn: &mut SqliteConnection,
-    account: models::NewAccount<'_>,
+    account: models::AccountChangeset<'_>,
 ) -> anyhow::Result<()> {
     use schema::accounts::dsl;
 
@@ -67,4 +68,21 @@ pub fn resolve_account_rowid_created_by_email(
         .filter(dsl::email.eq(email.as_str()))
         .first(conn)?;
     Ok(id)
+}
+
+pub fn delete_unconfirmed_accounts(
+    conn: &mut SqliteConnection,
+    created_before: OffsetDateTime,
+) -> anyhow::Result<()> {
+    use schema::accounts::dsl;
+
+    let created_before = created_before.unix_timestamp();
+    diesel::delete(dsl::accounts)
+        .filter(
+            dsl::email_confirmed
+                .eq(false)
+                .and(dsl::created_at.le(created_before)),
+        )
+        .execute(conn)?;
+    Ok(())
 }

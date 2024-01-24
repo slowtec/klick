@@ -29,7 +29,7 @@ where
     let Some(mut record) = repo.find_account(&email_nonce.email)? else {
         return Err(Error::NotFound);
     };
-    debug_assert_eq!(record.account.email, email_nonce.email);
+    debug_assert_eq!(record.account.email_address, email_nonce.email);
     record.account.email_confirmed = true;
     record.password = new_password;
     repo.save_account(&record)?;

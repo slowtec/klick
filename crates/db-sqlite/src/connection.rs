@@ -41,8 +41,13 @@ impl Connection {
     }
 
     pub fn run_embedded_database_migrations(&self) -> anyhow::Result<()> {
-        log::info!("Running embedded account database migrations");
         run_embedded_database_migrations(self, MIGRATIONS)
+    }
+    pub fn delete_old_unconfirmed_accounts(
+        &self,
+        created_before: OffsetDateTime,
+    ) -> anyhow::Result<()> {
+        delete_old_unconfirmed_accounts(self, created_before)
     }
 }
 
@@ -56,12 +61,21 @@ fn run_embedded_database_migrations(
     connection: &Connection,
     migrations: EmbeddedMigrations,
 ) -> anyhow::Result<()> {
+    log::info!("Running embedded account database migrations");
     connection
         .0
         .lock()
         .run_pending_migrations(migrations)
         .map_err(|err| anyhow!("unable to do database migrations: {err}"))?;
     Ok(())
+}
+
+fn delete_old_unconfirmed_accounts(
+    connection: &Connection,
+    created_before: OffsetDateTime,
+) -> anyhow::Result<()> {
+    log::info!("Delete unconfirmed_accounts created before {created_before}");
+    account::queries::delete_unconfirmed_accounts(&mut connection.0.lock(), created_before)
 }
 
 impl AccountRepo for Connection {

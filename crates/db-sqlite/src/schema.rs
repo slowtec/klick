@@ -6,6 +6,7 @@ table! {
         email -> Text,
         email_confirmed -> Bool,
         password -> Text,
+        created_at -> BigInt,
     }
 }
 

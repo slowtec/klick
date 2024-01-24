@@ -1,4 +1,5 @@
 use thiserror::Error;
+use time::OffsetDateTime;
 
 use klick_domain::{Account, EmailAddress, Password};
 
@@ -17,9 +18,11 @@ where
     if repo.find_account(&email_address)?.is_some() {
         return Err(Error::AlreadyExists);
     };
+    let created_at = OffsetDateTime::now_utc();
     let account = Account {
-        email: email_address.clone(),
+        email_address: email_address.clone(),
         email_confirmed: false,
+        created_at,
     };
     let password = password.to_hashed();
     let record = AccountRecord { account, password };

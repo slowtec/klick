@@ -12,7 +12,7 @@ use axum_extra::TypedHeader;
 use headers::{authorization::Bearer, Authorization};
 use parking_lot::RwLock;
 use rust_embed::RustEmbed;
-use time::OffsetDateTime;
+use time::{Duration, OffsetDateTime};
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
@@ -46,9 +46,13 @@ pub async fn run(config: &Config) -> anyhow::Result<()> {
     Ok(())
 }
 
+const VALIDITY_PERIOD_OF_UNCONFIRMED_ACCOUNTS: Duration = Duration::days(2);
+
 pub fn create_db_connection(config: &Config) -> anyhow::Result<Connection> {
     let db = Connection::establish(&config.db_connection)?;
     db.run_embedded_database_migrations()?;
+    let created_before = OffsetDateTime::now_utc() - VALIDITY_PERIOD_OF_UNCONFIRMED_ACCOUNTS;
+    db.delete_old_unconfirmed_accounts(created_before)?;
     Ok(db)
 }
 
@@ -165,7 +169,7 @@ async fn login(
         .parse::<Password>()
         .map_err(ApiError::LoginPassword)?;
     let account = usecases::login(&state.db, &email, &password)?;
-    debug_assert_eq!(account.email, email);
+    debug_assert_eq!(account.email_address, email);
     let token = Uuid::new_v4();
     state.tokens.write().insert(token, account);
     Ok(Json(json_api::ApiToken {
@@ -190,7 +194,7 @@ async fn account_info(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::UserInfo> {
     let account = account_from_token(&state, auth)?;
-    let email = account.email.into_string();
+    let email = account.email_address.into_string();
     let user_info = json_api::UserInfo { email };
     Ok(Json(user_info))
 }
@@ -273,7 +277,7 @@ async fn new_project(
         modified_at,
         data,
     };
-    state.db.save_project(project, &account.email)?;
+    state.db.save_project(project, &account.email_address)?;
     let id = boundary::ProjectId::from(id);
     Ok(Json(id))
 }
@@ -289,7 +293,7 @@ async fn update_project(
     };
     project.modified_at = Some(OffsetDateTime::now_utc());
     project.data = updated.data;
-    state.db.save_project(project, &account.email)?;
+    state.db.save_project(project, &account.email_address)?;
     Ok(Json(()))
 }
 
@@ -311,7 +315,7 @@ async fn get_all_projects(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<Vec<boundary::SavedProject>> {
     let account = account_from_token(&state, auth)?;
-    let projects = state.db.all_projects_by_owner(&account.email)?;
+    let projects = state.db.all_projects_by_owner(&account.email_address)?;
     let projects = projects.into_iter().map(Into::into).collect();
     Ok(Json(projects))
 }
@@ -343,10 +347,13 @@ fn account_from_token(
         .ok_or(AuthError::NotAuthorized)?;
 
     // check if account still exits
-    let Some(record) = state.db.find_account(&account.email).map_err(|err| {
-        log::warn!("Unable to find account: {err}");
-        ApiError::InternalServerError
-    })?
+    let Some(record) = state
+        .db
+        .find_account(&account.email_address)
+        .map_err(|err| {
+            log::warn!("Unable to find account: {err}");
+            ApiError::InternalServerError
+        })?
     else {
         return Err(AuthError::NotAuthorized.into());
     };
