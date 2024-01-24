@@ -26,5 +26,9 @@ thiserror = "1.0.56"
 time = "0.3.31"
 uuid = "1.7.0"
 
+[dev-dependencies.klick-boundary]
+version = "=0.0.0"
+features = ["conversion", "extra-derive"]
+
 [lints]
 workspace = true
