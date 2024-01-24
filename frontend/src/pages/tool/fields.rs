@@ -66,6 +66,8 @@ pub fn read_title(s: &HashMap<FieldId, FieldSignal>) -> Option<String> {
     s.get(&FieldId::ProjectName).and_then(FieldSignal::get_text)
 }
 
+const DEFAULT_OPEN_SLUDGE_STORAGE_CONTAINERS_VALUE: bool = false;
+
 pub fn read_input_fields(
     s: &HashMap<FieldId, FieldSignal>,
     required_fields: &Vec<RequiredField>,
@@ -124,9 +126,10 @@ pub fn read_input_fields(
         open_sludge_bags: s
             .get(&FieldId::Schlammtaschen)
             .and_then(FieldSignal::get_bool),
-        open_sludge_storage_containers: s
+        open_sludge_storage_containers: Some(s
             .get(&FieldId::Schlammstapel)
-            .and_then(FieldSignal::get_bool),
+            .and_then(FieldSignal::get_bool)
+            .unwrap_or(DEFAULT_OPEN_SLUDGE_STORAGE_CONTAINERS_VALUE)),
         sewage_sludge_for_disposal: s
             .get(&FieldId::KlaerschlammEnstorgung)
             .and_then(FieldSignal::get_float),
@@ -254,7 +257,7 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
 
     let SewageSludgeTreatment {
         open_sludge_bags,
-        open_sludge_storage_containers,
+        open_sludge_storage_containers:_,
         sewage_sludge_for_disposal,
         transport_distance,
     } = sewage_sludge_treatment;
@@ -357,11 +360,6 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .and_then(FieldSignal::get_bool_signal)
         .unwrap()
         .set(open_sludge_bags == Some(true));
-    signals
-        .get(&FieldId::Schlammstapel)
-        .and_then(FieldSignal::get_bool_signal)
-        .unwrap()
-        .set(open_sludge_storage_containers == Some(true));
     signals
         .get(&FieldId::KlaerschlammTransport)
         .and_then(FieldSignal::get_float_signal)
