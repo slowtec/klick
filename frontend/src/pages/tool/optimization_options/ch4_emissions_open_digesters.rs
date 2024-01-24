@@ -114,10 +114,11 @@ pub fn options(
         </div>
         <InfoBox text = "Auch Schlammstapelbehälter tragen maßgeblich zu Methanemissionen bei, falls diese nicht geschlossen sind/werden.">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S. 24)" url = DWA_MERKBLATT_URL >
-            "Messungen von OShITA et al. (2014) zeigen mit einer im Nacheindicker vorliegenden CH4-Konzentration,
+            "Messungen von OSHITA et al. (2014) zeigen mit einer im Nacheindicker vorliegenden CH"<sub>4</sub>"-Konzentration,
             die 16 % über der theoretischen Löslichkeit von Methan lag,
-            die Relevanz des Nachga-sungspotenzials für die Reduzierung der THG-Emission aus der Schlammbehandlung.
-            Im Klärwerk Köhlbrandhöft werden seit Abdeckung des Nacheindickers ca. 1.100 m CH /d zusätzlich der Gasver-wertung zugeführt,
+            die Relevanz des Nachgasungspotenzials für die Reduzierung der THG-Emission aus der Schlammbehandlung.
+            Im Klärwerk Köhlbrandhöft werden seit Abdeckung des Nacheindickers ca. 1.100 m"<sup>3</sup>" CH"<sub>4</sub>"/d
+            zusätzlich der Gasverwertung zugeführt,
             welche ohne Abdeckung und Verwertung als Treibhausgas emittiert worden wären (SCHÄFER 2020),
             was 1,6 % der täglichen Gasmenge entspricht."
           </Cite>

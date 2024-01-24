@@ -9,8 +9,8 @@ pub fn options() -> impl IntoView {
           text = "Die (jährliche) Überprüfung möglicher Leckagen und deren Behebung, kann signifikant zum THG-Minderungspotenzial an Kläranlagen beitragen."
         >
           <Cite source ="Auszug aus dem DWA-Merkblatt 230-1 (S. 23 und 43)" url = DWA_MERKBLATT_URL>
-            "Methan, das an verschiedenen Behältern und Leitungen durch Undichtigkeiten und/oder Schlupfver-luste austreten kann.
-            Die Roboter erkunden flächendeckend und identifizieren Leckagen auch an Or-ten,
+            "Methan, das an verschiedenen Behältern und Leitungen durch Undichtigkeiten und/oder Schlupfverluste austreten kann.
+            Die Roboter erkunden flächendeckend und identifizieren Leckagen auch an Orten,
             wo sich aufgrund der Lage zuvor kein Monitoring realisieren ließ, und visualisieren die Ergebnisse entsprechend (Bild 7)."
           </Cite>
         </InfoBox>

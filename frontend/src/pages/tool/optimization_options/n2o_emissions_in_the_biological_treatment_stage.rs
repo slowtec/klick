@@ -26,7 +26,12 @@ pub fn options() -> impl IntoView {
               </li>
               <li>
                 <p>
-                "Vermeidung des Auftretens von Nitritkonzentrationen, ausreichendes Denitrifikationsvolumen,"
+                "Vermeidung des Auftretens von Nitritkonzentrationen,"
+                </p>
+              </li>
+              <li>
+                <p>
+                 "ausreichendes Denitrifikationsvolumen,"
                 </p>
               </li>
               <li>
