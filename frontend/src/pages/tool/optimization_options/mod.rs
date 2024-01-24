@@ -9,6 +9,7 @@ mod ch4_emissions_chp;
 mod ch4_emissions_open_digesters;
 mod ch4_emissions_pre_treatment;
 mod excess_energy_co2_equivalent;
+mod n2o_emissions_in_the_biological_treatment_stage;
 
 const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";
@@ -23,6 +24,7 @@ pub fn OptimizationOptions(
       { ch4_emissions_chp::options(input_data, n2o_emission_factor_method) }
       { ch4_emissions_open_digesters::options(input_data, n2o_emission_factor_method) }
       { excess_energy_co2_equivalent::options(input_data, n2o_emission_factor_method) }
+      { n2o_emissions_in_the_biological_treatment_stage::options() }
     }
 }
 
