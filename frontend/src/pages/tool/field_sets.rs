@@ -404,17 +404,6 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::Schlammstapel,
-                label: "Offene Schlammstapelbehälter",
-                description: Some(
-                    "Falls die Schlammstapelbehälter Ihrer Kläranlage nicht geschlossen sind, sondern offen betrieben werden, dann dieses Feld bitte anklicken.",
-                ),
-                required: false,
-                field_type: FieldType::Bool {
-                    initial_value: None,
-                },
-            },
-            Field {
                 id: Id::KlaerschlammEnstorgung,
                 label: "Klärschlamm zur Entsorgung",
                 description: Some(
