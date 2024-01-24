@@ -556,26 +556,33 @@ pub fn Tool(
 
       <div id={ CHART_ELEMENT_ID } class="mt-8"></div>
 
-      <div class="my-8 border-b border-gray-200 pb-5" >
-        <h3
-          class="text-xl font-semibold leading-6 text-gray-900 cursor-pointer"
-          on:click = move |_| {
-            current_section.set(Some(PageSection::OptimizationOptions));
-          }
-        >
-          "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
-        </h3>
-        <p class="mt-2 max-w-4xl text-lg text-gray-500">
-          "Die vorgestellten Handlungsempfehlungen stellen eine erste Auswahl
-          an möglichen Minderungsmaßnahmen für Treibhausgasemissionen (THG) an Kläranlagen dar.
-          Diese sollen Ihnen wichtige Mehrwerte bieten, um die Klimaauswirkungen Ihrer Kläranlage zu minimieren
-          und deren Wettbewerbsfähigkeit langfristig zu sichern."
-        </p>
-      </div>
-      <OptimizationOptions
-        input_data = input_data.into()
-        n2o_emission_factor_method = n2o_emission_factor_method.into()
-      />
+      <Show
+        when = move || current_section.get() == Some(PageSection::OptimizationOptions)
+        fallback = move || view! {
+          <button
+            class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
+            on:click = move |_| current_section.set(Some(PageSection::OptimizationOptions))
+          >
+             "zu den Handlungsempfehlungen"
+          </button>
+        }
+      >
+        <div class="my-8 border-b border-gray-200 pb-5" >
+          <h3 class="text-xl font-semibold leading-6 text-gray-900">
+            "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
+          </h3>
+          <p class="mt-2 max-w-4xl text-lg text-gray-500">
+            "Die vorgestellten Handlungsempfehlungen stellen eine erste Auswahl
+            an möglichen Minderungsmaßnahmen für Treibhausgasemissionen (THG) an Kläranlagen dar.
+            Diese sollen Ihnen wichtige Mehrwerte bieten, um die Klimaauswirkungen Ihrer Kläranlage zu minimieren
+            und deren Wettbewerbsfähigkeit langfristig zu sichern."
+          </p>
+        </div>
+        <OptimizationOptions
+          input_data = input_data.into()
+          n2o_emission_factor_method = n2o_emission_factor_method.into()
+        />
+      </Show>
     }
 }
 
