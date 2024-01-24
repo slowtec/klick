@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.3 (2024-01-24)
+
+- New:
+  - Delete outdated unconfirmed accounts
+
 ## v0.3.2 (2024-01-24)
 
 - New:
