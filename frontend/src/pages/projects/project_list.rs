@@ -74,6 +74,14 @@ fn Project(
         }
     });
 
+    let offset_minutes = js_sys::Date::new_0().get_timezone_offset();
+    let offset_seconds = -(offset_minutes as i32) * 60;
+    let local_offset = time::UtcOffset::from_whole_seconds(offset_seconds)
+        .map_err(|_| {
+            log::warn!("Unable to determine local timezone");
+        })
+        .unwrap_or(time::UtcOffset::UTC);
+
     view! {
       <div class="min-w-0">
         <div class="flex items-start gap-x-3">
@@ -83,7 +91,7 @@ fn Project(
           <p class="whitespace-nowrap">
             "Erstellt am "
             <time datetime= { project.created_at.format(&Rfc3339).ok() } >
-              { project.created_at.format(DATE_TIME_FORMAT).ok() }
+              { project.created_at.to_offset(local_offset).format(DATE_TIME_FORMAT).ok() }
             </time>
           </p>
           { project.modified_at.map(|modified|view!
@@ -94,7 +102,7 @@ fn Project(
               <p class="whitespace-nowrap">
                 "Verändert am "
                 <time datetime= { modified.format(&Rfc3339).ok() } >
-                  { modified.format(DATE_TIME_FORMAT).ok() }
+                  { modified.to_offset(local_offset).format(DATE_TIME_FORMAT).ok() }
                 </time>
               </p>
             })
