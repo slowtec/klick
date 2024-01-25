@@ -27,7 +27,14 @@ pub fn ProjectList(
               <ul role="list" class="divide-y divide-gray-100">
               {
                 let mut projects = projects.get().clone();
-                projects.sort_by(|a,b| a.modified_at.cmp(&b.modified_at));
+                projects.sort_by(|a,b|{
+                  match (a.modified_at, b.modified_at) {
+                    (Some(x),Some(y)) => x.cmp(&y),
+                    (Some(x),None) => x.cmp(&b.created_at),
+                    (None,Some(y)) => a.created_at.cmp(&y),
+                    (None, None) => a.created_at.cmp(&b.created_at)
+                  }
+                });
 
                 projects.into_iter().rev().map(|project|view!{
                   <li class="flex items-center justify-between gap-x-6 py-5">
