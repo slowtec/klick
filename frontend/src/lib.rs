@@ -241,8 +241,9 @@ pub fn App() -> impl IntoView {
           />
           <Route
               path=Page::Projects.path()
-              view = move || view!
-                {
+              view = move || {
+                set_current_page.update(|p|*p = Page::Projects);
+                view! {
                   <Main>
                     <header class="prose">
                       <h1 class="mb-8">"Projekte"</h1>
@@ -253,6 +254,7 @@ pub fn App() -> impl IntoView {
                     />
                   </Main>
                 }
+              }
           />
         </Routes>
       </Router>

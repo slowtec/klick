@@ -99,6 +99,7 @@ pub fn Nav(
         <div class= move || if mobile_menu_is_open.get() { "sm:hidden" } else { "hidden" } >
           <div class="space-y-1 pb-3 pt-2">
             <MobileNavLink page=Page::Home current_page label="KlicK" />
+            <MobileNavLink page=Page::Projects current_page label="Projekte" />
             <MobileNavLink page=Page::Tool current_page label="Tool" />
             <MobileNavLink page=Page::Faq  current_page label="FAQs" />
           </div>
