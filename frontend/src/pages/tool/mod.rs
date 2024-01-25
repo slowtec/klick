@@ -205,11 +205,11 @@ pub fn Tool(
                     };
 
                     let scenario = domain::OptimizationScenario {
-                    n2o_emission_factor,
-                    ch4_chp_emission_factor: None,
-                 };
+                      n2o_emission_factor,
+                      ch4_chp_emission_factor: None,
+                    };
 
-                 let output_data = klick_application::calculate_emissions(&input_data, scenario);
+                    let output_data = klick_application::calculate_emissions(&input_data, scenario);
 
                     if selected_scenario.get() == Some(i as u64) {
                         let name_ka: String = s
@@ -225,8 +225,9 @@ pub fn Tool(
                         let einheit = "t CO₂ Äquivalente/Jahr";
                         let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
                         selected_scenario_name.set(szenario_name.to_string().clone());
+                        let ef = Lng::De.format_number_with_precision(f64::from(output_data.n2o_emission_factor) * 100.0, 2);
                         let title = format!(
-                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}"
+                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (EF={ef}%)"
                         );
                         sankey_header.set(title);
                         sankey::render(output_data.clone(), CHART_ELEMENT_ID);

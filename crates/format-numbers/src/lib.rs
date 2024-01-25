@@ -26,6 +26,14 @@ impl Lng {
         n.into().to_string().replace('.', self.decimal_separator())
     }
 
+    pub fn format_number_with_precision<N>(&self, n: N, precision: usize) -> String
+    where
+        N: Into<f64>,
+    {
+        let n = n.into();
+        format!("{n:.*}", precision).replace('.', self.decimal_separator())
+    }
+
     #[allow(clippy::missing_panics_doc)]
     pub fn format_number_with_thousands_seperator<N>(&self, n: N) -> String
     where
@@ -47,6 +55,9 @@ fn format_german_numbers() {
     assert_eq!(Lng::De.format_number(0.6), "0,6");
     assert_eq!(Lng::De.format_number(6.0), "6");
     assert_eq!(Lng::De.format_number(6.01), "6,01");
+
+    assert_eq!(Lng::De.format_number_with_precision(6.0, 3), "6,000");
+    assert_eq!(Lng::De.format_number_with_precision(0.6, 3), "0,600");
 }
 
 #[test]
