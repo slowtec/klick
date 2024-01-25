@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.3.4 (2024-01-25)
+
+- New:
+  - Add leak test section
+  - Add emission factor to Sankey header
+  - Add section N2O emissions in the biologicaltreatment stage
+
+- Changed:
+  - Improve project list sorting
+  - Format project dates with local time
+  - Remove 'Offene Schlammstapelbehälter' from input fields
+  - Hide section 'Minderungsmaßnahmen' during data collection
+  - Minimize info boxes by default
+
+- Fixed:
+  - Fixed bug when saving the same project twice
+  - Fix bug in navigation
+  - Fixed some typos
+
 ## v0.3.3 (2024-01-24)
 
 - New:
