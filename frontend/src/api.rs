@@ -149,7 +149,7 @@ impl AuthorizedApi {
     }
 
     pub async fn read_project(&self, id: &ProjectId) -> Result<SavedProject, Value> {
-        let url = format!("{}/projec/{}", self.url, id.0.to_string());
+        let url = format!("{}/project/{}", self.url, id.0.to_string());
         self.send(Request::get(&url)).await
     }
 

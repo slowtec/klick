@@ -15,6 +15,7 @@ use klick_svg_charts::BarChart;
 use crate::{
     api::AuthorizedApi,
     forms::{self, FieldSignal, MissingField},
+    message::{ErrorMessage, SuccessMessage},
     sankey,
 };
 
@@ -52,6 +53,8 @@ impl PageSection {
         }
     }
 }
+
+const DEFAULT_UNNAMED_PROJECT_TITLE: &str = "Unbenannt";
 
 #[component]
 #[allow(clippy::too_many_lines)]
@@ -351,28 +354,36 @@ pub fn Tool(
                     return;
                 };
                 let result_msg = match project {
-                    Project::Saved(ref p) => api
-                        .update_project(&p)
-                        .await
-                        .map(|_| {
-                            current_project.set(Some(project));
-                            "Das Projekt wurde gespeichert."
-                        })
-                        .map_err(|err| {
-                            log::warn!("Unable to update project: {err}");
-                            "Das Projekt konnte leider nicht gespeichert werden."
-                        }),
-                    Project::Unsaved(p) => api
-                        .create_project(&p)
-                        .await
-                        .map(|new_id| {
-                            load_action.dispatch(new_id);
-                            "Das Projekt wurde neu angelegt."
-                        })
-                        .map_err(|err| {
-                            log::warn!("Unable to create project: {err}");
-                            "Das Projekt konnte leider nicht gespeichert werden."
-                        }),
+                    Project::Saved(mut p) => {
+                        if p.data.title.is_none() || p.data.title.as_deref() == Some("") {
+                            p.data.title = Some(DEFAULT_UNNAMED_PROJECT_TITLE.to_string());
+                        }
+                        api.update_project(&p)
+                            .await
+                            .map(|_| {
+                                current_project.set(Some(Project::Saved(p)));
+                                "Das Projekt wurde gespeichert."
+                            })
+                            .map_err(|err| {
+                                log::warn!("Unable to update project: {err}");
+                                "Das Projekt konnte leider nicht gespeichert werden."
+                            })
+                    }
+                    Project::Unsaved(mut p) => {
+                        if p.title.is_none() || p.title.as_deref() == Some("") {
+                            p.title = Some(DEFAULT_UNNAMED_PROJECT_TITLE.to_string());
+                        }
+                        api.create_project(&p)
+                            .await
+                            .map(|new_id| {
+                                load_action.dispatch(new_id);
+                                "Das Projekt wurde neu angelegt."
+                            })
+                            .map_err(|err| {
+                                log::warn!("Unable to create project: {err}");
+                                "Das Projekt konnte leider nicht gespeichert werden."
+                            })
+                    }
                 };
                 save_result_message.set(Some(result_msg));
             }
@@ -424,36 +435,42 @@ pub fn Tool(
     ];
 
     view! {
-      <div class="space-y-12">
-        <ProjectMenu
-          logged_in = is_logged_in
-          clear = clear_signals
-          load = load_example_values
-          save = save_project
-          download
-          upload_action
-        />
+      <div class="space-y-10">
+        <div class="flex center-items justify-between">
+          <Breadcrumbs
+            entries = { breadcrumps_entries }
+            current = current_section
+          />
+          <ProjectMenu
+            logged_in = is_logged_in
+            clear = clear_signals
+            load = load_example_values
+            save = save_project
+            download
+            upload_action
+          />
+        </div>
         { move || save_result_message.get().map(|res| match res {
-            Ok(msg) => {
-              view!{
-                <p class="">
-                 { msg }
-                </p>
-              }.into_view()
-            }
-            Err(msg) => {
-              view!{
-                <p class="">
-                 { msg }
-                </p>
-              }.into_view()
-            }
+            Ok(msg) => view!{ <SuccessMessage message = msg /> }.into_view(),
+            Err(msg) => view!{ <ErrorMessage message = msg /> }.into_view()
             })
         }
-        <Breadcrumbs
-          entries = { breadcrumps_entries }
-          current = current_section
-        />
+        { move || current_project.get()
+            .and_then(|p|match p {
+              Project::Saved(p) => Some(p),
+              Project::Unsaved(_) => None
+            })
+            .map(|p| view! {
+              <p class="text-xs text-gray-400 !-mb-8">
+                <span class="font-semibold">
+                  "Projekt ID: "
+                </span>
+                <span>
+                  { p.id.0.to_string() }
+                </span>
+              </p>
+            }.into_view())
+        }
         <div
           id = PageSection::DataCollection.section_id()
           class = move || {
