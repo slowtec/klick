@@ -1,5 +1,12 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    cmp::Ordering,
+    collections::{HashMap, HashSet},
+};
+
 use leptos::*;
+
+#[cfg(test)]
+mod tests;
 
 #[derive(Debug, Default, Clone)]
 pub struct Sankey {
@@ -15,7 +22,7 @@ pub struct Node {
 }
 
 impl Node {
-    fn new(value: f64, label: Option<String>, color: Option<String>) -> Self {
+    const fn new(value: f64, label: Option<String>, color: Option<String>) -> Self {
         Self {
             value,
             label,
@@ -32,7 +39,7 @@ pub struct NodePosition {
 }
 
 impl NodePosition {
-    fn new(x: f64, y: f64, height: f64) -> Self {
+    const fn new(x: f64, y: f64, height: f64) -> Self {
         Self { x, y, height }
     }
 }
@@ -71,6 +78,7 @@ impl Sankey {
         self.edges.insert(Edge { source, target });
     }
 
+    #[must_use]
     pub fn node_value(&self, id: &NodeId) -> Option<f64> {
         self.nodes.get(id).map(|n| n.value)
     }
@@ -193,8 +201,7 @@ where
             // TODO: use gradient
             let fill = color
                 .as_ref()
-                .map(|c| c.0.clone())
-                .unwrap_or_else(|| "#555".to_string());
+                .map_or_else(|| "#555".to_string(), |c| c.0.clone());
 
             view! {
               <path
@@ -253,13 +260,12 @@ fn dependencies(edges: &HashSet<Edge>) -> HashMap<NodeId, Dependencies> {
     deps
 }
 
-pub fn merge_layers(layers_a: Vec<Vec<NodeId>>, layers_b: Vec<Vec<NodeId>>) -> Vec<Vec<NodeId>> {
-    let mut layers = layers_a.clone();
-    for (i, layer) in layers_b.iter().enumerate() {
+pub fn merge_layers(mut layers: Vec<Vec<NodeId>>, layers_b: Vec<Vec<NodeId>>) -> Vec<Vec<NodeId>> {
+    for (i, layer) in layers_b.into_iter().enumerate() {
         if layers.len() <= i {
-            layers.push(layer.clone());
+            layers.push(layer);
         } else {
-            layers[i].extend(layer.clone());
+            layers[i].extend(layer);
         }
     }
     layers
@@ -268,8 +274,11 @@ pub fn merge_layers(layers_a: Vec<Vec<NodeId>>, layers_b: Vec<Vec<NodeId>>) -> V
 // layers returns a list of n layers, where layers[0] is on the right side of the sankey and
 // layers[n] on the left side. nodes without inputs are on the left side.
 // NOTE the reversed order before return!
-pub fn layers(deps: &HashMap<NodeId, Dependencies>, nodes: &HashMap<NodeId, Node>) -> Vec<Vec<NodeId>> {
-    let mut root_layer = deps
+pub fn layers(
+    deps: &HashMap<NodeId, Dependencies>,
+    nodes: &HashMap<NodeId, Node>,
+) -> Vec<Vec<NodeId>> {
+    let root_layer = deps
         .iter()
         .filter_map(|(node, Dependencies { outputs, .. })| {
             if outputs.is_empty() {
@@ -279,38 +288,44 @@ pub fn layers(deps: &HashMap<NodeId, Dependencies>, nodes: &HashMap<NodeId, Node
             }
         })
         .collect::<Vec<_>>();
-    let mut final_root_layers: Vec<Vec<NodeId>>;
-    let mut final_leafs_layers: Vec<NodeId>;
-    (final_root_layers, final_leafs_layers) = recursive_layers(&deps, &nodes, root_layer);
+    let (mut final_root_layers, final_leafs_layers) = recursive_layers(deps, nodes, root_layer);
     final_root_layers.extend(vec![final_leafs_layers]);
     final_root_layers.reverse();
     final_root_layers
 }
 
-pub fn recursive_layers (deps: &HashMap<NodeId, Dependencies>, nodes: &HashMap<NodeId, Node>,
-                         current_layer: Vec<NodeId>) -> (Vec<Vec<NodeId>>, Vec<NodeId>) {
-    let mut roots: Vec<Vec<NodeId>> = vec![];
-    let mut leafs: Vec<NodeId> = vec![];
-    let mut current_layer_sorted: Vec<NodeId> = current_layer.clone();
+pub fn recursive_layers(
+    deps: &HashMap<NodeId, Dependencies>,
+    nodes: &HashMap<NodeId, Node>,
+    mut current_layer: Vec<NodeId>,
+) -> (Vec<Vec<NodeId>>, Vec<NodeId>) {
+    let mut roots = vec![];
+    let mut leafs = vec![];
 
-    current_layer_sorted.sort_by(|a, b| nodes[a].value.partial_cmp(&nodes[b].value).unwrap_or(std::cmp::Ordering::Equal));
-    let mut t_roots: Vec<Vec<NodeId>> = vec![];
-    for el in current_layer_sorted.clone() {
+    current_layer.sort_by(|a, b| {
+        nodes[a]
+            .value
+            .partial_cmp(&nodes[b].value)
+            .unwrap_or(Ordering::Equal)
+    });
+    let mut t_roots = vec![];
+    for el in current_layer {
         if deps[&el].inputs.is_empty() {
             leafs.push(el);
             continue;
         }
-        let mut return_roots: Vec<Vec<NodeId>> = vec![];
-        let mut return_leafs: Vec<NodeId> = vec![];
-        let next_layer_nodes = deps.get(&el).unwrap().inputs.clone();
-        (return_roots, return_leafs) = recursive_layers(&deps, &nodes, next_layer_nodes);
-        if return_roots.len() == 0 {
+        let Some(dependency) = deps.get(&el) else {
+            continue;
+        };
+        let next_layer_nodes = dependency.inputs.clone();
+        let (mut return_roots, return_leafs) = recursive_layers(deps, nodes, next_layer_nodes);
+        if return_roots.is_empty() {
             return_roots.push(vec![el]);
         } else {
             return_roots.insert(0, vec![el]);
         }
         t_roots = merge_layers(t_roots, return_roots);
-        leafs.extend(return_leafs.clone());
+        leafs.extend(return_leafs);
     }
     roots = merge_layers(roots, t_roots);
     (roots, leafs)
@@ -325,7 +340,7 @@ fn layer_x_positions(layer_count: usize, width: f64, node_width: f64) -> Vec<f64
 
 // compute node_positions: height, x position and y positions
 fn node_positions(
-    layers: &Vec<Vec<NodeId>>,
+    layers: &[Vec<NodeId>],
     layer_positions: &[f64],
     nodes: &HashMap<NodeId, Node>,
     deps: &HashMap<NodeId, Dependencies>,
@@ -336,19 +351,17 @@ fn node_positions(
     for (j, layer) in layers.iter().enumerate() {
         let x = layer_positions[j];
         let mut layer_y = 0.0;
-        for (i, id) in layer.iter().enumerate() {
+        for id in layer {
             let y = if j == 0 {
                 layer_y
             } else {
-                let mut y = f64::INFINITY;
-                for successor in deps[&id].inputs.clone() {
-                    y = y.min(node_positions[&successor].y);
-                }
-                y
+                deps[&id].inputs.iter().fold(f64::INFINITY, |y, successor| {
+                    y.min(node_positions[&successor].y)
+                })
             };
             let height = nodes[id].value * scale;
-            let label = nodes[id].label.clone().unwrap_or(String::new());
-            node_positions.insert(*id, NodePosition::new ( x, y, height ));
+            let position = NodePosition::new(x, y, height);
+            node_positions.insert(*id, position);
             layer_y += height + gap;
         }
     }
@@ -400,80 +413,49 @@ fn edge_positions(
     nodes: &HashMap<NodeId, Node>,
     deps: &HashMap<NodeId, Dependencies>,
     node_positions: &HashMap<NodeId, NodePosition>,
-    layers: &Vec<Vec<NodeId>>,
+    layers: &[Vec<NodeId>],
     node_width: f64,
 ) -> Vec<(Point, Point, Point, Point, Option<Color>)> {
     let mut total_input_values = HashMap::<NodeId, f64>::new();
     for Edge { source, target } in edges {
         *total_input_values.entry(*target).or_default() += nodes[&source].value;
     }
-    layers.iter().enumerate().flat_map(|(i, layer)| {
-        layer.iter().enumerate().filter_map(|(j, node)| {
-            let from = node_positions[node];
-            let Some(edge) = edges.iter().find(|edge| edge.source == *node) else { return None;};
-            let to = node_positions[&edge.target];
+    layers
+        .iter()
+        .flat_map(|layer| {
+            layer
+                .iter()
+                .filter_map(|node| {
+                    let from = node_positions[node];
+                    let Some(edge) = edges.iter().find(|edge| edge.source == *node) else {
+                        return None;
+                    };
+                    let to = node_positions[&edge.target];
 
-            let scale = to.height / total_input_values[&edge.target];
-            let mut to_y_start = node_positions.get(&edge.target).unwrap().y;
-            if (from.y - to.y).abs() > 1.0 {
-                let prev_nodes = deps[&edge.target].inputs.clone().into_iter().filter(|id| {
-                    from.y - node_positions[&id].y > 1.0
-                }).collect::<Vec<_>>();
-                to_y_start += prev_nodes.iter().fold(0.0, |acc, id| {
-                    acc + node_positions[&id].height
-                });
-            }
-            let to_y_end = to_y_start + nodes[&edge.source].value * scale;
-            let color = nodes[&edge.source].color.clone().map(Color);
-            let points = (
-                Point::new(from.x + node_width, from.y),
-                Point::new(from.x + node_width, from.y + from.height),
-                Point::new(to.x, to_y_start),
-                Point::new(to.x, to_y_end),
-                color,
-            );
-            Some(points)
-        }).collect::<Vec<_>>()
-    }).collect()
+                    let scale = to.height / total_input_values[&edge.target];
+                    let mut to_y_start = node_positions.get(&edge.target).unwrap().y;
+                    if (from.y - to.y).abs() > 1.0 {
+                        let prev_nodes = deps[&edge.target]
+                            .inputs
+                            .iter()
+                            .filter(|id| from.y - node_positions[&id].y > 1.0)
+                            .collect::<Vec<_>>();
+                        to_y_start += prev_nodes
+                            .iter()
+                            .fold(0.0, |acc, id| acc + node_positions[&id].height);
+                    }
+                    let to_y_end = to_y_start + nodes[&edge.source].value * scale;
+                    let color = nodes[&edge.source].color.clone().map(Color);
+                    let points = (
+                        Point::new(from.x + node_width, from.y),
+                        Point::new(from.x + node_width, from.y + from.height),
+                        Point::new(to.x, to_y_start),
+                        Point::new(to.x, to_y_end),
+                        color,
+                    );
+                    Some(points)
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect()
 }
-
-// fn edge_positions(
-//     edges: &HashSet<Edge>,
-//     nodes: &HashMap<NodeId, Node>,
-//     node_positions: &HashMap<NodeId, NodePosition>,
-//     node_width: f64,
-// ) -> Vec<(Point, Point, Point, Point, Option<Color>)> {
-//     let mut total_input_values = HashMap::<NodeId, f64>::new();
-//     let mut relative_heights = HashMap::<NodeId, f64>::new();
-//
-//     for Edge { source, target } in edges {
-//         *total_input_values.entry(*target).or_default() += nodes[&source].value;
-//     }
-//     log::debug!("{total_input_values:?}");
-//
-//     edges
-//         .iter()
-//         .map(|edge| {
-//             let from = node_positions[&edge.source];
-//             let to = node_positions[&edge.target];
-//
-//             let scale = to.height / total_input_values[&edge.target];
-//             let to_y_start = node_positions.get(&edge.source).unwrap().y;
-//             let to_y_end = to_y_start + nodes[&edge.source].value * scale;
-//
-//             let color = nodes[&edge.source].color.clone().map(Color);
-//
-//             let points = (
-//                 Point::new(from.x + node_width, from.y),
-//                 Point::new(from.x + node_width, from.y + from.height),
-//                 Point::new(to.x, to_y_start),
-//                 Point::new(to.x, to_y_end),
-//                 color,
-//             );
-//
-//             *relative_heights.entry(edge.target).or_default() += nodes[&edge.source].value * scale;
-//
-//             points
-//         })
-//         .collect()
-// }

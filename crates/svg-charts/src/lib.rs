@@ -2,9 +2,6 @@
 mod bar;
 mod sankey;
 
-#[cfg(test)]
-mod tests;
-
 #[cfg(feature = "ssr")]
 pub mod ssr;
 

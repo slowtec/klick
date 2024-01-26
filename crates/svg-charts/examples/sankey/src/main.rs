@@ -1,21 +1,12 @@
-use klick_svg_charts::{SankeyChart, SankeyData};
 use leptos::*;
+
+use klick_svg_charts::{SankeyChart, SankeyData};
 
 #[component]
 fn MySankeyChart() -> impl IntoView {
     let mut sankey = SankeyData::new();
     let operating_materials = 149.04749999999999;
 
-    let n2o_plant = 409.0497357374996;
-    let n2o_water = 72.22835441250001;
-    let n2o_emissions = 481.27809014999957;
-    let ch4_sewage_treatment = 322.0;
-
-    let ch4_sludge_storage_containers = 0.0;
-    let ch4_sludge_bags = 15.694308000000003;
-    let ch4_water = 25.38675594;
-    let ch4_combined_heat_and_power_plant = 25.492320000000003;
-    let ch4_emissions = 388.57338394;
     let fecl3 = 122.6475;
     let feclso4 = 0.0;
     let caoh2 = 0.0;
@@ -26,7 +17,6 @@ fn MySankeyChart() -> impl IntoView {
     let electricity_mix = 159.1;
     let sewage_sludge_transport = 39.568938749999994;
     let emissions = 347.0;
-    let direct_emissions = 869.8514740899996;
     let indirect_emissions = 159.1;
     let other_indirect_emissions = 188.61643875;
 
@@ -55,22 +45,6 @@ fn MySankeyChart() -> impl IntoView {
 
     let red = Some("red");
     let emissions = sankey.node(emissions, "Emission", red);
-    let direct_emissions = sankey.node(direct_emissions, "Direkte Emissionen", red);
-    let n2o_emissions = sankey.node(n2o_emissions, "Lachgasemissionen", red);
-    let ch4_emissions = sankey.node(ch4_emissions, "Methanemissionen", red);
-    let n2o_plant = sankey.node(n2o_plant, "N₂O Anlage", red);
-    let n2o_water = sankey.node(n2o_water, "N₂O Gewässer", red);
-
-    let ch4_sewage_treatment = sankey.node(ch4_sewage_treatment, "CH₄ Klärprozess", red);
-    let ch4_sludge_storage_containers = sankey.node(
-        ch4_sludge_storage_containers,
-        "CH₄ Schlupf Schlammstapel",
-        red,
-    );
-    let ch4_sludge_bags = sankey.node(ch4_sludge_bags, "CH₄ Schlupf Schlammtasche", red);
-    let ch4_water = sankey.node(ch4_water, "CH₄ Gewässer", red);
-    let ch4_combined_heat_and_power_plant =
-        sankey.node(ch4_combined_heat_and_power_plant, "CH₄ BHKW", red);
 
     let edges = [
         (foobar_gamma, fecl3),
