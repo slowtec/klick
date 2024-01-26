@@ -5,6 +5,7 @@ pub enum Lng {
 }
 
 impl Lng {
+    #[must_use]
     pub const fn thousands_separator(&self) -> &str {
         match self {
             Self::En => ",",
@@ -12,6 +13,7 @@ impl Lng {
         }
     }
 
+    #[must_use]
     pub const fn decimal_separator(&self) -> &str {
         match self {
             Self::En => ".",
@@ -31,7 +33,7 @@ impl Lng {
         N: Into<f64>,
     {
         let n = n.into();
-        format!("{n:.*}", precision).replace('.', self.decimal_separator())
+        format!("{n:.precision$}").replace('.', self.decimal_separator())
     }
 
     #[allow(clippy::missing_panics_doc)]

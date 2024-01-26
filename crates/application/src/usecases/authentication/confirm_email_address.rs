@@ -9,7 +9,7 @@ where
     R: AccountRepo + AccountTokenRepo,
 {
     // The token should be consumed only once, even if the following fails!
-    let token = usecases::consume_account_token(&repo, &email_nonce).map_err(|err| {
+    let token = usecases::consume_account_token(&repo, email_nonce).map_err(|err| {
         log::warn!(
             "missing or invalid token to reset password for account '{:?}': {err}",
             email_nonce.email,

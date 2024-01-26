@@ -1,4 +1,5 @@
 mod account;
+mod co2_equivalents;
 mod email;
 mod nonce;
 mod optimization_scenario;
@@ -9,6 +10,7 @@ mod units;
 
 pub use self::{
     account::*,
+    co2_equivalents::CO2Equivalents,
     email::{EmailAddress, ParseError as EmailAddressParseError},
     nonce::{AccountToken, EmailNonce, EmailNonceDecodingError, Nonce},
     optimization_scenario::{

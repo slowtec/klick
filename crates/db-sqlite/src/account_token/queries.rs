@@ -76,5 +76,5 @@ pub fn account_token_by_email(
         .select((a_dsl::rowid, t_dsl::nonce, t_dsl::expires_at, a_dsl::email))
         .filter(a_dsl::email.eq(email.as_str()))
         .first::<models::AccountToken>(conn)?;
-    Ok(AccountToken::try_from(token)?)
+    AccountToken::try_from(token)
 }

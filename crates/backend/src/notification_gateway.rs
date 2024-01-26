@@ -56,7 +56,7 @@ fn mailer_from_cfg(config: &Config) -> anyhow::Result<Mailer> {
     if !is_ok {
         log::warn!("SMTP connection does not work");
     };
-    let mailer = Mailer { from, transport };
+    let mailer = Mailer { transport, from };
     Ok(mailer)
 }
 
@@ -101,7 +101,7 @@ fn send_address_confirmation_mail(
     let subject = "Bestätigen Sie Ihre E-Mail Addresse".to_string();
 
     let link = email_confirmation_url(nonce, base_url)?;
-    let body = vec![
+    let body = [
         "Bitte bestätigen Sie Ihre E-Mail Addresse ",
         "indem Sie auf folgenden Link klicken:\n\n",
         &link,
@@ -129,7 +129,7 @@ fn send_reset_password_request_mail(
     let subject = "Passwort zurücksetzen".to_string();
 
     let link = email_confirmation_and_password_reset_url(nonce, base_url)?;
-    let body = vec![
+    let body = [
         "Sie können ihr Passwort zurück setzen,",
         "indem Sie auf folgenden Link klicken:\n\n",
         &link,
@@ -170,7 +170,7 @@ fn create_email_confirmation_url() {
     let nonce = klick_domain::Nonce::new();
     let email_nonce = EmailNonce {
         email: "foo@bar.com".parse().unwrap(),
-        nonce: nonce.clone(),
+        nonce: nonce,
     };
     let base_url = "http://localhost:3000/".parse().unwrap();
     let url = email_confirmation_url(&email_nonce, &base_url).unwrap();

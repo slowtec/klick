@@ -65,7 +65,7 @@ impl fmt::Debug for SmtpConfig {
 impl Config {
     pub fn from_file<P: AsRef<Path>>(path: P) -> anyhow::Result<Self> {
         let raw = raw::Config::from_file(path)?;
-        Ok(Self::try_from(raw)?)
+        Self::try_from(raw)
     }
 }
 

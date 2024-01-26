@@ -16,14 +16,17 @@ pub struct Project<D> {
 pub struct Id(Uuid);
 
 impl Id {
+    #[must_use]
     pub fn new() -> Self {
         Self(Uuid::new_v4())
     }
 
+    #[must_use]
     pub const fn from_uuid(uuid: Uuid) -> Self {
         Self(uuid)
     }
 
+    #[must_use]
     pub const fn to_uuid(&self) -> Uuid {
         self.0
     }

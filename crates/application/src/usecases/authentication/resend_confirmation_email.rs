@@ -12,7 +12,7 @@ where
     R: AccountRepo + AccountTokenRepo,
     N: NotificationGateway,
 {
-    match usecases::login(repo, &email, &password) {
+    match usecases::login(repo, &email, password) {
         Ok(_) => {
             log::warn!("Unexpected state: user already confirmed his email address ({email})");
             return Ok(());

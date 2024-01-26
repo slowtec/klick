@@ -1,6 +1,5 @@
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::anyhow;
 use axum::{
     extract::{Path, State},
     http::{header, Method, StatusCode, Uri},
@@ -17,16 +16,16 @@ use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 use uuid::Uuid;
 
-use klick_application::{usecases, AccountRepo as _, ProjectRepo as _};
+use klick_application::{usecases, AccountRepo as _};
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
-use klick_domain::{Account, EmailAddress, EmailNonce, Password, Project, ProjectId};
+use klick_domain::{Account, EmailAddress, EmailNonce, Password, ProjectId};
 
 mod adapters;
 mod config;
 mod notification_gateway;
 
-use self::adapters::*;
+use self::adapters::{ApiError, AuthError, LogoutError};
 
 pub use self::config::Config;
 
@@ -57,7 +56,7 @@ pub fn create_db_connection(config: &Config) -> anyhow::Result<Connection> {
 }
 
 pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> {
-    let notification_gw = notification_gateway::Gateway::new(&config);
+    let notification_gw = notification_gateway::Gateway::new(config);
     let shared_state = AppState::new(db, notification_gw);
 
     let cors_layer = CorsLayer::new()
@@ -130,6 +129,7 @@ pub struct AppState {
 }
 
 impl AppState {
+    #[must_use]
     pub fn new(db: Connection, notification_gw: notification_gateway::Gateway) -> Self {
         Self {
             db,
@@ -268,16 +268,7 @@ async fn new_project(
     Json(data): Json<boundary::ProjectData>,
 ) -> Result<boundary::ProjectId> {
     let account = account_from_token(&state, auth)?;
-    let id = ProjectId::new();
-    let created_at = OffsetDateTime::now_utc();
-    let modified_at = None;
-    let project = Project {
-        id,
-        created_at,
-        modified_at,
-        data,
-    };
-    state.db.save_project(project, &account.email_address)?;
+    let id = usecases::create_new_project(&state.db, &account, data)?;
     let id = boundary::ProjectId::from(id);
     Ok(Json(id))
 }
@@ -288,12 +279,8 @@ async fn update_project(
     Json(updated): Json<boundary::SavedProject>,
 ) -> Result<()> {
     let account = account_from_token(&state, auth)?;
-    let Some(mut project) = state.db.find_project(&updated.id.into())? else {
-        return Err(anyhow!("project not found").into());
-    };
-    project.modified_at = Some(OffsetDateTime::now_utc());
-    project.data = updated.data;
-    state.db.save_project(project, &account.email_address)?;
+    let id = ProjectId::from_uuid(updated.id.0);
+    usecases::update_project(&state.db, &account, &id, updated.data)?;
     Ok(Json(()))
 }
 
@@ -304,9 +291,7 @@ async fn get_project(
 ) -> Result<boundary::SavedProject> {
     account_from_token(&state, auth)?;
     let id = ProjectId::from_uuid(uuid);
-    let Some(project) = state.db.find_project(&id)? else {
-        return Err(anyhow!("project not found").into());
-    };
+    let project = usecases::read_project(&state.db, id)?;
     Ok(Json(project.into()))
 }
 
@@ -315,8 +300,10 @@ async fn get_all_projects(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<Vec<boundary::SavedProject>> {
     let account = account_from_token(&state, auth)?;
-    let projects = state.db.all_projects_by_owner(&account.email_address)?;
-    let projects = projects.into_iter().map(Into::into).collect();
+    let projects = usecases::read_all_projects(&state.db, &account)?
+        .into_iter()
+        .map(Into::into)
+        .collect();
     Ok(Json(projects))
 }
 
@@ -327,7 +314,7 @@ async fn delete_project(
 ) -> Result<()> {
     account_from_token(&state, auth)?;
     let id = ProjectId::from_uuid(uuid);
-    state.db.delete_project(&id)?;
+    usecases::delete_project(&state.db, id)?;
     Ok(Json(()))
 }
 

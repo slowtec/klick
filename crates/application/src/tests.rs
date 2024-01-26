@@ -118,7 +118,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
@@ -126,7 +126,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
@@ -235,7 +235,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
@@ -243,7 +243,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
@@ -352,7 +352,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
@@ -360,7 +360,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
@@ -469,7 +469,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
@@ -477,7 +477,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
@@ -586,7 +586,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
@@ -594,7 +594,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario.clone(),
+            scenario,
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),

@@ -6,6 +6,7 @@ use charming::{
 };
 
 use klick_application as app;
+use klick_domain as domain;
 
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 fn format_large_number<T>(number: T) -> String
@@ -55,7 +56,7 @@ pub fn render(output_data: app::Output, element_id: &str) {
         n2o_emission_factor: _,
     } = output_data;
 
-    let app::CO2Equivalents {
+    let domain::CO2Equivalents {
         n2o_plant,
         n2o_water,
         n2o_emissions,

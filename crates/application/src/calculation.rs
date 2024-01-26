@@ -1,11 +1,11 @@
 use klick_domain::{
-    AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
+    AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
     EnergyConsumption, Factor, Kilowatthours, Mass, MilligramsPerLiter,
     N2oEmissionFactorCalcMethod, OperatingMaterials, OptimizationScenario, PlantProfile,
     Qubicmeters, SewageSludgeTreatment, Tons,
 };
 
-use crate::{constants::*, CO2Equivalents, Output};
+use crate::{constants::*, Output};
 
 #[must_use]
 #[allow(clippy::too_many_lines)]

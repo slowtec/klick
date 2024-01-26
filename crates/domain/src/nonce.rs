@@ -12,6 +12,7 @@ pub struct Nonce(Uuid);
 impl Nonce {
     pub const STR_LEN: usize = 32;
 
+    #[must_use]
     pub fn new() -> Self {
         Self(Uuid::new_v4())
     }
@@ -61,6 +62,7 @@ pub enum EmailNonceDecodingError {
 }
 
 impl EmailNonce {
+    #[must_use]
     pub fn encode_to_string(&self) -> String {
         let nonce = self.nonce.to_string();
         debug_assert_eq!(Nonce::STR_LEN, nonce.len());

@@ -81,7 +81,7 @@ async fn register_and_login_account(
     pw: &str,
 ) -> String {
     register_account(addr, email, pw).await;
-    set_email_address_as_confirmed(&db, email);
+    set_email_address_as_confirmed(db, email);
     login_account(addr, email, pw).await
 }
 
@@ -132,7 +132,7 @@ mod auth {
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 200);
         let record = db.find_account(&email).unwrap().unwrap();
-        assert_eq!(record.account.email_confirmed, true);
+        assert!(record.account.email_confirmed);
     }
 
     #[tokio::test]
@@ -155,7 +155,7 @@ mod auth {
         let data = res.json::<Value>().await.unwrap();
         assert_eq!(data["status"], 400);
         let record = db.find_account(&email).unwrap().unwrap();
-        assert_eq!(record.account.email_confirmed, false);
+        assert!(!record.account.email_confirmed);
     }
 
     #[tokio::test]

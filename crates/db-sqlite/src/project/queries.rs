@@ -38,7 +38,7 @@ pub fn all_projects_by_owner(
 ) -> Result<Vec<Project>, anyhow::Error> {
     use schema::projects::dsl;
 
-    let account_rowid = account::queries::resolve_account_rowid_created_by_email(conn, &owner)?;
+    let account_rowid = account::queries::resolve_account_rowid_created_by_email(conn, owner)?;
     let results = dsl::projects
         .filter(dsl::account_rowid.eq(account_rowid))
         .select(models::ProjectQuery::as_select())
@@ -64,7 +64,7 @@ pub fn save_project(
 
     let project_id = project.id.to_string();
     let data = models::project_to_json_string(project)?;
-    let account_rowid = account::queries::resolve_account_rowid_created_by_email(conn, &owner)?;
+    let account_rowid = account::queries::resolve_account_rowid_created_by_email(conn, owner)?;
 
     let changeset = models::ProjectChangeset {
         account_rowid,

@@ -28,8 +28,8 @@ fn roundtrip() {
     let created_at = OffsetDateTime::now_utc();
     let data = ProjectData {
         title,
-        optimization_scenario,
         plant_profile,
+        optimization_scenario,
     };
     let saved = SavedProject {
         id,

@@ -23,6 +23,7 @@ pub struct Error<T> {
 }
 
 impl<T> Error<T> {
+    #[must_use]
     pub const fn internal() -> Self {
         Self {
             message: None, // We really want to hide internal details
@@ -30,6 +31,7 @@ impl<T> Error<T> {
             details: None, // We realld want to hide internal details
         }
     }
+    #[must_use]
     pub const fn unauthorized() -> Self {
         Self {
             message: None,
@@ -37,6 +39,7 @@ impl<T> Error<T> {
             details: None,
         }
     }
+    #[must_use]
     pub const fn bad_request() -> Self {
         Self {
             message: None,

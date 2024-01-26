@@ -15,21 +15,24 @@ impl FromStr for EmailAddress {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         addrparse(s)
             .ok()
-            .and_then(|parsed| parsed.extract_single_info())
+            .and_then(mailparse::MailAddrList::extract_single_info)
             .map(|single_info| Self(single_info.addr))
             .ok_or(ParseError)
     }
 }
 
 impl EmailAddress {
+    #[must_use]
     pub const fn new_unchecked(address: String) -> Self {
         Self(address)
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
+    #[must_use]
     pub fn into_string(self) -> String {
         self.0
     }

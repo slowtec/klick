@@ -340,8 +340,8 @@ impl From<domain::SewageSludgeTreatment> for SewageSludgeTreatment {
             transport_distance,
         } = from;
 
-        let open_sludge_bags = Some(open_sludge_bags.into());
-        let open_sludge_storage_containers = Some(open_sludge_storage_containers.into());
+        let open_sludge_bags = Some(open_sludge_bags);
+        let open_sludge_storage_containers = Some(open_sludge_storage_containers);
         let sewage_sludge_for_disposal = Some(sewage_sludge_for_disposal.into());
         let transport_distance = Some(transport_distance.into());
 

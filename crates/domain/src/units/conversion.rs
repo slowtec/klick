@@ -1,5 +1,6 @@
 use std::ops::Mul;
 
+#[allow(clippy::wildcard_imports)]
 use super::*;
 
 macro_rules! direct_multiply {
