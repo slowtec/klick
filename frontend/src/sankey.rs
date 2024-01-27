@@ -3,7 +3,7 @@ use leptos::*;
 use klick_application as app;
 use klick_domain as domain;
 
-use klick_svg_charts::{SankeyChart, SankeyData};
+use klick_svg_charts::{Color, SankeyChart, SankeyData};
 
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 fn format_large_number<T>(number: T) -> String
@@ -73,46 +73,50 @@ pub fn Sankey(data: app::Output) -> impl IntoView {
 
     let mut sankey = SankeyData::new();
 
-    let orange = Some("orange");
-    let indirect_emissions = sankey.node(indirect_emissions.into(), "Indirekte Emissionen", orange);
-    let electricity_mix = sankey.node(electricity_mix.into(), "Strommix", orange);
+    let orange = Some(Color::new("orange"));
+    let indirect_emissions =
+        sankey.insert_node(indirect_emissions.into(), "Indirekte Emissionen", orange);
+    let electricity_mix = sankey.insert_node(electricity_mix.into(), "Strommix", orange);
 
-    let yellow = Some("#fd0");
-    let other_indirect_emissions = sankey.node(
+    let yellow = Some(Color::new("#fd0"));
+    let other_indirect_emissions = sankey.insert_node(
         other_indirect_emissions.into(),
         "Weitere Indirekte Emissionen",
         yellow,
     );
-    let operating_materials = sankey.node(operating_materials.into(), "Betriebsstoffe", yellow);
-    let fecl3 = sankey.node(fecl3.into(), "Eisen(III)-chlorid-Lösung", yellow);
-    let feclso4 = sankey.node(feclso4.into(), "Eisenchloridsulfat-Lösung", yellow);
-    let caoh2 = sankey.node(caoh2.into(), "Kalkhydrat", yellow);
+    let operating_materials =
+        sankey.insert_node(operating_materials.into(), "Betriebsstoffe", yellow);
+    let fecl3 = sankey.insert_node(fecl3.into(), "Eisen(III)-chlorid-Lösung", yellow);
+    let feclso4 = sankey.insert_node(feclso4.into(), "Eisenchloridsulfat-Lösung", yellow);
+    let caoh2 = sankey.insert_node(caoh2.into(), "Kalkhydrat", yellow);
     let synthetic_polymers =
-        sankey.node(synthetic_polymers.into(), "Synthetische Polymere", yellow);
-    let sewage_sludge_transport = sankey.node(
+        sankey.insert_node(synthetic_polymers.into(), "Synthetische Polymere", yellow);
+    let sewage_sludge_transport = sankey.insert_node(
         sewage_sludge_transport.into(),
         "Klaerschlamm Transport",
         yellow,
     );
 
-    let red = Some("red");
-    let emissions = sankey.node(emissions.into(), "Emission", red);
-    let direct_emissions = sankey.node(direct_emissions.into(), "Direkte Emissionen", red);
-    let n2o_emissions = sankey.node(n2o_emissions.into(), "Lachgasemissionen", red);
-    let ch4_emissions = sankey.node(ch4_emissions.into(), "Methanemissionen", red);
-    let n2o_plant = sankey.node(n2o_plant.into(), "N₂O Anlage", red);
-    let n2o_water = sankey.node(n2o_water.into(), "N₂O Gewässer", red);
+    let red = Some(Color::new("red"));
+    let emissions = sankey.insert_node(emissions.into(), "Emission", red);
+    let direct_emissions = sankey.insert_node(direct_emissions.into(), "Direkte Emissionen", red);
+    let n2o_emissions = sankey.insert_node(n2o_emissions.into(), "Lachgasemissionen", red);
+    let ch4_emissions = sankey.insert_node(ch4_emissions.into(), "Methanemissionen", red);
+    let n2o_plant = sankey.insert_node(n2o_plant.into(), "N₂O Anlage", red);
+    let n2o_water = sankey.insert_node(n2o_water.into(), "N₂O Gewässer", red);
 
-    let ch4_sewage_treatment = sankey.node(ch4_sewage_treatment.into(), "CH₄ Klärprozess", red);
-    let ch4_sludge_storage_containers = sankey.node(
+    let ch4_sewage_treatment =
+        sankey.insert_node(ch4_sewage_treatment.into(), "CH₄ Klärprozess", red);
+    let ch4_sludge_storage_containers = sankey.insert_node(
         ch4_sludge_storage_containers.into(),
         "CH₄ Schlupf Schlammstapel",
         red,
     );
-    let ch4_sludge_bags = sankey.node(ch4_sludge_bags.into(), "CH₄ Schlupf Schlammtasche", red);
-    let ch4_water = sankey.node(ch4_water.into(), "CH₄ Gewässer", red);
+    let ch4_sludge_bags =
+        sankey.insert_node(ch4_sludge_bags.into(), "CH₄ Schlupf Schlammtasche", red);
+    let ch4_water = sankey.insert_node(ch4_water.into(), "CH₄ Gewässer", red);
     let ch4_combined_heat_and_power_plant =
-        sankey.node(ch4_combined_heat_and_power_plant.into(), "CH₄ BHKW", red);
+        sankey.insert_node(ch4_combined_heat_and_power_plant.into(), "CH₄ BHKW", red);
 
     let edges = [
         (fecl3, operating_materials),
@@ -144,7 +148,7 @@ pub fn Sankey(data: app::Output) -> impl IntoView {
         .collect();
 
     for (from, to) in filtered_edges {
-        sankey.edge(from, to);
+        sankey.insert_edge(from, to);
     }
 
     Some(view! {

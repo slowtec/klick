@@ -18,11 +18,11 @@ pub struct Sankey {
 pub struct Node {
     pub value: f64,
     pub label: Option<String>,
-    pub color: Option<String>,
+    pub color: Option<Color>,
 }
 
 impl Node {
-    const fn new(value: f64, label: Option<String>, color: Option<String>) -> Self {
+    const fn new(value: f64, label: Option<String>, color: Option<Color>) -> Self {
         Self {
             value,
             label,
@@ -47,6 +47,12 @@ impl NodePosition {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct NodeId(pub usize);
 
+impl NodeId {
+    const fn new(id: usize) -> Self {
+        Self(id)
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Edge {
     source: NodeId,
@@ -62,19 +68,19 @@ impl Sankey {
         }
     }
 
-    pub fn node<S>(&mut self, value: f64, label: S, color: Option<S>) -> NodeId
+    pub fn insert_node<S>(&mut self, value: f64, label: S, color: Option<Color>) -> NodeId
     where
         S: Into<String>,
     {
         let id = self.nodes.len();
-        let id = NodeId(id);
+        let id = NodeId::new(id);
         let label = Some(label.into());
-        let node = Node::new(value, label, color.map(Into::into));
+        let node = Node::new(value, label, color);
         self.nodes.insert(id, node);
         id
     }
 
-    pub fn edge(&mut self, source: NodeId, target: NodeId) {
+    pub fn insert_edge(&mut self, source: NodeId, target: NodeId) {
         self.edges.insert(Edge { source, target });
     }
 
@@ -89,7 +95,7 @@ pub fn Chart<F>(sankey: Sankey, width: f64, height: f64, number_format: F) -> im
 where
     F: Fn(f64) -> String,
 {
-    let margin_x = width * 0.05;
+    let margin_x = width * 0.08;
     let margin_y = height * 0.05;
 
     view! {
@@ -117,7 +123,7 @@ where
     F: Fn(f64) -> String,
 {
     let node_separation = height / 50.0;
-    let node_width = width / 100.0;
+    let node_width = width / 70.0; // TODO: make this configurable
     let deps = dependencies(&sankey.edges);
     let layers = layers(&deps, &sankey.nodes);
     let layer_x_positions = layer_x_positions(layers.len(), width, node_width);
@@ -145,7 +151,7 @@ where
             let x = node_position.x;
             let y = node_position.y;
             let node_height = node_position.height;
-            let font_size = height / 40.0;
+            let font_size = height / 50.0; // TODO: make this configurable
             let value = sankey.nodes[id].value;
             let label = sankey.nodes[id].label.as_ref().map(|label| {
                 view! {
@@ -161,10 +167,7 @@ where
                 0.0
             };
 
-            let fill = sankey.nodes[id]
-                .color
-                .clone()
-                .unwrap_or_else(|| "#555".to_string());
+            let fill = sankey.nodes[id].color.unwrap_or(Color::new("#555"));
 
             view! {
               <rect
@@ -172,7 +175,7 @@ where
                 y = {y}
                 width = { node_width }
                 height = { node_height }
-                fill = { fill }
+                fill = { fill.as_str() }
               />
               <text
                 class = "label"
@@ -199,14 +202,12 @@ where
             let d = edge_path(from_top, from_bottom, to_top, to_bottom);
 
             // TODO: use gradient
-            let fill = color
-                .as_ref()
-                .map_or_else(|| "#555".to_string(), |c| c.0.clone());
+            let fill = color.unwrap_or(Color::new("#555"));
 
             view! {
               <path
                 d = {d}
-                fill = { fill }
+                fill = { fill.as_str() }
                 opacity = 0.3
               />
             }
@@ -406,7 +407,19 @@ impl Point {
     }
 }
 
-struct Color(String);
+#[derive(Debug, Copy, Clone)]
+pub struct Color(&'static str);
+
+impl Color {
+    #[must_use]
+    pub const fn new(c: &'static str) -> Self {
+        Self(c)
+    }
+    #[must_use]
+    pub const fn as_str(&self) -> &'static str {
+        self.0
+    }
+}
 
 fn edge_positions(
     edges: &HashSet<Edge>,
@@ -445,7 +458,7 @@ fn edge_positions(
                             .fold(0.0, |acc, id| acc + node_positions[&id].height);
                     }
                     let to_y_end = to_y_start + nodes[&edge.source].value * scale;
-                    let color = nodes[&edge.source].color.clone().map(Color);
+                    let color = nodes[&edge.source].color;
                     let points = (
                         Point::new(from.x + node_width, from.y),
                         Point::new(from.x + node_width, from.y + from.height),
