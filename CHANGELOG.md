@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.6 (2024-01-29)
+
+- Changed:
+  - Sankey font size 16px, see #111
+  - BHKW input field label, see #88
+
 ## v0.3.5 (2024-01-29)
 
 - Changed:
