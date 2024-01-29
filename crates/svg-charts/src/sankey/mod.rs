@@ -304,9 +304,10 @@ pub fn recursive_layers(
     let mut leafs = vec![];
 
     current_layer.sort_by(|a, b| {
-        nodes[a]
+        return
+        nodes[b]
             .value
-            .partial_cmp(&nodes[b].value)
+            .partial_cmp(&nodes[a].value)
             .unwrap_or(Ordering::Equal)
     });
     let mut t_roots = vec![];
