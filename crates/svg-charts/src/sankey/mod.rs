@@ -91,7 +91,7 @@ impl Sankey {
 }
 
 #[component]
-pub fn Chart<F>(sankey: Sankey, width: f64, height: f64, number_format: F) -> impl IntoView
+pub fn Chart<F>(sankey: Sankey, width: f64, height: f64, number_format: F, font_size: f64) -> impl IntoView
 where
     F: Fn(f64) -> String,
 {
@@ -111,6 +111,7 @@ where
             width = { width - margin_x * 2.0 }
             height = { height - margin_y * 2.0 }
             number_format
+            font_size = font_size
           />
         </g>
       </svg>
@@ -118,7 +119,7 @@ where
 }
 
 #[component]
-fn InnerChart<F>(sankey: Sankey, width: f64, height: f64, number_format: F) -> impl IntoView
+fn InnerChart<F>(sankey: Sankey, width: f64, height: f64, number_format: F, font_size: f64) -> impl IntoView
 where
     F: Fn(f64) -> String,
 {
@@ -151,7 +152,6 @@ where
             let x = node_position.x;
             let y = node_position.y;
             let node_height = node_position.height;
-            let font_size = height / 50.0; // TODO: make this configurable
             let value = sankey.nodes[id].value;
             let label = sankey.nodes[id].label.as_ref().map(|label| {
                 view! {

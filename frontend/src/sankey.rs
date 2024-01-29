@@ -157,6 +157,7 @@ pub fn Sankey(data: app::Output) -> impl IntoView {
         width = 1200.0
         height = 800.0
         number_format = |n| format_large_number(n)
+        font_size = 16.0
       />
     })
 }

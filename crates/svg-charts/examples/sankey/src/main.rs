@@ -126,24 +126,28 @@ fn MySankeyChart() -> impl IntoView {
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.1}")
+        font_size = 16.0
       />
       <SankeyChart
         sankey = { other_sankey }
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.0}")
+        font_size = 16.0
       />
       <SankeyChart
         sankey = { short_sankey }
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.0}")
+        font_size = 16.0
       />
       <SankeyChart
         sankey = { short_sankey_w }
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.0}")
+        font_size = 16.0
       />
     }
 }
