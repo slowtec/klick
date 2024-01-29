@@ -33,7 +33,7 @@ css: frontend-install-npm-packages
   cd frontend && tailwindcss -i src/style.css -o target/style.css
 
 # Build and minify CSS file
-css-release:
+css-release: frontend-install-npm-packages
   cd frontend && tailwindcss -i src/style.css -o target/style.css --minify
 
 # Build the server in debug mode

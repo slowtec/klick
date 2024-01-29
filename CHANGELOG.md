@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.5 (2024-01-29)
+
+- Changed:
+  - Sankey diagram renderer update, see #97
+
 ## v0.3.4 (2024-01-25)
 
 - New:
