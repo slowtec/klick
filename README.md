@@ -27,6 +27,18 @@ For a list of available tasks (named _recipes_) run the following command:
 just
 ```
 
+### Deployment
+
+```shell
+just build-release
+scp target/x86_64-unknown-linux-musl/release/klick klick:/home/klick-app/klick-v0.3.x
+ssh klick
+systemctl stop klick-app
+cp /tmp/klick 
+ln -s /home/klick-app/klick-v0.3.x /home/klick-app/klick
+systemctl start klick-app
+```
+
 ## License
 
 Copyright (c) 2023 - 2024 [slowtec GmbH](https://slowtec.de)
