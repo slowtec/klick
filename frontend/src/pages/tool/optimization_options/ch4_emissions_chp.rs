@@ -154,8 +154,8 @@ fn field_set() -> FieldSet {
     let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor);
     let custom_factor_field = Field {
         id,
-        label: "Benutzerdefiniert",
-        description: Some("z.B. nach Messung/Eigenberechnung"),
+        label: "BHKW EF Benutzerdefinierter Wert",
+        description: Some("BHKW EF, z.B. nach Messung/Eigenberechnung"),
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
@@ -190,7 +190,7 @@ fn field_set() -> FieldSet {
                     value: 3,
                 },
                 SelectOption {
-                    label: "BHKW EF Freiwählbar",
+                    label: "BHKW EF Benutzerdefiniert",
                     value: 4,
                 },
             ],
