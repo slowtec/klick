@@ -8,6 +8,10 @@ fmt:
   cargo fmt --all
   cd frontend && cargo fmt
 
+fmt-check:
+  cargo fmt --all -- --check
+  cd frontend && cargo fmt -- --check
+
 # Run the server in debug mode
 run: frontend
   RUST_LOG=debug cargo run
@@ -41,7 +45,7 @@ build: frontend
   cargo build
 
 # Build the server in release mode (musl)
-build-release: frontend-release
+build-release: fmt-check test frontend-release
   cargo zigbuild --release --target x86_64-unknown-linux-musl
 
 # Set up (and update) tooling
