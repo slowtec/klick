@@ -43,7 +43,7 @@ pub fn options(
     let output = RwSignal::new(Option::<app::Output>::None);
 
     create_effect(move |_| {
-        log::debug!("Calculate with CH4 CHP emission factor");
+        log::debug!("Calculate with CH₄ CHP emission factor");
         let Some(input_data) = input_data.get() else {
             log::debug!("No input data");
             output.set(None);
@@ -79,7 +79,7 @@ pub fn options(
             }
         };
 
-        log::debug!("Calculate with CH4 CHP emission factor {ch4_chp_emission_factor:?}");
+        log::debug!("Calculate with CH₄ CHP emission factor {ch4_chp_emission_factor:?}");
         let scenario = domain::OptimizationScenario {
             n2o_emission_factor: n2o_emission_factor_method
                 .get()
@@ -155,8 +155,8 @@ fn field_set() -> FieldSet {
     let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor);
     let custom_factor_field = Field {
         id,
-        label: "BHKW EF Benutzerdefinierter Wert",
-        description: Some("BHKW EF, z.B. nach Messung/Eigenberechnung"),
+        label: "BHKW CH₄-EF benutzerdefiniert",
+        description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
@@ -179,19 +179,19 @@ fn field_set() -> FieldSet {
             initial_value: None,
             options: vec![
                 SelectOption {
-                    label: "Mikrogasturbinen (EF <1%)",
+                    label: "Mikrogasturbinen (EF max. 1 %)",
                     value: 1,
                 },
                 SelectOption {
-                    label: "Ottomotor (EF ~1–2%)",
+                    label: "Ottomotor (EF MW = 1,5 %)",
                     value: 2,
                 },
                 SelectOption {
-                    label: "Zündstrahlmotor (EF ~2–3%)",
+                    label: "Zündstrahlmotor (EF MW = 2,5 %)",
                     value: 3,
                 },
                 SelectOption {
-                    label: "BHKW EF Benutzerdefiniert %",
+                    label: "BHKW CH₄-EF benutzerdefiniert",
                     value: 4,
                 },
             ],
