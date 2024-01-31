@@ -76,6 +76,7 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
     let ch4_water = f64::from(*chemical_oxygen_demand_effluent * *wastewater) / 1000.0
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
 
+    // #114
     let ch4_slippage_sludge_bags = if *open_sludge_bags {
         let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_BAGS;
         let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
@@ -84,12 +85,10 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
         0.0
     }; // [t CH4 / a]
 
-    let ch4_slippage_sludge_storage = if *open_sludge_storage_containers {
+    let ch4_slippage_sludge_storage = {
         let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_STORAGE;
         let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
         f64::from(mass) / 1_000.0
-    } else {
-        0.0
     }; // [t CH4 / a]
 
     let n2o_plant = Tons::new(n2o_plant * GWP_N2O);
