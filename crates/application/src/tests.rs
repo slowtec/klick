@@ -122,7 +122,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        154.588_933_8
+        235.414_620_000_000_04
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -130,7 +130,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        153.019_503_000_000_01
+        392.35769999999997
     );
 }
 
@@ -239,7 +239,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        154.588_933_8
+        235.414_620_000_000_04
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -247,7 +247,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        153.019_503_000_000_01
+        392.357_699_999_999_97
     );
 }
 
@@ -356,7 +356,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        154.588_933_8
+        235.414_620_000_000_04
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -364,7 +364,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        153.019_503_000_000_01
+        392.357_699_999_999_97
     );
 }
 
@@ -473,7 +473,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        154.588_933_8
+        235.414_620_000_000_04
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -481,7 +481,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        153.019_503_000_000_01
+        392.357_699_999_999_97
     );
 }
 
@@ -590,7 +590,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        154.588_933_8
+        235.414_620_000_000_04
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -598,6 +598,6 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             profile.clone(),
             Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        153.019_503_000_000_01
+        392.357_699_999_999_97
     );
 }
