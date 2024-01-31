@@ -101,7 +101,8 @@ pub fn options(
             Durch diese Überschneidung können unter Umständen geringe Mengen unverbrannten Faulgases in den Abgasstrom gelangen.
             Ottomotoren haben dabei einen Methanschlupf im Bereich von 1 % bis 2 %
             Zündstrahlmotoren (sind für Faulgas nicht relevant) liegen höher in der Größenordnung von 2 % bis 3 %.
-            Mikrogasturbinen (typische Leistungsklasse von 30 kW bis 65 kW) können dagegen einen Methanschlupf < 1 % erreichen (STMWI 2016)."
+            Mikrogasturbinen (typische Leistungsklasse von 30 kW bis 65 kW) können dagegen einen
+            Methanschlupf < 1 % erreichen (STMWI 2016)."
           </Cite>
         </InfoBox>
         <p>

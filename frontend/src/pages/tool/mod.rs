@@ -230,7 +230,7 @@ pub fn Tool(
                         selected_scenario_name.set(szenario_name.to_string().clone());
                         let ef = Lng::De.format_number_with_precision(f64::from(output_data.n2o_emission_factor) * 100.0, 2);
                         let title = format!(
-                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (EF={ef}%)"
+                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
                         );
                         sankey_header.set(title);
                         sankey_data.set(Some(output_data.clone()));
