@@ -107,11 +107,11 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(synthetic_polymers), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 15.156_589_140_000_001);
+    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
     assert_eq!(f64::from(direct_emissions), 1_860.265_740_000_001_9);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 436.198_767_14);
-    assert_eq!(f64::from(emissions), 2_498.809_923_140_002);
+    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
+    assert_eq!(f64::from(emissions), 2492.8391456000018);
     assert_eq!(f64::from(n2o_emission_factor), 0.001_253_278_688_524_597_2);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
@@ -224,11 +224,11 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(f64::from(synthetic_polymers), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 15.156_589_140_000_001);
+    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
     assert_eq!(f64::from(direct_emissions), 2_317.365_239_999_999_6);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 436.198_767_14);
-    assert_eq!(f64::from(emissions), 2_955.909_423_139_999_5);
+    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
+    assert_eq!(f64::from(emissions), 2949.9386455999997);
     assert_eq!(f64::from(n2o_emission_factor), 0.003);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
@@ -341,11 +341,11 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(f64::from(synthetic_polymers), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 15.156_589_140_000_001);
+    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
     assert_eq!(f64::from(direct_emissions), 3_625.815_240_000_000_4);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 436.198_767_14);
-    assert_eq!(f64::from(emissions), 4_264.359_423_14);
+    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
+    assert_eq!(f64::from(emissions), 4258.3886456);
     assert_eq!(f64::from(n2o_emission_factor), 0.008);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
@@ -458,11 +458,11 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(f64::from(synthetic_polymers), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 15.156_589_140_000_001);
+    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
     assert_eq!(f64::from(direct_emissions), 5_719.335_24);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 436.198_767_14);
-    assert_eq!(f64::from(emissions), 6_357.879_423_140_001);
+    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
+    assert_eq!(f64::from(emissions), 6351.9086456);
     assert_eq!(f64::from(n2o_emission_factor), 0.016);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
@@ -575,11 +575,11 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_eq!(f64::from(synthetic_polymers), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 15.156_589_140_000_001);
+    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
     assert_eq!(f64::from(direct_emissions), 4_149.195_240_000_001);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 436.198_767_14);
-    assert_eq!(f64::from(emissions), 4_787.739_423_140_001);
+    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
+    assert_eq!(f64::from(emissions), 4781.768645600001);
     assert_eq!(f64::from(n2o_emission_factor), 0.01);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
