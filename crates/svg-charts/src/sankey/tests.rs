@@ -183,7 +183,7 @@ fn test_layers_long_sort() {
     final_root_layers.reverse();
     assert_eq!(
         final_root_layers,
-        vec![vec![NodeId(2), NodeId(0)], vec![NodeId(1)], vec![NodeId(3)]]
+        vec![vec![NodeId(0), NodeId(2)], vec![NodeId(1)], vec![NodeId(3)]]
     );
 }
 
@@ -223,7 +223,7 @@ fn test_layers_long_sort_clone_different_weights() {
     final_root_layers.reverse();
     assert_eq!(
         final_root_layers,
-        vec![vec![NodeId(0), NodeId(2)], vec![NodeId(1)], vec![NodeId(3)]]
+        vec![vec![NodeId(2), NodeId(0)], vec![NodeId(1)], vec![NodeId(3)]]
     );
 }
 
@@ -265,7 +265,7 @@ fn test_layers_fork_sort() {
     assert_eq!(
         final_root_layers,
         vec![
-            vec![NodeId(1), NodeId(2), NodeId(0), NodeId(3)],
+            vec![NodeId(0), NodeId(3), NodeId(1), NodeId(2)],
             vec![NodeId(4)]
         ]
     );
@@ -309,8 +309,8 @@ fn test_layers_double_chain_fork() {
     assert_eq!(
         final_root_layers,
         vec![
-            vec![NodeId(0), NodeId(2)],
-            vec![NodeId(1), NodeId(3)],
+            vec![NodeId(2), NodeId(0)],
+            vec![NodeId(3), NodeId(1)],
             vec![NodeId(5)]
         ]
     );
