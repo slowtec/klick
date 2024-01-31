@@ -9,6 +9,7 @@ members = [
   # backend crates
   "crates/backend",
   "crates/db-sqlite",
+  "crates/pdf-export",
 
   # shared crates
   "crates/application",
@@ -36,6 +37,7 @@ klick-backend        = { path = "crates/backend"        }
 klick-boundary       = { path = "crates/boundary"       }
 klick-db-sqlite      = { path = "crates/db-sqlite"      }
 klick-domain         = { path = "crates/domain"         }
+klick-pdf-export     = { path = "crates/pdf-export"     }
 klick-presenter      = { path = "crates/presenter"      }
 
 [package]
