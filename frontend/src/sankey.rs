@@ -5,6 +5,7 @@ use klick_presenter as presenter;
 
 use klick_app_charts::{Color, SankeyChart, SankeyData};
 
+// FIXME: can we use Lng::format_number_with_thousands_seperator?
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 fn format_large_number<T>(number: T) -> String
 where
