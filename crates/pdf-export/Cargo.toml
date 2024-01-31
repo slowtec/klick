@@ -1,0 +1,28 @@
+[package]
+name = "klick-pdf-export"
+authors.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+klick-app-charts = { version = "=0.0.0", features = ["ssr"] }
+klick-application = "=0.0.0"
+klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
+klick-domain = "=0.0.0"
+klick-presenter = "=0.0.0"
+
+anyhow = "1.0.79"
+lazy_static = "1.4.0"
+pandoc = "0.8.11"
+serde = { version = "1.0.196", features = ["derive"] }
+tera = "1.19.1"
+time = { version = "0.3.31", features = ["formatting", "local-offset", "macros"] }
+tempfile = "3.10.0"
+
+[dev-dependencies]
+klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
+
+[lints]
+workspace = true

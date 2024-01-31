@@ -11,6 +11,7 @@ pub fn bar_chart(
     width: f64,
     height: f64,
     selected: Option<u64>,
+    emission_factor_label: Option<&'static str>,
 ) -> String {
     render_view_as_svg(move || {
         let selected_bar = RwSignal::new(selected);
@@ -21,6 +22,7 @@ pub fn bar_chart(
             height
             data
             selected_bar
+            emission_factor_label
           />
         }
     })

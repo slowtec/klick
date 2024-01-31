@@ -1,0 +1,38 @@
+---
+lang: de-DE
+date: {{ date }}
+title: Klimabilanz
+subtitle: {{ profile.plant_name }}
+toc: true
+
+# LaTeX
+documentclass: scrartcl
+papersize: a4
+header-includes: # contents specified by -H/--include-in-header (may have multiple values)
+  - |
+    ```{=latex}
+    \usepackage{longtable}
+    ```
+  - |
+    ```{=latex}
+    \usepackage{siunitx}
+    \sisetup{
+      locale = DE,
+      per-mode=symbol-or-fraction
+    }
+    ```
+---
+
+# Kläranlagenprofil
+
+{{ table }}
+
+# Auswertung
+
+## Szenarien im Vergleich
+
+![$N_2O$ Szenarien im Vergleich]({{ n2o_svg_barchart_file_path }})
+
+## Treibhausgasemissionen
+
+![$CO_2$ Emissionen]({{ sankey_svg_file_path }})

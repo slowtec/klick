@@ -38,6 +38,9 @@
               just                     # task runner
               nodePackages.tailwindcss # build CSS files
               nodejs                   # required to install tailwind plugins
+              pandoc                   # required to process markdown files
+              texliveMedium            # required to generate PDF reports
+              librsvg                  # required to render SVG image
             ];
           };
         }

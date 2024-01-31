@@ -1,0 +1,18 @@
+\begin{longtable}{ |r|r l| }
+
+  {% for section in sections -%}
+
+  \hline
+  \multicolumn{3}{|c|}{\textbf{ {{ section.title }} }} \\
+  \hline
+
+  {% for row in section.rows -%}
+
+    {{ row.0 }} & {% if row.1 %} {{ row.1 }} {% else %} $-$ {% endif %} & ${{ row.2 }}$  \\
+
+  {% endfor -%}
+
+  \hline
+  {% endfor -%}
+
+\end{longtable}
