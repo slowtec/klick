@@ -91,7 +91,13 @@ impl Sankey {
 }
 
 #[component]
-pub fn Chart<F>(sankey: Sankey, width: f64, height: f64, number_format: F, font_size: f64) -> impl IntoView
+pub fn Chart<F>(
+    sankey: Sankey,
+    width: f64,
+    height: f64,
+    number_format: F,
+    font_size: f64,
+) -> impl IntoView
 where
     F: Fn(f64) -> String,
 {
@@ -119,7 +125,13 @@ where
 }
 
 #[component]
-fn InnerChart<F>(sankey: Sankey, width: f64, height: f64, number_format: F, font_size: f64) -> impl IntoView
+fn InnerChart<F>(
+    sankey: Sankey,
+    width: f64,
+    height: f64,
+    number_format: F,
+    font_size: f64,
+) -> impl IntoView
 where
     F: Fn(f64) -> String,
 {
@@ -304,11 +316,10 @@ pub fn recursive_layers(
     let mut leafs = vec![];
 
     current_layer.sort_by(|a, b| {
-        return
-        nodes[b]
+        return nodes[b]
             .value
             .partial_cmp(&nodes[a].value)
-            .unwrap_or(Ordering::Equal)
+            .unwrap_or(Ordering::Equal);
     });
     let mut t_roots = vec![];
     for el in current_layer {
