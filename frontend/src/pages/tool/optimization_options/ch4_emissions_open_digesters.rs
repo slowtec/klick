@@ -24,7 +24,7 @@ pub fn options(
 ) -> impl IntoView {
     let open_sludge_bags = Field {
         id: Id::SludgeBags,
-        label: "Schliessen der Schlammtaschen",
+        label: "Schließen der Schlammtaschen",
         description: None,
         required: false,
         field_type: FieldType::Bool {
@@ -34,7 +34,7 @@ pub fn options(
 
     let open_sludge_storage_containers = Field {
         id: Id::SludgeStorageContainers,
-        label: "Schliessen der Schlammstapelbehälter",
+        label: "Schließen der Schlammstapelbehälter",
         description: None,
         required: false,
         field_type: FieldType::Bool {
@@ -143,7 +143,7 @@ pub fn options(
                       <span class="ml-2 text-gray-400">{ "t" }</span>
                     </dd>
 
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen der Kläranlage"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.co2_equivalents.emissions)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t" }</span>

@@ -98,7 +98,7 @@ pub fn options(
             BHKW-Motoren arbeiten nach dem Vier-Takt-Prinzip.
             Dabei sind zum Gasaustausch für eine kurze Zeit beim Übergang vom vierten (Ausstoßen)
             in den ersten (Ansaugen) Takt sowohl das Einlass- als auch das Auslassventil (teilweise) geöffnet.
-            Durch diese Überschneidung können unter Umständen geringe Mengen unver-brannten Faulgases in den Abgasstrom gelangen.
+            Durch diese Überschneidung können unter Umständen geringe Mengen unverbrannten Faulgases in den Abgasstrom gelangen.
             Ottomotoren haben dabei einen Methanschlupf im Bereich von 1 % bis 2 %
             Zündstrahlmotoren (sind für Faulgas nicht relevant) liegen höher in der Größenordnung von 2 % bis 3 %.
             Mikrogasturbinen (typische Leistungsklasse von 30 kW bis 65 kW) können dagegen einen Methanschlupf < 1 % erreichen (STMWI 2016)."
@@ -114,7 +114,7 @@ pub fn options(
         <InfoBox text = "Zusatzinformation zum Methanschlupf:">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
             "Die Gaszusammensetzung, Brennraumtemperatur (Gasfeuchte), Brennraumgestaltung und Betriebsweise beeinflussen die Verbrennungsvorgänge.
-            Bei hohen Sauerstoffkonzentrationen (Magerbetrieb), welche für die Reduktion der NO,-Bildung bei hohen Temperaturen notwendig sind,
+            Bei hohen Sauerstoffkonzentrationen (Magerbetrieb), welche für die Reduktion der NOₓ,-Bildung bei hohen Temperaturen notwendig sind,
             steigt der Methanschlupf.
             Neben der Betriebsweise hat auch die Aggregateleistung einen Einfluss auf den Methan-schlupf.
             So hat sich bei Messungen im Betrieb gezeigt, dass unter Volllast in der Regel weniger Methan über das Abgas emittiert wird
@@ -190,7 +190,7 @@ fn field_set() -> FieldSet {
                     value: 3,
                 },
                 SelectOption {
-                    label: "BHKW EF Benutzerdefiniert",
+                    label: "BHKW EF Benutzerdefiniert %",
                     value: 4,
                 },
             ],

@@ -14,9 +14,9 @@ pub fn options() -> impl IntoView {
             <InfoBox text = "Vermeidung von langen Schlammaufenthaltszeiten zur Reduktion des Methanbildungspotenzials">
               <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S.28)" url = DWA_MERKBLATT_URL>
                 "In Vorklärbecken ermittelten ISGREN & MARTENSSEN (2013)
-                eine durchschnittliche CH4-Konzentration (lediglich aus drei Proben)
-                im Vorklärbecken der Kläranlage Sjölunda von 0,83 mg CH4/l.
-                Die CH,-Konzentration lag damit höher als im Einlaufbereich der KA,
+                eine durchschnittliche CH₄-Konzentration (lediglich aus drei Proben)
+                im Vorklärbecken der Kläranlage Sjölunda von 0,83 mg CH₄/L.
+                Die CH₄-Konzentration lag damit höher als im Einlaufbereich der KA,
                 sodass hier durch die Autoren eine Methanbildung in der Vorklärung vermutet wird.
                 Die geringe Probenzahl ist hier jedoch zu beachten.
                 Aufgrund der geringen Schlammaufenthaltszeiten ist die Ausbildung
@@ -36,7 +36,7 @@ pub fn options() -> impl IntoView {
                 Als möglicher Grund konnte hier unter anderem der Abzug von Schlamm
                 aus der Vorklärung zur Erhöhung der Biogasausbeute in der Faulung identifiziert werden.
                 Das aus der Ausfrachtung von Kohlenstoff resultierende verringerte Verhältnis CSB/N
-                ist dann nicht ausreichend für eine vollständige De-nitrifikation."
+                ist dann nicht ausreichend für eine vollständige Denitrifikation."
               </Cite>
             </InfoBox>
           </li>
