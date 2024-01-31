@@ -52,7 +52,7 @@ pub const CONVERSION_FACTOR_CH4_M3_TO_KG: KilogramsPerQubicmeter =
 pub const EMISSION_FACTOR_DIESEL: KilogramsPerLiter = KilogramsPerLiter::new(2.65);
 
 /// `[l/tkm]`
-pub const FUEL_CONSUMPTION: LitersPerTonKilometer = LitersPerTonKilometer::new(0.033);
+pub const FUEL_CONSUMPTION: LitersPerTonKilometer = LitersPerTonKilometer::new(0.02);
 
 /// 0,3 `[%]` of the nitrogen inflow
 pub const EMISSION_FACTOR_N2O_OPTIMISTIC: Percent = Percent::new(0.3);
