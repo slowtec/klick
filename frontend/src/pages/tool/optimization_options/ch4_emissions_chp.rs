@@ -37,7 +37,7 @@ pub fn options(
 
     let custom_factor = signals
         .get(&FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor))
-        .and_then(FieldSignal::get_float_signal)
+        .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
     let output = RwSignal::new(Option::<app::Output>::None);
@@ -63,11 +63,6 @@ pub fn options(
             4 => {
                 let Some(f) = custom_factor.get() else {
                     log::warn!("No custom factor defined");
-                    output.set(None);
-                    return;
-                };
-                let Ok(f) = f.parse::<f64>() else {
-                    log::warn!("Unable to parse float from {f:?}");
                     output.set(None);
                     return;
                 };
