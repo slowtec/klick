@@ -5,7 +5,8 @@ use klick_app_components::icons;
 
 use crate::Page;
 
-const EXPORT_FILE_NAME: &str = "klimabilanzklaeranlage.json";
+const EXPORT_FILE_NAME_JSON: &str = "klimabilanzklaeranlage.json";
+const EXPORT_FILE_NAME_CSV: &str = "klimabilanzklaeranlage.csv";
 
 #[component]
 pub fn ProjectMenu(
@@ -14,6 +15,7 @@ pub fn ProjectMenu(
     #[prop(into)] clear: Callback<()>,
     #[prop(into)] load: Callback<()>,
     #[prop(into)] download: Callback<(), ObjectUrl>,
+    #[prop(into)] export_csv: Callback<(), ObjectUrl>,
     upload_action: Action<File, ()>,
 ) -> impl IntoView {
     let is_open = RwSignal::new(false);
@@ -86,12 +88,34 @@ pub fn ProjectMenu(
                         let object_url = download.call(());
                         let link = download_link.get().expect("<a> to exist");
                         link.set_attribute("href", &object_url).unwrap();
-                        link.set_attribute("download", EXPORT_FILE_NAME).unwrap();
+                        link.set_attribute("download", EXPORT_FILE_NAME_JSON).unwrap();
                         link.click();
                         link.remove_attribute("href").unwrap();
                         is_open.set(false);
                       }
                       icon = icons::DocumentArrowDown
+                    />
+                  </Section>
+                  <Section>
+                  <Entry
+                      label = "CSV export"
+                      on:click = move |ev| {
+                        ev.prevent_default();
+                        let object_url = export_csv.call(());
+                        let link = download_link.get().expect("<a> to exist");
+                        link.set_attribute("href", &object_url).unwrap();
+                        link.set_attribute("download", EXPORT_FILE_NAME_CSV).unwrap();
+                        link.click();
+                        link.remove_attribute("href").unwrap();
+                        is_open.set(false);
+                      }
+                      icon = view! {
+                        <svg
+                          class="mr-3 h-6 w-6"
+                          fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                        </svg>
+                      }
                     />
                   </Section>
                   <Section>

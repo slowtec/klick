@@ -1,3 +1,4 @@
+use chrono::prelude::*;
 use std::rc::Rc;
 
 use gloo_file::{Blob, File, ObjectUrl};
@@ -76,6 +77,8 @@ pub fn Tool(
     let custom_sludge_bags_factor = RwSignal::new(Option::<f64>::None);
     let custom_sludge_storage_containers_factor = RwSignal::new(Option::<f64>::None);
     let input_data = RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
+    let input_data_optimizationOptions_model =
+        RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
     let sankey_data =
         RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
     let sankey_header = RwSignal::new(String::new());
@@ -86,28 +89,7 @@ pub fn Tool(
     > = RwSignal::new(vec![]);
     let barchart_arguments_radio_inputs_bhkw: RwSignal<
         Vec<klick_app_charts::BarChartRadioInputArguments>,
-    > = RwSignal::new(vec![
-        klick_app_charts::BarChartRadioInputArguments {
-            label: Some("Mikrogasturbinen"),
-            value: 55.0,
-            emission_factor: 0.01,
-        },
-        klick_app_charts::BarChartRadioInputArguments {
-            label: Some("Ottomotor"),
-            value: 77.0,
-            emission_factor: 0.015,
-        },
-        klick_app_charts::BarChartRadioInputArguments {
-            label: Some("Zündstrahlmotor"),
-            value: 151.0,
-            emission_factor: 0.025,
-        },
-        klick_app_charts::BarChartRadioInputArguments {
-            label: Some("Benutzerdefiniert"),
-            value: 55.0,
-            emission_factor: 0.025,
-        },
-    ]);
+    > = RwSignal::new(vec![]);
 
     let current_section = RwSignal::new(Option::<PageSection>::Some(PageSection::DataCollection));
     let n2o_emission_factor_method =
@@ -125,16 +107,21 @@ pub fn Tool(
 
     let save_result_message = RwSignal::new(None);
     let show_handlungsempfehlungen: RwSignal<bool> = RwSignal::new(false);
-    let output_final = RwSignal::new(
+    let output_optimizationOptions_model = RwSignal::new(
         Option::<(
             domain::CO2Equivalents,
             domain::EmissionFactors,
             domain::EmissionFactorCalculationMethods,
         )>::None,
     );
-    let sankey_data_final =
-        RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
-    let sankey_header_final = RwSignal::new(String::new());
+    let sankey_data_optimizationOptions_model = RwSignal::new(
+        Option::<(
+            domain::CO2Equivalents,
+            domain::EmissionFactors,
+            domain::EmissionFactorCalculationMethods,
+        )>::None,
+    );
+    let sankey_header_optimizationOptions_model = RwSignal::new(String::new());
     let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
     let selected_scenario_bhkw = RwSignal::new(Option::<u64>::Some(0));
@@ -283,7 +270,6 @@ pub fn Tool(
         // }
 
         if input_data_validation_error {
-            // prevent sankey or barchart from rendering
             sankey_data.set(None);
         }
 
@@ -344,10 +330,7 @@ pub fn Tool(
                 })
                 .collect(),
         );
-        if !input_data_validation_error
-        // && n2o_emission_factor_method.get().is_some()
-        // && selected_scenario_bhkw.get().is_some()
-        {
+        if !input_data_validation_error {
             log::info!("computing final output data");
             let ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod> =
                 match selected_scenario_bhkw.get() {
@@ -381,14 +364,15 @@ pub fn Tool(
                 .sewage_sludge_treatment
                 .custom_sludge_storage_containers_factor =
                 custom_sludge_storage_containers_factor.get();
+            input_data_optimizationOptions_model.set(Some(input_data.clone()));
             let output: (
                 domain::CO2Equivalents,
                 domain::EmissionFactors,
                 domain::EmissionFactorCalculationMethods,
             ) = domain::calculate_emissions(input_data.clone(), scenario);
-            output_final.set(Some(output.clone()));
-            sankey_data_final.set(Some((output.clone().0, output.clone().1)));
-            sankey_header_final.set(format!(
+            output_optimizationOptions_model.set(Some(output.clone()));
+            sankey_data_optimizationOptions_model.set(Some(output.clone()));
+            sankey_header_optimizationOptions_model.set(format!(
                 "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}",
                 name_ka = name_ka,
                 ew = Lng::De.format_number(ew),
@@ -448,13 +432,11 @@ pub fn Tool(
                 .collect(),
             );
 
-            let ss = selected_scenario.get().unwrap_or(0);
-            let old = szenario_calculations[ss as usize].clone().1 .0;
-            let new = output.0; // FIXME hack
-
-            let final_emissions = f64::from(new.emissions)
-                - f64::from(old.emissions)
-                - f64::from(new.excess_energy_co2_equivalent);
+            let old = szenario_calculations[selected_scenario.get().unwrap_or(0) as usize]
+                .clone()
+                .1
+                 .0;
+            let new = output.0;
 
             let comp = vec![
                 klick_app_charts::BarChartArguments {
@@ -477,26 +459,18 @@ pub fn Tool(
                 },
                 klick_app_charts::BarChartArguments {
                     label: "Emissionen",
-                    value: final_emissions,
+                    value: f64::from(new.emissions)
+                        - f64::from(old.emissions)
+                        - f64::from(new.excess_energy_co2_equivalent),
                 },
             ];
-            barchart_arguments.set(
-                comp.into_iter()
-                    .filter_map(|x| {
-                        if f64::abs(x.value) > 0.1 {
-                            Some(x)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect(),
-            );
+            barchart_arguments.set(comp);
             show_handlungsempfehlungen.set(true);
         } else {
             log::info!("NOT computing final output data, input incomplete");
-            output_final.set(None);
-            sankey_header_final.set(String::new());
-            sankey_data_final.set(None);
+            output_optimizationOptions_model.set(None);
+            sankey_header_optimizationOptions_model.set(String::new());
+            sankey_data_optimizationOptions_model.set(None);
             barchart_arguments.set(vec![]);
         }
     });
@@ -529,6 +503,42 @@ pub fn Tool(
             }
         }
     });
+
+    let export_csv = {
+        move |_| {
+            let mut s: String = "".to_string();
+            s.push_str(
+                format!("# export from klimabilanzklaeranlage.de - {}", Utc::now()).as_str(),
+            );
+
+            s.push_str("\n\n# input_data_optimizationOptions_model");
+            if let Some(v) = input_data_optimizationOptions_model.get() {
+                s.push_str(&v.to_csv());
+            }
+            //output_optimizationOptions_model
+            sankey_data_optimizationOptions_model.get().map(
+                |(co2_equivalents, emission_factors, emission_factor_calculation_methods)| {
+                    s.push_str("\n\n# sankey_data_optimizationOptions_model");
+                    s.push_str(&co2_equivalents.to_csv());
+                    s.push_str(&emission_factors.to_csv());
+                    s.push_str(&emission_factor_calculation_methods.to_csv());
+                },
+            );
+
+            // final result +/- values of emissions FIXME
+            s.push_str("\n\n# final result +/- values of emissions\n");
+            for b in barchart_arguments.get() {
+                s.push_str(&b.label);
+                s.push_str(",");
+                s.push_str(&b.value.to_string());
+                s.push_str("\n");
+            }
+
+            let example_file =
+                File::new_with_options("", s.as_str(), Some("text/plain"), Some(Utc::now().into()));
+            ObjectUrl::from(example_file)
+        }
+    };
 
     let load_action = create_action({
         let api = api.clone();
@@ -680,6 +690,7 @@ pub fn Tool(
             load = load_example_values
             save = save_project
             download
+            export_csv
             upload_action
           />
         </div>
@@ -880,7 +891,7 @@ pub fn Tool(
           { move || {
               view! {
                 <OptimizationOptions
-                  output = output_final.read_only()
+                  output = output_optimizationOptions_model.read_only()
                   sludge_bags_are_open = sludge_bags_are_open
                   sludge_storage_containers_are_open = sludge_storage_containers_are_open
                   selected_scenario_bhkw = selected_scenario_bhkw
@@ -895,7 +906,7 @@ pub fn Tool(
           </div>
           <div
             class = move || {
-              if sankey_data_final.get().is_some() {
+              if sankey_data_optimizationOptions_model.get().is_some() {
                   None
               } else {
                   Some("hidden")
@@ -904,14 +915,19 @@ pub fn Tool(
           >
             <div>
               <h4 class="my-8 text-lg font-bold">
-                { move || sankey_header_final.get().to_string() }
+                { move || sankey_header_optimizationOptions_model.get().to_string() }
               </h4>
-              { move || sankey_data_final.get().map(|data| view!{ <Sankey data /> }) }
+              { move ||
+               sankey_data_optimizationOptions_model.get().map(|(co2_equivalents, emission_factors,_)| {
+                 let data = (co2_equivalents, emission_factors);
+                 view!{ <Sankey data /> }
+               } )
+              }
             </div>
           </div>
           <div
             class = move || {
-              if !barchart_arguments.get().is_empty() {
+              if barchart_arguments.get().iter().any(|x| f64::abs(x.value) > 0.1) {
                   None
               } else {
                   Some("hidden")
@@ -925,12 +941,23 @@ pub fn Tool(
               <p class="mt-2 max-w-4xl text-lg text-gray-500">
                 "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"
               </p>
-              { move ||  view! {
-                  <BarChart
-                      width = 1100.0
-                      height = 400.0
-                      data=barchart_arguments.get()
-                  />
+              { move || {
+                      let barchart_arguments_filtered: Vec<klick_app_charts::BarChartArguments> = barchart_arguments.get()
+                        .iter()
+                        .filter_map(|x| {
+                            if f64::abs(x.value) > 0.1 {
+                                Some(x.clone())
+                            } else {
+                                None
+                            }
+                        }).collect();
+                      view! {
+                      <BarChart
+                          width = 1100.0
+                          height = 400.0
+                          data=barchart_arguments_filtered
+                      />
+                      }
                   }
               }
             </div>
