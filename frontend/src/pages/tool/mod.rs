@@ -1,4 +1,5 @@
 use std::rc::Rc;
+use chrono::prelude::*;
 
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
@@ -7,7 +8,7 @@ use klick_app_charts::{BarChart, BarChartRadioInput};
 use klick_app_components::message::{ErrorMessage, SuccessMessage};
 use klick_application::usecases::calculate_all_n2o_emission_factor_scenarios;
 use klick_boundary::{
-    export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
+    export_to_csv_pretty, export_to_vec_pretty, export_to_string, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
     SavedProject,
 };
 use klick_domain as domain;
@@ -422,6 +423,84 @@ pub fn Tool(
         }
     });
 
+    let clear_signals = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            for s in signals.values() {
+                s.clear();
+            }
+            current_project.set(None);
+        }
+    };
+
+    let load_example_values = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            current_project.set(None);
+            example_data::load_example_field_signal_values(&signals);
+        }
+    };
+
+    let download = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            let project_data = fields::read_all_project_fields(&signals);
+            let project = project_data.into();
+            let data = Data { project };
+            let json_bytes = export_to_vec_pretty(&data);
+
+            let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
+
+            ObjectUrl::from(blob)
+        }
+    };
+
+// FIXME
+// felder lesen
+// auf struct mappen
+// serde serialisieren
+// csv create nutzen
+
+    let export_csv = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            let project_data = fields::read_all_project_fields(&signals);
+            let project = project_data.into();
+            let data = Data { project };
+            let s: String = export_to_csv_pretty(&data);
+            log::info!("{}", s);
+            let example_file = File::new_with_options(
+                "motivation.txt",
+                // use s
+                s.as_str(),
+                Some("text/plain"),
+                Some(Utc::now().into())
+            );
+            ObjectUrl::from(example_file)
+        }
+    };
+
+    let export_json = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            let project_data = fields::read_all_project_fields(&signals);
+            let project = project_data.into();
+            let data = Data { project };
+            let s: String = export_to_csv_pretty(&data);
+            log::info!("{}", s);
+            let example_file = File::new_with_options(
+                "motivation.txt",
+                // use s
+                s.as_str(),
+                Some("application/json"),
+                Some(Utc::now().into())
+            );
+            ObjectUrl::from(example_file)
+        }
+    };
+
+    let save_result_message = RwSignal::new(None);
+
     let load_action = create_action({
         let api = api.clone();
         move |id: &ProjectId| {
@@ -572,6 +651,8 @@ pub fn Tool(
             load = load_example_values
             save = save_project
             download
+            export_csv
+            export_json
             upload_action
           />
         </div>

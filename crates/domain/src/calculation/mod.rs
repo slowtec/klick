@@ -78,7 +78,7 @@ pub fn calculate_emissions(
     let ch4_water = f64::from(*chemical_oxygen_demand_effluent * *wastewater) / 1000.0
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
 
-    let ch4_slippage_sludge_bags = if *sludge_bags_are_open {
+        let ch4_slippage_sludge_bags = if *sludge_bags_are_open {
         let count = digester_count.unwrap_or(0);
         let volume = *sewage_gas_produced
             * *methane_fraction

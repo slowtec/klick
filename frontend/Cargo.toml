@@ -16,6 +16,7 @@ klick-domain = "=0.0.0"
 klick-presenter = "=0.0.0"
 
 # External dependencies
+chrono = "0.4"
 anyhow = "1.0.79"
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }

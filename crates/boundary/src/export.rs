@@ -39,3 +39,14 @@ pub fn export_to_vec_pretty(data: &Data) -> Vec<u8> {
     };
     serde_json::to_vec_pretty(&export).expect("Valid input data")
 }
+
+#[must_use]
+#[allow(clippy::missing_panics_doc)]
+pub fn export_to_csv_pretty(data: &Data) -> String {
+    let export = Export {
+        version: CURRENT_VERSION,
+        data,
+    };
+//    serde_json::to_vec_pretty(&export).expect("Valid input data")
+    "csv".to_string()
+}
