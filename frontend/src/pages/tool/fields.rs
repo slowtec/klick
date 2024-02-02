@@ -33,10 +33,9 @@ pub enum FieldId {
     Strombedarf,
     Eigenstrom,
     EfStrommix,
-    Schlammtaschen,
-    Schlammstapel,
     KlaerschlammEnstorgung,
     KlaerschlammTransport,
+    DigesterCount,
     BetriebsstoffeFe3,
     BetriebsstoffeFeso4,
     BetriebsstoffeKalk,
@@ -65,8 +64,6 @@ pub fn read_all_project_fields(signals: &HashMap<FieldId, FieldSignal>) -> Proje
 pub fn read_title(s: &HashMap<FieldId, FieldSignal>) -> Option<String> {
     s.get(&FieldId::ProjectName).and_then(FieldSignal::get_text)
 }
-
-const DEFAULT_OPEN_SLUDGE_STORAGE_CONTAINERS_VALUE: bool = false;
 
 pub fn read_input_fields(
     s: &HashMap<FieldId, FieldSignal>,
@@ -123,20 +120,17 @@ pub fn read_input_fields(
     };
 
     let sewage_sludge_treatment = SewageSludgeTreatment {
-        open_sludge_bags: s
-            .get(&FieldId::Schlammtaschen)
-            .and_then(FieldSignal::get_bool),
-        open_sludge_storage_containers: Some(
-            s.get(&FieldId::Schlammstapel)
-                .and_then(FieldSignal::get_bool)
-                .unwrap_or(DEFAULT_OPEN_SLUDGE_STORAGE_CONTAINERS_VALUE),
-        ),
+        sludge_bags_are_open: Some(true),
+        sludge_storage_containers_are_open: Some(true),
         sewage_sludge_for_disposal: s
             .get(&FieldId::KlaerschlammEnstorgung)
             .and_then(FieldSignal::get_float),
         transport_distance: s
             .get(&FieldId::KlaerschlammTransport)
             .and_then(FieldSignal::get_float),
+        digester_count: s
+            .get(&FieldId::DigesterCount)
+            .and_then(FieldSignal::get_unsigned_integer),
     };
 
     let operating_materials = OperatingMaterials {
@@ -195,6 +189,10 @@ pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> OptimizationSc
 
 fn float_to_sting_option(f: Option<f64>) -> Option<String> {
     f.map(format_f64_into_de_string)
+}
+
+fn unsigned_integer_to_sting_option(f: Option<u64>) -> Option<String> {
+    f.map(|x| x.to_string())
 }
 
 #[allow(clippy::too_many_lines)]
@@ -257,10 +255,11 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
     } = energy_consumption;
 
     let SewageSludgeTreatment {
-        open_sludge_bags,
-        open_sludge_storage_containers: _,
+        sludge_bags_are_open: _,
+        sludge_storage_containers_are_open: _,
         sewage_sludge_for_disposal,
         transport_distance,
+        digester_count,
     } = sewage_sludge_treatment;
 
     let OperatingMaterials {
@@ -357,11 +356,6 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .unwrap()
         .set(float_to_sting_option(gas_supply));
     signals
-        .get(&FieldId::Schlammtaschen)
-        .and_then(FieldSignal::get_bool_signal)
-        .unwrap()
-        .set(open_sludge_bags == Some(true));
-    signals
         .get(&FieldId::KlaerschlammTransport)
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
@@ -371,6 +365,11 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(sewage_sludge_for_disposal));
+    signals
+        .get(&FieldId::DigesterCount)
+        .and_then(FieldSignal::get_unsigned_integer_signal)
+        .unwrap()
+        .set(unsigned_integer_to_sting_option(digester_count));
     signals
         .get(&FieldId::BetriebsstoffeFe3)
         .and_then(FieldSignal::get_float_signal)

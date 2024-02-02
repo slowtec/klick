@@ -1,4 +1,4 @@
-use crate::{v1, v2, v3, v4, v5};
+use crate::{v1, v2, v3, v4, v5, v6};
 
 const V1_OPERATING_MATERIALS_DIVISOR: f64 = 1_000.0;
 
@@ -194,4 +194,84 @@ pub fn from_v4(data: v4::Import) -> v5::Data {
     let project = v5::Project::from(unsaved_project);
 
     v5::Data { project }
+}
+
+fn convert_v5_v6_project_data(pd5: v5::ProjectData) -> v6::ProjectData {
+    let v5::ProjectData {
+        title,
+        plant_profile,
+        optimization_scenario,
+    } = pd5;
+
+    let v5::PlantProfile {
+        plant_name,
+        population_equivalent,
+        wastewater,
+        influent_average,
+        effluent_average,
+        energy_consumption,
+        sewage_sludge_treatment,
+        operating_materials,
+    } = plant_profile;
+
+    let v5::SewageSludgeTreatment {
+        open_sludge_bags,
+        open_sludge_storage_containers,
+        sewage_sludge_for_disposal,
+        transport_distance,
+    } = sewage_sludge_treatment;
+
+    let sewage_sludge_treatment = v6::SewageSludgeTreatment {
+        sludge_bags_are_open: open_sludge_bags,
+        sludge_storage_containers_are_open: open_sludge_storage_containers,
+        sewage_sludge_for_disposal,
+        transport_distance,
+        digester_count: None,
+    };
+
+    let plant_profile = v6::PlantProfile {
+        plant_name,
+        population_equivalent,
+        wastewater,
+        influent_average,
+        effluent_average,
+        energy_consumption,
+        sewage_sludge_treatment,
+        operating_materials,
+    };
+
+    v6::ProjectData {
+        title,
+        plant_profile,
+        optimization_scenario,
+    }
+}
+
+pub fn from_v5(data: v5::Data) -> v6::Data {
+    let v5::Data { project } = data;
+
+    let project = match project {
+        v5::Project::Saved(saved_project) => {
+            let v5::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                data,
+            } = saved_project;
+            let data = convert_v5_v6_project_data(data);
+            v6::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                data,
+            }
+            .into()
+        }
+        v5::Project::Unsaved(unsaved_project) => {
+            let data = convert_v5_v6_project_data(unsaved_project);
+            v6::Project::Unsaved(data)
+        }
+    };
+
+    v6::Data { project }
 }

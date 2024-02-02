@@ -13,7 +13,7 @@ pub const EMISSION_FACTOR_CH4_CHP: Percent = Percent::new(1.0);
 pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);
 
 /// 0.3 `[%]` of the total methane gas yield
-pub const EMISSION_FACTOR_SLUDGE_BAGS: Percent = Percent::new(0.3);
+pub const EMISSION_FACTOR_SLUDGE_BAGS: Percent = Percent::new(0.0375);
 
 /// 1,7 `[%]` of the total digester gas production
 pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(1.7);

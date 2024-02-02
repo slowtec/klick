@@ -44,10 +44,11 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
     } = energy_consumption;
 
     let SewageSludgeTreatment {
-        open_sludge_bags,
-        open_sludge_storage_containers,
+        sludge_bags_are_open,
+        sludge_storage_containers_are_open,
         sewage_sludge_for_disposal,
         transport_distance,
+        digester_count,
     } = sewage_sludge_treatment;
 
     let OperatingMaterials {
@@ -73,22 +74,27 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
 
     let ch4_sewage_treatment =
         population_equivalent * EMISSION_FACTOR_CH4_PLANT / f64::from(10_i32.pow(6)); // [t CH4/a]
+
     let ch4_water = f64::from(*chemical_oxygen_demand_effluent * *wastewater) / 1000.0
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
 
-    // #114
-    let ch4_slippage_sludge_bags = if *open_sludge_bags {
-        let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_BAGS;
+    let ch4_slippage_sludge_bags = if *sludge_bags_are_open {
+        let count = digester_count.unwrap_or(1);
+        let volume = *sewage_gas_produced
+            * *methane_fraction
+            * (Factor::new(count as f64) * EMISSION_FACTOR_SLUDGE_BAGS);
         let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
         f64::from(mass) / 1_000.0
     } else {
         0.0
     }; // [t CH4 / a]
 
-    let ch4_slippage_sludge_storage = {
+    let ch4_slippage_sludge_storage = if *sludge_storage_containers_are_open {
         let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_STORAGE;
         let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
         f64::from(mass) / 1_000.0
+    } else {
+        0.0
     }; // [t CH4 / a]
 
     let n2o_plant = Tons::new(n2o_plant * GWP_N2O);

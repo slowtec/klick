@@ -43,10 +43,11 @@ fn example_input_data() -> ProjectData {
             emission_factor_electricity_mix: Some(420.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
-            open_sludge_bags: Some(true),
-            open_sludge_storage_containers: Some(false),
+            sludge_bags_are_open: Some(true),
+            sludge_storage_containers_are_open: Some(true),
             sewage_sludge_for_disposal: Some(3016.5),
             transport_distance: Some(150.0),
+            digester_count: Some(3),
         },
         operating_materials: OperatingMaterials {
             fecl3: Some(310.5),

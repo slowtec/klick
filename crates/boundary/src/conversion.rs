@@ -302,16 +302,17 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
 
     fn try_from(from: SewageSludgeTreatment) -> Result<Self, Self::Error> {
         let SewageSludgeTreatment {
-            open_sludge_bags,
-            open_sludge_storage_containers,
+            sludge_bags_are_open,
+            sludge_storage_containers_are_open,
             sewage_sludge_for_disposal,
             transport_distance,
+            digester_count,
         } = from;
-        let Some(open_sludge_bags) = open_sludge_bags else {
-            bail!("missing open_sludge_bags");
+        let Some(sludge_bags_are_open) = sludge_bags_are_open else {
+            bail!("missing sludge_bags_are_open");
         };
-        let Some(open_sludge_storage_containers) = open_sludge_storage_containers else {
-            bail!("missing open_sludge_storage_containers");
+        let Some(sludge_storage_containers_are_open) = sludge_storage_containers_are_open else {
+            bail!("missing sludge_storage_containers_are_open");
         };
         let Some(sewage_sludge_for_disposal) = sewage_sludge_for_disposal else {
             bail!("missing sewage_sludge_for_disposal");
@@ -319,14 +320,14 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
         let Some(transport_distance) = transport_distance else {
             bail!("missing transport_distance");
         };
-
         let sewage_sludge_for_disposal = domain::Tons::new(sewage_sludge_for_disposal);
         let transport_distance = domain::Kilometers::new(transport_distance);
         Ok(Self {
-            open_sludge_bags,
-            open_sludge_storage_containers,
+            sludge_bags_are_open,
+            sludge_storage_containers_are_open,
             sewage_sludge_for_disposal,
             transport_distance,
+            digester_count,
         })
     }
 }
@@ -334,22 +335,23 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
 impl From<domain::SewageSludgeTreatment> for SewageSludgeTreatment {
     fn from(from: domain::SewageSludgeTreatment) -> Self {
         let domain::SewageSludgeTreatment {
-            open_sludge_bags,
-            open_sludge_storage_containers,
+            sludge_bags_are_open,
+            sludge_storage_containers_are_open,
             sewage_sludge_for_disposal,
             transport_distance,
+            digester_count,
         } = from;
-
-        let open_sludge_bags = Some(open_sludge_bags);
-        let open_sludge_storage_containers = Some(open_sludge_storage_containers);
+        let sludge_bags_are_open = Some(sludge_bags_are_open);
+        let sludge_storage_containers_are_open = Some(sludge_storage_containers_are_open);
         let sewage_sludge_for_disposal = Some(sewage_sludge_for_disposal.into());
         let transport_distance = Some(transport_distance.into());
-
+        let digester_count = digester_count.map(Into::into);
         Self {
-            open_sludge_bags,
-            open_sludge_storage_containers,
+            sludge_bags_are_open,
+            sludge_storage_containers_are_open,
             sewage_sludge_for_disposal,
             transport_distance,
+            digester_count,
         }
     }
 }

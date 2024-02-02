@@ -37,6 +37,10 @@ pub enum FieldSignal {
         input: RwSignal<Option<String>>,
         output: RwSignal<Option<f64>>,
     },
+    UnsignedInteger {
+        input: RwSignal<Option<String>>,
+        output: RwSignal<Option<u64>>,
+    },
     Text(RwSignal<Option<String>>),
     Bool(RwSignal<bool>),
     Selection(RwSignal<Option<usize>>),
@@ -46,6 +50,12 @@ impl FieldSignal {
     pub fn get_float(&self) -> Option<f64> {
         match self {
             Self::Float { output, .. } => output.get(),
+            _ => None,
+        }
+    }
+    pub fn get_unsigned_integer(&self) -> Option<u64> {
+        match self {
+            Self::UnsignedInteger { output, .. } => output.get(),
             _ => None,
         }
     }
@@ -73,7 +83,6 @@ impl FieldSignal {
     }
 
     pub const fn get_float_signal(&self) -> Option<RwSignal<Option<String>>> {
-        // FIXME rename
         match self {
             Self::Float { input, .. } => Some(*input),
             _ => None,
@@ -81,9 +90,15 @@ impl FieldSignal {
     }
 
     pub const fn get_float_output_signal(&self) -> Option<RwSignal<Option<f64>>> {
-        // FIXME rename
         match self {
             Self::Float { output, .. } => Some(*output),
+            _ => None,
+        }
+    }
+
+    pub const fn get_unsigned_integer_signal(&self) -> Option<RwSignal<Option<String>>> {
+        match self {
+            Self::UnsignedInteger { input, .. } => Some(*input),
             _ => None,
         }
     }
@@ -112,6 +127,7 @@ impl FieldSignal {
     pub fn clear(&self) {
         match self {
             Self::Float { input, .. } => input.set(None),
+            Self::UnsignedInteger { input, .. } => input.set(None),
             Self::Text(s) => s.set(None),
             Self::Bool(s) => s.set(false),
             Self::Selection(s) => s.set(None),
@@ -121,6 +137,7 @@ impl FieldSignal {
     pub fn as_formatted_string(&self) -> Option<String> {
         match self {
             Self::Float { input, .. } => input.get(),
+            Self::UnsignedInteger { input, .. } => input.get(),
             Self::Text(s) => s.get(),
             Self::Bool(s) => Some(if s.get() { "Ja" } else { "Nein" }.to_string()),
             Self::Selection(_) => todo!(),
@@ -208,9 +225,9 @@ impl<ID> Field<ID> {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct MinMax {
-    pub min: Option<f64>,
-    pub max: Option<f64>,
+pub struct MinMax<T> {
+    pub min: Option<T>,
+    pub max: Option<T>,
 }
 
 #[derive(Debug, Clone)]
@@ -219,7 +236,13 @@ pub enum FieldType {
     Float {
         initial_value: Option<f64>,
         placeholder: Option<&'static str>,
-        limits: MinMax,
+        limits: MinMax<f64>,
+        unit: &'static str,
+    },
+    UnsignedInteger {
+        initial_value: Option<u64>,
+        placeholder: Option<&'static str>,
+        limits: MinMax<u64>,
         unit: &'static str,
     },
     Text {

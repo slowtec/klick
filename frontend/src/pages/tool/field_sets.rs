@@ -402,14 +402,24 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Klärschlammbehandlung"),
         fields: vec![
             Field {
-                id: Id::Schlammtaschen,
-                label: "Offene Schlammtaschen",
+                id: Id::DigesterCount,
+                label: "Anzahl Faultürme",
                 description: Some(
-                    "Falls die Schlammtaschen des Faulturms nicht geschlossen sind, sondern zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.",
+                    "Falls auf Ihrer Kläranlage eine Faulung vorhanden ist, dann geben Sie bitte die Anzahl der Faultürme ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein.",
                 ),
                 required: false,
-                field_type: FieldType::Bool {
+                field_type: FieldType::UnsignedInteger {
                     initial_value: None,
+                    placeholder: Some(
+                        "Anzahl Faultürme",
+                    ),
+                    limits: MinMax {
+                        min: None,
+                        max: Some(
+                            9,
+                        ),
+                    },
+                    unit: "Gebäude",
                 },
             },
             Field {

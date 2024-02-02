@@ -111,7 +111,40 @@ where
             };
 
             let view = view! {
-              <NumberInput
+              <FloatInput
+                label
+                field_id
+                placeholder = placeholder.unwrap_or_default()
+                input_value = input_signal
+                output_value = output_signal
+                unit
+                description
+                limits
+                required
+              />
+            }
+            .into_view();
+            (field_signal, view)
+        }
+        FieldType::UnsignedInteger {
+            placeholder,
+            unit,
+            initial_value,
+            limits,
+            ..
+        } => {
+            let i_value = initial_value.map(|v| format!("{}", v));
+
+            let input_signal = RwSignal::new(i_value);
+            let output_signal = RwSignal::new(Option::<u64>::None);
+
+            let field_signal = FieldSignal::UnsignedInteger {
+                input: input_signal,
+                output: output_signal,
+            };
+
+            let view = view! {
+              <UnsignedIntegerInput
                 label
                 field_id
                 placeholder = placeholder.unwrap_or_default()
@@ -194,7 +227,6 @@ fn create_tooltip(
     description: Option<&'static str>,
     required: bool,
     _unit: Option<&'static str>,
-    limits: Option<MinMax>,
 ) -> impl IntoView {
     let show_tooltip = RwSignal::new("none".to_string());
 
@@ -241,7 +273,7 @@ fn create_tooltip(
             </svg>
             <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
             <p class="text-xs leading-4 text-gray-600 pb-3">{ description }</p>
-            <Show when=move || (limits.is_some() || limits.is_some() || required )>
+            <Show when=move || required>
               <ul class="list-disc list-inside">
               <Show when=move || required>
                 <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe benötigt!"</li>
@@ -271,7 +303,7 @@ fn TextInput(
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }
           </label>
-          { create_tooltip(label, description, required, None, None) }
+          { create_tooltip(label, description, required, None) }
         </div>
 
         <div class="relative mt-2 rounded-md shadow-sm group">
@@ -335,7 +367,7 @@ pub fn format_f64_into_de_string(number: f64) -> String {
 }
 
 #[component]
-fn NumberInput(
+fn FloatInput(
     label: &'static str,
     unit: &'static str,
     placeholder: &'static str,
@@ -343,7 +375,7 @@ fn NumberInput(
     input_value: RwSignal<Option<String>>,
     output_value: RwSignal<Option<f64>>,
     description: Option<&'static str>,
-    limits: MinMax,
+    limits: MinMax<f64>,
     required: bool,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
@@ -355,7 +387,7 @@ fn NumberInput(
           <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }
           </label>
-          { create_tooltip(label, description, required, Some(unit), Some(limits)) }
+          { create_tooltip(label, description, required, Some(unit)) }
         </div>
 
         <div class="relative mt-2 rounded-md shadow-sm">
@@ -398,14 +430,117 @@ fn NumberInput(
                     return v;
                 };
                 if let Some(min) = limits.min {
-                    if t <= min {
+                    if t < min {
                         error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
                         output_value.set(None);
                         return v;
                     }
                 }
                 if let Some(max) = limits.max {
-                    if t >= max {
+                    if t > max {
+                        error.set(Some("Eingabe überschreitet das Maximum".to_string()));
+                        output_value.set(None);
+                        return v;
+                    }
+                }
+                error.set(None);
+                output_value.set(Some(t));
+                v
+            }
+            on:input = move |ev| {
+              let input = event_target_value(&ev);
+              let v = if input.is_empty() { None } else { Some(input) };
+              input_value.set(v);
+            }
+          />
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <span class="text-gray-500 sm:text-sm">{ unit }</span>
+          </div>
+        </div>
+        <Show when=move || error.get().is_some()>
+          <p class="mt-2 text-sm" style="color: red">{ move || error.get() }</p>
+        </Show>
+      </div>
+    }
+}
+
+#[component]
+fn UnsignedIntegerInput(
+    label: &'static str,
+    unit: &'static str,
+    placeholder: &'static str,
+    field_id: String,
+    input_value: RwSignal<Option<String>>,
+    output_value: RwSignal<Option<u64>>,
+    description: Option<&'static str>,
+    limits: MinMax<u64>,
+    required: bool,
+) -> impl IntoView {
+    let required_label = format!("{} {}", if required { "*" } else { "" }, label);
+    let error = RwSignal::new(Option::<String>::None);
+
+    view! {
+      <div>
+        <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
+          <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
+            { required_label }
+          </label>
+          { create_tooltip(label, description, required, Some(unit)) }
+        </div>
+
+        <div class="relative mt-2 rounded-md shadow-sm">
+          <input
+            id = { field_id }
+            type="text"
+            class = move || {
+              let bg = if error.get().is_some() { "bg-red-100" } else { "" };
+              format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
+            }
+            placeholder = { placeholder }
+            on:focusin = move |_ev| {
+              if let Some(v) = input_value.get() {
+                  let v = v.replace('.', "");
+                  input_value.set(Some(v));
+              }
+            }
+            on:focusout = move |_ev| {
+                let Some(v) = input_value.get() else {
+                    input_value.set(None);
+                    if required {
+                        error.set(Some("Eingabe benötigt!".to_string()));
+                    }
+                    return;
+                };
+                match v.parse::<u64>() {
+                    Ok(_parsed_number) => {
+                    // not needed for u64 vs. f64
+                    //   input_value.set(Some(parsed_number));
+                    }
+                    Err(_err) => {
+                      error.set(Some("Fehlerhafte Eingabe!".to_string()));
+                    }
+                };
+            }
+            prop:value = move || {
+                let Some(v) = input_value.get() else {
+                    output_value.set(None);
+                    error.set(None);
+                    return String::new();
+                };
+                let Ok(t) = v.parse::<u64>() else {
+                    error.set(Some("Fehlerhafte Eingabe!".to_string()));
+                    output_value.set(None);
+                    return v;
+                };
+                if let Some(min) = limits.min {
+                    if t < min {
+                        error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
+                        output_value.set(None);
+                        return v;
+                    }
+                }
+                if let Some(max) = limits.max {
+                    if t > max {
                         error.set(Some("Eingabe überschreitet das Maximum".to_string()));
                         output_value.set(None);
                         return v;

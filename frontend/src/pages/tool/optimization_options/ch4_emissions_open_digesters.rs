@@ -22,7 +22,7 @@ pub fn options(
     input_data: Signal<Option<domain::PlantProfile>>,
     n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
-    let open_sludge_bags = Field {
+    let sludge_bags_are_open = Field {
         id: Id::SludgeBags,
         label: "Schließen der Schlammtaschen",
         description: None,
@@ -32,7 +32,7 @@ pub fn options(
         },
     };
 
-    let open_sludge_storage_containers = Field {
+    let sludge_storage_containers_are_open = Field {
         id: Id::SludgeStorageContainers,
         label: "Schließen der Schlammstapelbehälter",
         description: None,
@@ -44,7 +44,7 @@ pub fn options(
 
     let field_set = FieldSet {
         title: None,
-        fields: vec![open_sludge_bags, open_sludge_storage_containers],
+        fields: vec![sludge_bags_are_open, sludge_storage_containers_are_open],
     };
 
     let (signals, fields_view, _required_fields) = render_field_sets(vec![field_set]);
@@ -69,11 +69,11 @@ pub fn options(
 
         let field_signal = signals.get(&Id::SludgeBags);
 
-        input_data.sewage_sludge_treatment.open_sludge_bags =
+        input_data.sewage_sludge_treatment.sludge_bags_are_open =
             if let Some(v) = field_signal.and_then(FieldSignal::get_bool) {
                 !v
             } else {
-                let value = !input_data.sewage_sludge_treatment.open_sludge_bags;
+                let value = !input_data.sewage_sludge_treatment.sludge_bags_are_open;
                 field_signal
                     .and_then(FieldSignal::get_bool_signal)
                     .unwrap()
@@ -85,13 +85,13 @@ pub fn options(
 
         input_data
             .sewage_sludge_treatment
-            .open_sludge_storage_containers =
+            .sludge_storage_containers_are_open =
             if let Some(v) = field_signal.and_then(FieldSignal::get_bool) {
                 !v
             } else {
                 let value = !input_data
                     .sewage_sludge_treatment
-                    .open_sludge_storage_containers;
+                    .sludge_storage_containers_are_open;
                 field_signal
                     .and_then(FieldSignal::get_bool_signal)
                     .unwrap()
@@ -104,10 +104,10 @@ pub fn options(
     });
 
     view! {
-      <Card title = "Methanemissionen aus offenen Faultürmen">
+      <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung">
         <p>
           "Das Schließen von "<b>"Schlammtaschen"</b>" an Faultürmen wirkt sich durch die Eindämmung von Methanschlupfen positiv auf die Klimabilanz von Kläranlagen aus.
-          Die Anzahl der Faultürme wird hierbei proportional berücksichtigt (siehe Angabe im Eingabefeld „Anzahl der Faultürme“)."
+          Die Anzahl der Faultürme wird hierbei proportional berücksichtigt (siehe Eingabe im Feld „Anzahl der Faultürme“)."
         </p>
         <div class="my-4 ml-4">
           { fields_view }

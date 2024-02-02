@@ -50,10 +50,11 @@ fn import_v1() {
     } = energy_consumption;
 
     let SewageSludgeTreatment {
-        open_sludge_bags,
-        open_sludge_storage_containers,
+        sludge_bags_are_open,
+        sludge_storage_containers_are_open,
         sewage_sludge_for_disposal,
         transport_distance,
+        digester_count,
     } = sewage_sludge_treatment;
 
     assert_eq!(plant_name.as_deref(), Some("Example Plant"));
@@ -76,10 +77,11 @@ fn import_v1() {
     assert_eq!(purchase_of_biogas, Some(true));
     assert_eq!(total_power_consumption, Some(2_683_259.0));
 
-    assert_eq!(open_sludge_bags, Some(true));
-    assert_eq!(open_sludge_storage_containers, Some(true));
+    assert_eq!(sludge_bags_are_open, Some(true));
+    assert_eq!(sludge_storage_containers_are_open, Some(true));
     assert_eq!(sewage_sludge_for_disposal, Some(3687.6));
     assert_eq!(transport_distance, Some(47.0));
+    assert_eq!(digester_count, None);
 
     assert_eq!(operating_materials.fecl3, Some(12.345));
     assert_eq!(operating_materials.feclso4, Some(326.0));
@@ -132,10 +134,11 @@ fn import_v2() {
     } = energy_consumption;
 
     let SewageSludgeTreatment {
-        open_sludge_bags,
-        open_sludge_storage_containers,
+        sludge_bags_are_open,
+        sludge_storage_containers_are_open,
         sewage_sludge_for_disposal,
         transport_distance,
+        digester_count,
     } = sewage_sludge_treatment;
 
     assert_eq!(plant_name.as_deref(), Some("Example Plant"));
@@ -158,10 +161,11 @@ fn import_v2() {
     assert_eq!(purchase_of_biogas, Some(true));
     assert_eq!(total_power_consumption, Some(2_683_259.0));
 
-    assert_eq!(open_sludge_bags, Some(true));
-    assert_eq!(open_sludge_storage_containers, Some(true));
+    assert_eq!(sludge_bags_are_open, Some(true));
+    assert_eq!(sludge_storage_containers_are_open, Some(true));
     assert_eq!(sewage_sludge_for_disposal, Some(3687.6));
     assert_eq!(transport_distance, Some(47.0));
+    assert_eq!(digester_count, None);
 
     assert_eq!(operating_materials.fecl3, Some(12.345));
     assert_eq!(operating_materials.feclso4, Some(326.0));
@@ -197,4 +201,68 @@ fn import_v3() {
     );
 
     assert_eq!(project.optimization_scenario.ch4_chp_emission_factor, None);
+}
+
+#[test]
+fn import_v5() {
+    let json = include_str!("example_data_v5.json");
+    let Project::Unsaved(project) = import_from_str(json).unwrap() else {
+        panic!("expected unsaved project");
+    };
+
+    assert_eq!(
+        project
+            .optimization_scenario
+            .n2o_emission_factor
+            .calculation_method,
+        N2oEmissionFactorCalcMethod::Ipcc2019
+    );
+
+    assert_eq!(project.optimization_scenario.ch4_chp_emission_factor, None);
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_bags_are_open,
+        Some(true)
+    );
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_storage_containers_are_open,
+        Some(true)
+    );
+}
+
+#[test]
+fn import_v6() {
+    let json = include_str!("example_data_v6.json");
+    let Project::Unsaved(project) = import_from_str(json).unwrap() else {
+        panic!("expected unsaved project");
+    };
+
+    assert_eq!(
+        project
+            .optimization_scenario
+            .n2o_emission_factor
+            .calculation_method,
+        N2oEmissionFactorCalcMethod::Ipcc2019
+    );
+
+    assert_eq!(project.optimization_scenario.ch4_chp_emission_factor, None);
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_bags_are_open,
+        Some(true)
+    );
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_storage_containers_are_open,
+        Some(true)
+    );
 }

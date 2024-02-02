@@ -41,10 +41,11 @@ pub struct EnergyConsumption {
 
 #[derive(Debug, Clone)]
 pub struct SewageSludgeTreatment {
-    pub open_sludge_bags: bool,
-    pub open_sludge_storage_containers: bool,
+    pub sludge_bags_are_open: bool,
+    pub sludge_storage_containers_are_open: bool,
     pub sewage_sludge_for_disposal: Tons,
     pub transport_distance: Kilometers,
+    pub digester_count: Option<u64>,
 }
 
 #[derive(Debug, Clone)]
