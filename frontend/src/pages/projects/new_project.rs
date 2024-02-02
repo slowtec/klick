@@ -2,6 +2,7 @@ use leptos::*;
 use strum::AsRefStr;
 
 use klick_boundary::{ProjectData, ProjectId};
+use klick_presenter::ValueLabel;
 
 use crate::{api::AuthorizedApi, forms};
 
@@ -15,7 +16,6 @@ pub fn NewProject(
 ) -> impl IntoView {
     let field = Field {
         id: Id::Name,
-        label: "Projektname",
         description: None,
         required: true,
         field_type: forms::FieldType::Text {
@@ -90,6 +90,14 @@ pub fn NewProject(
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr)]
 enum Id {
     Name,
+}
+
+impl ValueLabel for Id {
+    fn label(&self) -> &str {
+        match self {
+            Self::Name => "Projektname",
+        }
+    }
 }
 
 type Field = forms::Field<Id>;

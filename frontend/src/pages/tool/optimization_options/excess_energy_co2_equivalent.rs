@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_application as app;
 use klick_domain as domain;
-use klick_format_numbers::Lng;
+use klick_presenter::Lng;
 
 use super::Card;
 

@@ -813,10 +813,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "klick-format-numbers"
-version = "0.0.0"
-
-[[package]]
 name = "klick-frontend"
 version = "0.3.8"
 dependencies = [
@@ -824,6 +820,7 @@ dependencies = [
  "anyhow",
  "console_error_panic_hook",
  "console_log",
+ "derive_more",
  "gloo-file",
  "gloo-net 0.5.0",
  "gloo-storage",
@@ -831,7 +828,7 @@ dependencies = [
  "klick-application",
  "klick-boundary",
  "klick-domain",
- "klick-format-numbers",
+ "klick-presenter",
  "klick-svg-charts",
  "leptos",
  "leptos_meta",
@@ -847,10 +844,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-presenter"
+version = "0.0.0"
+dependencies = [
+ "derive_more",
+ "serde",
+ "strum",
+]
+
+[[package]]
 name = "klick-svg-charts"
 version = "0.0.0"
 dependencies = [
- "klick-format-numbers",
+ "klick-presenter",
  "leptos",
  "log",
 ]

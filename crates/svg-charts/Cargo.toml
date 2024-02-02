@@ -7,7 +7,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-klick-format-numbers = "=0.0.0"
+klick-presenter = "=0.0.0"
 
 leptos = "0.6.5"
 log = "0.4.20"

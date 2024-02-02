@@ -1,0 +1,15 @@
+[package]
+name = "klick-presenter"
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+derive_more = "0.99.17"
+serde = { version = "1.0.196", features = ["derive"] }
+strum = { version = "0.26.1", features = ["derive"] }

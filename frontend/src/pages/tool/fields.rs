@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use derive_more::From;
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
@@ -9,38 +10,30 @@ use klick_boundary::{
     OperatingMaterials, OptimizationScenario, PlantProfile, Project, ProjectData, SavedProject,
     SewageSludgeTreatment,
 };
+use klick_presenter::{
+    AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
+    ProfileValueId, SewageSludgeTreatmentId, ValueLabel,
+};
 
 use crate::forms::{self, format_f64_into_de_string, FieldSignal, MissingField};
 
 pub type RequiredField = forms::RequiredField<FieldId>;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize, From)]
 pub enum FieldId {
     ProjectName,
-    Name,
-    Ew,
-    Flow,
-    CsbZu,
-    TknZu,
-    PZu,
-    CsbAb,
-    TknAb,
-    PAb,
-    Klaergas,
-    Methangehalt,
-    GasZusatz,
-    Biogas,
-    Strombedarf,
-    Eigenstrom,
-    EfStrommix,
-    KlaerschlammEnstorgung,
-    KlaerschlammTransport,
-    DigesterCount,
-    BetriebsstoffeFe3,
-    BetriebsstoffeFeso4,
-    BetriebsstoffeKalk,
-    BetriebsstoffePoly,
+    Profile(ProfileValueId),
     Scenario(ScenarioFieldId),
+}
+
+impl ValueLabel for FieldId {
+    fn label(&self) -> &str {
+        match self {
+            Self::ProjectName => "Projektname",
+            Self::Profile(id) => id.label(),
+            Self::Scenario(id) => id.label(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
@@ -48,6 +41,16 @@ pub enum ScenarioFieldId {
     N2oCustomFactor,
     CH4ChpCalculationMethod,
     CH4ChpCustomFactor,
+}
+
+impl ValueLabel for ScenarioFieldId {
+    fn label(&self) -> &str {
+        match self {
+            Self::N2oCustomFactor => "N₂O-Emissionsfaktor",
+            Self::CH4ChpCalculationMethod => "BHKW Emmisionsfaktor",
+            Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
+        }
+    }
 }
 
 pub fn read_all_project_fields(signals: &HashMap<FieldId, FieldSignal>) -> ProjectData {
@@ -71,16 +74,16 @@ pub fn read_input_fields(
 ) -> (PlantProfile, Vec<MissingField>) {
     let missing_fields: Vec<MissingField> =
         required_fields.iter().fold(vec![], |mut acc, field| {
-            if field.id == FieldId::Name {
+            if field.id == ProfileValueId::PlantName.into() {
                 if s.get(&field.id).and_then(FieldSignal::get_text).is_none() {
-                    let x = MissingField::new(field.field_id.clone(), field.label);
+                    let x = MissingField::new(field.field_id.clone(), field.id.label().to_string());
                     acc.push(x);
                     acc
                 } else {
                     acc
                 }
             } else if s.get(&field.id).and_then(FieldSignal::get_float).is_none() {
-                let x = MissingField::new(field.field_id.clone(), field.label);
+                let x = MissingField::new(field.field_id.clone(), field.id.label().to_string());
                 acc.push(x);
                 acc
             } else {
@@ -88,34 +91,61 @@ pub fn read_input_fields(
             }
         });
 
-    let plant_name = s.get(&FieldId::Name).and_then(FieldSignal::get_text);
-    let population_equivalent = s.get(&FieldId::Ew).and_then(FieldSignal::get_float);
-    let wastewater = s.get(&FieldId::Flow).and_then(FieldSignal::get_float);
+    let plant_name = s
+        .get(&ProfileValueId::PlantName.into())
+        .and_then(FieldSignal::get_text);
+    let population_equivalent = s
+        .get(&ProfileValueId::PopulationEquivalent.into())
+        .and_then(FieldSignal::get_float);
+    let wastewater = s
+        .get(&ProfileValueId::Wastewater.into())
+        .and_then(FieldSignal::get_float);
 
     let influent_average = AnnualAverage {
-        nitrogen: s.get(&FieldId::TknZu).and_then(FieldSignal::get_float),
-        chemical_oxygen_demand: s.get(&FieldId::CsbZu).and_then(FieldSignal::get_float),
-        phosphorus: s.get(&FieldId::PZu).and_then(FieldSignal::get_float),
+        nitrogen: s
+            .get(&ProfileValueId::from(AnnualAverageInfluentId::Nitrogen).into())
+            .and_then(FieldSignal::get_float),
+        chemical_oxygen_demand: s
+            .get(&ProfileValueId::from(AnnualAverageInfluentId::ChemicalOxygenDemand).into())
+            .and_then(FieldSignal::get_float),
+        phosphorus: s
+            .get(&ProfileValueId::from(AnnualAverageInfluentId::Phosphorus).into())
+            .and_then(FieldSignal::get_float),
     };
+
     let effluent_average = AnnualAverage {
-        nitrogen: s.get(&FieldId::TknAb).and_then(FieldSignal::get_float),
-        chemical_oxygen_demand: s.get(&FieldId::CsbAb).and_then(FieldSignal::get_float),
-        phosphorus: s.get(&FieldId::PAb).and_then(FieldSignal::get_float),
+        nitrogen: s
+            .get(&ProfileValueId::from(AnnualAverageEffluentId::Nitrogen).into())
+            .and_then(FieldSignal::get_float),
+        chemical_oxygen_demand: s
+            .get(&ProfileValueId::from(AnnualAverageEffluentId::ChemicalOxygenDemand).into())
+            .and_then(FieldSignal::get_float),
+        phosphorus: s
+            .get(&ProfileValueId::from(AnnualAverageEffluentId::Phosphorus).into())
+            .and_then(FieldSignal::get_float),
     };
 
     let energy_consumption = EnergyConsumption {
-        sewage_gas_produced: s.get(&FieldId::Klaergas).and_then(FieldSignal::get_float),
+        sewage_gas_produced: s
+            .get(&ProfileValueId::from(EnergyConsumptionId::SewageGasProduced).into())
+            .and_then(FieldSignal::get_float),
         methane_fraction: s
-            .get(&FieldId::Methangehalt)
+            .get(&ProfileValueId::from(EnergyConsumptionId::MethaneFraction).into())
             .and_then(FieldSignal::get_float),
-        gas_supply: s.get(&FieldId::GasZusatz).and_then(FieldSignal::get_float),
-        purchase_of_biogas: s.get(&FieldId::Biogas).and_then(FieldSignal::get_bool),
+        gas_supply: s
+            .get(&ProfileValueId::from(EnergyConsumptionId::GasSupply).into())
+            .and_then(FieldSignal::get_float),
+        purchase_of_biogas: s
+            .get(&ProfileValueId::from(EnergyConsumptionId::PurchaseOfBiogas).into())
+            .and_then(FieldSignal::get_bool),
         total_power_consumption: s
-            .get(&FieldId::Strombedarf)
+            .get(&ProfileValueId::from(EnergyConsumptionId::TotalPowerConsumption).into())
             .and_then(FieldSignal::get_float),
-        on_site_power_generation: s.get(&FieldId::Eigenstrom).and_then(FieldSignal::get_float),
+        on_site_power_generation: s
+            .get(&ProfileValueId::from(EnergyConsumptionId::OnSitePowerGeneration).into())
+            .and_then(FieldSignal::get_float),
         emission_factor_electricity_mix: s
-            .get(&FieldId::EfStrommix)
+            .get(&ProfileValueId::from(EnergyConsumptionId::EmissionFactorElectricityMix).into())
             .and_then(FieldSignal::get_float),
     };
 
@@ -123,28 +153,28 @@ pub fn read_input_fields(
         sludge_bags_are_open: Some(true),
         sludge_storage_containers_are_open: Some(true),
         sewage_sludge_for_disposal: s
-            .get(&FieldId::KlaerschlammEnstorgung)
+            .get(&ProfileValueId::from(SewageSludgeTreatmentId::SewageSludgeForDisposal).into())
             .and_then(FieldSignal::get_float),
         transport_distance: s
-            .get(&FieldId::KlaerschlammTransport)
+            .get(&ProfileValueId::from(SewageSludgeTreatmentId::TransportDistance).into())
             .and_then(FieldSignal::get_float),
         digester_count: s
-            .get(&FieldId::DigesterCount)
+            .get(&ProfileValueId::from(SewageSludgeTreatmentId::DigesterCount).into())
             .and_then(FieldSignal::get_unsigned_integer),
     };
 
     let operating_materials = OperatingMaterials {
         fecl3: s
-            .get(&FieldId::BetriebsstoffeFe3)
+            .get(&ProfileValueId::from(OperatingMaterialId::FeCl3).into())
             .and_then(FieldSignal::get_float),
         feclso4: s
-            .get(&FieldId::BetriebsstoffeFeso4)
+            .get(&ProfileValueId::from(OperatingMaterialId::FeClSO4).into())
             .and_then(FieldSignal::get_float),
         caoh2: s
-            .get(&FieldId::BetriebsstoffeKalk)
+            .get(&ProfileValueId::from(OperatingMaterialId::CaOH2).into())
             .and_then(FieldSignal::get_float),
         synthetic_polymers: s
-            .get(&FieldId::BetriebsstoffePoly)
+            .get(&ProfileValueId::from(OperatingMaterialId::SyntheticPolymers).into())
             .and_then(FieldSignal::get_float),
     };
 
@@ -275,118 +305,119 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .unwrap()
         .set(title);
     signals
-        .get(&FieldId::Name)
+        .get(&ProfileValueId::PlantName.into())
         .and_then(FieldSignal::get_text_signal)
         .unwrap()
         .set(plant_name);
     signals
-        .get(&FieldId::Ew)
+        .get(&ProfileValueId::PopulationEquivalent.into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(population_equivalent));
     signals
-        .get(&FieldId::Flow)
+        .get(&ProfileValueId::Wastewater.into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(wastewater));
+
     signals
-        .get(&FieldId::TknZu)
+        .get(&ProfileValueId::from(AnnualAverageInfluentId::Nitrogen).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(nitrogen_influent));
     signals
-        .get(&FieldId::CsbZu)
+        .get(&ProfileValueId::from(AnnualAverageInfluentId::ChemicalOxygenDemand).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(chemical_oxygen_demand_influent));
     signals
-        .get(&FieldId::PZu)
+        .get(&ProfileValueId::from(AnnualAverageInfluentId::Phosphorus).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(phosphorus_influent));
 
     signals
-        .get(&FieldId::TknAb)
+        .get(&ProfileValueId::from(AnnualAverageEffluentId::Nitrogen).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(nitrogen_effluent));
     signals
-        .get(&FieldId::CsbAb)
+        .get(&ProfileValueId::from(AnnualAverageEffluentId::ChemicalOxygenDemand).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(chemical_oxygen_demand_effluent));
     signals
-        .get(&FieldId::PAb)
+        .get(&ProfileValueId::from(AnnualAverageEffluentId::Phosphorus).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(phosphorus_effluent));
     signals
-        .get(&FieldId::Klaergas)
+        .get(&ProfileValueId::from(EnergyConsumptionId::SewageGasProduced).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(sewage_gas_produced));
     signals
-        .get(&FieldId::Methangehalt)
+        .get(&ProfileValueId::from(EnergyConsumptionId::MethaneFraction).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(methane_fraction));
     signals
-        .get(&FieldId::Strombedarf)
+        .get(&ProfileValueId::from(EnergyConsumptionId::TotalPowerConsumption).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(total_power_consumption));
     signals
-        .get(&FieldId::Eigenstrom)
+        .get(&ProfileValueId::from(EnergyConsumptionId::OnSitePowerGeneration).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(on_site_power_generation));
     signals
-        .get(&FieldId::EfStrommix)
+        .get(&ProfileValueId::from(EnergyConsumptionId::EmissionFactorElectricityMix).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(emission_factor_electricity_mix));
     signals
-        .get(&FieldId::Biogas)
+        .get(&ProfileValueId::from(EnergyConsumptionId::PurchaseOfBiogas).into())
         .and_then(FieldSignal::get_bool_signal)
         .unwrap()
         .set(purchase_of_biogas == Some(true));
     signals
-        .get(&FieldId::GasZusatz)
+        .get(&ProfileValueId::from(EnergyConsumptionId::GasSupply).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(gas_supply));
     signals
-        .get(&FieldId::KlaerschlammTransport)
+        .get(&ProfileValueId::from(SewageSludgeTreatmentId::TransportDistance).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(transport_distance));
     signals
-        .get(&FieldId::KlaerschlammEnstorgung)
+        .get(&ProfileValueId::from(SewageSludgeTreatmentId::SewageSludgeForDisposal).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(sewage_sludge_for_disposal));
     signals
-        .get(&FieldId::DigesterCount)
+        .get(&ProfileValueId::from(SewageSludgeTreatmentId::DigesterCount).into())
         .and_then(FieldSignal::get_unsigned_integer_signal)
         .unwrap()
         .set(unsigned_integer_to_sting_option(digester_count));
     signals
-        .get(&FieldId::BetriebsstoffeFe3)
+        .get(&ProfileValueId::from(OperatingMaterialId::FeCl3).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(fecl3));
     signals
-        .get(&FieldId::BetriebsstoffeFeso4)
+        .get(&ProfileValueId::from(OperatingMaterialId::FeClSO4).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(feclso4));
     signals
-        .get(&FieldId::BetriebsstoffeKalk)
+        .get(&ProfileValueId::from(OperatingMaterialId::CaOH2).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(caoh2));
     signals
-        .get(&FieldId::BetriebsstoffePoly)
+        .get(&ProfileValueId::from(OperatingMaterialId::SyntheticPolymers).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(synthetic_polymers));

@@ -150,7 +150,6 @@ fn field_set() -> FieldSet {
     let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor);
     let custom_factor_field = Field {
         id,
-        label: "BHKW CH₄-EF benutzerdefiniert",
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
         required: false,
         field_type: FieldType::Float {
@@ -167,7 +166,6 @@ fn field_set() -> FieldSet {
     let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCalculationMethod);
     let calc_method_field = Field {
         id,
-        label: "BHKW Emmisionsfaktor",
         description: None,
         required: false,
         field_type: FieldType::Selection {

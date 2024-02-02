@@ -10,7 +10,8 @@ use klick_boundary::{
     SavedProject,
 };
 use klick_domain as domain;
-use klick_format_numbers::Lng;
+use klick_presenter::Lng;
+use klick_presenter::ProfileValueId;
 use klick_svg_charts::BarChart;
 
 use crate::{
@@ -216,12 +217,12 @@ pub fn Tool(
 
                     if selected_scenario.get() == Some(i as u64) {
                         let name_ka: String = s
-                            .get(&FieldId::Name)
+                            .get(&ProfileValueId::PlantName.into())
                             .and_then(FieldSignal::get_text)
                             .unwrap_or_else(|| "Kläranlage".to_string());
 
                         let ew = s
-                            .get(&FieldId::Ew)
+                            .get(&ProfileValueId::PopulationEquivalent.into())
                             .and_then(FieldSignal::get_float)
                             .unwrap_or_default();
 

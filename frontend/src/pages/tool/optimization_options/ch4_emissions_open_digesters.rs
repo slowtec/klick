@@ -4,6 +4,7 @@ use strum::AsRefStr;
 
 use klick_application as app;
 use klick_domain as domain;
+use klick_presenter::ValueLabel;
 
 use crate::{
     forms::{render_field_sets, Field, FieldSet, FieldType},
@@ -18,13 +19,21 @@ enum Id {
     SludgeStorageContainers,
 }
 
+impl ValueLabel for Id {
+    fn label(&self) -> &str {
+        match self {
+            Self::SludgeBags => "Schließen der Schlammtaschen",
+            Self::SludgeStorageContainers => "Schließen der Schlammstapelbehälter",
+        }
+    }
+}
+
 pub fn options(
     input_data: Signal<Option<domain::PlantProfile>>,
     n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let sludge_bags_are_open = Field {
         id: Id::SludgeBags,
-        label: "Schließen der Schlammtaschen",
         description: None,
         required: false,
         field_type: FieldType::Bool {
@@ -34,7 +43,6 @@ pub fn options(
 
     let sludge_storage_containers_are_open = Field {
         id: Id::SludgeStorageContainers,
-        label: "Schließen der Schlammstapelbehälter",
         description: None,
         required: false,
         field_type: FieldType::Bool {

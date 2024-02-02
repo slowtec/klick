@@ -1,3 +1,8 @@
+use klick_presenter::{
+    AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
+    ProfileValueId, SewageSludgeTreatmentId,
+};
+
 use crate::forms::{self, FieldType, MinMax};
 
 use super::fields::{FieldId, ScenarioFieldId};
@@ -14,7 +19,6 @@ pub fn field_sets() -> Vec<FieldSet> {
         fields: vec![
             Field {
                 id: Id::ProjectName,
-                label: "Projektname",
                 description: Some(
                     "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. Falls Sie sich angemeldet haben,
                     wird der Projektname zur Speicherung Ihrer Eingabewerte und Ergebnisse unter dem Reiter Projekte verwendet.
@@ -38,8 +42,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Angaben zur Kläranlage"),
         fields: vec![
             Field {
-                id: Id::Name,
-                label: "Name oder Ort",
+                id: ProfileValueId::PlantName.into(),
                 description: Some(
                     "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
                 ),
@@ -53,8 +56,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::Ew,
-                label: "Ausbaugröße",
+                id: ProfileValueId::PopulationEquivalent.into(),
                 description: Some(
                     "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
                 ),
@@ -76,8 +78,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::Flow,
-                label: "Abwassermenge",
+                id: ProfileValueId::Wastewater.into(),
                 description: Some(
                     "Die jährliche (a) Abwassermenge in Kubikmeter (m³) im Zulauf Ihrer Kläranlage.",
                 ),
@@ -104,8 +105,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Zulauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
             Field {
-                id: Id::CsbZu,
-                label: "Chemischer Sauerstoffbedarf",
+                id: ProfileValueId::from(AnnualAverageInfluentId::ChemicalOxygenDemand).into(),
                 description: Some(
                     "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
                 ),
@@ -127,8 +127,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::TknZu,
-                label: "Gesamtstickstoff",
+                id: ProfileValueId::from(AnnualAverageInfluentId::Nitrogen).into(),
                 description: Some(
                     "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
@@ -150,8 +149,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::PZu,
-                label: "Phosphor",
+                id: ProfileValueId::from(AnnualAverageInfluentId::Phosphorus).into(),
                 description: Some(
                     "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
@@ -178,8 +176,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Ablauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
             Field {
-                id: Id::CsbAb,
-                label: "Chemischer Sauerstoffbedarf",
+                id: ProfileValueId::from(AnnualAverageEffluentId::ChemicalOxygenDemand).into(),
                 description: Some(
                     "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
                 ),
@@ -201,8 +198,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::TknAb,
-                label: "Gesamtstickstoff",
+                id: ProfileValueId::from(AnnualAverageEffluentId::Nitrogen).into(),
                 description: Some(
                     "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
@@ -224,8 +220,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::PAb,
-                label: "Phosphor",
+                id: ProfileValueId::from(AnnualAverageEffluentId::Phosphorus).into(),
                 description: Some(
                     "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
@@ -252,8 +247,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Energiebedarf"),
         fields: vec![
             Field {
-                id: Id::Klaergas,
-                label: "Erzeugtes Klärgas",
+                id: ProfileValueId::from(EnergyConsumptionId::SewageGasProduced).into(),
                 description: Some(
                     "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m³) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
                 ),
@@ -275,8 +269,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::Methangehalt,
-                label: "Methangehalt",
+                id: ProfileValueId::from(EnergyConsumptionId::MethaneFraction).into(),
                 description: Some(
                     "Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
                 ),
@@ -298,8 +291,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::GasZusatz,
-                label: "Gasbezug (Versorger)",
+                id: ProfileValueId::from(EnergyConsumptionId::GasSupply).into(),
                 description: Some(
                     "Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
                 ),
@@ -317,8 +309,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::Biogas,
-                label: "Bezug von Biogas",
+                id: ProfileValueId::from(EnergyConsumptionId::PurchaseOfBiogas).into(),
                 description: Some(
                     "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
                 ),
@@ -328,8 +319,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::Strombedarf,
-                label: "Strombedarf gesamt",
+                id: ProfileValueId::from(EnergyConsumptionId::TotalPowerConsumption).into(),
                 description: Some(
                     "Der Gesamt-Strombedarf Ihrer Kläranlage in Kilowattstunden (kWh) pro Jahr (a).",
                 ),
@@ -351,8 +341,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::Eigenstrom,
-                label: "Eigenstromerzeugung",
+                id: ProfileValueId::from(EnergyConsumptionId::OnSitePowerGeneration).into(),
                 description: Some(
                     "Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen.",
                 ),
@@ -374,8 +363,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::EfStrommix,
-                label: "Emissionsfaktor Strommix (Versorger)",
+                id: ProfileValueId::from(EnergyConsumptionId::EmissionFactorElectricityMix).into(),
                 description: Some(
                     "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
                 ),
@@ -402,8 +390,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Klärschlammbehandlung"),
         fields: vec![
             Field {
-                id: Id::DigesterCount,
-                label: "Anzahl Faultürme",
+                id: ProfileValueId::from(SewageSludgeTreatmentId::DigesterCount).into(),
                 description: Some(
                     "Falls auf Ihrer Kläranlage eine Faulung vorhanden ist, dann geben Sie bitte die Anzahl der Faultürme ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein.",
                 ),
@@ -423,8 +410,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::KlaerschlammEnstorgung,
-                label: "Klärschlamm zur Entsorgung",
+                id: ProfileValueId::from(SewageSludgeTreatmentId::SewageSludgeForDisposal).into(),
                 description: Some(
                     "Angabe der Menge an Klärschlamm in Tonnen (t) die zur Entsorgung anfallen.",
                 ),
@@ -444,8 +430,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::KlaerschlammTransport,
-                label: "Transportdistanz",
+                id: ProfileValueId::from(SewageSludgeTreatmentId::TransportDistance).into(),
                 description: Some(
                     "Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen.",
                 ),
@@ -472,8 +457,7 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Eingesetzte Betriebsstoffe"),
         fields: vec![
             Field {
-                id: Id::BetriebsstoffeFe3,
-                label: "Eisen(III)-chlorid-Lösung",
+                id: ProfileValueId::from(OperatingMaterialId::FeCl3).into(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Eisen(III)-chlorid (FeCl3) in Tonnen (t).",
                 ),
@@ -493,8 +477,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::BetriebsstoffeFeso4,
-                label: "Eisenchloridsulfat-Lösung",
+                id: ProfileValueId::from(OperatingMaterialId::FeClSO4).into(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Eisenchloridsulfat (FeClSO4) in Tonnen (t).",
                 ),
@@ -514,8 +497,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::BetriebsstoffeKalk,
-                label: "Kalkhydrat",
+                id: ProfileValueId::from(OperatingMaterialId::CaOH2).into(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Kalkhydrat (Ca(OH)2) in Tonnen (t).",
                 ),
@@ -535,8 +517,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: Id::BetriebsstoffePoly,
-                label: "Synthetische Polymere",
+                id: ProfileValueId::from(OperatingMaterialId::SyntheticPolymers).into(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an synthetischen Polymeren in Tonnen (t).",
                 ),
@@ -562,7 +543,6 @@ pub fn field_sets() -> Vec<FieldSet> {
         fields: vec![
             Field {
                 id: Id::Scenario(ScenarioFieldId::N2oCustomFactor),
-                label: "N₂O-Emissionsfaktor",
                 description: Some(
                     "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF N₂O eintragen.",
                 ),

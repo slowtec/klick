@@ -1311,14 +1311,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "klick-format-numbers"
+name = "klick-presenter"
 version = "0.0.0"
+dependencies = [
+ "derive_more",
+ "serde",
+ "strum",
+]
 
 [[package]]
 name = "klick-svg-charts"
 version = "0.0.0"
 dependencies = [
- "klick-format-numbers",
+ "klick-presenter",
  "leptos",
  "log",
 ]

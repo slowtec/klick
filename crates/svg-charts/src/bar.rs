@@ -1,6 +1,6 @@
 use leptos::*;
 
-use klick_format_numbers::Lng;
+use klick_presenter::Lng;
 
 #[derive(Debug, Clone)]
 pub struct Arguments {

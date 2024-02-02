@@ -17,6 +17,7 @@ fn unique_id() -> usize {
     ID_COUNTER.fetch_add(1, Ordering::SeqCst)
 }
 
+//FIXME: rename dom_node_id
 pub fn form_field_id<ID>(field_id: &ID) -> String
 where
     ID: Copy + AsRef<str>,
@@ -151,18 +152,17 @@ where
     ID: AsRef<str> + Copy + Hash + Eq,
 {
     pub id: ID,
-    pub field_id: String,
-    pub label: &'static str,
+    pub field_id: String, //FIXME: rename dom_node_id
 }
 
 #[derive(Clone)]
 pub struct MissingField {
-    pub field_id: String,
-    pub label: &'static str,
+    pub field_id: String, //FIXME: rename dom_node_id
+    pub label: String,
 }
 
 impl MissingField {
-    pub const fn new(field_id: String, label: &'static str) -> Self {
+    pub const fn new(field_id: String, label: String) -> Self {
         Self { field_id, label }
     }
 }
@@ -183,7 +183,7 @@ where
             <a
               class = "cursor-pointer"
               on:click=move |_| {
-                let field_id = &e.field_id;
+                let field_id = &e.field_id; //FIXME: rename dom_node_id
                 let element_id = format!("#{field_id}");
                 let element: web_sys::HtmlInputElement = document().query_selector(&element_id).unwrap().unwrap().unchecked_into();
                 // uses might have to click the list link twice because if they are in input editing the on:blur event needs to change the html first and
@@ -209,7 +209,6 @@ pub struct FieldSet<ID> {
 #[derive(Debug, Clone)]
 pub struct Field<ID> {
     pub id: ID,
-    pub label: &'static str,
     pub description: Option<&'static str>,
     pub required: bool,
     pub field_type: FieldType,

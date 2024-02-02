@@ -10,13 +10,14 @@ rust-version = "1.75"
 klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
 klick-domain = "=0.0.0"
-klick-format-numbers = "=0.0.0"
+klick-presenter = "=0.0.0"
 klick-svg-charts = "=0.0.0"
 
 # External dependencies
 anyhow = "1.0.79"
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
+derive_more = "0.99.17"
 gloo-file = { version = "0.3.0", features = ["futures"] }
 gloo-net = { version = "0.5.0", default-features = false, features = ["http", "json"] }
 gloo-storage = "0.3.0"
@@ -38,7 +39,7 @@ time = { version = "0.3.32", features = ["macros", "formatting"] }
 klick-application      = { path = "../crates/application"     }
 klick-boundary         = { path = "../crates/boundary"        }
 klick-domain           = { path = "../crates/domain"          }
-klick-format-numbers   = { path = "../crates/format-numbers"  }
+klick-presenter        = { path = "../crates/presenter"       }
 klick-svg-charts       = { path = "../crates/svg-charts"      }
 
 [profile.release]

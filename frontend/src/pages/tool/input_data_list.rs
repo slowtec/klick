@@ -2,6 +2,8 @@ use std::{collections::HashMap, hash::Hash, rc::Rc};
 
 use leptos::*;
 
+use klick_presenter::ValueLabel;
+
 use crate::forms::{FieldSet, FieldSignal};
 
 #[component]
@@ -10,13 +12,14 @@ pub fn InputDataList<'a, ID>(
     signals: &'a Rc<HashMap<ID, FieldSignal>>,
 ) -> impl IntoView
 where
-    ID: Hash + Eq + AsRef<str> + Copy + 'static,
+    ID: Hash + Eq + AsRef<str> + Copy + ValueLabel + 'static,
 {
     let sets = field_sets.iter().map(|fs|{
         let values: Vec<_> = fs.fields.iter().map(|field|{
             let signal: Option<FieldSignal> = signals.get(&field.id).copied();
+            let label = field.id.label().to_string();
             view! {
-              <dt class="font-semibold text-right px-3 py-1 text-gray-500">{ field.label }</dt>
+              <dt class="font-semibold text-right px-3 py-1 text-gray-500">{ label }</dt>
               <dd class="py-1 px-3">
                 {
                   move || signal.and_then(|s|s.as_formatted_string()).unwrap_or_else(||"-".to_string())

@@ -5,7 +5,7 @@ members = [
   "crates/boundary",
   "crates/db-sqlite",
   "crates/domain",
-  "crates/format-numbers",
+  "crates/presenter",
   "crates/svg-charts",
   "crates/svg-charts/examples/*"
 ]
@@ -26,7 +26,7 @@ klick-backend         = { path = "crates/backend"         }
 klick-boundary        = { path = "crates/boundary"        }
 klick-db-sqlite       = { path = "crates/db-sqlite"       }
 klick-domain          = { path = "crates/domain"          }
-klick-format-numbers  = { path = "crates/format-numbers"  }
+klick-presenter       = { path = "crates/presenter"       }
 klick-svg-charts      = { path = "crates/svg-charts"      }
 
 [package]

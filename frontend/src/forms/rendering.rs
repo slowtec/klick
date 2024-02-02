@@ -2,6 +2,8 @@ use std::{collections::HashMap, fmt::Write, hash::Hash};
 
 use leptos::*;
 
+use klick_presenter::ValueLabel;
+
 use super::{Field, FieldSet, FieldSignal, FieldType, MinMax, RequiredField, SelectOption};
 
 pub fn render_field_sets<ID>(
@@ -12,7 +14,7 @@ pub fn render_field_sets<ID>(
     Vec<RequiredField<ID>>,
 )
 where
-    ID: AsRef<str> + Copy + Hash + Eq,
+    ID: AsRef<str> + Copy + Hash + Eq + ValueLabel + 'static,
 {
     let mut signals = HashMap::new();
     let mut set_views = vec![];
@@ -23,7 +25,6 @@ where
 
         for field in set.fields {
             let id = field.id;
-            let label = field.label;
             let required = field.required;
             let field_id = crate::forms::form_field_id(&field.id);
 
@@ -31,11 +32,7 @@ where
             field_views.push(view);
             signals.insert(id, field_signal);
             if required {
-                required_fields.push(RequiredField {
-                    id,
-                    field_id,
-                    label,
-                });
+                required_fields.push(RequiredField { id, field_id });
             }
         }
 
@@ -62,11 +59,11 @@ where
 
 pub fn render_field<ID>(field: Field<ID>, field_id: String) -> (FieldSignal, impl IntoView)
 where
-    ID: AsRef<str> + Copy,
+    ID: AsRef<str> + Copy + ValueLabel + 'static,
 {
     let Field {
+        id,
         description,
-        label,
         required,
         ..
     } = field;
@@ -81,7 +78,7 @@ where
             let field_signal = FieldSignal::Text(signal);
             let view = view! {
               <TextInput
-                label
+                label = id.label().to_string()
                 field_id
                 placeholder = placeholder.unwrap_or_default()
                 value = signal
@@ -112,7 +109,7 @@ where
 
             let view = view! {
               <FloatInput
-                label
+                label = id.label().to_string()
                 field_id
                 placeholder = placeholder.unwrap_or_default()
                 input_value = input_signal
@@ -145,7 +142,7 @@ where
 
             let view = view! {
               <UnsignedIntegerInput
-                label
+                label = id.label().to_string()
                 field_id
                 placeholder = placeholder.unwrap_or_default()
                 input_value = input_signal
@@ -164,7 +161,7 @@ where
             let field_signal = FieldSignal::Bool(signal);
             let view = view! {
               <BoolInput
-                label
+                label = id.label().to_string()
                 field_id
                 value = signal
                 description
@@ -223,7 +220,7 @@ pub fn InfoIcon() -> impl IntoView {
 
 // TODO: don't render if description is None
 fn create_tooltip(
-    label: &'static str,
+    label: String,
     description: Option<&'static str>,
     required: bool,
     _unit: Option<&'static str>,
@@ -288,7 +285,7 @@ fn create_tooltip(
 
 #[component]
 fn TextInput(
-    label: &'static str,
+    label: String,
     field_id: String,
     placeholder: &'static str,
     value: RwSignal<Option<String>>,
@@ -368,7 +365,7 @@ pub fn format_f64_into_de_string(number: f64) -> String {
 
 #[component]
 fn FloatInput(
-    label: &'static str,
+    label: String,
     unit: &'static str,
     placeholder: &'static str,
     field_id: String,
@@ -466,7 +463,7 @@ fn FloatInput(
 
 #[component]
 fn UnsignedIntegerInput(
-    label: &'static str,
+    label: String,
     unit: &'static str,
     placeholder: &'static str,
     field_id: String,
@@ -569,7 +566,7 @@ fn UnsignedIntegerInput(
 
 #[component]
 fn BoolInput(
-    label: &'static str,
+    label: String,
     field_id: String,
     value: RwSignal<bool>,
     description: Option<&'static str>,
@@ -596,7 +593,7 @@ fn BoolInput(
 
 #[component]
 fn SelectInput(
-    label: &'static str,
+    label: String,
     field_id: String,
     value: RwSignal<Option<usize>>,
     options: Vec<SelectOption>,
