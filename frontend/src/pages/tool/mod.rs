@@ -9,6 +9,7 @@ use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
     SavedProject,
 };
+use klick_components::message::{ErrorMessage, SuccessMessage};
 use klick_domain as domain;
 use klick_presenter::Lng;
 use klick_presenter::ProfileValueId;
@@ -17,7 +18,6 @@ use klick_svg_charts::BarChart;
 use crate::{
     api::AuthorizedApi,
     forms::{self, FieldSignal, MissingField},
-    message::{ErrorMessage, SuccessMessage},
     sankey::Sankey,
 };
 

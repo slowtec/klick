@@ -1280,6 +1280,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-components"
+version = "0.0.0"
+dependencies = [
+ "leptos",
+]
+
+[[package]]
 name = "klick-db-sqlite"
 version = "0.0.0"
 dependencies = [

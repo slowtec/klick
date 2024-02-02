@@ -11,7 +11,6 @@ mod api;
 mod credentials;
 mod footer;
 mod forms;
-mod message;
 mod nav;
 mod pages;
 mod sankey;

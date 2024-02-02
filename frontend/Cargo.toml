@@ -9,6 +9,7 @@ rust-version = "1.75"
 # Project dependencies
 klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
+klick-components = "=0.0.0"
 klick-domain = "=0.0.0"
 klick-presenter = "=0.0.0"
 klick-svg-charts = "=0.0.0"
@@ -38,6 +39,7 @@ time = { version = "0.3.32", features = ["macros", "formatting"] }
 # Local paths to library crates in workspace
 klick-application      = { path = "../crates/application"     }
 klick-boundary         = { path = "../crates/boundary"        }
+klick-components       = { path = "../crates/components"      }
 klick-domain           = { path = "../crates/domain"          }
 klick-presenter        = { path = "../crates/presenter"       }
 klick-svg-charts       = { path = "../crates/svg-charts"      }

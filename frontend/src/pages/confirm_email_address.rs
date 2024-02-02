@@ -1,10 +1,9 @@
 use leptos::*;
 use leptos_router::*;
 
-use crate::{
-    api::UnauthorizedApi,
-    message::{ErrorMessage, InfoMessage, SuccessMessage},
-};
+use klick_components::message::{ErrorMessage, InfoMessage, SuccessMessage};
+
+use crate::api::UnauthorizedApi;
 
 type ErrorMessage = String;
 type ConfirmationResult = std::result::Result<(), ErrorMessage>;

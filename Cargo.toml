@@ -3,6 +3,7 @@ members = [
   "crates/application",
   "crates/backend",
   "crates/boundary",
+  "crates/components",
   "crates/db-sqlite",
   "crates/domain",
   "crates/presenter",
@@ -24,6 +25,7 @@ rust-version = "1.75"
 klick-application     = { path = "crates/application"     }
 klick-backend         = { path = "crates/backend"         }
 klick-boundary        = { path = "crates/boundary"        }
+klick-components      = { path = "crates/components"      }
 klick-db-sqlite       = { path = "crates/db-sqlite"       }
 klick-domain          = { path = "crates/domain"          }
 klick-presenter       = { path = "crates/presenter"       }

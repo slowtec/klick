@@ -1,12 +1,13 @@
 use leptos::*;
 use leptos_router::*;
 
+use klick_components::message::*;
+
 use crate::{
     api::{self, UnauthorizedApi},
     credentials::{
         DEFAULT_BUTTON_CLASS, DEFAULT_INPUT_CLASS, DISABLED_BUTTON_CLASS, DISABLED_INPUT_CLASS,
     },
-    message::*,
 };
 
 #[derive(Params, PartialEq, Debug, Clone)]

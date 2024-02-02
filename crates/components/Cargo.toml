@@ -1,0 +1,13 @@
+[package]
+name = "klick-components"
+authors.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+leptos = { version = "0.6.5", features = ["csr"] }
+
+[lints]
+workspace = true
