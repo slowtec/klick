@@ -11,10 +11,10 @@ derive_more = "0.99.17"
 http = "1.0.0"
 http-serde = "2.0.0"
 serde = { version = "1.0.196", features = ["derive"] }
-serde_json = "1.0.112"
-strum = { version = "0.25.0", features = ["derive"] }
+serde_json = "1.0.113"
+strum = { version = "0.26.1", features = ["derive"] }
 thiserror = "1.0.56"
-time = { version = "0.3.31", features = ["serde"] }
+time = { version = "0.3.32", features = ["serde"] }
 uuid = { version = "1.7.0", features = ["serde"] }
 
 [dependencies.klick-domain]

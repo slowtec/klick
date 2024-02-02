@@ -21,9 +21,9 @@ diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
 libsqlite3-sys = { version = "=0.27.0", features = ["bundled"] }
 log = "0.4.20"
 parking_lot = "0.12.1"
-serde_json = "1.0.112"
+serde_json = "1.0.113"
 thiserror = "1.0.56"
-time = "0.3.31"
+time = "0.3.32"
 uuid = "1.7.0"
 
 [dev-dependencies.klick-boundary]
