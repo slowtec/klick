@@ -1,15 +1,23 @@
 # Changelog
 
+## v0.3.8 (2024-02-02)
+
+- Changed:
+  - #41 offene schlammtaschen
+
+- Fixed:
+  - #119 BHWK float fix
+
 ## v0.3.7 (2024-01-31)
 
 - New:
-  - BHKW - spatial arrangement of the EF field #88 
+  - BHKW - spatial arrangement of the EF field #88
   - Projektname (i) #106
   - n2o emissionsfaktor #109
-  - typos fixing #108 
+  - typos fixing #108
   - FUEL_CONSUMPTION 0.033 -> 0.02 #116
-  - always show ch4_slippage_sludge_storage #114 
-  - BHKW new EF #91  
+  - always show ch4_slippage_sludge_storage #114
+  - BHKW new EF #91
 
 ## v0.3.6 (2024-01-29)
 
