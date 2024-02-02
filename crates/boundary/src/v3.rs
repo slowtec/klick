@@ -7,14 +7,12 @@ pub use crate::v2::{
 };
 
 #[derive(Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub(crate) struct Import {
     pub(crate) input: InputData,
     pub(crate) scenario: Scenario,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct InputData {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plant_name: Option<String>,
@@ -37,7 +35,6 @@ pub struct InputData {
 }
 
 #[derive(Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct Scenario {
     pub n2o_emission_factor: N2oEmissionFactorScenario,
     pub ch4_chp_emission_factor: Option<CH4ChpEmissionFactorScenario>,

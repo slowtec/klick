@@ -10,22 +10,19 @@ pub use crate::v4::{
     OperatingMaterials, Scenario as OptimizationScenario, SewageSludgeTreatment,
 };
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
+#[derive(Deserialize)]
 pub struct Data {
     pub project: Project,
 }
 
-#[derive(Serialize, Deserialize, From)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[derive(Deserialize, From)]
 #[serde(untagged)]
 pub enum Project {
     Saved(SavedProject),
     Unsaved(ProjectData),
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct SavedProject {
     pub id: ProjectId,
     pub created_at: OffsetDateTime,
@@ -34,8 +31,7 @@ pub struct SavedProject {
     pub data: ProjectData,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Default, Debug, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct ProjectData {
     pub title: Option<String>,
     pub plant_profile: PlantProfile,

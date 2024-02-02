@@ -31,6 +31,7 @@ impl<T> Error<T> {
             details: None, // We realld want to hide internal details
         }
     }
+
     #[must_use]
     pub const fn unauthorized() -> Self {
         Self {
@@ -39,6 +40,7 @@ impl<T> Error<T> {
             details: None,
         }
     }
+
     #[must_use]
     pub const fn bad_request() -> Self {
         Self {
@@ -47,13 +49,17 @@ impl<T> Error<T> {
             details: None,
         }
     }
-    pub fn message<S>(mut self, msg: S) -> Self
+
+    #[must_use]
+    pub fn message<M>(mut self, msg: M) -> Self
     where
-        S: ToString,
+        M: ToString,
     {
         self.message = Some(msg.to_string());
         self
     }
+
+    #[must_use]
     pub fn details(mut self, details: T) -> Self {
         self.details = Some(details);
         self

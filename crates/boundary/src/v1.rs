@@ -80,7 +80,6 @@ pub struct Scenario {
 }
 
 #[derive(Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct N2oEmissionFactorScenario {
     pub calculation_method: N2oEmissionFactorCalcMethod,
     pub custom_factor: Option<f64>,
@@ -88,12 +87,7 @@ pub struct N2oEmissionFactorScenario {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
-#[cfg_attr(
-    feature = "extra-derive",
-    derive(Debug, Default, Clone, Copy, PartialEq, Eq)
-)]
 pub enum N2oEmissionFactorCalcMethod {
-    #[cfg_attr(feature = "extra-derive", default)]
     ExtrapolatedParravicini,
     Optimistic,
     Pesimistic,

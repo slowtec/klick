@@ -143,16 +143,7 @@ pub fn from_v3(data: v3::Import) -> v4::Import {
         custom_factor,
     } = n2o_emission_factor;
 
-    use v3::N2oEmissionFactorCalcMethod as M3;
-    use v4::N2oEmissionFactorCalcMethod as M4;
-
-    let calculation_method = match calculation_method {
-        M3::ExtrapolatedParravicini => M4::TuWien2016,
-        M3::Optimistic => M4::Optimistic,
-        M3::Pesimistic => M4::Pesimistic,
-        M3::Ipcc2019 => M4::Ipcc2019,
-        M3::CustomFactor => M4::CustomFactor,
-    };
+    let calculation_method = calculation_method.into();
 
     let n2o_emission_factor = v4::N2oEmissionFactorScenario {
         calculation_method,
@@ -179,6 +170,21 @@ pub fn from_v3(data: v3::Import) -> v4::Import {
     }
 }
 
+impl From<v3::N2oEmissionFactorCalcMethod> for v4::N2oEmissionFactorCalcMethod {
+    fn from(from: v3::N2oEmissionFactorCalcMethod) -> Self {
+        use v3::N2oEmissionFactorCalcMethod as M3;
+        use v4::N2oEmissionFactorCalcMethod as M4;
+
+        match from {
+            M3::ExtrapolatedParravicini => M4::TuWien2016,
+            M3::Optimistic => M4::Optimistic,
+            M3::Pesimistic => M4::Pesimistic,
+            M3::Ipcc2019 => M4::Ipcc2019,
+            M3::CustomFactor => M4::CustomFactor,
+        }
+    }
+}
+
 pub fn from_v4(data: v4::Import) -> v5::Data {
     let v4::Import { input, scenario } = data;
 
@@ -196,54 +202,56 @@ pub fn from_v4(data: v4::Import) -> v5::Data {
     v5::Data { project }
 }
 
-fn convert_v5_v6_project_data(pd5: v5::ProjectData) -> v6::ProjectData {
-    let v5::ProjectData {
-        title,
-        plant_profile,
-        optimization_scenario,
-    } = pd5;
+impl From<v5::ProjectData> for v6::ProjectData {
+    fn from(from: v5::ProjectData) -> Self {
+        let v5::ProjectData {
+            title,
+            plant_profile,
+            optimization_scenario,
+        } = from;
 
-    let v5::PlantProfile {
-        plant_name,
-        population_equivalent,
-        wastewater,
-        influent_average,
-        effluent_average,
-        energy_consumption,
-        sewage_sludge_treatment,
-        operating_materials,
-    } = plant_profile;
+        let v5::PlantProfile {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        } = plant_profile;
 
-    let v5::SewageSludgeTreatment {
-        open_sludge_bags,
-        open_sludge_storage_containers,
-        sewage_sludge_for_disposal,
-        transport_distance,
-    } = sewage_sludge_treatment;
+        let v5::SewageSludgeTreatment {
+            open_sludge_bags,
+            open_sludge_storage_containers,
+            sewage_sludge_for_disposal,
+            transport_distance,
+        } = sewage_sludge_treatment;
 
-    let sewage_sludge_treatment = v6::SewageSludgeTreatment {
-        sludge_bags_are_open: open_sludge_bags,
-        sludge_storage_containers_are_open: open_sludge_storage_containers,
-        sewage_sludge_for_disposal,
-        transport_distance,
-        digester_count: None,
-    };
+        let sewage_sludge_treatment = v6::SewageSludgeTreatment {
+            sludge_bags_are_open: open_sludge_bags,
+            sludge_storage_containers_are_open: open_sludge_storage_containers,
+            sewage_sludge_for_disposal,
+            transport_distance,
+            digester_count: None,
+        };
 
-    let plant_profile = v6::PlantProfile {
-        plant_name,
-        population_equivalent,
-        wastewater,
-        influent_average,
-        effluent_average,
-        energy_consumption,
-        sewage_sludge_treatment,
-        operating_materials,
-    };
+        let plant_profile = v6::PlantProfile {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        };
 
-    v6::ProjectData {
-        title,
-        plant_profile,
-        optimization_scenario,
+        Self {
+            title,
+            plant_profile,
+            optimization_scenario,
+        }
     }
 }
 
@@ -258,19 +266,16 @@ pub fn from_v5(data: v5::Data) -> v6::Data {
                 modified_at,
                 data,
             } = saved_project;
-            let data = convert_v5_v6_project_data(data);
-            v6::SavedProject {
+            let data = data.into();
+            let saved = v6::SavedProject {
                 id,
                 created_at,
                 modified_at,
                 data,
-            }
-            .into()
+            };
+            v6::Project::Saved(saved)
         }
-        v5::Project::Unsaved(unsaved_project) => {
-            let data = convert_v5_v6_project_data(unsaved_project);
-            v6::Project::Unsaved(data)
-        }
+        v5::Project::Unsaved(unsaved_project) => v6::Project::Unsaved(unsaved_project.into()),
     };
 
     v6::Data { project }

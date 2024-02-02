@@ -11,8 +11,7 @@ pub struct Import {
     pub scenario: Scenario,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct InputData {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plant_name: Option<String>,
