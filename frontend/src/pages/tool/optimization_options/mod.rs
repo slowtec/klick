@@ -119,7 +119,7 @@ fn ScenarioHint(
                     domain::N2oEmissionFactorCalcMethod::Pesimistic => format!("Pesimistisch {ef}"),
                     domain::N2oEmissionFactorCalcMethod::Ipcc2019 => format!("IPCC 2019 {ef}"),
                     domain::N2oEmissionFactorCalcMethod::Custom(f) => {
-                        format!("Benutzerdefiniert ({:.1})", f64::from(f) * 100.0)
+                        format!("Benutzerdefiniert (N₂O EF = {:.2}", f64::from(f) * 100.0)
                     }
                 };
 
