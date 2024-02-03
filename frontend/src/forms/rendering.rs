@@ -269,7 +269,7 @@ fn create_tooltip(
               </g>
             </svg>
             <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
-            <p class="text-xs leading-4 text-gray-600 pb-3">{ description }</p>
+            <p class="text-xs leading-4 text-gray-600 pb-3" inner_html=description/>
             <Show when=move || required>
               <ul class="list-disc list-inside">
               <Show when=move || required>
