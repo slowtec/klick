@@ -1,14 +1,13 @@
 #![allow(clippy::wildcard_imports)]
 
 mod calculation;
-mod constants;
 mod gateways;
 mod output;
 mod repositories;
 
 pub mod usecases;
 
-pub use self::{calculation::*, constants::*, gateways::*, output::*, repositories::*};
+pub use self::{calculation::*, gateways::*, output::*, repositories::*};
 
 #[cfg(test)]
 mod tests;

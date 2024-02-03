@@ -8,6 +8,8 @@ mod plant_profile;
 mod project;
 mod units;
 
+pub mod constants;
+
 pub use self::{
     account::*,
     co2_equivalents::CO2Equivalents,
