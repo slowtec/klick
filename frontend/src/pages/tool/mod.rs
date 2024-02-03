@@ -189,7 +189,7 @@ pub fn Tool(
                 }
             }
 
-            log::debug!("Calculating with {input_data:#?}");
+            //log::debug!("Calculating with {input_data:#?}");
             let szenario_calculations = N2oEmissionFactorCalcMethod::iter()
                 .enumerate()
                 .filter_map(|(i, method)| {
@@ -558,7 +558,7 @@ pub fn Tool(
           <BarChart
             width = 1200.0
             height = 400.0
-            data  = barchart_arguments.into()
+            data  = barchart_arguments.get()
             selected_bar = selected_scenario
           />
         </div>

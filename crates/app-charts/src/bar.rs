@@ -14,7 +14,7 @@ pub struct Arguments {
 pub fn Chart(
     width: f64,
     height: f64,
-    data: Signal<Vec<Arguments>>,
+    data: Vec<Arguments>,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
     let margin = 10.0;
@@ -64,12 +64,11 @@ fn YAxis(height: f64) -> impl IntoView {
 fn Bars(
     width: f64,
     height: f64,
-    data: Signal<Vec<Arguments>>,
+    data: Vec<Arguments>,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
-    let count: usize = data.get().len();
+    let count: usize = data.len();
     let co2_value_max = data
-        .get()
         .iter()
         .fold(0.0, |max_co2, item| f64::max(max_co2, item.co2_data));
     let gap = width * 0.01;
@@ -78,7 +77,7 @@ fn Bars(
     view! {
       <For
         each = move || {
-          data.get().into_iter().enumerate().map(|(i,v)|
+          data.iter().enumerate().map(|(i,v)|
             (i, v.label, v.co2_data, v.n2o_factor * 100.0)
           ).collect::<Vec<_>>()
         }

@@ -40,7 +40,7 @@ where
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
 pub fn Sankey(data: app::Output) -> impl IntoView {
-    log::debug!("Render sankey chart for {data:#?}");
+    //log::debug!("Render sankey chart for {data:#?}");
 
     let app::Output {
         co2_equivalents,
