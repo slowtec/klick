@@ -773,6 +773,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-app-api"
+version = "0.0.0"
+dependencies = [
+ "gloo-net 0.5.0",
+ "klick-boundary",
+ "log",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "klick-app-charts"
+version = "0.0.0"
+dependencies = [
+ "klick-presenter",
+ "leptos",
+ "log",
+]
+
+[[package]]
+name = "klick-app-components"
+version = "0.0.0"
+dependencies = [
+ "leptos",
+]
+
+[[package]]
 name = "klick-application"
 version = "0.0.0"
 dependencies = [
@@ -801,13 +829,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "klick-components"
-version = "0.0.0"
-dependencies = [
- "leptos",
-]
-
-[[package]]
 name = "klick-domain"
 version = "0.0.0"
 dependencies = [
@@ -829,15 +850,15 @@ dependencies = [
  "console_log",
  "derive_more",
  "gloo-file",
- "gloo-net 0.5.0",
  "gloo-storage",
  "js-sys",
+ "klick-app-api",
+ "klick-app-charts",
+ "klick-app-components",
  "klick-application",
  "klick-boundary",
- "klick-components",
  "klick-domain",
  "klick-presenter",
- "klick-svg-charts",
  "leptos",
  "leptos_meta",
  "leptos_router",
@@ -858,15 +879,6 @@ dependencies = [
  "derive_more",
  "serde",
  "strum",
-]
-
-[[package]]
-name = "klick-svg-charts"
-version = "0.0.0"
-dependencies = [
- "klick-presenter",
- "leptos",
- "log",
 ]
 
 [[package]]

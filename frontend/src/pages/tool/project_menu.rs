@@ -1,7 +1,7 @@
 use gloo_file::{File, ObjectUrl};
 use leptos::*;
 
-use klick_components::icons;
+use klick_app_components::icons;
 
 use crate::Page;
 

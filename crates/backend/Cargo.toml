@@ -8,10 +8,10 @@ publish = false
 [dependencies]
 # Project dependencies
 klick-application = "=0.0.0"
+klick-app-charts = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["axum"] }
 klick-db-sqlite = "=0.0.0"
 klick-domain = "=0.0.0"
-klick-svg-charts = "=0.0.0"
 
 # External dependencies
 anyhow = "1.0.79"

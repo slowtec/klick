@@ -5,9 +5,9 @@ use leptos::*;
 use leptos_meta::provide_meta_context;
 use leptos_router::{use_navigate, Route, Router, Routes};
 
+use klick_app_api as api;
 use klick_boundary::{self as boundary, json_api::UserInfo};
 
-mod api;
 mod credentials;
 mod footer;
 mod forms;

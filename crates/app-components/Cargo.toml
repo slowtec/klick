@@ -1,5 +1,5 @@
 [package]
-name = "klick-svg-charts"
+name = "klick-app-components"
 authors.workspace = true
 license.workspace = true
 version.workspace = true
@@ -7,13 +7,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-klick-presenter = "=0.0.0"
-
-leptos = "0.6.5"
-log = "0.4.20"
-
-[features]
-ssr = []
+leptos = { version = "0.6.5", features = ["csr"] }
 
 [lints]
 workspace = true

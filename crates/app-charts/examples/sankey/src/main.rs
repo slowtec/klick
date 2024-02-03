@@ -1,6 +1,6 @@
 use leptos::*;
 
-use klick_svg_charts::{Color, SankeyChart, SankeyData};
+use klick_app_charts::{Color, SankeyChart, SankeyData};
 
 #[component]
 fn MySankeyChart() -> impl IntoView {

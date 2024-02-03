@@ -3,7 +3,7 @@ use leptos::*;
 use klick_application as app;
 use klick_domain as domain;
 
-use klick_svg_charts::{Color, SankeyChart, SankeyData};
+use klick_app_charts::{Color, SankeyChart, SankeyData};
 
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 fn format_large_number<T>(number: T) -> String

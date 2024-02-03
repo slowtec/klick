@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 
-use klick_components::message::*;
+use klick_app_components::message::*;
 
 use crate::{
     api::{self, UnauthorizedApi},

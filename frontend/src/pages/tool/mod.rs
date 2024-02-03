@@ -4,16 +4,16 @@ use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 use strum::IntoEnumIterator;
 
+use klick_app_charts::BarChart;
+use klick_app_components::message::{ErrorMessage, SuccessMessage};
 use klick_application as app;
 use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
     SavedProject,
 };
-use klick_components::message::{ErrorMessage, SuccessMessage};
 use klick_domain as domain;
 use klick_presenter::Lng;
 use klick_presenter::ProfileValueId;
-use klick_svg_charts::BarChart;
 
 use crate::{
     api::AuthorizedApi,
@@ -73,7 +73,7 @@ pub fn Tool(
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
     let selected_scenario_name = RwSignal::new(String::new());
-    let barchart_arguments: RwSignal<Vec<klick_svg_charts::BarChartArguments>> =
+    let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
 
     let current_section = RwSignal::new(Option::<PageSection>::None);
@@ -248,7 +248,7 @@ pub fn Tool(
             barchart_arguments.set(
                 szenario_calculations
                     .iter()
-                    .map(|(szenario, d)| klick_svg_charts::BarChartArguments {
+                    .map(|(szenario, d)| klick_app_charts::BarChartArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
                         co2_data: d.co2_equivalents.emissions.into(),
                         n2o_factor: f64::from(d.n2o_emission_factor),
