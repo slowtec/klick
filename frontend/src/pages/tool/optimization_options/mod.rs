@@ -109,7 +109,7 @@ fn ScenarioHint(
         n2o_emission_factor_method.get().and_then(|x| {
             output.get().map(|out| {
                 let f = f64::from(out.n2o_emission_factor) * 100.0;
-                let ef = format!("(N₂O EF = {f:.2}%)");
+                let ef = format!("(N₂O EF = {f:.2}%");
 
                 let scenario = match x {
                     domain::N2oEmissionFactorCalcMethod::TuWien2016 => {
@@ -125,7 +125,7 @@ fn ScenarioHint(
 
                 view! {
                    <p>
-                     "Bezogen auf das Szenario " { scenario }":"
+                     "Bezogen auf das Szenario " { scenario } ", CH₄ EF = " { format!("{:.2}%", f64::from(out.ch4_emission_factor) * 100.0) } ")"
                    </p>
                 }
             })

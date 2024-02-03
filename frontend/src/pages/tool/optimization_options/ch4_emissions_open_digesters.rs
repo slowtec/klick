@@ -139,13 +139,13 @@ pub fn options(
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
 
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schliessen der Schlammtaschen"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammtaschen"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_bags)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t" }</span>
                     </dd>
 
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schliessen der Schlammstapelbehälter"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammstapelbehälter"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_storage_containers)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t" }</span>

@@ -4,4 +4,5 @@ use klick_domain::{CO2Equivalents, Factor};
 pub struct Output {
     pub co2_equivalents: CO2Equivalents,
     pub n2o_emission_factor: Factor,
+    pub ch4_emission_factor: Factor,
 }

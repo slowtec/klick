@@ -106,7 +106,7 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
     let ch4_sludge_bags = Tons::new(ch4_slippage_sludge_bags * GWP_CH4);
     let ch4_water = Tons::new(ch4_water * GWP_CH4);
 
-    let ef = match scenario.ch4_chp_emission_factor {
+    let ch4_emission_factor = match scenario.ch4_chp_emission_factor {
         None => Factor::new(0.01),
         Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
         Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
@@ -114,7 +114,7 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
         Some(CH4ChpEmissionFactorCalcMethod::Custom(f)) => f,
     };
 
-    let volume = *sewage_gas_produced * *methane_fraction * ef;
+    let volume = *sewage_gas_produced * *methane_fraction * ch4_emission_factor;
     let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
     let ch4_chp = f64::from(mass) / 1_000.0; // [t CH4 / a]
 
@@ -196,6 +196,7 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
     Output {
         co2_equivalents,
         n2o_emission_factor,
+        ch4_emission_factor,
     }
 }
 

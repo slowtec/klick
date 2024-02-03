@@ -124,6 +124,8 @@ pub fn options(
           { move || {
               output.get().map(|out|
                 view! {
+                   <p>
+                   </p>
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
                     <dd class="text-lg py-1 px-3">
