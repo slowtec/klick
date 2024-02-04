@@ -102,9 +102,11 @@ fn send_address_confirmation_mail(
 
     let link = email_confirmation_url(nonce, base_url)?;
     let body = [
-        "Bitte bestätigen Sie Ihre E-Mail Addresse ",
-        "indem Sie auf folgenden Link klicken:\n\n",
+        "Willkommen beim KlicK-Tool, dem interaktiven Webtool für die Berechnung und Optimierung von Klimabilanzen von Kläranlagen.\n",
+        "Um Ihre Registrierung abzuschließen, klicken Sie auf folgenden Link:\n\n"
         &link,
+        "\n\nWenn Sie Fragen oder Feedback haben, können Sie wie folgt Kontakt aufnehmen KlicK-tool@umwelttechnik-bw.de",
+        "\nWir freuen uns, dass Sie das KlicK-tool nutzen!"
     ]
     .join("");
 

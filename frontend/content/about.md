@@ -1,20 +1,21 @@
-# Über KlicK
+# Webtool - Klimabilanz für Kläranlagen mit einem Klick
 
-Dies ist die erste Beta-Version des KlicK-Tools.
+Willkommen zum interaktiven Webtool der **Umwelttechnik BW** Das Klick-tool soll Sie als Kläranlagenbetreiber/-in, Kommune oder Interessierte/-r beifolgenden Schlüsselaktivitäten unterstützten:
 
-Vielen Dank für Ihr Interesse und dafür,
-dass Sie zu den ersten Anwendern/-innen gehören die das Tool testen möchten.
+* In wenigen Schritten die **Treibhausgasemissionen Ihrer Kläranlage** abschätzen und visualisieren.
+* Die Ergebnisse der **Klimabilanz in Übersichtsgraphen und Tabellen** herunterladen oder für
+einen späteren Zeitpunkt speichern/laden/weiterbearbeiten.
+* Erste **Maßnahmen zur Minderung von THG** auswählen für eine Verbesserung der Klima- und Ökobilanz.
 
-Das KlicK-Tool unterstützt Städte/Gemeinden und Anlagenbetreiber dabei,
-eine erste einfache Klimabilanz ihrer Kläranlage zu erstellen.
-Das Tool befindet sich im Aufbau und steht hier als Prototyp und zu Validierungszwecken zur Verfügung.
-Diese Version kann noch Fehler/Bugs enthalten.
-Das Tool darf aber gerne schon in dieser Version genutzt und getestet werden.
-Zur steten Verbesserung und Erweiterung des Tools, und gerne für allgemeines Feedback bitte
-Herrn Dr. Aennes Abbas und/oder Herrn Dipl.-Ing. Jürgen Schmidtke über die
-[KlicK-Projektseite](https://www.umwelttechnik-bw.de/de/klimabilanz-klaeranlagen-klick)
-kontaktieren
+Das Tool kann sowohl **anonym als auch nach Registrierung** genutzt werden. Ihre Daten bleiben in beiden
+Nutzungsarten geschützt und können nicht von uns oder Dritten eingesehen werden. Das Tool ist
+(in beiden Fällen) kostenlos und bietet eine einfache/intuitive Bedienbarkeit. Bei Fragen kommen
+Sie gerne auf uns zu [KlicK-tool@umwelttechnik-bw.de](mailto:KlicK-tool@umwelttechnik-bw.de) und/oder schauen Sie auf unsere [FAQ-Seiten](/faq).
 
-Viele gute Erkenntnisse für unser Klima wünscht das KlicK-Team.
+Gerne können Sie auch an unserem [interaktiven Wiki](https://codeberg.org/slowtec/klick/wiki) teilnehmen; dort finden Sie u.a. nützliche
+Informationen zu Berechnungsgrundlagen und Literaturhinweisen und können selbst daran mitwirken.
+Wir freuen uns, wenn Ihnen das Tool gefällt und auf ihr fachliches Feedback.
+
+Viele gute Erkenntnisse **für unser Klima und unsere Umwelt** wünscht das KlicK-Team.
 
 <a class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm no-underline" href="/tool">Zum Tool</a>
