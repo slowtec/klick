@@ -12,6 +12,7 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
     let Output {
         co2_equivalents,
         n2o_emission_factor: _,
+        ch4_emission_factor: _,
     } = calculate_emissions(&profile, s2);
 
     f64::from(co2_equivalents.ch4_combined_heat_and_power_plant)
@@ -65,6 +66,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
+        ch4_emission_factor: _,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -183,6 +185,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
+        ch4_emission_factor: _,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -301,6 +304,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
+        ch4_emission_factor: _,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -419,6 +423,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
+        ch4_emission_factor: _,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -537,6 +542,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     let Output {
         co2_equivalents,
         n2o_emission_factor,
+        ch4_emission_factor: _,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
