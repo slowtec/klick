@@ -1,5 +1,14 @@
 # Changelog
 
+
+## v0.3.9 (2024-02-05)
+
+- Changed:
+  - Landing page redesign #39
+  - Better info text #106
+  - BarChart fix #110
+  - Adding CH4 EF #120
+
 ## v0.3.8 (2024-02-02)
 
 - Changed:
