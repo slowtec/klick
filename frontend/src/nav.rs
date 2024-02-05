@@ -24,8 +24,8 @@ pub fn Nav(
               </div>
               <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <NavLink page=Page::Home current_page label="KlicK" />
-                <NavLink page=Page::Projects current_page label="Projekte" />
                 <NavLink page=Page::Tool current_page label="Tool" />
+                <NavLink page=Page::Projects current_page label="Projekte" />
                 <NavLink page=Page::Faq  current_page label="FAQs" />
               </div>
             </div>
@@ -99,8 +99,8 @@ pub fn Nav(
         <div class= move || if mobile_menu_is_open.get() { "sm:hidden" } else { "hidden" } >
           <div class="space-y-1 pb-3 pt-2">
             <MobileNavLink page=Page::Home current_page label="KlicK" />
-            <MobileNavLink page=Page::Projects current_page label="Projekte" />
             <MobileNavLink page=Page::Tool current_page label="Tool" />
+            <MobileNavLink page=Page::Projects current_page label="Projekte" />
             <MobileNavLink page=Page::Faq  current_page label="FAQs" />
           </div>
           { move ||
