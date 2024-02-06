@@ -1,6 +1,5 @@
 use leptos::*;
 
-use klick_application as app;
 use klick_domain as domain;
 
 use crate::forms::InfoIcon;
@@ -17,7 +16,7 @@ const DWA_MERKBLATT_URL: &str =
 
 #[component]
 pub fn OptimizationOptions(
-    input_data: Signal<Option<domain::PlantProfile>>,
+    input_data: Signal<Option<domain::EmissionInfluencingValues>>,
     n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     view! {
@@ -102,13 +101,13 @@ fn Cite(source: &'static str, url: &'static str, children: Children) -> impl Int
 
 #[component]
 fn ScenarioHint(
-    output: Signal<Option<app::Output>>,
+    output: Signal<Option<(domain::CO2Equivalents, domain::EmissionFactors)>>,
     n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     move || {
         n2o_emission_factor_method.get().and_then(|x| {
             output.get().map(|out| {
-                let f = f64::from(out.emission_factors.n2o) * 100.0;
+                let f = f64::from(out.1.n2o) * 100.0;
                 let ef = format!("(N₂O EF = {f:.2}%");
 
                 let scenario = match x {
@@ -125,7 +124,9 @@ fn ScenarioHint(
 
                 view! {
                    <p>
-                     "Bezogen auf das Szenario " { scenario } ", CH₄ EF = " { format!("{:.2}%", f64::from(out.emission_factors.ch4) * 100.0) } ")"
+                     "Bezogen auf das Szenario " { scenario } ", CH₄ EF = " {
+                      format!("{:.2}%", f64::from(out.1.ch4) * 100.0)
+                     } ")"
                    </p>
                 }
             })

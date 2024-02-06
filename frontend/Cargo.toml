@@ -10,7 +10,6 @@ rust-version = "1.75"
 klick-app-api = "=0.0.0"
 klick-app-charts = "=0.0.0"
 klick-app-components = "=0.0.0"
-klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
 klick-domain = "=0.0.0"
 klick-presenter = "=0.0.0"
@@ -40,7 +39,6 @@ time = { version = "0.3.32", features = ["macros", "formatting"] }
 klick-app-api          = { path = "../crates/app-api"         }
 klick-app-components   = { path = "../crates/app-components"  }
 klick-app-charts       = { path = "../crates/app-charts"      }
-klick-application      = { path = "../crates/application"     }
 klick-boundary         = { path = "../crates/boundary"        }
 klick-domain           = { path = "../crates/domain"          }
 klick-presenter        = { path = "../crates/presenter"       }

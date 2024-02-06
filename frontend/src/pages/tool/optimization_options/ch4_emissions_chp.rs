@@ -2,7 +2,6 @@ use leptos::*;
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
-use klick_application as app;
 use klick_domain as domain;
 
 use crate::{
@@ -23,7 +22,7 @@ enum Id {
 use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
 
 pub fn options(
-    input_data: Signal<Option<domain::PlantProfile>>,
+    input_data: Signal<Option<domain::EmissionInfluencingValues>>,
     n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let field_set = field_set();
@@ -40,7 +39,7 @@ pub fn options(
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
-    let output = RwSignal::new(Option::<app::Output>::None);
+    let output = RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
 
     create_effect(move |_| {
         log::debug!("Calculate with CH₄ CHP emission factor");
@@ -75,13 +74,13 @@ pub fn options(
         };
 
         log::debug!("Calculate with CH₄ CHP emission factor {ch4_chp_emission_factor:?}");
-        let scenario = domain::OptimizationScenario {
-            n2o_emission_factor: n2o_emission_factor_method
+        let scenario = domain::EmissionFactorCalculationMethods {
+            n2o: n2o_emission_factor_method
                 .get()
                 .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
-            ch4_chp_emission_factor: Some(ch4_chp_emission_factor),
+            ch4: Some(ch4_chp_emission_factor),
         };
-        let output_data = app::calculate_emissions(&input_data, scenario);
+        let output_data = domain::calculate_emissions(&input_data, scenario);
         output.set(Some(output_data));
     });
 
@@ -129,12 +128,12 @@ pub fn options(
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
                     <dd class="text-lg py-1 px-3">
-                      { format!("{:.1}", f64::from(out.co2_equivalents.ch4_combined_heat_and_power_plant)).replace('.',",") }
+                      { format!("{:.1}", f64::from(out.0.ch4_combined_heat_and_power_plant)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t" }</span>
                     </dd>
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                     <dd class="text-lg py-1 px-3">
-                      { format!("{:.1}", f64::from(out.co2_equivalents.emissions)).replace('.',",") }
+                      { format!("{:.1}", f64::from(out.0.emissions)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t" }</span>
                     </dd>
                   </dl>

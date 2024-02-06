@@ -1,6 +1,5 @@
 use leptos::*;
 
-use klick_application as app;
 use klick_domain as domain;
 
 use klick_app_charts::{Color, SankeyChart, SankeyData};
@@ -39,13 +38,8 @@ where
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
-pub fn Sankey(data: app::Output) -> impl IntoView {
-    //log::debug!("Render sankey chart for {data:#?}");
-
-    let app::Output {
-        co2_equivalents,
-        emission_factors: _,
-    } = data;
+pub fn Sankey(data: (domain::CO2Equivalents, domain::EmissionFactors)) -> impl IntoView {
+    let (co2_equivalents, _) = data;
 
     let domain::CO2Equivalents {
         n2o_plant,

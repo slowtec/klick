@@ -6,7 +6,6 @@ use strum::IntoEnumIterator;
 
 use klick_app_charts::BarChart;
 use klick_app_components::message::{ErrorMessage, SuccessMessage};
-use klick_application as app;
 use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
     SavedProject,
@@ -67,8 +66,9 @@ pub fn Tool(
     let signals = Rc::new(signals);
     let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
 
-    let input_data = RwSignal::new(Option::<domain::PlantProfile>::None);
-    let sankey_data = RwSignal::new(Option::<app::Output>::None);
+    let input_data = RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
+    let sankey_data =
+        RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
 
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
@@ -211,12 +211,12 @@ pub fn Tool(
                         N2oEmissionFactorCalcMethod::Ipcc2019 => domain::N2oEmissionFactorCalcMethod::Ipcc2019,
                     };
 
-                    let scenario = domain::OptimizationScenario {
-                      n2o_emission_factor,
-                      ch4_chp_emission_factor: None,
+                    let scenario = domain::EmissionFactorCalculationMethods {
+                      n2o: n2o_emission_factor,
+                      ch4: None,
                     };
 
-                    let output_data = klick_application::calculate_emissions(&input_data, scenario);
+                    let output_data = domain::calculate_emissions(&input_data, scenario);
 
                     if selected_scenario.get() == Some(i as u64) {
                         let name_ka: String = s
@@ -232,7 +232,7 @@ pub fn Tool(
                         let einheit = "t CO₂ Äquivalente/Jahr";
                         let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
                         selected_scenario_name.set(szenario_name.to_string().clone());
-                        let ef = Lng::De.format_number_with_precision(f64::from(output_data.emission_factors.n2o) * 100.0, 2);
+                        let ef = Lng::De.format_number_with_precision(f64::from(output_data.1.n2o) * 100.0, 2);
                         let title = format!(
                             "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
                         );
@@ -251,10 +251,12 @@ pub fn Tool(
             barchart_arguments.set(
                 szenario_calculations
                     .iter()
-                    .map(|(szenario, d)| klick_app_charts::BarChartArguments {
-                        label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
-                        co2_data: d.co2_equivalents.emissions.into(),
-                        n2o_factor: f64::from(d.emission_factors.n2o),
+                    .map(|(szenario, (co2_equivalents, emission_factors))| {
+                        klick_app_charts::BarChartArguments {
+                            label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
+                            co2_data: co2_equivalents.emissions.into(),
+                            n2o_factor: f64::from(emission_factors.n2o),
+                        }
                     })
                     .collect(),
             );

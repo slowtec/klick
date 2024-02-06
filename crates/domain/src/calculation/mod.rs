@@ -1,16 +1,20 @@
-use klick_domain::{
-    constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
-    CO2Equivalents, EmissionFactors, EnergyConsumption, Factor, Kilowatthours, Mass,
-    MilligramsPerLiter, N2oEmissionFactorCalcMethod, OperatingMaterials, OptimizationScenario,
-    PlantProfile, Qubicmeters, SewageSludgeTreatment, Tons,
-};
+#[cfg(test)]
+mod tests;
 
-use crate::Output;
+use crate::{
+    constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
+    CO2Equivalents, EmissionFactorCalculationMethods, EmissionFactors, EmissionInfluencingValues,
+    EnergyConsumption, Factor, Kilowatthours, Mass, MilligramsPerLiter,
+    N2oEmissionFactorCalcMethod, OperatingMaterials, Qubicmeters, SewageSludgeTreatment, Tons,
+};
 
 #[must_use]
 #[allow(clippy::too_many_lines)]
-pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario) -> Output {
-    let PlantProfile {
+pub fn calculate_emissions(
+    input: &EmissionInfluencingValues,
+    calc_methods: EmissionFactorCalculationMethods,
+) -> (CO2Equivalents, EmissionFactors) {
+    let EmissionInfluencingValues {
         population_equivalent,
         wastewater,
         influent_average,
@@ -52,11 +56,8 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
         synthetic_polymers,
     } = operating_materials;
 
-    let n2o_emission_factor = calculate_n2o_emission_factor(
-        scenario.n2o_emission_factor,
-        *nitrogen_influent,
-        *nitrogen_effluent,
-    );
+    let n2o_emission_factor =
+        calculate_n2o_emission_factor(calc_methods.n2o, *nitrogen_influent, *nitrogen_effluent);
     debug_assert!(n2o_emission_factor < Factor::new(1.0));
 
     let (n2o_plant, n2o_water) = calculate_nitrous_oxide(
@@ -100,7 +101,7 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
     let ch4_sludge_bags = Tons::new(ch4_slippage_sludge_bags * GWP_CH4);
     let ch4_water = Tons::new(ch4_water * GWP_CH4);
 
-    let ch4_emission_factor = match scenario.ch4_chp_emission_factor {
+    let ch4_emission_factor = match calc_methods.ch4 {
         None => Factor::new(0.01),
         Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
         Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
@@ -192,10 +193,7 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
         ch4: ch4_emission_factor,
     };
 
-    Output {
-        co2_equivalents,
-        emission_factors,
-    }
+    (co2_equivalents, emission_factors)
 }
 
 #[must_use]

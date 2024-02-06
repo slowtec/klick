@@ -1,25 +1,20 @@
-use super::*;
-use klick_domain as domain;
-use klick_domain::*;
+use crate::*;
 
 fn ch4_combined_heat_and_power_plant_computation_helper(
-    scenario: OptimizationScenario,
-    profile: PlantProfile,
-    ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod>,
+    scenario: EmissionFactorCalculationMethods,
+    profile: EmissionInfluencingValues,
+    ch4_chp_emission_factor: Option<CH4ChpEmissionFactorCalcMethod>,
 ) -> f64 {
     let mut s2 = scenario;
-    s2.ch4_chp_emission_factor = ch4_chp_emission_factor;
-    let Output {
-        co2_equivalents,
-        emission_factors: _,
-    } = calculate_emissions(&profile, s2);
+    s2.ch4 = ch4_chp_emission_factor;
+    let (co2_equivalents, _) = calculate_emissions(&profile, s2);
 
     f64::from(co2_equivalents.ch4_combined_heat_and_power_plant)
 }
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
-    let profile = PlantProfile {
+    let profile = EmissionInfluencingValues {
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
@@ -51,15 +46,12 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         },
     };
 
-    let scenario = OptimizationScenario {
-        n2o_emission_factor: N2oEmissionFactorCalcMethod::TuWien2016,
-        ch4_chp_emission_factor: None,
+    let scenario = EmissionFactorCalculationMethods {
+        n2o: N2oEmissionFactorCalcMethod::TuWien2016,
+        ch4: None,
     };
 
-    let Output {
-        co2_equivalents,
-        emission_factors,
-    } = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -115,7 +107,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         235.414_620_000_000_04
     );
@@ -123,7 +115,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         392.35769999999997
     );
@@ -131,7 +123,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_optimistic() {
-    let profile = PlantProfile {
+    let profile = EmissionInfluencingValues {
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
@@ -163,15 +155,12 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         },
     };
 
-    let scenario = OptimizationScenario {
-        n2o_emission_factor: N2oEmissionFactorCalcMethod::Optimistic,
-        ch4_chp_emission_factor: None,
+    let scenario = EmissionFactorCalculationMethods {
+        n2o: N2oEmissionFactorCalcMethod::Optimistic,
+        ch4: None,
     };
 
-    let Output {
-        co2_equivalents,
-        emission_factors,
-    } = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -227,7 +216,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         235.414_620_000_000_04
     );
@@ -235,7 +224,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         392.357_699_999_999_97
     );
@@ -243,7 +232,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_pesimistic() {
-    let profile = PlantProfile {
+    let profile = EmissionInfluencingValues {
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
@@ -275,15 +264,12 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         },
     };
 
-    let scenario = OptimizationScenario {
-        n2o_emission_factor: N2oEmissionFactorCalcMethod::Pesimistic,
-        ch4_chp_emission_factor: None,
+    let scenario = EmissionFactorCalculationMethods {
+        n2o: N2oEmissionFactorCalcMethod::Pesimistic,
+        ch4: None,
     };
 
-    let Output {
-        co2_equivalents,
-        emission_factors,
-    } = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -339,7 +325,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         235.414_620_000_000_04
     );
@@ -347,7 +333,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         392.357_699_999_999_97
     );
@@ -355,7 +341,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_ipcc2019() {
-    let profile = PlantProfile {
+    let profile = EmissionInfluencingValues {
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
@@ -387,15 +373,12 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         },
     };
 
-    let scenario = OptimizationScenario {
-        n2o_emission_factor: N2oEmissionFactorCalcMethod::Ipcc2019,
-        ch4_chp_emission_factor: None,
+    let scenario = EmissionFactorCalculationMethods {
+        n2o: N2oEmissionFactorCalcMethod::Ipcc2019,
+        ch4: None,
     };
 
-    let Output {
-        co2_equivalents,
-        emission_factors,
-    } = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -451,7 +434,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         235.414_620_000_000_04
     );
@@ -459,7 +442,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         392.357_699_999_999_97
     );
@@ -467,7 +450,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_custom_factor() {
-    let profile = PlantProfile {
+    let profile = EmissionInfluencingValues {
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
@@ -499,15 +482,12 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         },
     };
 
-    let scenario = OptimizationScenario {
-        n2o_emission_factor: N2oEmissionFactorCalcMethod::Custom(Factor::new(1.0 / 100.0)),
-        ch4_chp_emission_factor: None,
+    let scenario = EmissionFactorCalculationMethods {
+        n2o: N2oEmissionFactorCalcMethod::Custom(Factor::new(1.0 / 100.0)),
+        ch4: None,
     };
 
-    let Output {
-        co2_equivalents,
-        emission_factors,
-    } = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -563,7 +543,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         235.414_620_000_000_04
     );
@@ -571,7 +551,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
-            Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         392.357_699_999_999_97
     );

@@ -9,7 +9,7 @@ use crate::{
     SewageSludgeTreatment,
 };
 
-impl TryFrom<OptimizationScenario> for domain::OptimizationScenario {
+impl TryFrom<OptimizationScenario> for domain::EmissionFactorCalculationMethods {
     type Error = anyhow::Error;
 
     fn try_from(from: OptimizationScenario) -> Result<Self, Self::Error> {
@@ -18,25 +18,19 @@ impl TryFrom<OptimizationScenario> for domain::OptimizationScenario {
             ch4_chp_emission_factor,
         } = from;
 
-        let n2o_emission_factor = n2o_emission_factor.try_into()?;
-        let ch4_chp_emission_factor = ch4_chp_emission_factor.map(TryInto::try_into).transpose()?;
+        let n2o = n2o_emission_factor.try_into()?;
+        let ch4 = ch4_chp_emission_factor.map(TryInto::try_into).transpose()?;
 
-        Ok(Self {
-            n2o_emission_factor,
-            ch4_chp_emission_factor,
-        })
+        Ok(Self { n2o, ch4 })
     }
 }
 
-impl From<domain::OptimizationScenario> for OptimizationScenario {
-    fn from(from: domain::OptimizationScenario) -> Self {
-        let domain::OptimizationScenario {
-            n2o_emission_factor,
-            ch4_chp_emission_factor,
-        } = from;
+impl From<domain::EmissionFactorCalculationMethods> for OptimizationScenario {
+    fn from(from: domain::EmissionFactorCalculationMethods) -> Self {
+        let domain::EmissionFactorCalculationMethods { n2o, ch4 } = from;
 
-        let n2o_emission_factor = n2o_emission_factor.into();
-        let ch4_chp_emission_factor = ch4_chp_emission_factor.map(Into::into);
+        let n2o_emission_factor = n2o.into();
+        let ch4_chp_emission_factor = ch4.map(Into::into);
 
         Self {
             n2o_emission_factor,
@@ -135,7 +129,7 @@ impl From<domain::CH4ChpEmissionFactorCalcMethod> for CH4ChpEmissionFactorScenar
     }
 }
 
-impl TryFrom<PlantProfile> for domain::PlantProfile {
+impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
     type Error = anyhow::Error;
 
     fn try_from(from: PlantProfile) -> Result<Self, Self::Error> {
@@ -178,9 +172,9 @@ impl TryFrom<PlantProfile> for domain::PlantProfile {
     }
 }
 
-impl From<domain::PlantProfile> for PlantProfile {
-    fn from(from: domain::PlantProfile) -> Self {
-        let domain::PlantProfile {
+impl From<domain::EmissionInfluencingValues> for PlantProfile {
+    fn from(from: domain::EmissionInfluencingValues) -> Self {
+        let domain::EmissionInfluencingValues {
             population_equivalent,
             wastewater,
             influent_average,

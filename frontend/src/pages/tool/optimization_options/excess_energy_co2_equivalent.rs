@@ -1,13 +1,12 @@
 use leptos::*;
 
-use klick_application as app;
 use klick_domain as domain;
 use klick_presenter::Lng;
 
 use super::Card;
 
 pub fn options(
-    input_data: Signal<Option<domain::PlantProfile>>,
+    input_data: Signal<Option<domain::EmissionInfluencingValues>>,
     n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let excess_energy_co2_equivalent = RwSignal::new(0.0);
@@ -27,27 +26,15 @@ pub fn options(
             .get()
             .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019);
 
-        let scenario = domain::OptimizationScenario {
-            n2o_emission_factor,
-            ch4_chp_emission_factor: None,
+        let scenario = domain::EmissionFactorCalculationMethods {
+            n2o: n2o_emission_factor,
+            ch4: None,
         };
 
-        let output_data = app::calculate_emissions(&input_data, scenario);
-        excess_energy_co2_equivalent.set(
-            output_data
-                .clone()
-                .co2_equivalents
-                .excess_energy_co2_equivalent
-                .into(),
-        );
-        emissions.set(output_data.clone().co2_equivalents.emissions.into());
-        indirect_emissions.set(
-            output_data
-                .clone()
-                .co2_equivalents
-                .indirect_emissions
-                .into(),
-        );
+        let output_data = domain::calculate_emissions(&input_data, scenario);
+        excess_energy_co2_equivalent.set(output_data.clone().0.excess_energy_co2_equivalent.into());
+        emissions.set(output_data.clone().0.emissions.into());
+        indirect_emissions.set(output_data.clone().0.indirect_emissions.into());
     });
     view! {
       <Card title ="Strombilanz">
