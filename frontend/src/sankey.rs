@@ -44,8 +44,7 @@ pub fn Sankey(data: app::Output) -> impl IntoView {
 
     let app::Output {
         co2_equivalents,
-        n2o_emission_factor: _,
-        ch4_emission_factor: _,
+        emission_factors: _,
     } = data;
 
     let domain::CO2Equivalents {

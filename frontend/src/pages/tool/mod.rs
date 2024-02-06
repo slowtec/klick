@@ -229,7 +229,7 @@ pub fn Tool(
                         let einheit = "t CO₂ Äquivalente/Jahr";
                         let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
                         selected_scenario_name.set(szenario_name.to_string().clone());
-                        let ef = Lng::De.format_number_with_precision(f64::from(output_data.n2o_emission_factor) * 100.0, 2);
+                        let ef = Lng::De.format_number_with_precision(f64::from(output_data.emission_factors.n2o) * 100.0, 2);
                         let title = format!(
                             "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
                         );
@@ -251,7 +251,7 @@ pub fn Tool(
                     .map(|(szenario, d)| klick_app_charts::BarChartArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
                         co2_data: d.co2_equivalents.emissions.into(),
-                        n2o_factor: f64::from(d.n2o_emission_factor),
+                        n2o_factor: f64::from(d.emission_factors.n2o),
                     })
                     .collect(),
             );

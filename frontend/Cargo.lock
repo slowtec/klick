@@ -877,6 +877,7 @@ name = "klick-presenter"
 version = "0.0.0"
 dependencies = [
  "derive_more",
+ "klick-boundary",
  "serde",
  "strum",
 ]

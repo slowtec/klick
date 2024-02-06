@@ -11,8 +11,7 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
     s2.ch4_chp_emission_factor = ch4_chp_emission_factor;
     let Output {
         co2_equivalents,
-        n2o_emission_factor: _,
-        ch4_emission_factor: _,
+        emission_factors: _,
     } = calculate_emissions(&profile, s2);
 
     f64::from(co2_equivalents.ch4_combined_heat_and_power_plant)
@@ -65,8 +64,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
 
     let Output {
         co2_equivalents,
-        n2o_emission_factor,
-        ch4_emission_factor: _,
+        emission_factors,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -115,7 +113,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
     assert_eq!(f64::from(emissions), 2451.6415871000017);
-    assert_eq!(f64::from(n2o_emission_factor), 0.001_253_278_688_524_597_2);
+    assert_eq!(f64::from(emission_factors.n2o), 0.001_253_278_688_524_597_2);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
@@ -184,8 +182,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 
     let Output {
         co2_equivalents,
-        n2o_emission_factor,
-        ch4_emission_factor: _,
+        emission_factors,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -234,7 +231,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
     assert_eq!(f64::from(emissions), 2908.7410870999997);
-    assert_eq!(f64::from(n2o_emission_factor), 0.003);
+    assert_eq!(f64::from(emission_factors.n2o), 0.003);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
@@ -303,8 +300,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
 
     let Output {
         co2_equivalents,
-        n2o_emission_factor,
-        ch4_emission_factor: _,
+        emission_factors,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -353,7 +349,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
     assert_eq!(f64::from(emissions), 4217.1910871);
-    assert_eq!(f64::from(n2o_emission_factor), 0.008);
+    assert_eq!(f64::from(emission_factors.n2o), 0.008);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
@@ -422,8 +418,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
 
     let Output {
         co2_equivalents,
-        n2o_emission_factor,
-        ch4_emission_factor: _,
+        emission_factors,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -472,7 +467,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
     assert_eq!(f64::from(emissions), 6310.7110871);
-    assert_eq!(f64::from(n2o_emission_factor), 0.016);
+    assert_eq!(f64::from(emission_factors.n2o), 0.016);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
@@ -541,8 +536,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
 
     let Output {
         co2_equivalents,
-        n2o_emission_factor,
-        ch4_emission_factor: _,
+        emission_factors,
     } = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
@@ -591,7 +585,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
     assert_eq!(f64::from(emissions), 4740.571087100001);
-    assert_eq!(f64::from(n2o_emission_factor), 0.01);
+    assert_eq!(f64::from(emission_factors.n2o), 0.01);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines

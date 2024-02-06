@@ -1,8 +1,8 @@
 use klick_domain::{
     constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
-    CO2Equivalents, EnergyConsumption, Factor, Kilowatthours, Mass, MilligramsPerLiter,
-    N2oEmissionFactorCalcMethod, OperatingMaterials, OptimizationScenario, PlantProfile,
-    Qubicmeters, SewageSludgeTreatment, Tons,
+    CO2Equivalents, EmissionFactors, EnergyConsumption, Factor, Kilowatthours, Mass,
+    MilligramsPerLiter, N2oEmissionFactorCalcMethod, OperatingMaterials, OptimizationScenario,
+    PlantProfile, Qubicmeters, SewageSludgeTreatment, Tons,
 };
 
 use crate::Output;
@@ -193,10 +193,14 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
         excess_energy_co2_equivalent,
     };
 
+    let emission_factors = EmissionFactors {
+        n2o: n2o_emission_factor,
+        ch4: ch4_emission_factor,
+    };
+
     Output {
         co2_equivalents,
-        n2o_emission_factor,
-        ch4_emission_factor,
+        emission_factors,
     }
 }
 
