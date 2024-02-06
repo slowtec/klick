@@ -2,6 +2,7 @@ use leptos::*;
 
 const LOGO: &str = include_str!("../assets/logo_BMWK_NKI.svg");
 const FOOTER_MD: &str = include_str!("../content/footer.md");
+const WIKI_URL: &str = "https://codeberg.org/slowtec/klick/wiki";
 
 use crate::{Markdown, Page, CHANGELOG_URL, VERSION};
 
@@ -18,11 +19,12 @@ pub fn Footer() -> impl IntoView {
           </div>
           <div>
             <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
-              <FooterLink page = Page::Home label ="Über KlicK" />
-              <FooterLink page = Page::Tool label ="Tool" />
-              <FooterLink page = Page::Faq label ="FAQs" />
-              <FooterLink page = Page::OpenSource label ="Open Source" />
-              <FooterLink page = Page::Imprint label ="Impressum" />
+              <FooterLink link = LinkType::Page(Page::Home) label ="Über KlicK" />
+              <FooterLink link = LinkType::Page(Page::Tool) label ="Tool" />
+              <FooterLink link = LinkType::Page(Page::Faq) label ="FAQs" />
+              <FooterLink link = LinkType::External(WIKI_URL) label ="Wiki" />
+              <FooterLink link = LinkType::Page(Page::OpenSource) label ="Open Source" />
+              <FooterLink link = LinkType::Page(Page::Imprint) label ="Impressum" />
             </nav>
             <div class="mt-10 flex justify-center space-x-10">
               <a href="https://codeberg.org/slowtec/klick" class="text-gray-400 hover:text-gray-500">
@@ -46,14 +48,24 @@ pub fn Footer() -> impl IntoView {
 }
 
 #[component]
-fn FooterLink(page: Page, label: &'static str) -> impl IntoView {
+fn FooterLink(link: LinkType, label: &'static str) -> impl IntoView {
     view! {
       <div class="pb-6">
         <a
-          href = { page.path() }
+          href = {
+            match link {
+              LinkType::Page(page) => page.path(),
+              LinkType::External(url) => url
+            }
+          }
           class = "text-sm leading-6 text-gray-600 hover:text-gray-900">
           { label }
         </a>
       </div>
     }
+}
+
+enum LinkType {
+  Page(Page),
+  External(&'static str)
 }
