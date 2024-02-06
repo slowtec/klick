@@ -1,4 +1,4 @@
-use klick_domain::{Account, Project};
+use klick_domain::{authentication::Account, Project};
 
 use crate::ProjectRepo;
 

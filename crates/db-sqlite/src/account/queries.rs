@@ -2,7 +2,7 @@ use diesel::{prelude::*, sqlite::SqliteConnection};
 use time::OffsetDateTime;
 
 use klick_application::AccountRecord;
-use klick_domain::EmailAddress;
+use klick_domain::authentication::EmailAddress;
 
 use crate::{account::models, schema};
 
@@ -14,7 +14,7 @@ pub fn fetch_account_from_db(
 
     let results = dsl::accounts
         .filter(dsl::email.eq(email.as_str()))
-        .select(models::Account::as_select())
+        .select(models::AccountQuery::as_select())
         .load(conn);
 
     let results = match results {

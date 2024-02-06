@@ -19,7 +19,10 @@ use uuid::Uuid;
 use klick_application::{usecases, AccountRepo as _};
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
-use klick_domain::{Account, EmailAddress, EmailNonce, Password, ProjectId};
+use klick_domain::{
+    authentication::{Account, EmailAddress, EmailNonce, Password},
+    ProjectId,
+};
 
 mod adapters;
 mod config;

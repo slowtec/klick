@@ -1,4 +1,4 @@
-use crate::Factor;
+use crate::units::Factor;
 
 #[derive(Debug, Clone, Copy)]
 pub struct EmissionFactors {

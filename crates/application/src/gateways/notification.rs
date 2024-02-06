@@ -1,4 +1,4 @@
-use klick_domain::EmailNonce;
+use klick_domain::authentication::EmailNonce;
 
 pub trait Gateway {
     fn notify(&self, event: Event);

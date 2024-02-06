@@ -1,6 +1,6 @@
 use time::OffsetDateTime;
 
-use crate::EmailAddress;
+use crate::authentication::EmailAddress;
 
 #[derive(Debug, Clone)]
 pub struct Account {

@@ -55,7 +55,7 @@ impl TryFrom<N2oEmissionFactorScenario> for domain::N2oEmissionFactorCalcMethod 
                 let Some(factor) = from.custom_factor else {
                     bail!("custom N2O emission factor is missing");
                 };
-                D::Custom(domain::Factor::new(factor))
+                D::Custom(domain::units::Factor::new(factor))
             }
         };
         Ok(f)
@@ -100,7 +100,7 @@ impl TryFrom<CH4ChpEmissionFactorScenario> for domain::CH4ChpEmissionFactorCalcM
                 let Some(factor) = from.custom_factor else {
                     bail!("custom N2O emission factor is missing");
                 };
-                D::Custom(domain::Factor::new(factor))
+                D::Custom(domain::units::Factor::new(factor))
             }
         };
         Ok(f)
@@ -158,7 +158,7 @@ impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
         let sewage_sludge_treatment = sewage_sludge_treatment.try_into()?;
         let operating_materials = operating_materials.try_into()?;
 
-        let wastewater = domain::Qubicmeters::new(wastewater);
+        let wastewater = domain::units::Qubicmeters::new(wastewater);
 
         Ok(Self {
             population_equivalent,
@@ -237,12 +237,12 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
             bail!("missing emission_factor_electricity_mix");
         };
 
-        let methane_fraction = domain::Percent::new(methane_fraction);
-        let sewage_gas_produced = domain::Qubicmeters::new(sewage_gas_produced);
-        let on_site_power_generation = domain::Kilowatthours::new(on_site_power_generation);
-        let total_power_consumption = domain::Kilowatthours::new(total_power_consumption);
+        let methane_fraction = domain::units::Percent::new(methane_fraction);
+        let sewage_gas_produced = domain::units::Qubicmeters::new(sewage_gas_produced);
+        let on_site_power_generation = domain::units::Kilowatthours::new(on_site_power_generation);
+        let total_power_consumption = domain::units::Kilowatthours::new(total_power_consumption);
         let emission_factor_electricity_mix =
-            domain::GramsPerKilowatthour::new(emission_factor_electricity_mix);
+            domain::units::GramsPerKilowatthour::new(emission_factor_electricity_mix);
 
         Ok(Self {
             sewage_gas_produced,
@@ -309,8 +309,8 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
         let Some(transport_distance) = transport_distance else {
             bail!("missing transport_distance");
         };
-        let sewage_sludge_for_disposal = domain::Tons::new(sewage_sludge_for_disposal);
-        let transport_distance = domain::Kilometers::new(transport_distance);
+        let sewage_sludge_for_disposal = domain::units::Tons::new(sewage_sludge_for_disposal);
+        let transport_distance = domain::units::Kilometers::new(transport_distance);
         Ok(Self {
             sludge_bags_are_open,
             sludge_storage_containers_are_open,
@@ -368,10 +368,10 @@ impl TryFrom<OperatingMaterials> for domain::OperatingMaterials {
             bail!("missing synthetic_polymers");
         };
 
-        let fecl3 = domain::Tons::new(fecl3);
-        let feclso4 = domain::Tons::new(feclso4);
-        let caoh2 = domain::Tons::new(caoh2);
-        let synthetic_polymers = domain::Tons::new(synthetic_polymers);
+        let fecl3 = domain::units::Tons::new(fecl3);
+        let feclso4 = domain::units::Tons::new(feclso4);
+        let caoh2 = domain::units::Tons::new(caoh2);
+        let synthetic_polymers = domain::units::Tons::new(synthetic_polymers);
 
         Ok(Self {
             fecl3,
@@ -419,7 +419,7 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageInfluent {
             bail!("missing inflow nitrogen");
         };
 
-        let nitrogen = domain::MilligramsPerLiter::new(nitrogen);
+        let nitrogen = domain::units::MilligramsPerLiter::new(nitrogen);
 
         Ok(Self { nitrogen })
     }
@@ -459,8 +459,8 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageEffluent {
             bail!("missing effluent chemical_oxygen_demand");
         };
 
-        let chemical_oxygen_demand = domain::MilligramsPerLiter::new(chemical_oxygen_demand);
-        let nitrogen = domain::MilligramsPerLiter::new(nitrogen);
+        let chemical_oxygen_demand = domain::units::MilligramsPerLiter::new(chemical_oxygen_demand);
+        let nitrogen = domain::units::MilligramsPerLiter::new(nitrogen);
 
         Ok(Self {
             nitrogen,

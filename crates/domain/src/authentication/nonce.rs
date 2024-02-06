@@ -4,7 +4,7 @@ use thiserror::Error;
 use time::OffsetDateTime;
 use uuid::Uuid;
 
-use crate::{EmailAddress, EmailAddressParseError};
+use crate::authentication::{EmailAddress, EmailAddressParseError};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Nonce(Uuid);

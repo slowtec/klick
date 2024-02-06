@@ -1,6 +1,6 @@
 use anyhow::bail;
 
-use klick_domain::EmailAddress;
+use klick_domain::authentication::EmailAddress;
 
 use crate::{usecases, AccountRepo, AccountTokenRepo, NotificationEvent, NotificationGateway};
 

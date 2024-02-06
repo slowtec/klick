@@ -1,7 +1,7 @@
 use thiserror::Error;
 use time::OffsetDateTime;
 
-use klick_domain::{AccountToken, EmailNonce};
+use klick_domain::authentication::{AccountToken, EmailNonce};
 
 use crate::AccountTokenRepo;
 

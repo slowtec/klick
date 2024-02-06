@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use klick_domain::{EmailNonce, HashedPassword};
+use klick_domain::authentication::{EmailNonce, HashedPassword};
 
 use crate::{usecases, AccountRepo, AccountTokenRepo};
 

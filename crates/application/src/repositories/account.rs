@@ -1,4 +1,4 @@
-use klick_domain::{Account, EmailAddress, HashedPassword};
+use klick_domain::authentication::{Account, EmailAddress, HashedPassword};
 
 pub trait Repo {
     fn find_account(&self, email: &EmailAddress) -> anyhow::Result<Option<Record>>;

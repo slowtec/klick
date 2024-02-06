@@ -1,7 +1,7 @@
 use diesel::{prelude::*, sqlite::SqliteConnection};
 
 use klick_boundary as boundary;
-use klick_domain::{self as domain, EmailAddress, ProjectId};
+use klick_domain::{self as domain, authentication::EmailAddress, ProjectId};
 
 type Project = domain::Project<boundary::ProjectData>;
 

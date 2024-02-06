@@ -65,7 +65,9 @@ pub fn options(
                     output.set(None);
                     return;
                 };
-                domain::CH4ChpEmissionFactorCalcMethod::Custom(domain::Factor::new(f / 100.0))
+                domain::CH4ChpEmissionFactorCalcMethod::Custom(domain::units::Factor::new(
+                    f / 100.0,
+                ))
             }
             _ => {
                 output.set(None);

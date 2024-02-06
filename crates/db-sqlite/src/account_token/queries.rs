@@ -1,7 +1,7 @@
 use diesel::{prelude::*, sqlite::SqliteConnection};
 use time::OffsetDateTime;
 
-use klick_domain::{AccountToken, EmailAddress, EmailNonce};
+use klick_domain::authentication::{AccountToken, EmailAddress, EmailNonce};
 
 use crate::{account, account_token::models, schema};
 
@@ -75,6 +75,6 @@ pub fn account_token_by_email(
         .inner_join(a_dsl::accounts)
         .select((a_dsl::rowid, t_dsl::nonce, t_dsl::expires_at, a_dsl::email))
         .filter(a_dsl::email.eq(email.as_str()))
-        .first::<models::AccountToken>(conn)?;
+        .first::<models::AccountTokenQuery>(conn)?;
     AccountToken::try_from(token)
 }

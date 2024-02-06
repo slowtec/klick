@@ -1,4 +1,4 @@
-use crate::{KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent};
+use crate::units::{KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent};
 
 /// `[g ch4 / (population values * year)]`
 pub const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0;

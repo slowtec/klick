@@ -109,7 +109,7 @@ pub fn Tool(
             1 => domain::N2oEmissionFactorCalcMethod::Optimistic,
             2 => domain::N2oEmissionFactorCalcMethod::Pesimistic,
             3 => domain::N2oEmissionFactorCalcMethod::Ipcc2019,
-            4 => domain::N2oEmissionFactorCalcMethod::Custom(domain::Factor::new(
+            4 => domain::N2oEmissionFactorCalcMethod::Custom(domain::units::Factor::new(
                 custom_factor_value.get().unwrap_or_default() / 100.0,
             )),
             _ => {
@@ -203,7 +203,7 @@ pub fn Tool(
                     }
                     let n2o_emission_factor = match method {
                         N2oEmissionFactorCalcMethod::CustomFactor => {
-                            domain::N2oEmissionFactorCalcMethod::Custom(domain::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
+                            domain::N2oEmissionFactorCalcMethod::Custom(domain::units::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
                         }
                         N2oEmissionFactorCalcMethod::TuWien2016 => domain::N2oEmissionFactorCalcMethod::TuWien2016,
                         N2oEmissionFactorCalcMethod::Optimistic => domain::N2oEmissionFactorCalcMethod::Optimistic,

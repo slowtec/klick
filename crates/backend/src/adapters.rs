@@ -6,7 +6,7 @@ use thiserror::Error;
 
 use klick_application::usecases;
 use klick_boundary::json_api;
-use klick_domain::{
+use klick_domain::authentication::{
     EmailAddress, EmailAddressParseError, EmailNonceDecodingError, Password, PasswordParseError,
 };
 

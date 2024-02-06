@@ -1,4 +1,4 @@
-use crate::*;
+use crate::{units::*, *};
 
 fn ch4_combined_heat_and_power_plant_computation_helper(
     scenario: EmissionFactorCalculationMethods,

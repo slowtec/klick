@@ -2,10 +2,11 @@
 mod tests;
 
 use crate::{
-    constants::*, AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
-    CO2Equivalents, EmissionFactorCalculationMethods, EmissionFactors, EmissionInfluencingValues,
-    EnergyConsumption, Factor, Kilowatthours, Mass, MilligramsPerLiter,
-    N2oEmissionFactorCalcMethod, OperatingMaterials, Qubicmeters, SewageSludgeTreatment, Tons,
+    constants::*,
+    units::{Factor, Kilowatthours, Mass, MilligramsPerLiter, Qubicmeters, Tons},
+    AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
+    EmissionFactorCalculationMethods, EmissionFactors, EmissionInfluencingValues,
+    EnergyConsumption, N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
 };
 
 #[must_use]

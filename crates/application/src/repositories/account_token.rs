@@ -1,6 +1,6 @@
 use time::OffsetDateTime;
 
-use klick_domain::{AccountToken, EmailAddress, EmailNonce};
+use klick_domain::authentication::{AccountToken, EmailAddress, EmailNonce};
 
 pub trait Repo {
     fn replace_account_token(&self, account_token: AccountToken) -> anyhow::Result<EmailNonce>;

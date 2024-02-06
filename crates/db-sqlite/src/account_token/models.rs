@@ -1,14 +1,14 @@
 use diesel::prelude::*;
 use time::OffsetDateTime;
 
-use klick_domain as domain;
+use klick_domain::authentication::{AccountToken, EmailAddress, EmailNonce, Nonce};
 
 use crate::schema;
 
 #[derive(Queryable)]
 #[diesel(table_name = schema::account_tokens)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct AccountToken {
+pub struct AccountTokenQuery {
     pub account_rowid: i64,
     pub nonce: String,
     pub expires_at: i64,
@@ -25,19 +25,19 @@ pub struct NewAccountToken<'a> {
     pub expires_at: i64,
 }
 
-impl TryFrom<AccountToken> for domain::AccountToken {
+impl TryFrom<AccountTokenQuery> for AccountToken {
     type Error = anyhow::Error;
-    fn try_from(from: AccountToken) -> Result<Self, Self::Error> {
-        let AccountToken {
+    fn try_from(from: AccountTokenQuery) -> Result<Self, Self::Error> {
+        let AccountTokenQuery {
             account_rowid: _,
             nonce,
             expires_at,
             account_email,
         } = from;
 
-        let email = domain::EmailAddress::new_unchecked(account_email);
-        let nonce = nonce.parse::<domain::Nonce>()?;
-        let email_nonce = domain::EmailNonce { email, nonce };
+        let email = EmailAddress::new_unchecked(account_email);
+        let nonce = nonce.parse::<Nonce>()?;
+        let email_nonce = EmailNonce { email, nonce };
         let expires_at = OffsetDateTime::from_unix_timestamp(expires_at)?;
 
         Ok(Self {

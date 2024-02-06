@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use time::OffsetDateTime;
 
-use klick_domain::{Account, ProjectId};
+use klick_domain::{authentication::Account, ProjectId};
 
 use crate::ProjectRepo;
 

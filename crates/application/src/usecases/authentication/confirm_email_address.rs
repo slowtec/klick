@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use klick_domain::EmailNonce;
+use klick_domain::authentication::EmailNonce;
 
 use crate::{usecases, AccountRepo, AccountTokenRepo};
 

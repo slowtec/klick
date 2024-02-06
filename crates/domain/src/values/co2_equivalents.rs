@@ -1,4 +1,4 @@
-use crate::Tons;
+use crate::units::Tons;
 
 #[derive(Debug, Clone)]
 pub struct CO2Equivalents {

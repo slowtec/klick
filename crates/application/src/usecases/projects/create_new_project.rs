@@ -1,6 +1,6 @@
 use time::OffsetDateTime;
 
-use klick_domain::{Account, Project, ProjectId};
+use klick_domain::{authentication::Account, Project, ProjectId};
 
 use crate::ProjectRepo;
 

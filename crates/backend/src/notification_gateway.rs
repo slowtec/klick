@@ -7,7 +7,7 @@ use lettre::{
 use url::Url;
 
 use klick_application::{NotificationEvent, NotificationGateway};
-use klick_domain::EmailNonce;
+use klick_domain::authentication::EmailNonce;
 
 use crate::config::{Config, Encryption};
 
@@ -169,7 +169,7 @@ fn email_confirmation_and_password_reset_url(
 
 #[test]
 fn create_email_confirmation_url() {
-    let nonce = klick_domain::Nonce::new();
+    let nonce = klick_domain::authentication::Nonce::new();
     let email_nonce = EmailNonce {
         email: "foo@bar.com".parse().unwrap(),
         nonce: nonce,
