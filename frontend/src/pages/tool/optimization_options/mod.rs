@@ -21,12 +21,12 @@ pub fn OptimizationOptions(
     n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     view! {
+      { n2o_emissions_in_the_biological_treatment_stage::options() }
       { ch4_emissions_pre_treatment::options() }
       { ch4_emissions_chp::options(input_data, n2o_emission_factor_method) }
       { ch4_emissions_open_digesters::options(input_data, n2o_emission_factor_method) }
       { excess_energy_co2_equivalent::options(input_data, n2o_emission_factor_method) }
       { leak_test::options() }
-      { n2o_emissions_in_the_biological_treatment_stage::options() }
     }
 }
 
