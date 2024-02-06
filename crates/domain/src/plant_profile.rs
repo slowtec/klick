@@ -4,7 +4,6 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct PlantProfile {
-    pub plant_name: Option<String>,
     pub population_equivalent: f64,
     pub wastewater: Qubicmeters,
     pub influent_average: AnnualAverageInfluent,
@@ -17,23 +16,18 @@ pub struct PlantProfile {
 #[derive(Debug, Clone)]
 pub struct AnnualAverageInfluent {
     pub nitrogen: MilligramsPerLiter,
-    pub chemical_oxygen_demand: Option<MilligramsPerLiter>,
-    pub phosphorus: Option<MilligramsPerLiter>,
 }
 
 #[derive(Debug, Clone)]
 pub struct AnnualAverageEffluent {
     pub nitrogen: MilligramsPerLiter,
     pub chemical_oxygen_demand: MilligramsPerLiter,
-    pub phosphorus: Option<MilligramsPerLiter>,
 }
 
 #[derive(Debug, Clone)]
 pub struct EnergyConsumption {
     pub sewage_gas_produced: Qubicmeters,
     pub methane_fraction: Percent,
-    pub gas_supply: Option<Kilowatthours>,
-    pub purchase_of_biogas: Option<bool>,
     pub total_power_consumption: Kilowatthours,
     pub on_site_power_generation: Kilowatthours,
     pub emission_factor_electricity_mix: GramsPerKilowatthour,

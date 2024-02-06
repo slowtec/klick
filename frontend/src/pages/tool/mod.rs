@@ -157,37 +157,40 @@ pub fn Tool(
             } else {
                 nitrogen_io_warning.set(None);
             }
-            if let Some(chemical_oxygen_demand_influent) =
-                input_data.influent_average.chemical_oxygen_demand
-            {
-                if input_data.effluent_average.chemical_oxygen_demand
-                    > chemical_oxygen_demand_influent
-                {
-                    chemical_oxygen_io_warning.set(Some(format!(
-                        "Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!",
-                        Lng::De.format_number(input_data.effluent_average.chemical_oxygen_demand),
-                        Lng::De.format_number(chemical_oxygen_demand_influent)
-                    )));
-                    input_data_validation_error = true;
-                } else {
-                    chemical_oxygen_io_warning.set(None);
-                }
-            }
 
-            if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
-                if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
-                    if phosphorus_effluent > phosphorus_influent {
-                        phosphorus_io_warning.set(Some(format!(
-                            "Ablauf Phosphor {} größer als dessen Zulauf {}!",
-                            Lng::De.format_number(phosphorus_effluent),
-                            Lng::De.format_number(phosphorus_influent),
-                        )));
-                        input_data_validation_error = true;
-                    } else {
-                        phosphorus_io_warning.set(None);
-                    }
-                }
-            }
+            // TODO:
+            // if let Some(chemical_oxygen_demand_influent) =
+            //     input_data.influent_average.chemical_oxygen_demand
+            // {
+            //     if input_data.effluent_average.chemical_oxygen_demand
+            //         > chemical_oxygen_demand_influent
+            //     {
+            //         chemical_oxygen_io_warning.set(Some(format!(
+            //             "Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!",
+            //             Lng::De.format_number(input_data.effluent_average.chemical_oxygen_demand),
+            //             Lng::De.format_number(chemical_oxygen_demand_influent)
+            //         )));
+            //         input_data_validation_error = true;
+            //     } else {
+            //         chemical_oxygen_io_warning.set(None);
+            //     }
+            // }
+
+            // TODO:
+            // if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
+            //     if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
+            //         if phosphorus_effluent > phosphorus_influent {
+            //             phosphorus_io_warning.set(Some(format!(
+            //                 "Ablauf Phosphor {} größer als dessen Zulauf {}!",
+            //                 Lng::De.format_number(phosphorus_effluent),
+            //                 Lng::De.format_number(phosphorus_influent),
+            //             )));
+            //             input_data_validation_error = true;
+            //         } else {
+            //             phosphorus_io_warning.set(None);
+            //         }
+            //     }
+            // }
 
             //log::debug!("Calculating with {input_data:#?}");
             let szenario_calculations = N2oEmissionFactorCalcMethod::iter()

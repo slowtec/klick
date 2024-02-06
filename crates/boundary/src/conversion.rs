@@ -140,7 +140,7 @@ impl TryFrom<PlantProfile> for domain::PlantProfile {
 
     fn try_from(from: PlantProfile) -> Result<Self, Self::Error> {
         let PlantProfile {
-            plant_name,
+            plant_name: _,
             population_equivalent,
             wastewater,
             influent_average,
@@ -167,7 +167,6 @@ impl TryFrom<PlantProfile> for domain::PlantProfile {
         let wastewater = domain::Qubicmeters::new(wastewater);
 
         Ok(Self {
-            plant_name,
             population_equivalent,
             wastewater,
             influent_average,
@@ -182,7 +181,6 @@ impl TryFrom<PlantProfile> for domain::PlantProfile {
 impl From<domain::PlantProfile> for PlantProfile {
     fn from(from: domain::PlantProfile) -> Self {
         let domain::PlantProfile {
-            plant_name,
             population_equivalent,
             wastewater,
             influent_average,
@@ -200,6 +198,7 @@ impl From<domain::PlantProfile> for PlantProfile {
 
         let population_equivalent = Some(population_equivalent);
         let wastewater = Some(wastewater.into());
+        let plant_name = None;
 
         Self {
             plant_name,
@@ -221,8 +220,8 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
         let EnergyConsumption {
             sewage_gas_produced,
             methane_fraction,
-            gas_supply,
-            purchase_of_biogas,
+            gas_supply: _,
+            purchase_of_biogas: _,
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
@@ -248,15 +247,12 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
         let sewage_gas_produced = domain::Qubicmeters::new(sewage_gas_produced);
         let on_site_power_generation = domain::Kilowatthours::new(on_site_power_generation);
         let total_power_consumption = domain::Kilowatthours::new(total_power_consumption);
-        let gas_supply = gas_supply.map(domain::Kilowatthours::new);
         let emission_factor_electricity_mix =
             domain::GramsPerKilowatthour::new(emission_factor_electricity_mix);
 
         Ok(Self {
             sewage_gas_produced,
             methane_fraction,
-            gas_supply,
-            purchase_of_biogas,
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
@@ -269,8 +265,6 @@ impl From<domain::EnergyConsumption> for EnergyConsumption {
         let domain::EnergyConsumption {
             sewage_gas_produced,
             methane_fraction,
-            gas_supply,
-            purchase_of_biogas,
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
@@ -283,7 +277,8 @@ impl From<domain::EnergyConsumption> for EnergyConsumption {
         let on_site_power_generation = Some(on_site_power_generation.into());
         let emission_factor_electricity_mix = Some(emission_factor_electricity_mix.into());
 
-        let gas_supply = gas_supply.map(Into::into);
+        let gas_supply = None;
+        let purchase_of_biogas = None;
 
         Self {
             sewage_gas_produced,
@@ -422,38 +417,28 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageInfluent {
     fn try_from(from: AnnualAverage) -> Result<Self, Self::Error> {
         let AnnualAverage {
             nitrogen,
-            chemical_oxygen_demand,
-            phosphorus,
+            chemical_oxygen_demand: _,
+            phosphorus: _,
         } = from;
 
         let Some(nitrogen) = nitrogen else {
             bail!("missing inflow nitrogen");
         };
 
-        let phosphorus = phosphorus.map(domain::MilligramsPerLiter::new);
-        let chemical_oxygen_demand = chemical_oxygen_demand.map(domain::MilligramsPerLiter::new);
         let nitrogen = domain::MilligramsPerLiter::new(nitrogen);
 
-        Ok(Self {
-            nitrogen,
-            chemical_oxygen_demand,
-            phosphorus,
-        })
+        Ok(Self { nitrogen })
     }
 }
 
 impl From<domain::AnnualAverageInfluent> for AnnualAverage {
     fn from(from: domain::AnnualAverageInfluent) -> Self {
-        let domain::AnnualAverageInfluent {
-            nitrogen,
-            chemical_oxygen_demand,
-            phosphorus,
-        } = from;
+        let domain::AnnualAverageInfluent { nitrogen } = from;
 
         let nitrogen = Some(nitrogen.into());
 
-        let phosphorus = phosphorus.map(Into::into);
-        let chemical_oxygen_demand = chemical_oxygen_demand.map(Into::into);
+        let phosphorus = None;
+        let chemical_oxygen_demand = None;
 
         Self {
             nitrogen,
@@ -470,7 +455,7 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageEffluent {
         let AnnualAverage {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus,
+            phosphorus: _,
         } = from;
 
         let Some(nitrogen) = nitrogen else {
@@ -480,14 +465,12 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageEffluent {
             bail!("missing effluent chemical_oxygen_demand");
         };
 
-        let phosphorus = phosphorus.map(domain::MilligramsPerLiter::new);
         let chemical_oxygen_demand = domain::MilligramsPerLiter::new(chemical_oxygen_demand);
         let nitrogen = domain::MilligramsPerLiter::new(nitrogen);
 
         Ok(Self {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus,
         })
     }
 }
@@ -497,13 +480,12 @@ impl From<domain::AnnualAverageEffluent> for AnnualAverage {
         let domain::AnnualAverageEffluent {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus,
         } = from;
 
         let nitrogen = Some(nitrogen.into());
         let chemical_oxygen_demand = Some(chemical_oxygen_demand.into());
 
-        let phosphorus = phosphorus.map(Into::into);
+        let phosphorus = None;
 
         Self {
             nitrogen,

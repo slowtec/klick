@@ -20,24 +20,18 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
 #[test]
 fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     let profile = PlantProfile {
-        plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: None,
-            phosphorus: None,
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
             chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-            phosphorus: None,
         },
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Qubicmeters::new(1_260_000.0),
             methane_fraction: Percent::new(62.0),
-            gas_supply: None,
-            purchase_of_biogas: None,
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
@@ -138,24 +132,18 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
 #[test]
 fn calculate_with_n2o_emission_factor_method_optimistic() {
     let profile = PlantProfile {
-        plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: None,
-            phosphorus: None,
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
             chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-            phosphorus: None,
         },
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Qubicmeters::new(1_260_000.0),
             methane_fraction: Percent::new(62.0),
-            gas_supply: None,
-            purchase_of_biogas: None,
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
@@ -256,24 +244,18 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 #[test]
 fn calculate_with_n2o_emission_factor_method_pesimistic() {
     let profile = PlantProfile {
-        plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: None,
-            phosphorus: None,
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
             chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-            phosphorus: None,
         },
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Qubicmeters::new(1_260_000.0),
             methane_fraction: Percent::new(62.0),
-            gas_supply: None,
-            purchase_of_biogas: None,
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
@@ -374,24 +356,18 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
 #[test]
 fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     let profile = PlantProfile {
-        plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: None,
-            phosphorus: None,
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
             chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-            phosphorus: None,
         },
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Qubicmeters::new(1_260_000.0),
             methane_fraction: Percent::new(62.0),
-            gas_supply: None,
-            purchase_of_biogas: None,
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
@@ -492,24 +468,18 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
 #[test]
 fn calculate_with_n2o_emission_factor_method_custom_factor() {
     let profile = PlantProfile {
-        plant_name: None,
         population_equivalent: 120_000.0,
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: None,
-            phosphorus: None,
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
             chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-            phosphorus: None,
         },
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Qubicmeters::new(1_260_000.0),
             methane_fraction: Percent::new(62.0),
-            gas_supply: None,
-            purchase_of_biogas: None,
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),

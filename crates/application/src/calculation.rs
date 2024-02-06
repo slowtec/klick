@@ -11,7 +11,6 @@ use crate::Output;
 #[allow(clippy::too_many_lines)]
 pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario) -> Output {
     let PlantProfile {
-        plant_name: _,
         population_equivalent,
         wastewater,
         influent_average,
@@ -23,21 +22,16 @@ pub fn calculate_emissions(input: &PlantProfile, scenario: OptimizationScenario)
 
     let AnnualAverageInfluent {
         nitrogen: nitrogen_influent,
-        chemical_oxygen_demand: _,
-        phosphorus: _,
     } = influent_average;
 
     let AnnualAverageEffluent {
         nitrogen: nitrogen_effluent,
         chemical_oxygen_demand: chemical_oxygen_demand_effluent,
-        phosphorus: _,
     } = effluent_average;
 
     let EnergyConsumption {
         sewage_gas_produced,
         methane_fraction,
-        gas_supply: _,
-        purchase_of_biogas: _,
         total_power_consumption,
         on_site_power_generation,
         emission_factor_electricity_mix,
