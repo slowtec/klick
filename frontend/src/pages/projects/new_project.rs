@@ -27,7 +27,7 @@ pub fn NewProject(
 
     let error = RwSignal::new(None);
     let wait_for_response = RwSignal::new(false);
-    let field_id = forms::form_field_id(&field.id);
+    let field_id = forms::dom_node_id(&field.id);
 
     let (field_signal, field_view) = forms::render_field(field, field_id);
 

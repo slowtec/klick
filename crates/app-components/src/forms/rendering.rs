@@ -26,7 +26,7 @@ where
         for field in set.fields {
             let id = field.id;
             let required = field.required;
-            let field_id = crate::forms::form_field_id(&field.id);
+            let field_id = crate::forms::dom_node_id(&field.id);
 
             let (field_signal, view) = render_field(field, field_id.clone());
             field_views.push(view);
@@ -684,5 +684,39 @@ fn RadioInput(
       <div id = { field_id } class="mt-2 space-y-2">
         { options }
       </div>
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_a_german_input_string_as_f64() {
+        let result = parse_de_str_as_f64("1.100.100,23");
+        assert_eq!(result, Ok(1_100_100.23));
+    }
+    #[test]
+    fn parse_a_german_input_string_as_f64_trailing_space() {
+        let result = parse_de_str_as_f64("1.100.100,23 ");
+        assert_eq!(result, Ok(1_100_100.23));
+    }
+    #[test]
+    fn parse_a_german_input_string_as_f64_leading_space() {
+        let result = parse_de_str_as_f64(" 1.100.100,23");
+        assert_eq!(result, Ok(1_100_100.23));
+    }
+
+    #[test]
+    fn format_f64_as_german_string() {
+        assert_eq!(
+            format_f64_into_de_string(23_222_221_231.766_6),
+            "23.222.221.231,7666"
+        );
+        assert_eq!(
+            format_f64_into_de_string(23_222_221_231.0),
+            "23.222.221.231"
+        );
+        assert_eq!(format_f64_into_de_string(2.0), "2");
     }
 }

@@ -18,6 +18,7 @@ use crate::{
     api::AuthorizedApi,
     forms::{self, FieldSignal, MissingField},
     sankey::Sankey,
+    Page,
 };
 
 mod breadcrumbs;
@@ -55,6 +56,8 @@ impl PageSection {
 
 const DEFAULT_UNNAMED_PROJECT_TITLE: &str = "Unbenannt";
 
+// TODO:
+// Split this component into multiple tiny components.
 #[component]
 #[allow(clippy::too_many_lines)]
 pub fn Tool(
@@ -62,6 +65,11 @@ pub fn Tool(
     current_project: RwSignal<Option<Project>>,
 ) -> impl IntoView {
     let field_sets = field_sets();
+
+    // -----   ----- //
+    //    Signals    //
+    // -----   ----- //
+
     let (signals, set_views, required_fields) = forms::render_field_sets(field_sets.clone());
     let signals = Rc::new(signals);
     let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
@@ -85,18 +93,24 @@ pub fn Tool(
     let phosphorus_io_warning = RwSignal::new(Option::<String>::None);
     let is_logged_in = Signal::derive(move || api.get().is_some());
 
+    let custom_factor_value: RwSignal<Option<f64>> = signals
+        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
+        .and_then(FieldSignal::get_float_output_signal)
+        .unwrap();
+
+    let save_result_message = RwSignal::new(None);
+
     let s = Rc::clone(&signals);
+
+    // -----   ----- //
+    //    Effects    //
+    // -----   ----- //
 
     create_effect(move |_| {
         let (data, filtered_required_fields) = read_input_fields(&s, &required_fields);
         missing_fields.set(filtered_required_fields);
         input_data.set(data.try_into().ok());
     });
-
-    let custom_factor_value: RwSignal<Option<f64>> = signals
-        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
-        .and_then(FieldSignal::get_float_output_signal)
-        .unwrap();
 
     create_effect(move |_| {
         let Some(n) = selected_scenario.get() else {
@@ -134,135 +148,151 @@ pub fn Tool(
         load_project_fields(&s, project.into());
     });
 
+    create_effect(move |_| {
+        if let Some(s) = current_section.get() {
+            let id = s.section_id();
+            let path = Page::Tool.path();
+            let href = format!("{path}#{id}");
+            window().location().set_href(&href).unwrap();
+        }
+    });
+
     let s = Rc::clone(&signals);
 
     create_effect(move |_| {
-        let mut input_data_validation_error = false;
-        if let Some(input_data) = input_data.get() {
-            let custom_factor_value = s
-                .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
-                .and_then(FieldSignal::get_float);
-            let use_custom_factor = custom_factor_value.is_some();
-            if !use_custom_factor && selected_scenario.get() == Some(4) {
-                selected_scenario.set(Some(0));
-            }
-
-            if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
-                nitrogen_io_warning.set(Some(format!(
-                    "Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!",
-                    Lng::De.format_number(input_data.effluent_average.nitrogen),
-                    Lng::De.format_number(input_data.influent_average.nitrogen)
-                )));
-                input_data_validation_error = true;
-            } else {
-                nitrogen_io_warning.set(None);
-            }
-
-            // TODO:
-            // if let Some(chemical_oxygen_demand_influent) =
-            //     input_data.influent_average.chemical_oxygen_demand
-            // {
-            //     if input_data.effluent_average.chemical_oxygen_demand
-            //         > chemical_oxygen_demand_influent
-            //     {
-            //         chemical_oxygen_io_warning.set(Some(format!(
-            //             "Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!",
-            //             Lng::De.format_number(input_data.effluent_average.chemical_oxygen_demand),
-            //             Lng::De.format_number(chemical_oxygen_demand_influent)
-            //         )));
-            //         input_data_validation_error = true;
-            //     } else {
-            //         chemical_oxygen_io_warning.set(None);
-            //     }
-            // }
-
-            // TODO:
-            // if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
-            //     if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
-            //         if phosphorus_effluent > phosphorus_influent {
-            //             phosphorus_io_warning.set(Some(format!(
-            //                 "Ablauf Phosphor {} größer als dessen Zulauf {}!",
-            //                 Lng::De.format_number(phosphorus_effluent),
-            //                 Lng::De.format_number(phosphorus_influent),
-            //             )));
-            //             input_data_validation_error = true;
-            //         } else {
-            //             phosphorus_io_warning.set(None);
-            //         }
-            //     }
-            // }
-
-            if input_data_validation_error {
-                // prevent sankey or barchart from rendering
-                sankey_data.set(None);
-            }
-
-            let custom_factor = custom_factor_value
-                .map(|n| n / 100.0)
-                .map(domain::units::Factor::new);
-            let ch4_chp_calc_method = None;
-            let n2o_calculations = calculate_all_n2o_emission_factor_scenarios(
-                &input_data,
-                custom_factor,
-                ch4_chp_calc_method,
-            );
-
-            let szenario_calculations = if input_data_validation_error {
-                vec![]
-            } else {
-                n2o_calculations
-                    .into_iter()
-                    .map(|(method, emissions, factors)| (method.into(), (emissions, factors)))
-                    .collect()
-            };
-
-            let name_ka: String = s
-                .get(&ProfileValueId::PlantName.into())
-                .and_then(FieldSignal::get_text)
-                .unwrap_or_else(|| "Kläranlage".to_string());
-
-            let ew = s
-                .get(&ProfileValueId::PopulationEquivalent.into())
-                .and_then(FieldSignal::get_float)
-                .unwrap_or_default();
-
-            let einheit = "t CO₂ Äquivalente/Jahr";
-
-            if let Some(i) = selected_scenario.get() {
-                if let Some((method, output_data)) = szenario_calculations.get(i as usize) {
-                    let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
-                    selected_scenario_name.set(szenario_name.to_string().clone());
-                    let ef = Lng::De
-                        .format_number_with_precision(f64::from(output_data.1.n2o) * 100.0, 2);
-                    let title = format!(
-                        "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
-                    );
-                    sankey_header.set(title);
-                    sankey_data.set(Some(output_data.clone()));
-                }
-            }
-
-            barchart_arguments.set(
-                szenario_calculations
-                    .iter()
-                    .map(|(szenario, (co2_equivalents, emission_factors))| {
-                        klick_app_charts::BarChartArguments {
-                            label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
-                            co2_data: co2_equivalents.emissions.into(),
-                            n2o_factor: f64::from(emission_factors.n2o),
-                        }
-                    })
-                    .collect(),
-            );
-        } else {
-            sankey_header.set(String::new());
+        let Some(input_data) = input_data.get() else {
+            sankey_header.update(String::clear);
             barchart_arguments.update(Vec::clear);
             sankey_data.set(None);
             nitrogen_io_warning.set(None);
             chemical_oxygen_io_warning.set(None);
             phosphorus_io_warning.set(None);
+            return;
+        };
+
+        let custom_factor_value = s
+            .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
+            .and_then(FieldSignal::get_float);
+
+        let use_custom_factor = custom_factor_value.is_some();
+        if !use_custom_factor && selected_scenario.get() == Some(4) {
+            selected_scenario.set(Some(0));
         }
+
+        let mut input_data_validation_error = false;
+
+        if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
+            nitrogen_io_warning.set(Some(format!(
+                "Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!",
+                Lng::De.format_number(input_data.effluent_average.nitrogen),
+                Lng::De.format_number(input_data.influent_average.nitrogen)
+            )));
+            input_data_validation_error = true;
+        } else {
+            nitrogen_io_warning.set(None);
+        }
+
+        // TODO:
+        // if let Some(chemical_oxygen_demand_influent) =
+        //     input_data.influent_average.chemical_oxygen_demand
+        // {
+        //     if input_data.effluent_average.chemical_oxygen_demand
+        //         > chemical_oxygen_demand_influent
+        //     {
+        //         chemical_oxygen_io_warning.set(Some(format!(
+        //             "Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!",
+        //             Lng::De.format_number(input_data.effluent_average.chemical_oxygen_demand),
+        //             Lng::De.format_number(chemical_oxygen_demand_influent)
+        //         )));
+        //         input_data_validation_error = true;
+        //     } else {
+        //         chemical_oxygen_io_warning.set(None);
+        //     }
+        // }
+
+        // TODO:
+        // if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
+        //     if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
+        //         if phosphorus_effluent > phosphorus_influent {
+        //             phosphorus_io_warning.set(Some(format!(
+        //                 "Ablauf Phosphor {} größer als dessen Zulauf {}!",
+        //                 Lng::De.format_number(phosphorus_effluent),
+        //                 Lng::De.format_number(phosphorus_influent),
+        //             )));
+        //             input_data_validation_error = true;
+        //         } else {
+        //             phosphorus_io_warning.set(None);
+        //         }
+        //     }
+        // }
+
+        if input_data_validation_error {
+            // prevent sankey or barchart from rendering
+            sankey_data.set(None);
+        }
+
+        let custom_factor = custom_factor_value
+            .map(|n| n / 100.0)
+            .map(domain::units::Factor::new);
+        let ch4_chp_calc_method = None;
+        let n2o_calculations = calculate_all_n2o_emission_factor_scenarios(
+            &input_data,
+            custom_factor,
+            ch4_chp_calc_method,
+        );
+
+        let szenario_calculations = if input_data_validation_error {
+            vec![]
+        } else {
+            n2o_calculations
+                .into_iter()
+                .map(|(method, emissions, factors)| (method.into(), (emissions, factors)))
+                .collect()
+        };
+
+        let name_ka: String = s
+            .get(&ProfileValueId::PlantName.into())
+            .and_then(FieldSignal::get_text)
+            .unwrap_or_else(|| "Kläranlage".to_string());
+
+        let ew = s
+            .get(&ProfileValueId::PopulationEquivalent.into())
+            .and_then(FieldSignal::get_float)
+            .unwrap_or_default();
+
+        let einheit = "t CO₂ Äquivalente/Jahr";
+
+        if let Some(i) = selected_scenario.get() {
+            if let Some((method, output_data)) = szenario_calculations.get(i as usize) {
+                let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
+                selected_scenario_name.set(szenario_name.to_string().clone());
+                let ef =
+                    Lng::De.format_number_with_precision(f64::from(output_data.1.n2o) * 100.0, 2);
+                let title = format!(
+                    "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
+                );
+                sankey_header.set(title);
+                sankey_data.set(Some(output_data.clone()));
+            }
+        }
+
+        barchart_arguments.set(
+            szenario_calculations
+                .iter()
+                .map(|(szenario, (co2_equivalents, emission_factors))| {
+                    klick_app_charts::BarChartArguments {
+                        label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
+                        co2_data: co2_equivalents.emissions.into(),
+                        n2o_factor: f64::from(emission_factors.n2o),
+                    }
+                })
+                .collect(),
+        );
     });
+
+    // -----   ----- //
+    //    Actions    //
+    // -----   ----- //
 
     let upload_action = create_action({
         let signals = Rc::clone(&signals);
@@ -288,40 +318,6 @@ pub fn Tool(
             }
         }
     });
-
-    let clear_signals = {
-        let signals = Rc::clone(&signals);
-        move |_| {
-            for s in signals.values() {
-                s.clear();
-            }
-            current_project.set(None);
-        }
-    };
-
-    let load_example_values = {
-        let signals = Rc::clone(&signals);
-        move |_| {
-            current_project.set(None);
-            example_data::load_example_field_signal_values(&signals);
-        }
-    };
-
-    let download = {
-        let signals = Rc::clone(&signals);
-        move |_| {
-            let project_data = fields::read_all_project_fields(&signals);
-            let project = project_data.into();
-            let data = Data { project };
-            let json_bytes = export_to_vec_pretty(&data);
-
-            let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
-
-            ObjectUrl::from(blob)
-        }
-    };
-
-    let save_result_message = RwSignal::new(None);
 
     let load_action = create_action({
         let api = api.clone();
@@ -390,6 +386,42 @@ pub fn Tool(
         }
     });
 
+    // -----   ----- //
+    //   Callbacks   //
+    // -----   ----- //
+
+    let clear_signals = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            for s in signals.values() {
+                s.clear();
+            }
+            current_project.set(None);
+        }
+    };
+
+    let load_example_values = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            current_project.set(None);
+            example_data::load_example_field_signal_values(&signals);
+        }
+    };
+
+    let download = {
+        let signals = Rc::clone(&signals);
+        move |_| {
+            let project_data = fields::read_all_project_fields(&signals);
+            let project = project_data.into();
+            let data = Data { project };
+            let json_bytes = export_to_vec_pretty(&data);
+
+            let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
+
+            ObjectUrl::from(blob)
+        }
+    };
+
     let save_project = {
         let signals = Rc::clone(&signals);
         move |_| {
@@ -415,16 +447,6 @@ pub fn Tool(
             save_action.dispatch(project);
         }
     };
-
-    create_effect(move |_| {
-        if let Some(s) = current_section.get() {
-            let id = s.section_id();
-            window()
-                .location()
-                .set_href(&format!("{}#{id}", crate::Page::Tool.path()))
-                .unwrap();
-        }
-    });
 
     let breadcrumps_entries = vec![
         ("Datenerfassung", PageSection::DataCollection),
@@ -613,6 +635,7 @@ pub fn Tool(
     }
 }
 
+// TODO: move to presenter layer
 const fn label_of_n2o_emission_factor_calc_method(
     method: &N2oEmissionFactorCalcMethod,
 ) -> &'static str {
