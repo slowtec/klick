@@ -7,8 +7,8 @@ use klick_app_charts::BarChart;
 use klick_app_components::message::{ErrorMessage, SuccessMessage};
 use klick_application::usecases::calculate_all_n2o_emission_factor_scenarios;
 use klick_boundary::{
-    export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
-    SavedProject,
+    self as boundary, export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod,
+    Project, ProjectId, SavedProject,
 };
 use klick_domain as domain;
 use klick_presenter::Lng;
@@ -27,7 +27,9 @@ mod field_sets;
 mod fields;
 mod input_data_list;
 mod optimization_options;
+mod plant_profile_input_form;
 mod project_menu;
+mod project_name_input_form;
 
 use self::{
     breadcrumbs::Breadcrumbs,
@@ -35,7 +37,9 @@ use self::{
     fields::{load_project_fields, read_input_fields, FieldId, ScenarioFieldId},
     input_data_list::InputDataList,
     optimization_options::OptimizationOptions,
+    plant_profile_input_form::PlantProfileInputForm,
     project_menu::ProjectMenu,
+    project_name_input_form::ProjectNameInputForm,
 };
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -99,6 +103,11 @@ pub fn Tool(
         .unwrap();
 
     let save_result_message = RwSignal::new(None);
+
+    let plant_profile = RwSignal::<boundary::PlantProfile>::new(Default::default());
+    let missing_plant_profile_fields =
+        RwSignal::<Vec<MissingField<ProfileValueId>>>::new(Vec::new());
+    let project_name = RwSignal::<Option<String>>::new(None);
 
     let s = Rc::clone(&signals);
 
@@ -191,40 +200,6 @@ pub fn Tool(
         } else {
             nitrogen_io_warning.set(None);
         }
-
-        // TODO:
-        // if let Some(chemical_oxygen_demand_influent) =
-        //     input_data.influent_average.chemical_oxygen_demand
-        // {
-        //     if input_data.effluent_average.chemical_oxygen_demand
-        //         > chemical_oxygen_demand_influent
-        //     {
-        //         chemical_oxygen_io_warning.set(Some(format!(
-        //             "Ablauf Chemischer Sauerstoffbedarf {} größer als dessen Zulauf {}!",
-        //             Lng::De.format_number(input_data.effluent_average.chemical_oxygen_demand),
-        //             Lng::De.format_number(chemical_oxygen_demand_influent)
-        //         )));
-        //         input_data_validation_error = true;
-        //     } else {
-        //         chemical_oxygen_io_warning.set(None);
-        //     }
-        // }
-
-        // TODO:
-        // if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
-        //     if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
-        //         if phosphorus_effluent > phosphorus_influent {
-        //             phosphorus_io_warning.set(Some(format!(
-        //                 "Ablauf Phosphor {} größer als dessen Zulauf {}!",
-        //                 Lng::De.format_number(phosphorus_effluent),
-        //                 Lng::De.format_number(phosphorus_influent),
-        //             )));
-        //             input_data_validation_error = true;
-        //         } else {
-        //             phosphorus_io_warning.set(None);
-        //         }
-        //     }
-        // }
 
         if input_data_validation_error {
             // prevent sankey or barchart from rendering
@@ -494,9 +469,23 @@ pub fn Tool(
             }.into_view())
         }
         <Show when= move || current_section.get() == Some(PageSection::DataCollection)>
-        <div id = PageSection::DataCollection.section_id()>
-          { set_views.clone() } // input fields for data collection
-        </div>
+          <div
+            id = PageSection::DataCollection.section_id()
+            class = move || {
+              if current_section.get() == Some(PageSection::DataCollection) || current_section.get() == None {
+                  None
+              } else {
+                  Some("hidden")
+              }
+            }
+          >
+          <ProjectNameInputForm project_name />
+          <PlantProfileInputForm
+            plant_profile
+            missing_fields = missing_plant_profile_fields
+          />
+           { set_views.clone() }
+          </div>
         </Show>
         // FIXME this belongs to the data collection section
         <Show when= move || current_section.get() == Some(PageSection::OptimizationOptions) && !barchart_arguments.get().is_empty()>
