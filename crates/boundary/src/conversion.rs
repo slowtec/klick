@@ -64,23 +64,29 @@ impl TryFrom<N2oEmissionFactorScenario> for domain::N2oEmissionFactorCalcMethod 
 
 impl From<domain::N2oEmissionFactorCalcMethod> for N2oEmissionFactorScenario {
     fn from(from: domain::N2oEmissionFactorCalcMethod) -> Self {
-        use domain::N2oEmissionFactorCalcMethod as D;
-        use N2oEmissionFactorCalcMethod as M;
-
-        let calculation_method = match from {
-            D::TuWien2016 => M::TuWien2016,
-            D::Optimistic => M::Optimistic,
-            D::Pesimistic => M::Pesimistic,
-            D::Ipcc2019 => M::Ipcc2019,
-            D::Custom(_) => M::CustomFactor,
-        };
+        let calculation_method = from.into();
         let custom_factor = match from {
-            D::Custom(f) => Some(f.into()),
+            domain::N2oEmissionFactorCalcMethod::Custom(f) => Some(f.into()),
             _ => None,
         };
         Self {
             calculation_method,
             custom_factor,
+        }
+    }
+}
+
+impl From<domain::N2oEmissionFactorCalcMethod> for N2oEmissionFactorCalcMethod {
+    fn from(from: domain::N2oEmissionFactorCalcMethod) -> Self {
+        use domain::N2oEmissionFactorCalcMethod as D;
+        use N2oEmissionFactorCalcMethod as M;
+
+        match from {
+            D::TuWien2016 => M::TuWien2016,
+            D::Optimistic => M::Optimistic,
+            D::Pesimistic => M::Pesimistic,
+            D::Ipcc2019 => M::Ipcc2019,
+            D::Custom(_) => M::CustomFactor,
         }
     }
 }

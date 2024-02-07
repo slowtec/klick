@@ -801,6 +801,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-application"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "klick-domain",
+ "log",
+ "thiserror",
+ "time",
+]
+
+[[package]]
 name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
@@ -811,7 +822,6 @@ dependencies = [
  "klick-domain",
  "serde",
  "serde_json",
- "strum",
  "thiserror",
  "time",
  "uuid",
@@ -844,6 +854,7 @@ dependencies = [
  "klick-app-api",
  "klick-app-charts",
  "klick-app-components",
+ "klick-application",
  "klick-boundary",
  "klick-domain",
  "klick-presenter",

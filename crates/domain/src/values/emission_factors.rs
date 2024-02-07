@@ -9,6 +9,7 @@ pub struct EmissionFactors {
 #[derive(Debug, Clone, Copy)]
 pub struct EmissionFactorCalculationMethods {
     pub n2o: N2oEmissionFactorCalcMethod,
+    // TODO: rename to ch3_chp
     pub ch4: Option<CH4ChpEmissionFactorCalcMethod>,
 }
 

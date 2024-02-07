@@ -2,10 +2,10 @@ use std::rc::Rc;
 
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
-use strum::IntoEnumIterator;
 
 use klick_app_charts::BarChart;
 use klick_app_components::message::{ErrorMessage, SuccessMessage};
+use klick_application::usecases::calculate_all_n2o_emission_factor_scenarios;
 use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
     SavedProject,
@@ -192,61 +192,55 @@ pub fn Tool(
             //     }
             // }
 
-            //log::debug!("Calculating with {input_data:#?}");
-            let szenario_calculations = N2oEmissionFactorCalcMethod::iter()
-                .enumerate()
-                .filter_map(|(i, method)| {
-                    if input_data_validation_error {
-                        // prevent sankey or barchart from rendering
-                        sankey_data.set(None);
-                        return None
-                    }
-                    let n2o_emission_factor = match method {
-                        N2oEmissionFactorCalcMethod::CustomFactor => {
-                            domain::N2oEmissionFactorCalcMethod::Custom(domain::units::Factor::new(custom_factor_value.unwrap_or_default() / 100.0))
-                        }
-                        N2oEmissionFactorCalcMethod::TuWien2016 => domain::N2oEmissionFactorCalcMethod::TuWien2016,
-                        N2oEmissionFactorCalcMethod::Optimistic => domain::N2oEmissionFactorCalcMethod::Optimistic,
-                        N2oEmissionFactorCalcMethod::Pesimistic => domain::N2oEmissionFactorCalcMethod::Pesimistic,
-                        N2oEmissionFactorCalcMethod::Ipcc2019 => domain::N2oEmissionFactorCalcMethod::Ipcc2019,
-                    };
+            if input_data_validation_error {
+                // prevent sankey or barchart from rendering
+                sankey_data.set(None);
+            }
 
-                    let scenario = domain::EmissionFactorCalculationMethods {
-                      n2o: n2o_emission_factor,
-                      ch4: None,
-                    };
+            let custom_factor = custom_factor_value
+                .map(|n| n / 100.0)
+                .map(domain::units::Factor::new);
+            let ch4_chp_calc_method = None;
+            let n2o_calculations = calculate_all_n2o_emission_factor_scenarios(
+                &input_data,
+                custom_factor,
+                ch4_chp_calc_method,
+            );
 
-                    let output_data = domain::calculate_emissions(&input_data, scenario);
+            let szenario_calculations = if input_data_validation_error {
+                vec![]
+            } else {
+                n2o_calculations
+                    .into_iter()
+                    .map(|(method, emissions, factors)| (method.into(), (emissions, factors)))
+                    .collect()
+            };
 
-                    if selected_scenario.get() == Some(i as u64) {
-                        let name_ka: String = s
-                            .get(&ProfileValueId::PlantName.into())
-                            .and_then(FieldSignal::get_text)
-                            .unwrap_or_else(|| "Kläranlage".to_string());
+            let name_ka: String = s
+                .get(&ProfileValueId::PlantName.into())
+                .and_then(FieldSignal::get_text)
+                .unwrap_or_else(|| "Kläranlage".to_string());
 
-                        let ew = s
-                            .get(&ProfileValueId::PopulationEquivalent.into())
-                            .and_then(FieldSignal::get_float)
-                            .unwrap_or_default();
+            let ew = s
+                .get(&ProfileValueId::PopulationEquivalent.into())
+                .and_then(FieldSignal::get_float)
+                .unwrap_or_default();
 
-                        let einheit = "t CO₂ Äquivalente/Jahr";
-                        let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
-                        selected_scenario_name.set(szenario_name.to_string().clone());
-                        let ef = Lng::De.format_number_with_precision(f64::from(output_data.1.n2o) * 100.0, 2);
-                        let title = format!(
-                            "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
-                        );
-                        sankey_header.set(title);
-                        sankey_data.set(Some(output_data.clone()));
-                    }
-                    if matches!(method, N2oEmissionFactorCalcMethod::CustomFactor) && !use_custom_factor
-                    {
-                        None
-                    } else {
-                        Some((method, output_data))
-                    }
-                })
-                .collect::<Vec<_>>();
+            let einheit = "t CO₂ Äquivalente/Jahr";
+
+            if let Some(i) = selected_scenario.get() {
+                if let Some((method, output_data)) = szenario_calculations.get(i as usize) {
+                    let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
+                    selected_scenario_name.set(szenario_name.to_string().clone());
+                    let ef = Lng::De
+                        .format_number_with_precision(f64::from(output_data.1.n2o) * 100.0, 2);
+                    let title = format!(
+                        "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
+                    );
+                    sankey_header.set(title);
+                    sankey_data.set(Some(output_data.clone()));
+                }
+            }
 
             barchart_arguments.set(
                 szenario_calculations

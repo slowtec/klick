@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use strum::EnumIter;
 
 pub use crate::v3::{
     AnnualAverage, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
@@ -26,7 +25,7 @@ pub struct N2oEmissionFactorScenario {
     pub custom_factor: Option<f64>,
 }
 
-#[derive(EnumIter, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq, Eq))]
 pub enum N2oEmissionFactorCalcMethod {
