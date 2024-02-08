@@ -84,7 +84,7 @@ pub fn Tool(
     let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
 
-    let current_section = RwSignal::new(Option::<PageSection>::None);
+    let current_section = RwSignal::new(Option::<PageSection>::Some(PageSection::DataCollection));
     let n2o_emission_factor_method =
         RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
 
@@ -493,34 +493,22 @@ pub fn Tool(
               </p>
             }.into_view())
         }
-        <div
-          id = PageSection::DataCollection.section_id()
-          class = move || {
-            if current_section.get() == Some(PageSection::DataCollection) || current_section.get() == None {
-                None
-            } else {
-                Some("hidden")
-            }
-          }
-        >
-         { set_views }
+        <Show when= move || current_section.get() == Some(PageSection::DataCollection)>
+        <div id = PageSection::DataCollection.section_id()>
+          { set_views.clone() } // input fields for data collection
         </div>
-        <div
-          class = move || {
-            if current_section.get() == Some(PageSection::DataCollection) {
-                Some("hidden")
-            } else {
-                None
-            }
-          }
-        >
+        </Show>
+        // FIXME this belongs to the data collection section
+        <Show when= move || current_section.get() == Some(PageSection::OptimizationOptions) && !barchart_arguments.get().is_empty()>
+        <div>
           <InputDataList
             field_sets = { &field_sets }
             signals = { &signals }
           />
         </div>
+        </Show>
       </div>
-
+      <Show when= move || current_section.get() == Some(PageSection::DataCollection)>
       { move ||
           if barchart_arguments.get().is_empty() {
               Some(view! {
@@ -595,17 +583,32 @@ pub fn Tool(
         { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
       </Show>
 
-      <Show
-        when = move || current_section.get() == Some(PageSection::OptimizationOptions)
-        fallback = move || view! {
-          <button
+      <Show when = move || !barchart_arguments.get().is_empty()>
+        <button
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
             on:click = move |_| current_section.set(Some(PageSection::OptimizationOptions))
           >
              "zu den Handlungsempfehlungen"
-          </button>
-        }
-      >
+        </button>
+      </Show>
+        </Show>
+
+      <Show when = move || current_section.get() == Some(PageSection::OptimizationOptions)>
+        <Show when = move || barchart_arguments.get().is_empty()>
+        <div class="my-8 border-b border-gray-200 pb-5" >
+            <p>
+                "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
+            </p>
+        </div>
+        <button
+            class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
+            on:click = move |_| current_section.set(Some(PageSection::DataCollection))
+          >
+             "zu der Dateneingabe"
+        </button>
+        </Show>
+
+        <Show when = move || !barchart_arguments.get().is_empty()>
         <div class="my-8 border-b border-gray-200 pb-5" >
           <h3 class="text-xl font-semibold leading-6 text-gray-900">
             "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
@@ -631,6 +634,18 @@ pub fn Tool(
           input_data = input_data.into()
           n2o_emission_factor_method = n2o_emission_factor_method.into()
         />
+        // FIXME sankey - final diagram
+        <h4 class="my-8 text-lg font-bold">
+          { move || sankey_header.get().to_string() }
+        </h4>
+        { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
+
+        // FIXME barchart-diff - final diagram
+        // <div class="mx-auto p-8" style="background:#00000077">
+        //     <h1>"Line chart example"</h1>
+        //     <BarChartGroup chart=chart />
+        // </div>
+        </Show>
       </Show>
     }
 }
