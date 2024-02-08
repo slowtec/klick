@@ -19,7 +19,11 @@ const utbw = {
 };
 
 module.exports = {
-  content: ['./src/**/*.rs', './content/**/*.md'],
+  content: [
+     './src/**/*.rs',
+     '../crates/app-components/src/**/*.rs',
+     './content/**/*.md'
+  ],
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography')
