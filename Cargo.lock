@@ -257,6 +257,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "barchart-example"
+version = "0.0.0"
+dependencies = [
+ "console_error_panic_hook",
+ "console_log",
+ "klick-app-charts",
+ "leptos",
+ "log",
+]
+
+[[package]]
 name = "base64"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

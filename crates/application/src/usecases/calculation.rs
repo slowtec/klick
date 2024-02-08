@@ -14,25 +14,25 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
     // TuWien2016
     let n2o = N2oEmissionFactorCalcMethod::TuWien2016;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let (emissions, factors) = calculate_emissions(values, methods);
+    let (emissions, factors, _) = calculate_emissions(values, methods);
     let tuwien2016_result = (n2o, emissions, factors);
 
     // Optimistic
     let n2o = N2oEmissionFactorCalcMethod::Optimistic;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let (emissions, factors) = calculate_emissions(values, methods);
+    let (emissions, factors, _) = calculate_emissions(values, methods);
     let optimistc_result = (n2o, emissions, factors);
 
     // Pesimistic
     let n2o = N2oEmissionFactorCalcMethod::Pesimistic;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let (emissions, factors) = calculate_emissions(values, methods);
+    let (emissions, factors, _) = calculate_emissions(values, methods);
     let pesimistic_result = (n2o, emissions, factors);
 
     // Ipcc2019
     let n2o = N2oEmissionFactorCalcMethod::Ipcc2019;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let (emissions, factors) = calculate_emissions(values, methods);
+    let (emissions, factors, _) = calculate_emissions(values, methods);
     let ipcc2019_result = (n2o, emissions, factors);
 
     let mut results = vec![
@@ -49,7 +49,7 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
 
     let n2o = N2oEmissionFactorCalcMethod::Custom(factor);
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let (emissions, factors) = calculate_emissions(values, methods);
+    let (emissions, factors, _) = calculate_emissions(values, methods);
     let custom_result = (n2o, emissions, factors);
     results.push(custom_result);
 

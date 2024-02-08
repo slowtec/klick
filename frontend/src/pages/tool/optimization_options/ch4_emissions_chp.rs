@@ -22,8 +22,14 @@ enum Id {
 use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
 
 pub fn options(
-    input_data: Signal<Option<domain::EmissionInfluencingValues>>,
-    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
+    output: ReadSignal<
+        Option<(
+            domain::CO2Equivalents,
+            domain::EmissionFactors,
+            domain::EmissionFactorCalculationMethods,
+        )>,
+    >,
+    ch4_chp_emission_factor: RwSignal<Option<domain::CH4ChpEmissionFactorCalcMethod>>,
 ) -> impl IntoView {
     let field_set = field_set();
 
@@ -39,51 +45,25 @@ pub fn options(
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
-    let output = RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
-
     create_effect(move |_| {
-        log::debug!("Calculate with CH₄ CHP emission factor");
-        let Some(input_data) = input_data.get() else {
-            log::debug!("No input data");
-            output.set(None);
-            return;
-        };
-
         let Some(sel) = selection.get() else {
-            log::debug!("No calculation method selected");
-            output.set(None);
+            log::debug!("ch4_emissions_chp: No calculation method selected");
             return;
         };
-
-        let ch4_chp_emission_factor = match sel {
-            1 => domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines,
-            2 => domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine,
-            3 => domain::CH4ChpEmissionFactorCalcMethod::JetEngine,
-            4 => {
-                let Some(f) = custom_factor.get() else {
-                    log::warn!("No custom factor defined");
-                    output.set(None);
-                    return;
-                };
-                domain::CH4ChpEmissionFactorCalcMethod::Custom(domain::units::Factor::new(
-                    f / 100.0,
-                ))
-            }
-            _ => {
-                output.set(None);
-                return;
-            }
+        let ch4_chp_emission_factor_sel = match sel {
+            1 => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
+            2 => Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine),
+            3 => Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine),
+            4 => match custom_factor.get() {
+                Some(f) => Some(domain::CH4ChpEmissionFactorCalcMethod::Custom(
+                    domain::units::Factor::new(f / 100.0),
+                )),
+                None => None,
+            },
+            _ => None,
         };
-
-        log::debug!("Calculate with CH₄ CHP emission factor {ch4_chp_emission_factor:?}");
-        let scenario = domain::EmissionFactorCalculationMethods {
-            n2o: n2o_emission_factor_method
-                .get()
-                .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
-            ch4: Some(ch4_chp_emission_factor),
-        };
-        let output_data = domain::calculate_emissions(&input_data, scenario);
-        output.set(Some(output_data));
+        //log::debug!("ch4_emissions_chp: Calculate with CH₄ CHP emission factor {ch4_chp_emission_factor_sel:?}");
+        ch4_chp_emission_factor.set(ch4_chp_emission_factor_sel);
     });
 
     view! {
@@ -121,7 +101,7 @@ pub fn options(
           </Cite>
         </InfoBox>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-          <ScenarioHint output = output.into() n2o_emission_factor_method />
+          <ScenarioHint output = output.into() />
           { move || {
               output.get().map(|out|
                 view! {

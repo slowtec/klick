@@ -3,7 +3,7 @@ use std::rc::Rc;
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 
-use klick_app_charts::BarChart;
+use klick_app_charts::{BarChart, BarChartRadioInput};
 use klick_app_components::message::{ErrorMessage, SuccessMessage};
 use klick_application::usecases::calculate_all_n2o_emission_factor_scenarios;
 use klick_boundary::{
@@ -81,8 +81,9 @@ pub fn Tool(
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
     let selected_scenario_name = RwSignal::new(String::new());
-    let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
-        RwSignal::new(vec![]);
+    let barchart_arguments_radio_inputs: RwSignal<
+        Vec<klick_app_charts::BarChartRadioInputArguments>,
+    > = RwSignal::new(vec![]);
 
     let current_section = RwSignal::new(Option::<PageSection>::Some(PageSection::DataCollection));
     let n2o_emission_factor_method =
@@ -99,6 +100,23 @@ pub fn Tool(
         .unwrap();
 
     let save_result_message = RwSignal::new(None);
+    let show_handlungsempfehlungen: RwSignal<bool> = RwSignal::new(false);
+    let output_final = RwSignal::new(
+        Option::<(
+            domain::CO2Equivalents,
+            domain::EmissionFactors,
+            domain::EmissionFactorCalculationMethods,
+        )>::None,
+    );
+    let sankey_data_final =
+        RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
+    let sankey_header_final = RwSignal::new(String::new());
+    let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
+        RwSignal::new(vec![]);
+    let ch4_chp_emission_factor: RwSignal<Option<domain::CH4ChpEmissionFactorCalcMethod>> =
+        RwSignal::new(None);
+    let sludge_bags_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
+    let sludge_storage_containers_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
 
     let s = Rc::clone(&signals);
 
@@ -162,7 +180,8 @@ pub fn Tool(
     create_effect(move |_| {
         let Some(input_data) = input_data.get() else {
             sankey_header.update(String::clear);
-            barchart_arguments.update(Vec::clear);
+            show_handlungsempfehlungen.set(false);
+            barchart_arguments_radio_inputs.update(Vec::clear);
             sankey_data.set(None);
             nitrogen_io_warning.set(None);
             chemical_oxygen_io_warning.set(None);
@@ -276,11 +295,11 @@ pub fn Tool(
             }
         }
 
-        barchart_arguments.set(
+        barchart_arguments_radio_inputs.set(
             szenario_calculations
                 .iter()
                 .map(|(szenario, (co2_equivalents, emission_factors))| {
-                    klick_app_charts::BarChartArguments {
+                    klick_app_charts::BarChartRadioInputArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
                         co2_data: co2_equivalents.emissions.into(),
                         n2o_factor: f64::from(emission_factors.n2o),
@@ -288,6 +307,90 @@ pub fn Tool(
                 })
                 .collect(),
         );
+        if !input_data_validation_error
+            && n2o_emission_factor_method.get().is_some()
+            && selected_scenario.get().is_some()
+        {
+            log::info!("computing final output data");
+            let scenario = domain::EmissionFactorCalculationMethods {
+                n2o: n2o_emission_factor_method
+                    .get()
+                    .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
+                ch4: ch4_chp_emission_factor.get(),
+            };
+            let mut input_data = input_data.clone();
+            input_data.sewage_sludge_treatment.sludge_bags_are_open =
+                sludge_bags_are_open.get().unwrap_or(true);
+            input_data
+                .sewage_sludge_treatment
+                .sludge_storage_containers_are_open =
+                sludge_storage_containers_are_open.get().unwrap_or(true);
+            let output: (
+                domain::CO2Equivalents,
+                domain::EmissionFactors,
+                domain::EmissionFactorCalculationMethods,
+            ) = domain::calculate_emissions(&input_data, scenario);
+            output_final.set(Some(output.clone()));
+            sankey_data_final.set(Some((output.clone().0, output.clone().1)));
+            sankey_header_final.set(format!(
+                "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}",
+                name_ka = name_ka,
+                ew = Lng::De.format_number(ew),
+                einheit = einheit,
+                szenario_name = selected_scenario_name.get()
+            ));
+
+            let ss = selected_scenario.get().unwrap_or(0);
+            let old = szenario_calculations[ss as usize].clone().1 .0;
+            let new = output.0; // FIXME hack
+
+            let final_emissions = f64::from(new.emissions)
+                - f64::from(old.emissions)
+                - f64::from(new.excess_energy_co2_equivalent);
+
+            let comp = vec![
+                klick_app_charts::BarChartArguments {
+                    label: "CH₄ Schlupf Schlammtasche",
+                    value: f64::from(new.ch4_sludge_bags) - f64::from(old.ch4_sludge_bags),
+                },
+                klick_app_charts::BarChartArguments {
+                    label: "CH₄ Schlupf Schlammstapel",
+                    value: f64::from(new.ch4_sludge_storage_containers)
+                        - f64::from(old.ch4_sludge_storage_containers),
+                },
+                klick_app_charts::BarChartArguments {
+                    label: "CH₄ BHKW",
+                    value: f64::from(new.ch4_combined_heat_and_power_plant)
+                        - f64::from(old.ch4_combined_heat_and_power_plant),
+                },
+                klick_app_charts::BarChartArguments {
+                    label: "Strombedarf",
+                    value: -1.0 * f64::from(new.excess_energy_co2_equivalent),
+                },
+                klick_app_charts::BarChartArguments {
+                    label: "Emissionen",
+                    value: final_emissions,
+                },
+            ];
+            barchart_arguments.set(
+                comp.into_iter()
+                    .filter_map(|x| {
+                        if f64::abs(x.value) > 0.1 {
+                            Some(x)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect(),
+            );
+            show_handlungsempfehlungen.set(true);
+        } else {
+            log::info!("NOT computing final output data, input incomplete");
+            output_final.set(None);
+            sankey_header_final.set(String::new());
+            sankey_data_final.set(None);
+            barchart_arguments.set(vec![]);
+        }
     });
 
     // -----   ----- //
@@ -498,8 +601,7 @@ pub fn Tool(
           { set_views.clone() } // input fields for data collection
         </div>
         </Show>
-        // FIXME this belongs to the data collection section
-        <Show when= move || current_section.get() == Some(PageSection::OptimizationOptions) && !barchart_arguments.get().is_empty()>
+        <Show when= move || current_section.get() == Some(PageSection::OptimizationOptions) && show_handlungsempfehlungen.get()>
         <div>
           <InputDataList
             field_sets = { &field_sets }
@@ -510,7 +612,7 @@ pub fn Tool(
       </div>
       <Show when= move || current_section.get() == Some(PageSection::DataCollection)>
       { move ||
-          if barchart_arguments.get().is_empty() {
+          if !show_handlungsempfehlungen.get() {
               Some(view! {
                 <div class="mt-5">
                   <p>"Bitte ergänzen Sie folgende Werte, damit die Gesamtemissionen Ihrer Kläranlage, anhand verschiedener Szenarien, berechnet werden können:"</p>
@@ -554,20 +656,19 @@ pub fn Tool(
       </h3>
 
       <Show
-        when = move || !barchart_arguments.get().is_empty()
+        when = move || current_section.get() == Some(PageSection::OptimizationOptions)
         fallback = || view! {
           <p>
             "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
           </p>
         }
       >
-        // bar diagram
         <h4 class="my-8 text-lg font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"</h4>
         <div class="">
-          <BarChart
+          <BarChartRadioInput
             width = 1200.0
             height = 400.0
-            data  = barchart_arguments.get()
+            data  = barchart_arguments_radio_inputs.get()
             selected_bar = selected_scenario
           />
         </div>
@@ -583,7 +684,7 @@ pub fn Tool(
         { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
       </Show>
 
-      <Show when = move || !barchart_arguments.get().is_empty()>
+      <Show when = move || show_handlungsempfehlungen.get()>
         <button
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
             on:click = move |_| current_section.set(Some(PageSection::OptimizationOptions))
@@ -591,10 +692,18 @@ pub fn Tool(
              "zu den Handlungsempfehlungen"
         </button>
       </Show>
-        </Show>
+      </Show>
 
-      <Show when = move || current_section.get() == Some(PageSection::OptimizationOptions)>
-        <Show when = move || barchart_arguments.get().is_empty()>
+      <div
+        class = move || {
+          if current_section.get() == Some(PageSection::OptimizationOptions) {
+              None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
+        <Show when = move || !show_handlungsempfehlungen.get()>
         <div class="my-8 border-b border-gray-200 pb-5" >
             <p>
                 "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
@@ -608,7 +717,16 @@ pub fn Tool(
         </button>
         </Show>
 
-        <Show when = move || !barchart_arguments.get().is_empty()>
+
+        <div
+          class = move || {
+            if current_section.get() == Some(PageSection::OptimizationOptions) && show_handlungsempfehlungen.get() {
+                None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
         <div class="my-8 border-b border-gray-200 pb-5" >
           <h3 class="text-xl font-semibold leading-6 text-gray-900">
             "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
@@ -630,23 +748,63 @@ pub fn Tool(
             neu berechnen lassen/verbessern."
           </p>
         </div>
-        <OptimizationOptions
-          input_data = input_data.into()
-          n2o_emission_factor_method = n2o_emission_factor_method.into()
-        />
-        // FIXME sankey - final diagram
-        <h4 class="my-8 text-lg font-bold">
-          { move || sankey_header.get().to_string() }
-        </h4>
-        { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
-
-        // FIXME barchart-diff - final diagram
-        // <div class="mx-auto p-8" style="background:#00000077">
-        //     <h1>"Line chart example"</h1>
-        //     <BarChartGroup chart=chart />
-        // </div>
-        </Show>
-      </Show>
+        <div>
+          { move || {
+              view! {
+                <OptimizationOptions
+                  output = output_final.read_only()
+                  ch4_chp_emission_factor = ch4_chp_emission_factor
+                  sludge_bags_are_open = sludge_bags_are_open
+                  sludge_storage_containers_are_open = sludge_storage_containers_are_open
+                />
+              }
+            }
+          }
+          </div>
+          <div
+            class = move || {
+              if sankey_data_final.get().is_some() {
+                  None
+              } else {
+                  Some("hidden")
+              }
+            }
+          >
+            <div>
+              <h4 class="my-8 text-lg font-bold">
+                { move || sankey_header_final.get().to_string() }
+              </h4>
+              { move || sankey_data_final.get().map(|data| view!{ <Sankey data /> }) }
+            </div>
+          </div>
+          <div
+            class = move || {
+              if !barchart_arguments.get().is_empty() {
+                  None
+              } else {
+                  Some("hidden")
+              }
+            }
+          >
+            <div class="mx-auto p-8" >
+              <h3 class="text-xl font-semibold leading-6 text-gray-900">
+                "Änderungen durch Optionen der Handlungsmaßnahmen"
+              </h3>
+              <p class="mt-2 max-w-4xl text-lg text-gray-500">
+                "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen"
+              </p>
+              { move ||  view! {
+                  <BarChart
+                      width = 1100.0
+                      height = 400.0
+                      data=barchart_arguments.get()
+                  />
+                  }
+              }
+            </div>
+          </div>
+        </div>
+      </div>
     }
 }
 

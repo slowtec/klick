@@ -16,15 +16,24 @@ const DWA_MERKBLATT_URL: &str =
 
 #[component]
 pub fn OptimizationOptions(
-    input_data: Signal<Option<domain::EmissionInfluencingValues>>,
-    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
+    output: ReadSignal<
+        Option<(
+            domain::CO2Equivalents,
+            domain::EmissionFactors,
+            domain::EmissionFactorCalculationMethods,
+        )>,
+    >,
+    ch4_chp_emission_factor: RwSignal<Option<domain::CH4ChpEmissionFactorCalcMethod>>,
+    sludge_bags_are_open: RwSignal<Option<bool>>,
+    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
 ) -> impl IntoView {
+    log::info!("OptimizationOptions rendering");
     view! {
       { n2o_emissions_in_the_biological_treatment_stage::options() }
       { ch4_emissions_pre_treatment::options() }
-      { ch4_emissions_chp::options(input_data, n2o_emission_factor_method) }
-      { ch4_emissions_open_digesters::options(input_data, n2o_emission_factor_method) }
-      { excess_energy_co2_equivalent::options(input_data, n2o_emission_factor_method) }
+      { ch4_emissions_chp::options(output, ch4_chp_emission_factor) }
+      { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, sludge_storage_containers_are_open) }
+      { excess_energy_co2_equivalent::options(output) }
       { leak_test::options() }
     }
 }
@@ -101,35 +110,38 @@ fn Cite(source: &'static str, url: &'static str, children: Children) -> impl Int
 
 #[component]
 fn ScenarioHint(
-    output: Signal<Option<(domain::CO2Equivalents, domain::EmissionFactors)>>,
-    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
+    output: ReadSignal<
+        Option<(
+            domain::CO2Equivalents,
+            domain::EmissionFactors,
+            domain::EmissionFactorCalculationMethods,
+        )>,
+    >,
 ) -> impl IntoView {
     move || {
-        n2o_emission_factor_method.get().and_then(|x| {
-            output.get().map(|out| {
-                let f = f64::from(out.1.n2o) * 100.0;
-                let ef = format!("(N₂O EF = {f:.2}%");
+        output.get().map(|out| {
+            let f = f64::from(out.1.n2o) * 100.0;
+            let ef = format!("(N₂O EF = {f:.2}%");
 
-                let scenario = match x {
-                    domain::N2oEmissionFactorCalcMethod::TuWien2016 => {
-                        format!("TU Wien 2016 {ef}")
-                    }
-                    domain::N2oEmissionFactorCalcMethod::Optimistic => format!("Optimistisch {ef}"),
-                    domain::N2oEmissionFactorCalcMethod::Pesimistic => format!("Pesimistisch {ef}"),
-                    domain::N2oEmissionFactorCalcMethod::Ipcc2019 => format!("IPCC 2019 {ef}"),
-                    domain::N2oEmissionFactorCalcMethod::Custom(f) => {
-                        format!("Benutzerdefiniert (N₂O EF = {:.2}", f64::from(f) * 100.0)
-                    }
-                };
-
-                view! {
-                   <p>
-                     "Bezogen auf das Szenario " { scenario } ", CH₄ EF = " {
-                      format!("{:.2}%", f64::from(out.1.ch4) * 100.0)
-                     } ")"
-                   </p>
+            let scenario = match out.2.n2o {
+                domain::N2oEmissionFactorCalcMethod::TuWien2016 => {
+                    format!("TU Wien 2016 {ef}")
                 }
-            })
+                domain::N2oEmissionFactorCalcMethod::Optimistic => format!("Optimistisch {ef}"),
+                domain::N2oEmissionFactorCalcMethod::Pesimistic => format!("Pesimistisch {ef}"),
+                domain::N2oEmissionFactorCalcMethod::Ipcc2019 => format!("IPCC 2019 {ef}"),
+                domain::N2oEmissionFactorCalcMethod::Custom(f) => {
+                    format!("Benutzerdefiniert (N₂O EF = {:.2}", f64::from(f) * 100.0)
+                }
+            };
+
+            view! {
+               <p>
+                 "Bezogen auf das Szenario " { scenario } ", CH₄ EF = " {
+                  format!("{:.2}%", f64::from(out.1.ch4) * 100.0)
+                 } ")"
+               </p>
+            }
         })
     }
 }

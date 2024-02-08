@@ -1,11 +1,13 @@
 #[allow(clippy::wildcard_imports)]
-mod bar;
+mod barchart;
+mod barchart_radioinputs;
 mod sankey;
 
 #[cfg(feature = "ssr")]
 pub mod ssr;
 
 pub use self::{
-    bar::{Arguments as BarChartArguments, Chart as BarChart},
+    barchart::{BarChart, BarChartArguments},
+    barchart_radioinputs::{BarChartRadioInput, BarChartRadioInputArguments},
     sankey::{Chart as SankeyChart, Color, Sankey as SankeyData},
 };

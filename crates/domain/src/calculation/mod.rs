@@ -14,7 +14,11 @@ use crate::{
 pub fn calculate_emissions(
     input: &EmissionInfluencingValues,
     calc_methods: EmissionFactorCalculationMethods,
-) -> (CO2Equivalents, EmissionFactors) {
+) -> (
+    CO2Equivalents,
+    EmissionFactors,
+    EmissionFactorCalculationMethods,
+) {
     let EmissionInfluencingValues {
         population_equivalent,
         wastewater,
@@ -194,7 +198,7 @@ pub fn calculate_emissions(
         ch4: ch4_emission_factor,
     };
 
-    (co2_equivalents, emission_factors)
+    (co2_equivalents, emission_factors, calc_methods)
 }
 
 #[must_use]

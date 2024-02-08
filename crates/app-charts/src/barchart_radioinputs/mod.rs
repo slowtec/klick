@@ -3,7 +3,7 @@ use leptos::*;
 use klick_presenter::Lng;
 
 #[derive(Debug, Clone)]
-pub struct Arguments {
+pub struct BarChartRadioInputArguments {
     pub label: Option<&'static str>,
     pub co2_data: f64,
     pub n2o_factor: f64,
@@ -11,10 +11,10 @@ pub struct Arguments {
 
 #[component]
 #[allow(clippy::module_name_repetitions)]
-pub fn Chart(
+pub fn BarChartRadioInput(
     width: f64,
     height: f64,
-    data: Vec<Arguments>,
+    data: Vec<BarChartRadioInputArguments>,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
     let margin = 10.0;
@@ -64,7 +64,7 @@ fn YAxis(height: f64) -> impl IntoView {
 fn Bars(
     width: f64,
     height: f64,
-    data: Vec<Arguments>,
+    data: Vec<BarChartRadioInputArguments>,
     selected_bar: RwSignal<Option<u64>>,
 ) -> impl IntoView {
     let count: usize = data.len();
@@ -89,7 +89,7 @@ fn Bars(
 
           let selected_rect_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
           view! {
-            // background for selected bar
+            // background for selected barchart
             <Show when= move || { selected_bar.get() == Some(i as u64)}>
               <g transform=format!("translate({selected_rect_dx},0)")>
                 <rect

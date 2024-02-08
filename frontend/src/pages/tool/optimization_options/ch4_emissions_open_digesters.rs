@@ -28,10 +28,17 @@ impl ValueLabel for Id {
 }
 
 pub fn options(
-    input_data: Signal<Option<domain::EmissionInfluencingValues>>,
-    n2o_emission_factor_method: Signal<Option<domain::N2oEmissionFactorCalcMethod>>,
+    output: ReadSignal<
+        Option<(
+            domain::CO2Equivalents,
+            domain::EmissionFactors,
+            domain::EmissionFactorCalculationMethods,
+        )>,
+    >,
+    sludge_bags_are_open: RwSignal<Option<bool>>,
+    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
 ) -> impl IntoView {
-    let sludge_bags_are_open = Field {
+    let sludge_bags_are_open_field = Field {
         id: Id::SludgeBags,
         description: None,
         required: false,
@@ -40,7 +47,7 @@ pub fn options(
         },
     };
 
-    let sludge_storage_containers_are_open = Field {
+    let sludge_storage_containers_are_open_field = Field {
         id: Id::SludgeStorageContainers,
         description: None,
         required: false,
@@ -51,63 +58,26 @@ pub fn options(
 
     let field_set = FieldSet {
         title: None,
-        fields: vec![sludge_bags_are_open, sludge_storage_containers_are_open],
+        fields: vec![
+            sludge_bags_are_open_field,
+            sludge_storage_containers_are_open_field,
+        ],
     };
 
     let (signals, fields_view, _required_fields) = render_field_sets(vec![field_set]);
 
-    let output = RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
-
     create_effect(move |_| {
-        let Some(mut input_data) = input_data.get() else {
-            log::debug!("No input data");
-            output.set(None);
-            return;
-        };
-
-        let n2o_emission_factor = n2o_emission_factor_method
-            .get()
-            .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019);
-
-        let scenario = domain::EmissionFactorCalculationMethods {
-            n2o: n2o_emission_factor,
-            ch4: None,
-        };
-
         let field_signal = signals.get(&Id::SludgeBags);
-
-        input_data.sewage_sludge_treatment.sludge_bags_are_open =
-            if let Some(v) = field_signal.and_then(FieldSignal::get_bool) {
-                !v
-            } else {
-                let value = !input_data.sewage_sludge_treatment.sludge_bags_are_open;
-                field_signal
-                    .and_then(FieldSignal::get_bool_signal)
-                    .unwrap()
-                    .set(value);
-                value
-            };
+        match field_signal.and_then(FieldSignal::get_bool) {
+            Some(v) => sludge_bags_are_open.set(Some(!v)),
+            None => sludge_bags_are_open.set(None),
+        }
 
         let field_signal = signals.get(&Id::SludgeStorageContainers);
-
-        input_data
-            .sewage_sludge_treatment
-            .sludge_storage_containers_are_open =
-            if let Some(v) = field_signal.and_then(FieldSignal::get_bool) {
-                !v
-            } else {
-                let value = !input_data
-                    .sewage_sludge_treatment
-                    .sludge_storage_containers_are_open;
-                field_signal
-                    .and_then(FieldSignal::get_bool_signal)
-                    .unwrap()
-                    .set(value);
-                value
-            };
-
-        let output_data = domain::calculate_emissions(&input_data, scenario);
-        output.set(Some(output_data));
+        match field_signal.and_then(FieldSignal::get_bool) {
+            Some(v) => sludge_storage_containers_are_open.set(Some(!v)),
+            None => sludge_storage_containers_are_open.set(None),
+        }
     });
 
     view! {
@@ -132,7 +102,7 @@ pub fn options(
         </InfoBox>
 
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-          <ScenarioHint output = output.into() n2o_emission_factor_method />
+          <ScenarioHint output = output />
           { move || {
               output.get().map(|out|
                 view! {
