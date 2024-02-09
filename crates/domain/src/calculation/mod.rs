@@ -75,7 +75,7 @@ pub fn calculate_emissions(
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
 
     let ch4_slippage_sludge_bags = if *sludge_bags_are_open {
-        let count = digester_count.unwrap_or(1);
+        let count = digester_count.unwrap_or(0);
         let volume = *sewage_gas_produced
             * *methane_fraction
             * (Factor::new(count as f64) * EMISSION_FACTOR_SLUDGE_BAGS);
