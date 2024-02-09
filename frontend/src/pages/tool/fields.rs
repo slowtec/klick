@@ -71,25 +71,27 @@ pub fn read_title(s: &HashMap<FieldId, FieldSignal>) -> Option<String> {
 pub fn read_input_fields(
     s: &HashMap<FieldId, FieldSignal>,
     required_fields: &Vec<RequiredField>,
-) -> (PlantProfile, Vec<MissingField>) {
-    let missing_fields: Vec<MissingField> =
-        required_fields.iter().fold(vec![], |mut acc, field| {
-            if field.id == ProfileValueId::PlantName.into() {
-                if s.get(&field.id).and_then(FieldSignal::get_text).is_none() {
-                    let x = MissingField::new(field.field_id.clone(), field.id.label().to_string());
-                    acc.push(x);
-                    acc
-                } else {
-                    acc
-                }
-            } else if s.get(&field.id).and_then(FieldSignal::get_float).is_none() {
-                let x = MissingField::new(field.field_id.clone(), field.id.label().to_string());
-                acc.push(x);
-                acc
+) -> (PlantProfile, Vec<MissingField<FieldId>>) {
+    let missing_fields = required_fields
+        .iter()
+        .filter_map(|field| {
+            let Some(field_signal) = s.get(&field.id) else {
+                return None;
+            };
+            let is_missing = match field_signal {
+                FieldSignal::Float { output, .. } => output.get().is_none(),
+                FieldSignal::UnsignedInteger { output, .. } => output.get().is_none(),
+                FieldSignal::Text(signal) => signal.get().is_none(),
+                FieldSignal::Bool(signal) => !signal.get(),
+                FieldSignal::Selection(signal) => signal.get().is_none(),
+            };
+            if is_missing {
+                Some(MissingField::new(field.id, field.field_id.clone()))
             } else {
-                acc
+                None
             }
-        });
+        })
+        .collect();
 
     let plant_name = s
         .get(&ProfileValueId::PlantName.into())

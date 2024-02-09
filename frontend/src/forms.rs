@@ -2,17 +2,19 @@ use leptos::wasm_bindgen::JsCast;
 use leptos::*;
 
 pub use klick_app_components::forms::*;
+pub use klick_presenter::ValueLabel;
 
 #[component]
-pub fn HelperWidget<F>(missing_fields: Vec<MissingField>, before_focus: F) -> impl IntoView
+pub fn HelperWidget<ID, F>(missing_fields: Vec<MissingField<ID>>, before_focus: F) -> impl IntoView
 where
     F: Fn() + Copy + 'static,
+    ID: Clone + ValueLabel + 'static,
 {
     view! {
       <ul class="ml-5 my-4 list-disc list-inside">
         <For
           each = move || missing_fields.clone()
-          key = |e| e.label.to_string()
+          key = |e| e.id.label().to_string()
           let:e
         >
           <li>
@@ -28,7 +30,7 @@ where
                 let _ = element.focus();
               }
             >
-              { e.label }
+              { e.id.label().to_string() }
             </a>
           </li>
         </For>

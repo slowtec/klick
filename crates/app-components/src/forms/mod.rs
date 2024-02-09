@@ -63,14 +63,20 @@ where
 }
 
 #[derive(Clone)]
-pub struct MissingField {
+pub struct MissingField<ID>
+where
+    ID: Clone,
+{
+    pub id: ID,
     pub field_id: String, //FIXME: rename dom_node_id
-    pub label: String,    // TODO: use presenter::ValueLabel
 }
 
-impl MissingField {
-    pub const fn new(field_id: String, label: String) -> Self {
-        Self { field_id, label }
+impl<ID> MissingField<ID>
+where
+    ID: Clone,
+{
+    pub const fn new(id: ID, field_id: String) -> Self {
+        Self { id, field_id }
     }
 }
 

@@ -72,7 +72,7 @@ pub fn Tool(
 
     let (signals, set_views, required_fields) = forms::render_field_sets(field_sets.clone());
     let signals = Rc::new(signals);
-    let missing_fields: RwSignal<Vec<MissingField>> = RwSignal::new(Vec::<MissingField>::new());
+    let missing_fields = RwSignal::new(Vec::<MissingField<_>>::new());
 
     let input_data = RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
     let sankey_data =
