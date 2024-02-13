@@ -64,7 +64,7 @@ fn Bars(
     let count: usize = data.len();
     let value_max = data
         .iter()
-        .fold(10.0, |current_max, item| f64::max(current_max, item.value));
+        .fold(0.0, |current_max, item| f64::max(current_max, f64::abs(item.value)));
     let gap = width * 0.01;
     let bar_width = (width - ((count + 1) as f64 * gap)) / (count as f64);
 
@@ -80,11 +80,10 @@ fn Bars(
           let bar_height = (height - 4.0 * gap) * (value/value_max).abs() * 0.5;
           let dx = gap + (bar_width + gap) * i as f64;
 
-
           let (dy, label_position) = if value < 0.0 {
             (x_axis_position, LabelPosition::Bottom)
           } else {
-            (x_axis_position - bar_height , LabelPosition::Top)
+            (x_axis_position - bar_height, LabelPosition::Top)
           };
           view! {
             <Bar
@@ -119,14 +118,17 @@ fn Bar(
     label_position: LabelPosition,
 ) -> impl IntoView {
     let font_weight = RwSignal::new("bold");
-    let font_size = RwSignal::new(0.0);
+    let font_size = RwSignal::new(16.0);
 
     let label_dx = dx;
     let label_dy = match label_position {
-        LabelPosition::Top => dy - 10.0,
-        LabelPosition::Bottom => dy + bar_height + 16.0 + 20.0,
+        LabelPosition::Top => dy,
+        LabelPosition::Bottom => dy + bar_height + font_size.get() + 10.0,
     };
-
+    let value_dy = match label_position {
+        LabelPosition::Top => bar_height + 10.0 + font_size.get(),
+        LabelPosition::Bottom => - font_size.get(),
+    };
     view! {
       <g class="barchart">
         // barchart with 6.038 label above
@@ -141,30 +143,27 @@ fn Bar(
           // label, i.e.: CH₄ BHKW
           <text
             x = { bar_width/2.0 }
-            y = { -10.0 }
+            y = { -8.0 }
             text-anchor = "middle"
-            font-size = move || 16.0 + font_size.get()
+            font-size = move || font_size.get()
             font-weight = move || font_weight.get()
           >
             { label }
           </text>
         </g>
-      </g>
-        <g transform=format!("translate({label_dx},0)")>
-          // value 23.2
-          {
-              let value_as_label = format!("{value:.2}").replace('.', ",");
-              view! {
-                <text
-                  x = { bar_width/2.0 }
-                  y = { bar_height - 5.0 }
-                  text-anchor = "middle"
-                  font-size = move || 16.0 + font_size.get()
-                >
-                  { value_as_label }
-                </text>
-              }
-          }
+        <g transform=format!("translate({dx},{dy})")>
+        // value 23.2
+        <text
+          x = { bar_width/2.0 }
+          y = { value_dy  }
+          text-anchor = "middle"
+          font-size = move || font_size.get()
+        >
+        { value }
+        </text>
         </g>
+
+      </g>
+
     }
 }
