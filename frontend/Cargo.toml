@@ -3,7 +3,7 @@ name = "klick-frontend"
 version = "0.3.9"
 edition = "2021"
 publish = false
-rust-version = "1.75"
+rust-version = "1.76"
 
 [dependencies]
 # Project dependencies
@@ -22,17 +22,17 @@ console_log = { version = "1.0.0", features = ["color"] }
 derive_more = "0.99.17"
 gloo-file = { version = "0.3.0", features = ["futures"] }
 gloo-storage = "0.3.0"
-js-sys = "0.3.67"
+js-sys = "0.3.68"
 leptos = { version = "0.6.5", features = ["csr"] }
 leptos_meta = { version = "0.6.5", features = ["csr"] }
 leptos_router = { version = "0.6.5", features = ["csr"] }
 log = "0.4.20"
-pulldown-cmark = "0.9.6"
+pulldown-cmark = "0.10.0"
 serde_json = "1.0.113"
 serde = { version = "1.0.196", features = ["derive"] }
 strum = "0.26.1"
-thiserror = "1.0.56"
-time = { version = "0.3.32", features = ["macros", "formatting"] }
+thiserror = "1.0.57"
+time = { version = "0.3.34", features = ["macros", "formatting"] }
 
 [patch.crates-io]
 # Local paths to library crates in workspace
@@ -65,4 +65,4 @@ module_name_repetitions = "allow"
 mod_module_files = "allow"
 
 [build-dependencies]
-toml = "0.8.9"
+toml = "0.8.10"

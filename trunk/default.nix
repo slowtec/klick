@@ -2,13 +2,13 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "trunk";
-  version = "0.18.6";
+  version = "0.18.8";
 
   src = fetchFromGitHub {
     owner = "trunk-rs";
     repo = "trunk";
     rev = "v${version}";
-    sha256 = "sha256-cdPRVh+0PGhJO8FB+bYITUFraHVHXOGtB2Q26dT3thk=";
+    sha256 = "sha256-cx14IVqsu1SQezs8T1HFZ75+MPWkvf5RcvGCodW5G4A=";
   };
 
   nativeBuildInputs = [ pkg-config ];
@@ -17,7 +17,7 @@ rustPlatform.buildRustPackage rec {
   # requires network
   checkFlags = [ "--skip=tools::tests::download_and_install_binaries" ];
 
-  cargoSha256 = "sha256-HMGFlLxwr1nQxihOPiYRfKfrqStVlII4t7+5t4tQYk4=";
+  cargoSha256 = "sha256-70nSHOGUIege1JKIt+WRnAm9VJ5/npxMGG57naTVyEs=";
 
   postConfigure = ''
     cargo metadata --offline

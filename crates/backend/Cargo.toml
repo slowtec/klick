@@ -24,14 +24,14 @@ mime_guess = "2.0.4"
 parking_lot = "0.12.1"
 rust-embed = { version = "8.2.0", features = ["axum"] }
 serde = { version = "1.0.196", features = ["derive"] }
-thiserror = "1.0.56"
+thiserror = "1.0.57"
 tokio = { version = "1.36.0", features = ["net"] }
-toml = "0.8.9"
+toml = "0.8.10"
 tower-http = { version = "0.5.1", features = ["cors"] }
 url = { version = "2.5.0", features = ["serde"] }
 uuid = { version = "1.7.0", features = ["v4"] }
 serde_json = "1.0.113"
-time = "0.3.32"
+time = "0.3.34"
 
 [dev-dependencies]
 serde_json = "1.0.113"
