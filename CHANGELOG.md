@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.11 (2024-02-13)
+
+- Changed
+  - Updated BarChart rendering 
+
 ## v0.3.10 (2024-02-13)
 
 - Changed:
