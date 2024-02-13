@@ -62,9 +62,9 @@ fn Bars(
     x_axis_position: f64,
 ) -> impl IntoView {
     let count: usize = data.len();
-    let value_max = data
-        .iter()
-        .fold(0.0, |current_max, item| f64::max(current_max, f64::abs(item.value)));
+    let value_max = data.iter().fold(0.0, |current_max, item| {
+        f64::max(current_max, f64::abs(item.value))
+    });
     let gap = width * 0.01;
     let bar_width = (width - ((count + 1) as f64 * gap)) / (count as f64);
 
@@ -127,7 +127,7 @@ fn Bar(
     };
     let value_dy = match label_position {
         LabelPosition::Top => bar_height + 10.0 + font_size.get(),
-        LabelPosition::Bottom => - font_size.get(),
+        LabelPosition::Bottom => -font_size.get(),
     };
     view! {
       <g class="barchart">
