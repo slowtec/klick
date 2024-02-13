@@ -655,14 +655,23 @@ pub fn Tool(
         "Auswertung Ihrer Daten (via Barchart / Sankey-Diagramm)"
       </h3>
 
-      <Show
-        when = move || current_section.get() == Some(PageSection::OptimizationOptions)
-        fallback = || view! {
+      <Show when = move || current_section.get() == Some(PageSection::DataCollection) && input_data.get().is_none()>
+        <div class="my-8 border-b border-gray-200 pb-5" >
           <p>
             "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
           </p>
-        }
-      >
+        </div>
+      </Show>
+
+      <div
+        class = move || {
+          if current_section.get() == Some(PageSection::DataCollection) && input_data.get().is_some() {
+              None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
         <h4 class="my-8 text-lg font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"</h4>
         <div class="">
           <BarChartRadioInput
@@ -682,7 +691,7 @@ pub fn Tool(
           { move || sankey_header.get().to_string() }
         </h4>
         { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
-      </Show>
+      </div>
 
       <Show when = move || show_handlungsempfehlungen.get()>
         <button

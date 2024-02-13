@@ -1,7 +1,5 @@
 use leptos::*;
 
-use klick_presenter::Lng;
-
 #[derive(Debug, Clone)]
 pub struct BarChartArguments {
     pub label: &'static str,
@@ -27,7 +25,7 @@ pub fn BarChart(width: f64, height: f64, data: Vec<BarChartArguments>) -> impl I
       >
         <g transform=format!("translate({margin},{margin})")>
           <g transform=format!("translate(0,{x_axis_position})")>
-            <XAxis width={ inner_width } height={ inner_height } />
+            <XAxis width={ inner_width } />
           </g>
             <YAxis height={ inner_height } />
           <Bars
@@ -42,7 +40,7 @@ pub fn BarChart(width: f64, height: f64, data: Vec<BarChartArguments>) -> impl I
 }
 
 #[component]
-fn XAxis(width: f64, height: f64) -> impl IntoView {
+fn XAxis(width: f64) -> impl IntoView {
     view! {
       <line x1=0 y1={0} x2={width} y2={0} stroke-width=1 stroke="#bbb" />
     }
@@ -67,10 +65,6 @@ fn Bars(
     let value_max = data
         .iter()
         .fold(10.0, |current_max, item| f64::max(current_max, item.value));
-    let value_min = data
-        .iter()
-        .fold(-10.0, |current_min, item| f64::min(current_min, item.value));
-    let value_range = value_max - value_min;
     let gap = width * 0.01;
     let bar_width = (width - ((count + 1) as f64 * gap)) / (count as f64);
 
@@ -92,31 +86,14 @@ fn Bars(
           } else {
             (x_axis_position - bar_height , LabelPosition::Top)
           };
-
-          // let selected_rect_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
           view! {
-            // background for selected barchart
-            // <Show when= move || { selected_bar.get() == Some(i as u64)}>
-            //   <g transform=format!("translate({selected_rect_dx},0)")>
-            //     <rect
-            //       width={ bar_width + gap }
-            //       height={ height }
-            //       fill="#9FE2BF"
-            //       rx=3
-            //       ry=3
-            //     />
-            //   </g>
-            // </Show>
             <Bar
-              i
               label
               value
               dx={dx}
               dy={dy}
               bar_width={ bar_width }
               bar_height={ bar_height }
-              width={ width }
-              height={ height }
               label_position
             />
           }
@@ -139,18 +116,10 @@ fn Bar(
     dy: f64,
     bar_width: f64,
     bar_height: f64,
-    width: f64,
-    height: f64,
-    i: usize,
     label_position: LabelPosition,
 ) -> impl IntoView {
-    let hovered = create_rw_signal(false);
-    let fill = RwSignal::new("#0af");
     let font_weight = RwSignal::new("bold");
     let font_size = RwSignal::new(0.0);
-    let gap = width * 0.01;
-    let transparent_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
-    let hovered_color = move || if hovered.get() { "grey" } else { "" };
 
     let label_dx = dx;
     let label_dy = match label_position {
