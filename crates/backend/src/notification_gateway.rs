@@ -98,15 +98,14 @@ fn send_address_confirmation_mail(
 ) -> anyhow::Result<()> {
     // TODO: use templates
 
-    let subject = "Bestätigen Sie Ihre E-Mail Addresse".to_string();
+    let subject = "Emailadresse bestätigen / Anmeldung abschließen".to_string();
 
     let link = email_confirmation_url(nonce, base_url)?;
     let body = [
-        "Willkommen beim KlicK-Tool, dem interaktiven Webtool für die Berechnung und Optimierung von Klimabilanzen von Kläranlagen.\n",
-        "Um Ihre Registrierung abzuschließen, klicken Sie auf folgenden Link:\n\n",
+        "Willkommen beim KlicK-Tool \"Klimabilanz für Kläranlagen mit einem Klick\".\n\n",
+        "Um Ihre Anmeldung abzuschließen, klicken Sie bitte auf folgenden Link:\n",
         &link,
-        "\n\nWenn Sie Fragen oder Feedback haben, können Sie wie folgt Kontakt aufnehmen KlicK-tool@umwelttechnik-bw.de",
-        "\nWir freuen uns, dass Sie das KlicK-tool nutzen!"
+        "\n\nWir wünschen viele gute Erkenntnisse mit dem KlicK-tool!",
     ]
     .join("");
 
