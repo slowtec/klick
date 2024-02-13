@@ -844,7 +844,7 @@ dependencies = [
 
 [[package]]
 name = "klick-frontend"
-version = "0.3.10"
+version = "0.3.11"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
