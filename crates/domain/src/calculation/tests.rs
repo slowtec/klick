@@ -51,7 +51,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _ ) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -160,7 +160,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ch4: None,
     };
 
-      let (co2_equivalents, emission_factors, _ ) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -269,7 +269,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ch4: None,
     };
 
-      let (co2_equivalents, emission_factors, _ ) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -378,7 +378,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ch4: None,
     };
 
-      let (co2_equivalents, emission_factors, _ ) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -487,7 +487,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ch4: None,
     };
 
-      let (co2_equivalents, emission_factors, _ ) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,

@@ -33,8 +33,8 @@ pub fn OptimizationOptions(
       { ch4_emissions_pre_treatment::options() }
       { ch4_emissions_chp::options(output, ch4_chp_emission_factor) }
       { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, sludge_storage_containers_are_open) }
-      { excess_energy_co2_equivalent::options(output) }
       { leak_test::options() }
+      { excess_energy_co2_equivalent::options(output) }
     }
 }
 

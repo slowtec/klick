@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.10 (2024-02-13)
+
+- Changed:
+  - barchart diff view (instead of sankey diff tree) #32 
+  - digester count default no 0 instead of 1: #132 
+  - Various refactorings
 
 ## v0.3.9 (2024-02-05)
 
