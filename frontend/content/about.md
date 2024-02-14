@@ -2,7 +2,7 @@
 
 Willkommen zum interaktiven Webtool der **Umwelttechnik BW**.
 Das Klick-Tool soll Sie als Kläranlagenbetreiber/-in,
-Kommune oder Interessierte/-r in folgenden Schlüsselaktivitäten unterstützten:
+Kommune oder Interessierte/-r in folgenden Schlüsselaktivitäten unterstützt:
 
 - In wenigen Schritten die **Treibhausgasemissionen Ihrer Kläranlage** abschätzen und visualisieren.
 - Eine erste **Klimabilanz in Übersichtsgraphen und Tabellen** herunterladen und/oder speichern und/oder
