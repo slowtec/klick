@@ -8,7 +8,9 @@ mod ch4_emissions_chp;
 mod ch4_emissions_open_digesters;
 mod ch4_emissions_pre_treatment;
 mod excess_energy_co2_equivalent;
+mod fossil_co2_emissions;
 mod leak_test;
+mod n2o_emissions_in_secondary_stream_systems;
 mod n2o_emissions_in_the_biological_treatment_stage;
 
 const DWA_MERKBLATT_URL: &str =
@@ -30,10 +32,12 @@ pub fn OptimizationOptions(
     log::info!("OptimizationOptions rendering");
     view! {
       { n2o_emissions_in_the_biological_treatment_stage::options() }
+      { n2o_emissions_in_secondary_stream_systems::options() }
       { ch4_emissions_pre_treatment::options() }
       { ch4_emissions_chp::options(output, ch4_chp_emission_factor) }
       { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, sludge_storage_containers_are_open) }
       { leak_test::options() }
+      { fossil_co2_emissions::options() }
       { excess_energy_co2_equivalent::options(output) }
     }
 }
