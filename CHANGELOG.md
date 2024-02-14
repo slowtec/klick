@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.12 (2024-02-14)
+
+- Changed
+  - Handlungsempfehlungen boxes - change order #139
+  - Delete a doubled text there #135
+
 ## v0.3.11 (2024-02-13)
 
 - Changed
