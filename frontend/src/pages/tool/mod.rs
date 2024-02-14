@@ -740,6 +740,12 @@ pub fn Tool(
           <h3 class="text-xl font-semibold leading-6 text-gray-900">
             "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
           </h3>
+        <p class="mt-2 max-w-4xl text-lg text-gray-500">
+          "Die vorgestellten Handlungsempfehlungen stellen eine erste Auswahl an
+          möglichen Minderungsmaßnahmen für Treibhausgasemissionen (THG) an Kläranlagen
+          dar. Diese sollen Ihnen wichtige Mehrwerte bieten, um die Klimaauswirkungen Ihrer
+          Kläranlage zu minimieren und deren Wettbewerbsfähigkeit langfristig zu sichern."
+        </p>
           <p class="mt-2 max-w-4xl text-lg text-gray-500">
             "THG treten an mehreren Prozessschritten auf. Die
             Minderungsmaßnahmen fokussieren sich auf Methan-
@@ -752,10 +758,12 @@ pub fn Tool(
             Informationen zu einzelnen Maßnahmen und können gegebenenfalls Ihre Klimabilanz
             neu berechnen lassen/verbessern."
           </p>
-          <p><b>
+          <p class="mt-2 max-w-4xl text-lg text-gray-500">
+            <b>
             "Unter nachfolgenden „aufklappbaren“ Abschnitten erhalten Sie weiterführende
             Informationen zu einzelnen Maßnahmen und können gegebenenfalls Ihre Klimabilanz
-            neu berechnen lassen/verbessern."</b>
+            neu berechnen lassen/verbessern."
+            </b>
           </p>
         </div>
         <div>
