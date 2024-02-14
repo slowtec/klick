@@ -752,6 +752,11 @@ pub fn Tool(
             Informationen zu einzelnen Maßnahmen und können gegebenenfalls Ihre Klimabilanz
             neu berechnen lassen/verbessern."
           </p>
+          <p><b>
+            "Unter nachfolgenden „aufklappbaren“ Abschnitten erhalten Sie weiterführende
+            Informationen zu einzelnen Maßnahmen und können gegebenenfalls Ihre Klimabilanz
+            neu berechnen lassen/verbessern."</b>
+          </p>
         </div>
         <div>
           { move || {
