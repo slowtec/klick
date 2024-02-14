@@ -722,7 +722,7 @@ pub fn Tool(
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
             on:click = move |_| current_section.set(Some(PageSection::DataCollection))
           >
-             "zu der Dateneingabe"
+             "zu der Datenerfassung"
         </button>
         </Show>
 
