@@ -100,7 +100,7 @@ pub fn Sankey(data: (domain::CO2Equivalents, domain::EmissionFactors)) -> impl I
     let n2o_water = sankey.insert_node(n2o_water.into(), "N₂O Gewässer", red);
 
     let ch4_sewage_treatment =
-        sankey.insert_node(ch4_sewage_treatment.into(), "CH₄ Klärprozess", red);
+        sankey.insert_node(ch4_sewage_treatment.into(), "CH₄ Anlage (unspez.)", red);
     let ch4_sludge_storage_containers = sankey.insert_node(
         ch4_sludge_storage_containers.into(),
         "CH₄ Schlupf Schlammstapel",
