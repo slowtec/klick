@@ -800,7 +800,7 @@ pub fn Tool(
                 "Änderungen durch Optionen der Handlungsmaßnahmen"
               </h3>
               <p class="mt-2 max-w-4xl text-lg text-gray-500">
-                "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen"
+                "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"
               </p>
               { move ||  view! {
                   <BarChart
