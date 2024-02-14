@@ -42,6 +42,13 @@ pub fn options() -> impl IntoView {
               </li>
             </ul>
           </Cite>
+          "Bisherige Untersuchungen der Lachgasemissionen von Kläranlagen haben gezeigt,
+          dass diese häufig saisonalen Schwankungen unterliegen und in der Regel
+          anlagenspezifisch sind. Unter diesem Gesichtspunkt bieten sich Mess- und
+          Monitoringkampagnen an, die eine Datenbasis (idealerweise über ein Jahr)
+          schaffen, um den anlagenspezifischen Emissionsfaktor zu ermitteln. Dieser
+          kann für die kommunale Klimaberichterstattung genutzt werden. Darüber hinaus
+          können so potenzielle Minderungsmaßnahmen besser bewertet werden."
         </p>
       </Card>
     }
