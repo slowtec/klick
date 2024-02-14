@@ -741,11 +741,7 @@ pub fn Tool(
             "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
           </h3>
           <p class="mt-2 max-w-4xl text-lg text-gray-500">
-            "Die vorgestellten Handlungsempfehlungen stellen eine erste Auswahl
-            an möglichen Minderungsmaßnahmen für Treibhausgasemissionen (THG) an Kläranlagen dar.
-            Diese sollen Ihnen wichtige Mehrwerte bieten, um die Klimaauswirkungen Ihrer Kläranlage zu minimieren
-            und deren Wettbewerbsfähigkeit langfristig zu sichern.
-            THG treten an mehreren Prozessschritten auf. Die
+            "THG treten an mehreren Prozessschritten auf. Die
             Minderungsmaßnahmen fokussieren sich auf Methan-
             und Lachgasemissionen sowie energiebedingte Emissionen.
             Für bestimmte Maßnahmen kann ein konkretes Minderungspotenzial
