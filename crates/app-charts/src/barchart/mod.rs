@@ -159,7 +159,7 @@ fn Bar(
           text-anchor = "middle"
           font-size = move || font_size.get()
         >
-        { value }
+        { format!("{value:.1}") }
         </text>
         </g>
 
