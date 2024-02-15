@@ -84,6 +84,30 @@ pub fn Tool(
     let barchart_arguments_radio_inputs: RwSignal<
         Vec<klick_app_charts::BarChartRadioInputArguments>,
     > = RwSignal::new(vec![]);
+    let barchart_arguments_radio_inputs_bhkw: RwSignal<
+        Vec<klick_app_charts::BarChartRadioInputArguments>,
+    > = RwSignal::new(vec![
+        klick_app_charts::BarChartRadioInputArguments {
+            label: Some("Mikrogasturbinen"),
+            value: 55.0,
+            emission_factor: 0.01,
+        },
+        klick_app_charts::BarChartRadioInputArguments {
+            label: Some("Ottomotor"),
+            value: 77.0,
+            emission_factor: 0.015,
+        },
+        klick_app_charts::BarChartRadioInputArguments {
+            label: Some("Zündstrahlmotor"),
+            value: 151.0,
+            emission_factor: 0.025,
+        },
+        klick_app_charts::BarChartRadioInputArguments {
+            label: Some("Benutzerdefiniert"),
+            value: 55.0,
+            emission_factor: 0.025,
+        },
+    ]);
 
     let current_section = RwSignal::new(Option::<PageSection>::Some(PageSection::DataCollection));
     let n2o_emission_factor_method =
@@ -113,8 +137,9 @@ pub fn Tool(
     let sankey_header_final = RwSignal::new(String::new());
     let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
-    let ch4_chp_emission_factor: RwSignal<Option<domain::CH4ChpEmissionFactorCalcMethod>> =
-        RwSignal::new(None);
+    let selected_scenario_bhkw = RwSignal::new(Option::<u64>::Some(0));
+    let custom_factor_bhkw: RwSignal<Option<f64>> = Some(3.0 as f64).into();
+
     let sludge_bags_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
     let sludge_storage_containers_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
 
@@ -301,22 +326,35 @@ pub fn Tool(
                 .map(|(szenario, (co2_equivalents, emission_factors))| {
                     klick_app_charts::BarChartRadioInputArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
-                        co2_data: co2_equivalents.emissions.into(),
-                        n2o_factor: f64::from(emission_factors.n2o),
+                        value: co2_equivalents.emissions.into(),
+                        emission_factor: f64::from(emission_factors.n2o),
                     }
                 })
                 .collect(),
         );
         if !input_data_validation_error
-            && n2o_emission_factor_method.get().is_some()
-            && selected_scenario.get().is_some()
+        // && n2o_emission_factor_method.get().is_some()
+        // && selected_scenario_bhkw.get().is_some()
         {
             log::info!("computing final output data");
+            let ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod> =
+                match selected_scenario_bhkw.get() {
+                    Some(0) => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
+                    Some(1) => Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine),
+                    Some(2) => Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine),
+                    Some(3) => match custom_factor_bhkw.get() {
+                        Some(f) => Some(domain::CH4ChpEmissionFactorCalcMethod::Custom(
+                            domain::units::Factor::new(f / 100.0),
+                        )),
+                        None => None,
+                    },
+                    _ => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
+                };
             let scenario = domain::EmissionFactorCalculationMethods {
                 n2o: n2o_emission_factor_method
                     .get()
                     .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
-                ch4: ch4_chp_emission_factor.get(),
+                ch4: ch4_chp_emission_factor,
             };
             let mut input_data = input_data.clone();
             input_data.sewage_sludge_treatment.sludge_bags_are_open =
@@ -339,6 +377,55 @@ pub fn Tool(
                 einheit = einheit,
                 szenario_name = selected_scenario_name.get()
             ));
+            log::info!("computing barchart_arguments_radio_inputs_bhkw");
+            barchart_arguments_radio_inputs_bhkw.set(
+                (vec![
+                    (0, "Mikrogasturbinen"),
+                    (1, "Ottomotor"),
+                    (2, "Zündstrahlmotor"),
+                    (3, "Benutzerdefiniert"),
+                ])
+                .iter()
+                .map(|i| {
+                    let ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod> =
+                        match i.0 {
+                            0 => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
+                            1 => Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine),
+                            2 => Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine),
+                            3 => match custom_factor_bhkw.get() {
+                                Some(f) => Some(domain::CH4ChpEmissionFactorCalcMethod::Custom(
+                                    domain::units::Factor::new(f / 100.0),
+                                )),
+                                None => None,
+                            },
+                            _ => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
+                        };
+                    let scenario = domain::EmissionFactorCalculationMethods {
+                        n2o: n2o_emission_factor_method
+                            .get()
+                            .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
+                        ch4: ch4_chp_emission_factor,
+                    };
+                    let mut input_data = input_data.clone();
+                    input_data.sewage_sludge_treatment.sludge_bags_are_open =
+                        sludge_bags_are_open.get().unwrap_or(true);
+                    input_data
+                        .sewage_sludge_treatment
+                        .sludge_storage_containers_are_open =
+                        sludge_storage_containers_are_open.get().unwrap_or(true);
+                    let output: (
+                        domain::CO2Equivalents,
+                        domain::EmissionFactors,
+                        domain::EmissionFactorCalculationMethods,
+                    ) = domain::calculate_emissions(&input_data, scenario);
+                    klick_app_charts::BarChartRadioInputArguments {
+                        label: Some(i.1),
+                        value: f64::from(output.0.ch4_combined_heat_and_power_plant),
+                        emission_factor: f64::from(output.1.ch4),
+                    }
+                })
+                .collect(),
+            );
 
             let ss = selected_scenario.get().unwrap_or(0);
             let old = szenario_calculations[ss as usize].clone().1 .0;
@@ -670,15 +757,22 @@ pub fn Tool(
         >
 
         <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Auswahl des Auswertungsszenarios für Lachgasemissionen</h3>
+        { move || {
 
-        <div class="">
-          <BarChartRadioInput
-            width = 1200.0
-            height = 400.0
-            data  = barchart_arguments_radio_inputs.get()
-            selected_bar = selected_scenario
-          />
-        </div>
+
+            view! {
+              <BarChartRadioInput
+                width = 1200.0
+                height = 400.0
+                data  = barchart_arguments_radio_inputs.get()
+                selected_bar = selected_scenario
+                emission_factor_label = Some("N₂O EF")
+              />
+
+            }
+          }
+        }
+
         <p>
           "Es ist das Szenario \"" { selected_scenario_name.get() } "\" ausgewählt.
 
@@ -770,9 +864,11 @@ pub fn Tool(
               view! {
                 <OptimizationOptions
                   output = output_final.read_only()
-                  ch4_chp_emission_factor = ch4_chp_emission_factor
                   sludge_bags_are_open = sludge_bags_are_open
                   sludge_storage_containers_are_open = sludge_storage_containers_are_open
+                  selected_scenario_bhkw = selected_scenario_bhkw
+                  custom_factor_bhkw = custom_factor_bhkw
+                  barchart_arguments_radio_inputs_bhkw = barchart_arguments_radio_inputs_bhkw.read_only()
                 />
               }
             }
