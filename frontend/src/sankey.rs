@@ -1,6 +1,7 @@
 use leptos::*;
 
 use klick_domain as domain;
+use klick_presenter as presenter;
 
 use klick_app_charts::{Color, SankeyChart, SankeyData};
 
@@ -40,108 +41,19 @@ where
 #[component]
 pub fn Sankey(data: (domain::CO2Equivalents, domain::EmissionFactors)) -> impl IntoView {
     let (co2_equivalents, _) = data;
-
-    let domain::CO2Equivalents {
-        n2o_plant,
-        n2o_water,
-        n2o_emissions,
-        ch4_sewage_treatment,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_water,
-        ch4_combined_heat_and_power_plant,
-        ch4_emissions,
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-        electricity_mix,
-        operating_materials,
-        sewage_sludge_transport,
-        emissions,
-        direct_emissions,
-        indirect_emissions,
-        other_indirect_emissions,
-        excess_energy_co2_equivalent: _,
-    } = co2_equivalents;
+    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
 
     let mut sankey = SankeyData::new();
-
-    let orange = Some(Color::new("orange"));
-    let indirect_emissions =
-        sankey.insert_node(indirect_emissions.into(), "Indirekte Emissionen", orange);
-    let electricity_mix = sankey.insert_node(electricity_mix.into(), "Strommix", orange);
-
-    let yellow = Some(Color::new("#fd0"));
-    let other_indirect_emissions = sankey.insert_node(
-        other_indirect_emissions.into(),
-        "Weitere Indirekte Emissionen",
-        yellow,
-    );
-    let operating_materials =
-        sankey.insert_node(operating_materials.into(), "Betriebsstoffe", yellow);
-    let fecl3 = sankey.insert_node(fecl3.into(), "Eisen(III)-chlorid-Lösung", yellow);
-    let feclso4 = sankey.insert_node(feclso4.into(), "Eisenchloridsulfat-Lösung", yellow);
-    let caoh2 = sankey.insert_node(caoh2.into(), "Kalkhydrat", yellow);
-    let synthetic_polymers =
-        sankey.insert_node(synthetic_polymers.into(), "Synthetische Polymere", yellow);
-    let sewage_sludge_transport = sankey.insert_node(
-        sewage_sludge_transport.into(),
-        "Klaerschlamm Transport",
-        yellow,
-    );
-
-    let red = Some(Color::new("red"));
-    let emissions = sankey.insert_node(emissions.into(), "Emission", red);
-    let direct_emissions = sankey.insert_node(direct_emissions.into(), "Direkte Emissionen", red);
-    let n2o_emissions = sankey.insert_node(n2o_emissions.into(), "Lachgasemissionen", red);
-    let ch4_emissions = sankey.insert_node(ch4_emissions.into(), "Methanemissionen", red);
-    let n2o_plant = sankey.insert_node(n2o_plant.into(), "N₂O Anlage", red);
-    let n2o_water = sankey.insert_node(n2o_water.into(), "N₂O Gewässer", red);
-
-    let ch4_sewage_treatment =
-        sankey.insert_node(ch4_sewage_treatment.into(), "CH₄ Anlage (unspez.)", red);
-    let ch4_sludge_storage_containers = sankey.insert_node(
-        ch4_sludge_storage_containers.into(),
-        "CH₄ Schlupf Schlammstapel",
-        red,
-    );
-    let ch4_sludge_bags =
-        sankey.insert_node(ch4_sludge_bags.into(), "CH₄ Schlupf Schlammtasche", red);
-    let ch4_water = sankey.insert_node(ch4_water.into(), "CH₄ Gewässer", red);
-    let ch4_combined_heat_and_power_plant =
-        sankey.insert_node(ch4_combined_heat_and_power_plant.into(), "CH₄ BHKW", red);
-
-    let edges = [
-        (fecl3, operating_materials),
-        (synthetic_polymers, operating_materials),
-        (sewage_sludge_transport, other_indirect_emissions),
-        (feclso4, operating_materials),
-        (caoh2, operating_materials),
-        (n2o_plant, n2o_emissions),
-        (n2o_water, n2o_emissions),
-        (n2o_emissions, direct_emissions),
-        (ch4_sewage_treatment, ch4_emissions),
-        (ch4_sludge_storage_containers, ch4_emissions),
-        (ch4_sludge_bags, ch4_emissions),
-        (ch4_water, ch4_emissions),
-        (ch4_combined_heat_and_power_plant, ch4_emissions),
-        (ch4_emissions, direct_emissions),
-        (electricity_mix, indirect_emissions),
-        (operating_materials, other_indirect_emissions),
-        (other_indirect_emissions, emissions),
-        (direct_emissions, emissions),
-        (indirect_emissions, emissions),
-    ];
-
-    let filtered_edges: Vec<_> = edges
+    let node_count = nodes.len();
+    let node_ids: Vec<_> = nodes
         .into_iter()
-        .filter(|(from, to)| {
-            sankey.node_value(from) > Some(0.0) && sankey.node_value(to) > Some(0.0)
-        })
+        .map(|(value, label, color)| sankey.insert_node(value, label, Some(Color::new(color))))
         .collect();
+    assert_eq!(node_ids.len(), node_count);
 
-    for (from, to) in filtered_edges {
+    for (from_idx, to_idx) in edges {
+        let from = node_ids[from_idx];
+        let to = node_ids[to_idx];
         sankey.insert_edge(from, to);
     }
 

@@ -879,6 +879,7 @@ version = "0.0.0"
 dependencies = [
  "derive_more",
  "klick-boundary",
+ "klick-domain",
  "serde",
  "strum",
 ]
