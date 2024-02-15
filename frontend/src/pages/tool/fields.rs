@@ -46,7 +46,7 @@ pub enum ScenarioFieldId {
 impl ValueLabel for ScenarioFieldId {
     fn label(&self) -> &str {
         match self {
-            Self::N2oCustomFactor => "N₂O-Emissionsfaktor",
+            Self::N2oCustomFactor => "N₂O-EF Benutzerdefiniert",
             Self::CH4ChpCalculationMethod => "BHKW Emmisionsfaktor",
             Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
         }
