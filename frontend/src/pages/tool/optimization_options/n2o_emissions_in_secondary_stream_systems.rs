@@ -1,6 +1,6 @@
 use leptos::*;
 
-use super::{Card};
+use super::Card;
 
 pub fn options() -> impl IntoView {
     view! {

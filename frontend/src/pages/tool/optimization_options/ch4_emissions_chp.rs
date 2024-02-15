@@ -1,3 +1,4 @@
+use klick_app_charts::BarChartRadioInput;
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
@@ -5,7 +6,7 @@ use strum::AsRefStr;
 use klick_domain as domain;
 
 use crate::{
-    forms::{render_field_sets, FieldType, MinMax, SelectOption},
+    forms::{render_field_sets, FieldType, MinMax},
     pages::tool::{
         field_sets::{Field, FieldSet},
         fields::{FieldId, ScenarioFieldId},
@@ -22,6 +23,7 @@ enum Id {
 use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
 
 pub fn options(
+    // incoming signals
     output: ReadSignal<
         Option<(
             domain::CO2Equivalents,
@@ -29,41 +31,25 @@ pub fn options(
             domain::EmissionFactorCalculationMethods,
         )>,
     >,
-    ch4_chp_emission_factor: RwSignal<Option<domain::CH4ChpEmissionFactorCalcMethod>>,
+    // outgoing signals
+    selected_scenario_bhkw: RwSignal<Option<u64>>,
+    custom_factor_bhkw: RwSignal<Option<f64>>,
+    // incoming signals
+    barchart_arguments_radio_inputs_bhkw: ReadSignal<
+        Vec<klick_app_charts::BarChartRadioInputArguments>,
+    >,
 ) -> impl IntoView {
     let field_set = field_set();
-
     let (signals, chp_view, _required_fields) = render_field_sets(vec![field_set]);
-
-    let selection = signals
-        .get(&FieldId::Scenario(ScenarioFieldId::CH4ChpCalculationMethod))
-        .and_then(FieldSignal::get_selection_signal)
-        .unwrap();
-
     let custom_factor = signals
         .get(&FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor))
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
     create_effect(move |_| {
-        let Some(sel) = selection.get() else {
-            log::debug!("ch4_emissions_chp: No calculation method selected");
-            return;
-        };
-        let ch4_chp_emission_factor_sel = match sel {
-            1 => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
-            2 => Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine),
-            3 => Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine),
-            4 => match custom_factor.get() {
-                Some(f) => Some(domain::CH4ChpEmissionFactorCalcMethod::Custom(
-                    domain::units::Factor::new(f / 100.0),
-                )),
-                None => None,
-            },
-            _ => None,
-        };
-        //log::debug!("ch4_emissions_chp: Calculate with CH₄ CHP emission factor {ch4_chp_emission_factor_sel:?}");
-        ch4_chp_emission_factor.set(ch4_chp_emission_factor_sel);
+        if let Some(custom_factor) = custom_factor.get() {
+            custom_factor_bhkw.set(Some(custom_factor));
+        }
     });
 
     view! {
@@ -86,7 +72,18 @@ pub fn options(
           kann Ihre Klimabilanz bezüglich der Methanemissionen verfeinert abgeschätzt werden:"
         </p>
         <div class="my-4 ml-4">
-          { chp_view }
+        {
+          move || view! {
+          <BarChartRadioInput
+            width = 900.0
+            height = 300.0
+            data  = barchart_arguments_radio_inputs_bhkw.get()
+            selected_bar = selected_scenario_bhkw
+            emission_factor_label = Some("CH₄ EF")
+          />
+          }
+        }
+        { chp_view }
         </div>
         <InfoBox text = "Zusatzinformation zum Methanschlupf:">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
@@ -124,7 +121,6 @@ pub fn options(
             }
           }
         </div>
-
       </Card>
     }
 }
@@ -134,9 +130,9 @@ fn field_set() -> FieldSet {
     let custom_factor_field = Field {
         id,
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
-        required: false,
+        required: true,
         field_type: FieldType::Float {
-            initial_value: None,
+            initial_value: Some(3.0),
             placeholder: None,
             limits: MinMax {
                 min: Some(0.0),
@@ -145,37 +141,7 @@ fn field_set() -> FieldSet {
             unit: "%",
         },
     };
-
-    let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCalculationMethod);
-    let calc_method_field = Field {
-        id,
-        description: None,
-        required: false,
-        field_type: FieldType::Selection {
-            initial_value: None,
-            options: vec![
-                SelectOption {
-                    label: "Mikrogasturbinen (EF max. 1 %)",
-                    value: 1,
-                },
-                SelectOption {
-                    label: "Ottomotor (EF MW = 1,5 %)",
-                    value: 2,
-                },
-                SelectOption {
-                    label: "Zündstrahlmotor (EF MW = 2,5 %)",
-                    value: 3,
-                },
-                SelectOption {
-                    label: "BHKW CH₄-EF benutzerdefiniert",
-                    value: 4,
-                },
-            ],
-        },
-    };
-
-    let fields = vec![calc_method_field, custom_factor_field];
-
+    let fields = vec![custom_factor_field];
     FieldSet {
         title: None,
         fields,

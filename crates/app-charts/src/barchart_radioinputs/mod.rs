@@ -5,8 +5,8 @@ use klick_presenter::Lng;
 #[derive(Debug, Clone)]
 pub struct BarChartRadioInputArguments {
     pub label: Option<&'static str>,
-    pub co2_data: f64,
-    pub n2o_factor: f64,
+    pub value: f64,
+    pub emission_factor: f64,
 }
 
 #[component]
@@ -16,6 +16,7 @@ pub fn BarChartRadioInput(
     height: f64,
     data: Vec<BarChartRadioInputArguments>,
     selected_bar: RwSignal<Option<u64>>,
+    emission_factor_label: Option<&'static str>,
 ) -> impl IntoView {
     let margin = 10.0;
 
@@ -30,34 +31,35 @@ pub fn BarChartRadioInput(
         xmlns="http://www.w3.org/2000/svg"
       >
         <g transform=format!("translate({margin},{margin})")>
-          <g transform=format!("translate(0,{inner_height})")>
-            <XAxis width={ inner_width } />
-          </g>
-          <YAxis height={ inner_height } />
+          // <g transform=format!("translate(0,{inner_height})")>
+          //   <XAxis width={ inner_width } />
+          // </g>
+          // <YAxis height={ inner_height } />
           <Bars
             width = { inner_width }
             height = { inner_height }
             data
             selected_bar
+            emission_factor_label
           />
         </g>
       </svg>
     }
 }
 
-#[component]
-fn XAxis(width: f64) -> impl IntoView {
-    view! {
-      <line x1=0 y1=0 x2={width} y2=0 stroke-width=1 stroke="#bbb" />
-    }
-}
+// #[component]
+// fn XAxis(width: f64) -> impl IntoView {
+//     view! {
+//       // <line x1=0 y1=0 x2={width} y2=0 stroke-width=1 stroke="#bbb" />
+//     }
+// }
 
-#[component]
-fn YAxis(height: f64) -> impl IntoView {
-    view! {
-      <line x1=0 y1=0 x2=0 y2={ height } stroke-width=1 stroke="#bbb" />
-    }
-}
+// #[component]
+// fn YAxis(height: f64) -> impl IntoView {
+//     view! {
+//       // <line x1=0 y1=0 x2=0 y2={ height } stroke-width=1 stroke="#bbb" />
+//     }
+// }
 
 #[component]
 #[allow(clippy::cast_precision_loss)]
@@ -66,11 +68,12 @@ fn Bars(
     height: f64,
     data: Vec<BarChartRadioInputArguments>,
     selected_bar: RwSignal<Option<u64>>,
+    emission_factor_label: Option<&'static str>,
 ) -> impl IntoView {
     let count: usize = data.len();
     let co2_value_max = data
         .iter()
-        .fold(0.0, |max_co2, item| f64::max(max_co2, item.co2_data));
+        .fold(0.0, |max_co2, item| f64::max(max_co2, item.value));
     let gap = width * 0.01;
     let bar_width = (width - ((count + 1) as f64 * gap)) / (count as f64);
 
@@ -78,11 +81,11 @@ fn Bars(
       <For
         each = move || {
           data.iter().enumerate().map(|(i,v)|
-            (i, v.label, v.co2_data, v.n2o_factor * 100.0)
+            (i, v.label, v.value, v.emission_factor * 100.0)
           ).collect::<Vec<_>>()
         }
         key=|(i,_,_,_)| *i
-        children = move |(i,label,co2_value, n2o_factor)| {
+        children = move |(i,label,co2_value, emission_factor)| {
           let bar_height = (height - 4.0 * gap) * co2_value/co2_value_max;
           let dx = gap + (bar_width + gap) * i as f64;
           let dy = (height - gap) - bar_height;
@@ -92,6 +95,7 @@ fn Bars(
             // background for selected barchart
             <Show when= move || { selected_bar.get() == Some(i as u64)}>
               <g transform=format!("translate({selected_rect_dx},0)")>
+                // create a interesting fill pattern
                 <rect
                   width={ bar_width + gap }
                   height={ height }
@@ -105,7 +109,7 @@ fn Bars(
               i
               label
               co2_value
-              n2o_factor
+              emission_factor
               dx={dx}
               dy={dy}
               bar_width={ bar_width }
@@ -113,6 +117,7 @@ fn Bars(
               width={ width }
               height={ height }
               selected_bar
+              emission_factor_label
             />
           }
         }
@@ -125,7 +130,7 @@ fn Bars(
 fn Bar(
     label: Option<&'static str>,
     co2_value: f64,
-    n2o_factor: f64,
+    emission_factor: f64,
     dx: f64,
     dy: f64,
     bar_width: f64,
@@ -134,6 +139,7 @@ fn Bar(
     height: f64,
     i: usize,
     selected_bar: RwSignal<Option<u64>>,
+    emission_factor_label: Option<&'static str>,
 ) -> impl IntoView {
     let hovered = create_rw_signal(false);
     let fill = RwSignal::new("#0af");
@@ -219,10 +225,11 @@ fn Bar(
               }.into()
             })
           }
-          // n2o_factor
+          // emission_factor
           {
             label.and_then(|_| {
-              let n2o_factor_label = format!("N₂O EF = {n2o_factor:.2} %").replace('.', ",");
+              let zz = emission_factor_label.unwrap_or("");
+              let ef_label = format!("{zz} = {emission_factor:.2} %").replace('.', ",");
               view! {
                 <text
                   x = { bar_width/2.0 }
@@ -230,7 +237,7 @@ fn Bar(
                   text-anchor = "middle"
                   font-size = move || 16.0 + font_size.get()
                 >
-                  { n2o_factor_label }
+                  { ef_label }
                 </text>
               }.into()
             })
