@@ -651,10 +651,6 @@ pub fn Tool(
           }
       }
 
-      <h3 id = PageSection::OptimizationOptions.section_id() class="my-8 text-xl font-bold">
-        "Auswertung Ihrer Daten (via Barchart / Sankey-Diagramm)"
-      </h3>
-
       <Show when = move || current_section.get() == Some(PageSection::DataCollection) && input_data.get().is_none()>
         <div class="my-8 border-b border-gray-200 pb-5" >
           <p>
@@ -672,7 +668,9 @@ pub fn Tool(
             }
           }
         >
-        <h4 class="my-8 text-lg font-bold">"Szenarien im Vergleich - Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"</h4>
+
+        <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Auswahl des Auswertungsszenarios für Lachgasemissionen</h3>
+
         <div class="">
           <BarChartRadioInput
             width = 1200.0
@@ -683,6 +681,7 @@ pub fn Tool(
         </div>
         <p>
           "Es ist das Szenario \"" { selected_scenario_name.get() } "\" ausgewählt.
+
           Durch Anklicken kann ein anderes Szenario ausgewählt werden."
         </p>
 
