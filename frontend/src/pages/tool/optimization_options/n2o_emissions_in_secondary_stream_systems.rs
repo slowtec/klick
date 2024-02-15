@@ -1,6 +1,6 @@
 use leptos::*;
 
-use super::{Card, Cite, DWA_MERKBLATT_URL};
+use super::{Card};
 
 pub fn options() -> impl IntoView {
     view! {
