@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.13 (2024-02-15)
+
+- Changed
+  - Lachgasszenarien UX rework #143
+  - zur datenerfassung #141
+  - more text #140
+  - unterstützten -> unterstützt #127
+  - CH4 Klärprozess -> CH4 Anlage (unspez.) #131
+  - fixup #135 
+
 ## v0.3.12 (2024-02-14)
 
 - Changed
