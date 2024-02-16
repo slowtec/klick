@@ -3,7 +3,10 @@ mod tests;
 
 use crate::{
     constants::*,
-    units::{Factor, Kilowatthours, Mass, MilligramsPerLiter, Qubicmeters, Tons},
+    units::{
+        Factor, Hours, Kilowatthours, Mass, MilligramsPerLiter, Percent, Qubicmeters, Time, Tons,
+        Years,
+    },
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
     EmissionFactorCalculationMethods, EmissionFactors, EmissionInfluencingValues,
     EnergyConsumption, N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
@@ -79,31 +82,24 @@ pub fn calculate_emissions(
         * EMISSION_FACTOR_CH4_WATER; // [t CH4/a]
 
     let ch4_slippage_sludge_bags = if *sludge_bags_are_open {
-        let count = digester_count.unwrap_or(0);
-        let volume = *sewage_gas_produced
-            * *methane_fraction
-            * (Factor::new(count as f64) * EMISSION_FACTOR_SLUDGE_BAGS);
-        let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
-        f64::from(mass) / 1_000.0
+        calculate_ch4_slippage_sludge_bags(*digester_count, *methane_fraction)
     } else {
-        0.0
-    }; // [t CH4 / a]
+        Tons::new(0.0)
+    };
 
     let ch4_slippage_sludge_storage = if *sludge_storage_containers_are_open {
-        let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_STORAGE;
-        let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
-        f64::from(mass) / 1_000.0
+        calculate_ch4_slippage_sludge_storage(sewage_gas_produced, methane_fraction)
     } else {
-        0.0
-    }; // [t CH4 / a]
+        Tons::new(0.0)
+    };
 
     let n2o_plant = Tons::new(n2o_plant * GWP_N2O);
     let n2o_water = Tons::new(n2o_water * GWP_N2O);
     let n2o_emissions = n2o_plant + n2o_water;
 
     let ch4_sewage_treatment = Tons::new(ch4_sewage_treatment * GWP_CH4);
-    let ch4_sludge_storage_containers = Tons::new(ch4_slippage_sludge_storage * GWP_CH4);
-    let ch4_sludge_bags = Tons::new(ch4_slippage_sludge_bags * GWP_CH4);
+    let ch4_sludge_storage_containers = ch4_slippage_sludge_storage * GWP_CH4;
+    let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
     let ch4_water = Tons::new(ch4_water * GWP_CH4);
 
     let ch4_emission_factor = match calc_methods.ch4 {
@@ -199,6 +195,32 @@ pub fn calculate_emissions(
     };
 
     (co2_equivalents, emission_factors, calc_methods)
+}
+
+#[must_use]
+pub fn calculate_ch4_slippage_sludge_bags(
+    digester_count: Option<u64>,
+    methane_fraction: Percent,
+) -> Tons {
+    let count = Factor::new(digester_count.unwrap_or(0) as f64);
+    let hours_per_year = Years::new(1.0).convert_to::<Hours>();
+    let kilograms = EMISSION_FACTOR_SLUDGE_BAGS
+        * hours_per_year
+        * count
+        * methane_fraction
+        * GWP_CH4
+        * CONVERSION_FACTOR_CH4_M3_TO_KG;
+    kilograms.convert_to()
+}
+
+#[must_use]
+pub fn calculate_ch4_slippage_sludge_storage(
+    sewage_gas_produced: &Qubicmeters,
+    methane_fraction: &Percent,
+) -> Tons {
+    let volume = *sewage_gas_produced * *methane_fraction * EMISSION_FACTOR_SLUDGE_STORAGE;
+    let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
+    Tons::new(f64::from(mass) / 1_000.0)
 }
 
 #[must_use]

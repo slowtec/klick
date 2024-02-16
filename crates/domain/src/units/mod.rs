@@ -179,3 +179,19 @@ quantity! {
         LitersPerTonKilometer, 1.0, "l/tkm";
     }
 }
+
+quantity! {
+    FlowRate;
+    units {
+        QubicmetersPerHour, 1.0, "m³/h";
+    }
+}
+
+quantity! {
+    Time;
+    units {
+        Hours, 1.0, "h";
+        Days, 24.0, "d";
+        Years, 24.0 * 365.0, "y";
+    }
+}
