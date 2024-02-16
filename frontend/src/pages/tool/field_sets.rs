@@ -253,16 +253,14 @@ pub fn field_sets() -> Vec<FieldSet> {
                 description: Some(
                     "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m³) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
                         "Klärgas",
                     ),
                     limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
+                        min: Some(0.0),
                         max: Some(
                             100_000_000.0,
                         ),
@@ -275,16 +273,14 @@ pub fn field_sets() -> Vec<FieldSet> {
                 description: Some(
                     "Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
                         "62",
                     ),
                     limits: MinMax {
-                        min: Some(
-                            20.0,
-                        ),
+                        min: Some(0.0),
                         max: Some(
                             90.0,
                         ),
@@ -347,7 +343,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 description: Some(
                     "Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen.",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
@@ -436,7 +432,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 description: Some(
                     "Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen.",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(

@@ -53,7 +53,14 @@ pub fn options(
     });
 
     view! {
-      <Card title = "Methanemissionen aus Blockheizkraftwerken (BHKW)" >
+      <div class =move || {
+        if barchart_arguments_radio_inputs_bhkw.get().len() > 0 {
+          None
+        } else {
+          Some("hidden")
+        }
+      }>
+      <Card title = "Methanemissionen aus Blockheizkraftwerken (BHKW)">
         <InfoBox text = "BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
             "Auch bei der Gasverwertung entstehen prozessbedingte Methan-Emissionen:
@@ -74,6 +81,7 @@ pub fn options(
         <div class="my-4 ml-4">
         {
           move || view! {
+            // show when vector has elements
           <BarChartRadioInput
             width = 900.0
             height = 300.0
@@ -122,6 +130,7 @@ pub fn options(
           }
         </div>
       </Card>
+        </div>
     }
 }
 
