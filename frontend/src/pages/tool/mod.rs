@@ -150,7 +150,19 @@ pub fn Tool(
     // -----   ----- //
 
     create_effect(move |_| {
-        let (data, filtered_required_fields) = read_input_fields(&s, &required_fields);
+        let (mut data, filtered_required_fields) = read_input_fields(&s, &required_fields);
+        if data.energy_consumption.sewage_gas_produced.is_none() {
+            data.energy_consumption.sewage_gas_produced = Some(0.0);
+        }
+        if data.energy_consumption.methane_fraction.is_none() {
+            data.energy_consumption.methane_fraction = Some(0.0);
+        }
+        if data.energy_consumption.on_site_power_generation.is_none() {
+            data.energy_consumption.on_site_power_generation = Some(0.0);
+        }
+        if data.sewage_sludge_treatment.transport_distance.is_none() {
+            data.sewage_sludge_treatment.transport_distance = Some(0.0);
+        }
         missing_fields.set(filtered_required_fields);
         input_data.set(data.try_into().ok());
     });
@@ -386,7 +398,7 @@ pub fn Tool(
                     (3, "Benutzerdefiniert"),
                 ])
                 .iter()
-                .map(|i| {
+                .filter_map(|i| {
                     let ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod> =
                         match i.0 {
                             0 => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
@@ -418,11 +430,14 @@ pub fn Tool(
                         domain::EmissionFactors,
                         domain::EmissionFactorCalculationMethods,
                     ) = domain::calculate_emissions(input_data, scenario);
-                    klick_app_charts::BarChartRadioInputArguments {
+                    if f64::from(output.0.ch4_combined_heat_and_power_plant) < 0.1 {
+                        return None;
+                    }
+                    Some(klick_app_charts::BarChartRadioInputArguments {
                         label: Some(i.1),
                         value: f64::from(output.0.ch4_combined_heat_and_power_plant),
                         emission_factor: f64::from(output.1.ch4),
-                    }
+                    })
                 })
                 .collect(),
             );
@@ -755,11 +770,8 @@ pub fn Tool(
             }
           }
         >
-
         <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Auswahl des Auswertungsszenarios für Lachgasemissionen</h3>
         { move || {
-
-
             view! {
               <BarChartRadioInput
                 width = 1200.0
