@@ -1,19 +1,22 @@
-use crate::units::{KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent};
+use crate::units::{
+    Factor, KilogramsPerLiter, KilogramsPerQubicmeter, LitersPerTonKilometer, Percent,
+    QubicmetersPerHour,
+};
 
 /// `[g ch4 / (population values * year)]`
 pub const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0;
 
-/// 0,9 `[%]` of chemical oxygen demand effluent
+/// 0.9 `[%]` of chemical oxygen demand effluent
 pub const EMISSION_FACTOR_CH4_WATER: Percent = Percent::new(0.9);
 
-/// 1,0 `[%]` ch4 factor
+/// 1.0 `[%]` ch4 factor
 pub const EMISSION_FACTOR_CH4_CHP: Percent = Percent::new(1.0);
 
-/// 0,5 `[%]` nitrogen effulent
+/// 0.5 `[%]` nitrogen effulent
 pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);
 
-/// 0.3 `[%]` of the total methane gas yield
-pub const EMISSION_FACTOR_SLUDGE_BAGS: Percent = Percent::new(0.0375);
+/// 1.25 `[m^3/h]`
+pub const EMISSION_FACTOR_SLUDGE_BAGS: QubicmetersPerHour = QubicmetersPerHour::new(1.25);
 
 /// 1,6 `[%]` of the total digester gas production
 pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(1.6);
@@ -31,7 +34,8 @@ pub const EMISSION_FACTOR_CAOH2: f64 = 1_055.3;
 pub const EMISSION_FACTOR_POLYMERS: f64 = 2_200.0;
 
 pub const GWP_N2O: f64 = 273.0;
-pub const GWP_CH4: f64 = 28.0;
+
+pub const GWP_CH4: Factor = Factor::new(28.0);
 
 /// `[kg/m^3]` for standard cubic meters (GESTIS substance database)
 pub const CONVERSION_FACTOR_CH4_M3_TO_KG: KilogramsPerQubicmeter =

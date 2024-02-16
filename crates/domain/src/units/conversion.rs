@@ -23,11 +23,28 @@ macro_rules! direct_multiply {
     };
 }
 
+macro_rules! direct_divide {
+    (
+      $unit_a:ident, $unit_b:ident, $output:ident
+    ) => {
+        impl Div<$unit_a> for $unit_b {
+            type Output = $output;
+            fn div(self, rhs: $unit_a) -> Self::Output {
+                Self::Output::new(self.0 / rhs.0)
+            }
+        }
+    };
+}
+
 direct_multiply!(Qubicmeters, KilogramsPerQubicmeter, Kilograms);
 direct_multiply!(Kilowatthours, GramsPerKilowatthour, Grams);
 direct_multiply!(LitersPerTonKilometer, Tons, LitersPerKilometer);
 direct_multiply!(Kilometers, LitersPerKilometer, Liters);
 direct_multiply!(KilogramsPerLiter, Liters, Kilograms);
+direct_multiply!(QubicmetersPerHour, Hours, Qubicmeters);
+
+direct_divide!(Qubicmeters, Hours, QubicmetersPerHour);
+direct_divide!(Liters, Kilometers, LitersPerKilometer);
 
 impl From<Percent> for Factor {
     fn from(from: Percent) -> Factor {
