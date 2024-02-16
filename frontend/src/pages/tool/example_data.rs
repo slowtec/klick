@@ -47,7 +47,7 @@ fn example_input_data() -> ProjectData {
             sludge_storage_containers_are_open: Some(true),
             sewage_sludge_for_disposal: Some(3016.5),
             transport_distance: Some(150.0),
-            digester_count: Some(3),
+            digester_count: Some(1),
         },
         operating_materials: OperatingMaterials {
             fecl3: Some(310.5),
