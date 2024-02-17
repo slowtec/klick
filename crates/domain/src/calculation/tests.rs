@@ -78,7 +78,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 327.970_500_000_001_83);
-    assert_eq!(f64::from(n2o_water), 126.125_999_999_999_99);
+    assert_eq!(f64::from(n2o_water), 126.126);
     assert_eq!(f64::from(n2o_emissions), 454.096_500_000_001_8);
     assert_eq!(f64::from(ch4_sewage_treatment), 772.800_000_000_000_1);
     assert_eq!(
@@ -91,7 +91,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
     assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers), 51.964);
+    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
     assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
@@ -108,7 +108,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_620_000_000_04
+        235.414_619_999_999_99
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -186,7 +186,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 785.07);
-    assert_eq!(f64::from(n2o_water), 126.125_999_999_999_99);
+    assert_eq!(f64::from(n2o_water), 126.126);
     assert_eq!(f64::from(n2o_emissions), 911.196);
     assert_eq!(f64::from(ch4_sewage_treatment), 772.800_000_000_000_1);
     assert_eq!(
@@ -199,7 +199,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
     assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers), 51.964);
+    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
     assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
@@ -217,7 +217,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_620_000_000_04
+        235.414_619_999_999_99
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -295,7 +295,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 2_093.52);
-    assert_eq!(f64::from(n2o_water), 126.125_999_999_999_99);
+    assert_eq!(f64::from(n2o_water), 126.126);
     assert_eq!(f64::from(n2o_emissions), 2_219.646);
     assert_eq!(f64::from(ch4_sewage_treatment), 772.800_000_000_000_1);
     assert_eq!(
@@ -308,7 +308,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
     assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers), 51.964);
+    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
     assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
@@ -326,7 +326,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_620_000_000_04
+        235.414_619_999_999_99
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -404,7 +404,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 4_187.04);
-    assert_eq!(f64::from(n2o_water), 126.125_999_999_999_99);
+    assert_eq!(f64::from(n2o_water), 126.126);
     assert_eq!(f64::from(n2o_emissions), 4_313.166);
     assert_eq!(f64::from(ch4_sewage_treatment), 772.800_000_000_000_1);
     assert_eq!(
@@ -417,7 +417,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(f64::from(fecl3), 0.0);
     assert_eq!(f64::from(feclso4), 24.776);
     assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers), 51.964);
+    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
     assert_eq!(f64::from(electricity_mix), 202.345_416);
     assert_eq!(f64::from(operating_materials), 421.042_178);
     assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
@@ -434,7 +434,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_620_000_000_04
+        235.414_619_999_999_99
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -511,38 +511,46 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         excess_energy_co2_equivalent,
     } = co2_equivalents;
 
-    assert_eq!(f64::from(n2o_plant), 2_616.900_000_000_000_5);
-    assert_eq!(f64::from(n2o_water), 126.125_999_999_999_99);
-    assert_eq!(f64::from(n2o_emissions), 2_743.026_000_000_000_7);
-    assert_eq!(f64::from(ch4_sewage_treatment), 772.800_000_000_000_1);
+    const PRECISION: usize = 3;
+
+    assert_eq!(n2o_plant.round(PRECISION), Tons::new(2_616.9));
+    assert_eq!(n2o_water.round(PRECISION), Tons::new(126.126));
+    assert_eq!(n2o_emissions.round(PRECISION), Tons::new(2_743.026));
+    assert_eq!(ch4_sewage_treatment.round(PRECISION), Tons::new(772.8));
     assert_eq!(
-        f64::from(ch4_sludge_storage_containers),
-        251.108_928_000_000_05
+        ch4_sludge_storage_containers.round(PRECISION),
+        Tons::new(251.109)
     );
-    assert_eq!(f64::from(ch4_sludge_bags), 0.0);
-    assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_emissions), 1_343.392_008);
-    assert_eq!(f64::from(fecl3), 0.0);
-    assert_eq!(f64::from(feclso4), 24.776);
-    assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers), 51.964);
-    assert_eq!(f64::from(electricity_mix), 202.345_416);
-    assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
-    assert_eq!(f64::from(direct_emissions), 4_086.418_008_000_001);
-    assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(emissions), 4_718.991_413_600_001);
-    assert_eq!(f64::from(emission_factors.n2o), 0.01);
-    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(ch4_sludge_bags.round(PRECISION), Tons::zero());
+    assert_eq!(ch4_water.round(PRECISION), Tons::new(162.54));
+    assert_eq!(ch4_emissions.round(PRECISION), Tons::new(1_343.392));
+    assert_eq!(fecl3.round(PRECISION), Tons::zero());
+    assert_eq!(feclso4.round(PRECISION), Tons::new(24.776));
+    assert_eq!(caoh2.round(PRECISION), Tons::new(344.302));
+    assert_eq!(synthetic_polymers.round(PRECISION), Tons::new(51.964));
+    assert_eq!(electricity_mix.round(PRECISION), Tons::new(202.345));
+    assert_eq!(operating_materials.round(PRECISION), Tons::new(421.042));
+    assert_eq!(sewage_sludge_transport.round(PRECISION), Tons::new(9.186));
+    assert_eq!(direct_emissions.round(PRECISION), Tons::new(4_086.418));
+    assert_eq!(indirect_emissions.round(PRECISION), Tons::new(202.345));
+    assert_eq!(
+        other_indirect_emissions.round(PRECISION),
+        Tons::new(430.228)
+    );
+    assert_eq!(emissions.round(PRECISION), Tons::new(4_718.991));
+    assert_eq!(emission_factors.n2o.round(PRECISION), Factor::new(0.01));
+    assert_eq!(excess_energy_co2_equivalent.round(PRECISION), Tons::zero());
+    assert_eq!(
+        ch4_combined_heat_and_power_plant.round(PRECISION),
+        Tons::new(156.943)
+    ); // MicroGasTurbines
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_620_000_000_04
+        235.414_619_999_999_99
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(

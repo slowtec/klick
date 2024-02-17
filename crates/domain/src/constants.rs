@@ -21,21 +21,23 @@ pub const EMISSION_FACTOR_SLUDGE_BAGS: QubicmetersPerHour = QubicmetersPerHour::
 /// 1,6 `[%]` of the total digester gas production
 pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(1.6);
 
-/// `[g co2 / kg]` solution
-pub const EMISSION_FACTOR_FECL3: f64 = 395.0;
+/// `[kg co2 / kg]` solution
+pub const EMISSION_FACTOR_FECL3: Factor = Factor::new(0.395);
 
-/// `[g co2 / kg]` solution
-pub const EMISSION_FACTOR_FECLSO4: f64 = 76.0;
+/// `[kg co2 / kg]` solution
+pub const EMISSION_FACTOR_FECLSO4: Factor = Factor::new(0.076);
 
-/// `[g co2 / kg]` solution
-pub const EMISSION_FACTOR_CAOH2: f64 = 1_055.3;
+/// `[kg co2 / kg]` solution
+pub const EMISSION_FACTOR_CAOH2: Factor = Factor::new(1.0553);
 
-/// `[g co2 / kg]` solution
-pub const EMISSION_FACTOR_POLYMERS: f64 = 2_200.0;
+/// `[kg co2 / kg]` solution
+pub const EMISSION_FACTOR_POLYMERS: Factor = Factor::new(2.2);
 
-pub const GWP_N2O: f64 = 273.0;
+pub const GWP_N2O: Factor = Factor::new(273.0);
 
 pub const GWP_CH4: Factor = Factor::new(28.0);
+
+pub const CONVERSION_FACTOR_N_TO_N2O: Factor = Factor::new(44.0 / 28.0);
 
 /// `[kg/m^3]` for standard cubic meters (GESTIS substance database)
 pub const CONVERSION_FACTOR_CH4_M3_TO_KG: KilogramsPerQubicmeter =
