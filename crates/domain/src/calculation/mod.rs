@@ -15,7 +15,7 @@ use crate::{
 #[must_use]
 #[allow(clippy::too_many_lines)]
 pub fn calculate_emissions(
-    input: &EmissionInfluencingValues,
+    input: EmissionInfluencingValues,
     calc_methods: EmissionFactorCalculationMethods,
 ) -> (
     CO2Equivalents,
@@ -73,29 +73,29 @@ pub fn calculate_emissions(
     // -------    ------ //
 
     let n2o_emission_factor =
-        calculate_n2o_emission_factor(calc_methods.n2o, *nitrogen_influent, *nitrogen_effluent);
+        calculate_n2o_emission_factor(calc_methods.n2o, nitrogen_influent, nitrogen_effluent);
     debug_assert!(n2o_emission_factor < Factor::new(1.0));
 
     let (n2o_plant, n2o_water) = calculate_nitrous_oxide(
-        *nitrogen_influent,
-        *nitrogen_effluent,
-        *wastewater,
+        nitrogen_influent,
+        nitrogen_effluent,
+        wastewater,
         n2o_emission_factor,
     );
 
     let ch4_sewage_treatment =
         Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT).convert_to::<Tons>();
 
-    let ch4_water = *chemical_oxygen_demand_effluent * *wastewater * EMISSION_FACTOR_CH4_WATER;
+    let ch4_water = chemical_oxygen_demand_effluent * wastewater * EMISSION_FACTOR_CH4_WATER;
 
-    let ch4_slippage_sludge_bags = if *sludge_bags_are_open {
-        calculate_ch4_slippage_sludge_bags(*digester_count, *methane_fraction)
+    let ch4_slippage_sludge_bags = if sludge_bags_are_open {
+        calculate_ch4_slippage_sludge_bags(digester_count, methane_fraction)
     } else {
         Tons::zero()
     };
 
-    let ch4_slippage_sludge_storage = if *sludge_storage_containers_are_open {
-        calculate_ch4_slippage_sludge_storage(*sewage_gas_produced, *methane_fraction)
+    let ch4_slippage_sludge_storage = if sludge_storage_containers_are_open {
+        calculate_ch4_slippage_sludge_storage(sewage_gas_produced, methane_fraction)
     } else {
         Tons::zero()
     };
@@ -117,7 +117,7 @@ pub fn calculate_emissions(
         Some(CH4ChpEmissionFactorCalcMethod::Custom(f)) => f,
     };
 
-    let volume = *sewage_gas_produced * *methane_fraction * ch4_emission_factor;
+    let volume = sewage_gas_produced * methane_fraction * ch4_emission_factor;
     let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
     let ch4_chp = mass.convert_to::<Tons>();
 
@@ -129,30 +129,30 @@ pub fn calculate_emissions(
         + ch4_water
         + ch4_combined_heat_and_power_plant;
 
-    let mut external_energy = *total_power_consumption - *on_site_power_generation;
+    let mut external_energy = total_power_consumption - on_site_power_generation;
 
     if external_energy.is_sign_negative() {
         external_energy = Kilowatthours::zero();
     }
 
     let excess_energy_co2_equivalent = if external_energy.is_sign_negative() {
-        external_energy * *emission_factor_electricity_mix * Factor::new(-1.0)
+        external_energy * emission_factor_electricity_mix * Factor::new(-1.0)
     } else {
         Grams::zero()
     }
     .convert_to::<Tons>();
 
-    let electricity_mix = (external_energy * *emission_factor_electricity_mix).convert_to::<Tons>();
-    let synthetic_polymers = *synthetic_polymers * EMISSION_FACTOR_POLYMERS;
-    let fecl3 = *fecl3 * EMISSION_FACTOR_FECL3;
-    let feclso4 = *feclso4 * EMISSION_FACTOR_FECLSO4;
-    let caoh2 = *caoh2 * EMISSION_FACTOR_CAOH2;
+    let electricity_mix = (external_energy * emission_factor_electricity_mix).convert_to::<Tons>();
+    let synthetic_polymers = synthetic_polymers * EMISSION_FACTOR_POLYMERS;
+    let fecl3 = fecl3 * EMISSION_FACTOR_FECL3;
+    let feclso4 = feclso4 * EMISSION_FACTOR_FECLSO4;
+    let caoh2 = caoh2 * EMISSION_FACTOR_CAOH2;
 
     let operating_materials = synthetic_polymers + feclso4 + caoh2 + fecl3;
 
-    let sewage_sludge_transport = (*sewage_sludge_for_disposal
+    let sewage_sludge_transport = (sewage_sludge_for_disposal
         * FUEL_CONSUMPTION
-        * *transport_distance
+        * transport_distance
         * EMISSION_FACTOR_DIESEL)
         .convert_to();
 
