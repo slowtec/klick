@@ -37,6 +37,22 @@ macro_rules! quantity {
                 pub const fn new(value: f64) -> Self {
                     Self(value)
                 }
+
+                #[must_use]
+                pub const fn zero() -> Self {
+                    Self(0.0)
+                }
+
+                #[must_use]
+                pub fn is_sign_negative(&self) -> bool {
+                    self.0.is_sign_negative()
+                }
+
+                #[must_use]
+                pub fn round(&self, precision: usize) -> Self {
+                    let scaling_factor = 10_f64.powi(precision as i32);
+                    Self((self.0 * scaling_factor).round() / scaling_factor)
+                }
             }
 
             impl $quantity for $unit {
