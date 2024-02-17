@@ -214,7 +214,6 @@ pub fn calculate_ch4_slippage_sludge_bags(
         * hours_per_year
         * count
         * methane_fraction
-        * GWP_CH4
         * CONVERSION_FACTOR_CH4_M3_TO_KG;
     kilograms.convert_to()
 }
