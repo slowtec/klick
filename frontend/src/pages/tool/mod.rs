@@ -367,7 +367,7 @@ pub fn Tool(
                 domain::CO2Equivalents,
                 domain::EmissionFactors,
                 domain::EmissionFactorCalculationMethods,
-            ) = domain::calculate_emissions(&input_data, scenario);
+            ) = domain::calculate_emissions(input_data.clone(), scenario);
             output_final.set(Some(output.clone()));
             sankey_data_final.set(Some((output.clone().0, output.clone().1)));
             sankey_header_final.set(format!(
@@ -417,7 +417,7 @@ pub fn Tool(
                         domain::CO2Equivalents,
                         domain::EmissionFactors,
                         domain::EmissionFactorCalculationMethods,
-                    ) = domain::calculate_emissions(&input_data, scenario);
+                    ) = domain::calculate_emissions(input_data, scenario);
                     klick_app_charts::BarChartRadioInputArguments {
                         label: Some(i.1),
                         value: f64::from(output.0.ch4_combined_heat_and_power_plant),

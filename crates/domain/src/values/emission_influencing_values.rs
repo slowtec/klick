@@ -3,6 +3,7 @@ use crate::units::{
 };
 
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
 pub struct EmissionInfluencingValues {
     pub population_equivalent: f64,
     pub wastewater: Qubicmeters,
@@ -14,17 +15,20 @@ pub struct EmissionInfluencingValues {
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
 pub struct AnnualAverageInfluent {
     pub nitrogen: MilligramsPerLiter,
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
 pub struct AnnualAverageEffluent {
     pub nitrogen: MilligramsPerLiter,
     pub chemical_oxygen_demand: MilligramsPerLiter,
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
 pub struct EnergyConsumption {
     pub sewage_gas_produced: Qubicmeters,
     pub methane_fraction: Percent,
@@ -34,6 +38,7 @@ pub struct EnergyConsumption {
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
 pub struct SewageSludgeTreatment {
     pub sludge_bags_are_open: bool,
     pub sludge_storage_containers_are_open: bool,
@@ -43,6 +48,7 @@ pub struct SewageSludgeTreatment {
 }
 
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
 pub struct OperatingMaterials {
     pub fecl3: Tons,
     pub feclso4: Tons,

@@ -7,7 +7,7 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
 ) -> f64 {
     let mut s2 = scenario;
     s2.ch4 = ch4_chp_emission_factor;
-    let (co2_equivalents, _, _) = calculate_emissions(&profile, s2);
+    let (co2_equivalents, _, _) = calculate_emissions(profile, s2);
 
     f64::from(co2_equivalents.ch4_combined_heat_and_power_plant)
 }
@@ -51,7 +51,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -159,7 +159,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -268,7 +268,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -377,7 +377,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -485,7 +485,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(&profile, scenario);
+    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,

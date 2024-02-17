@@ -90,6 +90,22 @@ macro_rules! quantity {
                 }
             }
 
+            impl Sub<&$unit> for $unit {
+                type Output = $unit;
+
+                fn sub(self, rhs: &$unit) -> Self::Output  {
+                    Self::new(self.0 - rhs.0)
+                }
+            }
+
+            impl Sub<&$unit> for &$unit {
+                type Output = $unit;
+
+                fn sub(self, rhs: &$unit) -> Self::Output  {
+                    Self::Output::new(self.0 - rhs.0)
+                }
+            }
+
             impl SubAssign<$unit> for $unit {
                 fn sub_assign(&mut self, rhs: Self) {
                     self.0 = self.0 - rhs.0;
@@ -111,7 +127,36 @@ macro_rules! quantity {
                 }
             }
 
+            impl Mul<&Percent> for $unit {
+                type Output = $unit;
+                fn mul(self, rhs: &Percent) -> Self::Output {
+                    $unit::new(self.0 * rhs.0 / 100.0)
+                }
+            }
+
+            impl Mul<&Percent> for &$unit {
+                type Output = $unit;
+                fn mul(self, rhs: &Percent) -> Self::Output {
+                    $unit::new(self.0 * rhs.0 / 100.0)
+                }
+            }
+
+
             impl Mul<Factor> for $unit {
+                type Output = $unit;
+                fn mul(self, rhs: Factor) -> Self::Output {
+                    $unit::new(self.0 * rhs.0)
+                }
+            }
+
+            impl Mul<&Factor> for $unit {
+                type Output = $unit;
+                fn mul(self, rhs: &Factor) -> Self::Output {
+                    $unit::new(self.0 * rhs.0)
+                }
+            }
+
+            impl Mul<Factor> for &$unit {
                 type Output = $unit;
                 fn mul(self, rhs: Factor) -> Self::Output {
                     $unit::new(self.0 * rhs.0)
