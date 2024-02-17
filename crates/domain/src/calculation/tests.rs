@@ -1,4 +1,4 @@
-use crate::{units::*, *};
+use crate::{units::*, *, constants::*};
 
 fn ch4_combined_heat_and_power_plant_computation_helper(
     scenario: EmissionFactorCalculationMethods,
@@ -564,9 +564,10 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
 
 #[test]
 fn calculate_ch4_slippage_sludge_bags_for_one_digester() {
-    let expected = Tons::new(136.391_01);
+    let expected = Tons::new(4.8711075);
     let digester_count = Some(1);
     let methane_fraction = Percent::new(62.0);
     let result = calculate_ch4_slippage_sludge_bags(digester_count, methane_fraction);
-    assert_eq!(expected, result);
+    assert_eq!(result, expected);
+    assert_eq!(result * GWP_CH4, Tons::new(136.391_01));
 }
