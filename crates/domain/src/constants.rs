@@ -15,8 +15,8 @@ pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);
 /// 0.3 `[%]` of the total methane gas yield
 pub const EMISSION_FACTOR_SLUDGE_BAGS: Percent = Percent::new(0.0375);
 
-/// 1,7 `[%]` of the total digester gas production
-pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(1.7);
+/// 1,6 `[%]` of the total digester gas production
+pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(1.6);
 
 /// `[g co2 / kg]` solution
 pub const EMISSION_FACTOR_FECL3: f64 = 395.0;
