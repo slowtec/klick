@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.3.14 (2024-02-18)
+
+- Changed
+  - calculatioin of CH4 slippage sludge bags emissions
+  - `EMISSION_FACTOR_SLUDGE_STORAGE` 1.7 -> 1.6 #144
+  - Set digester count to 1 in example data
+
+- Fixed
+  - Some texts and typos #124
+  - Some refactorings
+
 ## v0.3.13 (2024-02-15)
 
 - Changed
@@ -8,7 +19,7 @@
   - more text #140
   - unterstützten -> unterstützt #127
   - CH4 Klärprozess -> CH4 Anlage (unspez.) #131
-  - fixup #135 
+  - fixup #135
 
 ## v0.3.12 (2024-02-14)
 
@@ -19,13 +30,13 @@
 ## v0.3.11 (2024-02-13)
 
 - Changed
-  - Updated BarChart rendering 
+  - Updated BarChart rendering
 
 ## v0.3.10 (2024-02-13)
 
 - Changed:
-  - barchart diff view (instead of sankey diff tree) #32 
-  - digester count default no 0 instead of 1: #132 
+  - barchart diff view (instead of sankey diff tree) #32
+  - digester count default no 0 instead of 1: #132
   - Various refactorings
 
 ## v0.3.9 (2024-02-05)
