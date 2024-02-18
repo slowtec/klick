@@ -105,7 +105,7 @@ fn send_address_confirmation_mail(
         "Willkommen beim KlicK-Tool \"Klimabilanz für Kläranlagen mit einem Klick\".\n\n",
         "Um Ihre Anmeldung abzuschließen, klicken Sie bitte auf folgenden Link:\n",
         &link,
-        "\n\nWir wünschen viele gute Erkenntnisse mit dem KlicK-tool!",
+        "\n\nWir wünschen viele gute Erkenntnisse mit dem KlicK-Tool!",
     ]
     .join("");
 
