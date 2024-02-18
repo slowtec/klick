@@ -1,6 +1,6 @@
 [package]
 name = "klick-frontend"
-version = "0.3.13"
+version = "0.3.14"
 edition = "2021"
 publish = false
 rust-version = "1.76"
