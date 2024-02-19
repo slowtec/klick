@@ -111,19 +111,19 @@ pub fn options(
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammtaschen"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.0.ch4_sludge_bags)).replace('.',",") }
-                      <span class="ml-2 text-gray-400">{ "t" }</span>
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
 
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammlagerung"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.0.ch4_sludge_storage_containers)).replace('.',",") }
-                      <span class="ml-2 text-gray-400">{ "t" }</span>
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
 
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen der Kläranlage"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.0.emissions)).replace('.',",") }
-                      <span class="ml-2 text-gray-400">{ "t" }</span>
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                   </dl>
                 }

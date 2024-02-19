@@ -786,8 +786,7 @@ pub fn Tool(
         }
 
         <p>
-          "Es ist das Szenario \"" { selected_scenario_name.get() } "\" ausgewählt.
-
+          "Es ist das Szenario \"" { selected_scenario_name.get() } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
           Durch Anklicken kann ein anderes Szenario ausgewählt werden."
         </p>
 
