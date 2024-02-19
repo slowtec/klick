@@ -22,7 +22,7 @@ impl ValueLabel for Id {
     fn label(&self) -> &str {
         match self {
             Self::SludgeBags => "Schließen der Schlammtaschen",
-            Self::SludgeStorageContainers => "Schließen der Schlammstapelbehälter",
+            Self::SludgeStorageContainers => "Schließen der Schlammlagerung",
         }
     }
 }
@@ -89,7 +89,7 @@ pub fn options(
         <div class="my-4 ml-4">
           { fields_view }
         </div>
-        <InfoBox text = "Auch Schlammstapelbehälter tragen maßgeblich zu Methanemissionen bei, falls diese nicht geschlossen sind/werden.">
+        <InfoBox text = "Auch die Schlammlagerung trägt maßgeblich zu Methanemissionen bei, falls diese nicht geschlossen sind/werden.">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S. 24)" url = DWA_MERKBLATT_URL >
             "Messungen von OSHITA et al. (2014) zeigen mit einer im Nacheindicker vorliegenden CH"<sub>4</sub>"-Konzentration,
             die 16 % über der theoretischen Löslichkeit von Methan lag,
@@ -114,7 +114,7 @@ pub fn options(
                       <span class="ml-2 text-gray-400">{ "t" }</span>
                     </dd>
 
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammstapelbehälter"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammlagerung"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.0.ch4_sludge_storage_containers)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t" }</span>

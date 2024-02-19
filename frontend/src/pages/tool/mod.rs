@@ -456,7 +456,7 @@ pub fn Tool(
                     value: f64::from(new.ch4_sludge_bags) - f64::from(old.ch4_sludge_bags),
                 },
                 klick_app_charts::BarChartArguments {
-                    label: "CH₄ Schlupf Schlammstapel",
+                    label: "CH₄ Schlupf Schlammlagerung",
                     value: f64::from(new.ch4_sludge_storage_containers)
                         - f64::from(old.ch4_sludge_storage_containers),
                 },
