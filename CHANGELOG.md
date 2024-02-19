@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.15 (2024-02-19)
+
+- Changed
+  - Pflichtfeld Klärgas/Methangehalt/Eigenstromerzeugung/Transportdistanz anpassung #145
+
 ## v0.3.14 (2024-02-18)
 
 - Changed
