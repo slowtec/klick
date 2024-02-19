@@ -116,12 +116,12 @@ pub fn options(
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.0.ch4_combined_heat_and_power_plant)).replace('.',",") }
-                      <span class="ml-2 text-gray-400">{ "t" }</span>
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.0.emissions)).replace('.',",") }
-                      <span class="ml-2 text-gray-400">{ "t" }</span>
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                   </dl>
                 }
