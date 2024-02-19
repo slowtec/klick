@@ -14,7 +14,7 @@ fn MyBarChart() -> impl IntoView {
             value: 6.0,
         },
         klick_app_charts::BarChartArguments {
-            label: "CH₄ Schlupf Schlammstapel",
+            label: "CH₄ Schlupf Schlammlagerung",
             value: -86.0,
         },
         klick_app_charts::BarChartArguments {
@@ -53,7 +53,7 @@ fn MyBarChart() -> impl IntoView {
             value: 20.0,
         },
         klick_app_charts::BarChartArguments {
-            label: "CH₄ Schlupf Schlammstapel",
+            label: "CH₄ Schlupf Schlammlagerung",
             value: 30.0,
         },
         klick_app_charts::BarChartArguments {
@@ -71,7 +71,7 @@ fn MyBarChart() -> impl IntoView {
             value: -20.0,
         },
         klick_app_charts::BarChartArguments {
-            label: "CH₄ Schlupf Schlammstapel",
+            label: "CH₄ Schlupf Schlammlagerung",
             value: -30.0,
         },
         klick_app_charts::BarChartArguments {
@@ -89,7 +89,7 @@ fn MyBarChart() -> impl IntoView {
             value: -20.0,
         },
         klick_app_charts::BarChartArguments {
-            label: "CH₄ Schlupf Schlammstapel",
+            label: "CH₄ Schlupf Schlammlagerung",
             value: -30.0,
         },
         klick_app_charts::BarChartArguments {

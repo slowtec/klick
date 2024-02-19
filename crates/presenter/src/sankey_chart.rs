@@ -90,7 +90,7 @@ pub fn create_sankey_chart_data(
 
     nodes.push((
         ch4_sludge_storage_containers.into(),
-        "CH₄ Schlupf Schlammstapel",
+        "CH₄ Schlupf Schlammlagerung",
         red,
     ));
     let ch4_sludge_storage_containers = nodes.len() - 1;
