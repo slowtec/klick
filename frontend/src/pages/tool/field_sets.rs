@@ -34,7 +34,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 required: false,
                 field_type: FieldType::Text {
                     initial_value: None,
-                    placeholder: Some("Projektname"),
+                    placeholder: Some("Projektname".to_string()),
                     max_len: None,
                 },
             },
@@ -52,7 +52,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Text {
                     initial_value: None,
                     placeholder: Some(
-                        "Name der Kläranlage",
+                        "Name der Kläranlage".to_string(),
                     ),
                     max_len: None,
                 },
@@ -66,7 +66,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Ausbaugröße [EW]",
+                        "Ausbaugröße [EW]".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -88,7 +88,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Abwassermenge",
+                        "Abwassermenge".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -115,7 +115,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "CSB",
+                        "CSB".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -137,7 +137,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "TKN",
+                        "TKN".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -159,7 +159,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "P",
+                        "P".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -186,7 +186,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "CSB",
+                        "CSB".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -208,7 +208,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "TKN",
+                        "TKN".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -230,7 +230,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "P",
+                        "P".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -257,7 +257,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Klärgas",
+                        "Klärgas".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(0.0),
@@ -277,7 +277,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "62",
+                        "62".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(0.0),
@@ -297,7 +297,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Gasbezug",
+                        "Gasbezug".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
@@ -325,7 +325,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Gesamtstrombedarf",
+                        "Gesamtstrombedarf".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -347,7 +347,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Eigenstrom",
+                        "Eigenstrom".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -369,7 +369,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "485",
+                        "485".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -396,7 +396,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::UnsignedInteger {
                     initial_value: None,
                     placeholder: Some(
-                        "Anzahl Faultürme",
+                        "Anzahl Faultürme".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
@@ -416,7 +416,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Masse entwässert",
+                        "Masse entwässert".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
@@ -436,7 +436,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Entfernung",
+                        "Entfernung".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
@@ -463,7 +463,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "t Lösung",
+                        "t Lösung".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
@@ -483,7 +483,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "t Lösung",
+                        "t Lösung".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
@@ -503,7 +503,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "t Branntkalk",
+                        "t Branntkalk".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
@@ -523,7 +523,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "t Polymere",
+                        "t Polymere".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
@@ -553,7 +553,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: Some(3.0),
                     placeholder: Some(
-                        "% des TN(Zulauf)",
+                        "% des TN(Zulauf)".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(

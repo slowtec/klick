@@ -41,7 +41,9 @@ pub struct EnergyConsumption {
 #[cfg_attr(test, derive(Copy))]
 pub struct SewageSludgeTreatment {
     pub sludge_bags_are_open: bool,
+    pub custom_sludge_bags_factor: Option<f64>,
     pub sludge_storage_containers_are_open: bool,
+    pub custom_sludge_storage_containers_factor: Option<f64>,
     pub sewage_sludge_for_disposal: Tons,
     pub transport_distance: Kilometers,
     pub digester_count: Option<u64>,

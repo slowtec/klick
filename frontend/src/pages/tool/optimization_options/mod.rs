@@ -5,7 +5,7 @@ use klick_domain as domain;
 use crate::forms::InfoIcon;
 
 mod ch4_emissions_chp;
-mod ch4_emissions_open_digesters;
+pub mod ch4_emissions_open_digesters;
 mod ch4_emissions_pre_treatment;
 mod excess_energy_co2_equivalent;
 mod fossil_co2_emissions;
@@ -32,6 +32,8 @@ pub fn OptimizationOptions(
     barchart_arguments_radio_inputs_bhkw: ReadSignal<
         Vec<klick_app_charts::BarChartRadioInputArguments>,
     >,
+    custom_sludge_bags_factor: RwSignal<Option<f64>>,
+    custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
 ) -> impl IntoView {
     log::info!("OptimizationOptions rendering");
     view! {
@@ -39,7 +41,7 @@ pub fn OptimizationOptions(
       { n2o_emissions_in_secondary_stream_systems::options() }
       { ch4_emissions_pre_treatment::options() }
       { ch4_emissions_chp::options(output, selected_scenario_bhkw, custom_factor_bhkw, barchart_arguments_radio_inputs_bhkw) }
-      { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, sludge_storage_containers_are_open) }
+      { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, custom_sludge_bags_factor, sludge_storage_containers_are_open, custom_sludge_storage_containers_factor) }
       { leak_test::options() }
       { fossil_co2_emissions::options() }
       { excess_energy_co2_equivalent::options(output) }

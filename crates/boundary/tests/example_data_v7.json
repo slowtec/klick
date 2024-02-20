@@ -1,0 +1,52 @@
+{
+  "version": 7,
+  "project": {
+    "title": null,
+    "plant_profile": {
+      "plant_name": "Muster Klärwerk",
+      "population_equivalent": 50000.0,
+      "wastewater": 2135250.0,
+      "influent_average": {
+        "nitrogen": 94.0,
+        "chemical_oxygen_demand": 1020.0,
+        "phosphorus": 15.38
+      },
+      "effluent_average": {
+        "nitrogen": 15.77,
+        "chemical_oxygen_demand": 47.18,
+        "phosphorus": 1.02
+      },
+      "energy_consumption": {
+        "sewage_gas_produced": 420000.0,
+        "methane_fraction": 62.0,
+        "purchase_of_biogas": false,
+        "total_power_consumption": 1665000.0,
+        "on_site_power_generation": 810000.0,
+        "emission_factor_electricity_mix": 420.0
+      },
+      "sewage_sludge_treatment": {
+        "sludge_bags_are_open": true,
+        "custom_sludge_bags_factor": 1.12,
+        "sludge_storage_containers_are_open": true,
+        "custom_sludge_storage_containers_factor": 1.13,
+        "sewage_sludge_for_disposal": 3016.5,
+        "transport_distance": 150.0,
+        "digester_count": 3
+      },
+      "operating_materials": {
+        "fecl3": 310.5,
+        "feclso4": 0.0,
+        "caoh2": 0.0,
+        "synthetic_polymers": 12.0
+      }
+    },
+    "optimization_scenario": {
+      "n2o_emission_factor": {
+        "calculation_method": "ipcc2019",
+        "custom_factor": null
+      },
+      "ch4_chp_emission_factor": null
+    }
+  }
+}
+

@@ -44,7 +44,9 @@ fn example_input_data() -> ProjectData {
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: Some(true),
+            custom_sludge_bags_factor: None,
             sludge_storage_containers_are_open: Some(true),
+            custom_sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Some(3016.5),
             transport_distance: Some(150.0),
             digester_count: Some(1),
