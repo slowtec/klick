@@ -341,7 +341,10 @@ async fn get_export(
             Ok((headers, json_string).into_response())
         }
         Format::Pdf => {
-            let project_data = project.into_project_data();
+            let project_data = match project {
+                boundary::Project::Saved(p) => p.data,
+                boundary::Project::Unsaved(d) => d,
+            };
             let bytes = export_to_pdf(project_data)?;
             let headers = [
                 (header::CONTENT_TYPE, "application/pdf"),

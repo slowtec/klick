@@ -201,7 +201,7 @@ mod auth {
     }
 }
 
-const EXAMPLE_PROJECT: &str = include_str!("unsaved_example_project_v6.json");
+const EXAMPLE_PROJECT: &str = include_str!("unsaved_example_project.json");
 
 #[test]
 fn use_actual_data_version_for_tests() {

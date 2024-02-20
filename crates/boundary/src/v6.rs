@@ -22,15 +22,6 @@ pub enum Project {
     Unsaved(ProjectData),
 }
 
-impl Project {
-    pub fn into_project_data(self) -> ProjectData {
-        match self {
-            Self::Saved(p) => p.data,
-            Self::Unsaved(d) => d,
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(feature = "extra-derive", derive(Default, Debug, Clone, PartialEq))]
 pub struct ProjectData {
