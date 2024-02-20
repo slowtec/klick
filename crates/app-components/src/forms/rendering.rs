@@ -287,7 +287,7 @@ fn create_tooltip(
 fn TextInput(
     label: String,
     field_id: String,
-    placeholder: &'static str,
+    placeholder: String,
     value: RwSignal<Option<String>>,
     max_len: Option<usize>,
     description: Option<&'static str>,
@@ -367,7 +367,7 @@ pub fn format_f64_into_de_string(number: f64) -> String {
 fn FloatInput(
     label: String,
     unit: &'static str,
-    placeholder: &'static str,
+    placeholder: String,
     field_id: String,
     input_value: RwSignal<Option<String>>,
     output_value: RwSignal<Option<f64>>,
@@ -465,7 +465,7 @@ fn FloatInput(
 fn UnsignedIntegerInput(
     label: String,
     unit: &'static str,
-    placeholder: &'static str,
+    placeholder: String,
     field_id: String,
     input_value: RwSignal<Option<String>>,
     output_value: RwSignal<Option<u64>>,

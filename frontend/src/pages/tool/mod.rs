@@ -26,7 +26,7 @@ mod example_data;
 mod field_sets;
 mod fields;
 mod input_data_list;
-mod optimization_options;
+pub mod optimization_options;
 mod project_menu;
 
 use self::{
@@ -73,11 +73,11 @@ pub fn Tool(
     let (signals, set_views, required_fields) = forms::render_field_sets(field_sets.clone());
     let signals = Rc::new(signals);
     let missing_fields = RwSignal::new(Vec::<MissingField<_>>::new());
-
+    let custom_sludge_bags_factor = RwSignal::new(Option::<f64>::None);
+    let custom_sludge_storage_containers_factor = RwSignal::new(Option::<f64>::None);
     let input_data = RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
     let sankey_data =
         RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
-
     let sankey_header = RwSignal::new(String::new());
     let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
     let selected_scenario_name = RwSignal::new(String::new());
@@ -375,6 +375,12 @@ pub fn Tool(
                 .sewage_sludge_treatment
                 .sludge_storage_containers_are_open =
                 sludge_storage_containers_are_open.get().unwrap_or(true);
+            input_data.sewage_sludge_treatment.custom_sludge_bags_factor =
+                custom_sludge_bags_factor.get();
+            input_data
+                .sewage_sludge_treatment
+                .custom_sludge_storage_containers_factor =
+                custom_sludge_storage_containers_factor.get();
             let output: (
                 domain::CO2Equivalents,
                 domain::EmissionFactors,
@@ -880,6 +886,8 @@ pub fn Tool(
                   selected_scenario_bhkw = selected_scenario_bhkw
                   custom_factor_bhkw = custom_factor_bhkw
                   barchart_arguments_radio_inputs_bhkw = barchart_arguments_radio_inputs_bhkw.read_only()
+                  custom_sludge_bags_factor
+                  custom_sludge_storage_containers_factor
                 />
               }
             }

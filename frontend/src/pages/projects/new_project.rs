@@ -20,7 +20,7 @@ pub fn NewProject(
         required: true,
         field_type: forms::FieldType::Text {
             initial_value: None,
-            placeholder: Some("Projektname"),
+            placeholder: Some("Projektname".to_string()),
             max_len: None,
         },
     };

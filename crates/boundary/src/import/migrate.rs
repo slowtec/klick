@@ -1,4 +1,4 @@
-use crate::{v1, v2, v3, v4, v5, v6};
+use crate::{v1, v2, v3, v4, v5, v6, v7};
 
 const V1_OPERATING_MATERIALS_DIVISOR: f64 = 1_000.0;
 
@@ -279,4 +279,86 @@ pub fn from_v5(data: v5::Data) -> v6::Data {
     };
 
     v6::Data { project }
+}
+
+impl From<v6::ProjectData> for v7::ProjectData {
+    fn from(from: v6::ProjectData) -> Self {
+        let v6::ProjectData {
+            title,
+            plant_profile,
+            optimization_scenario,
+        } = from;
+
+        let v6::PlantProfile {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        } = plant_profile;
+
+        let v6::SewageSludgeTreatment {
+            sludge_bags_are_open,
+            sludge_storage_containers_are_open,
+            sewage_sludge_for_disposal,
+            transport_distance,
+            digester_count,
+        } = sewage_sludge_treatment;
+
+        let sewage_sludge_treatment = v7::SewageSludgeTreatment {
+            sludge_bags_are_open: sludge_bags_are_open,
+            custom_sludge_bags_factor: None,
+            sludge_storage_containers_are_open: sludge_storage_containers_are_open,
+            custom_sludge_storage_containers_factor: None,
+            sewage_sludge_for_disposal,
+            transport_distance,
+            digester_count,
+        };
+
+        let plant_profile = v7::PlantProfile {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        };
+
+        Self {
+            title,
+            plant_profile,
+            optimization_scenario,
+        }
+    }
+}
+
+pub fn from_v6(data: v6::Data) -> v7::Data {
+    let v6::Data { project } = data;
+
+    let project = match project {
+        v6::Project::Saved(saved_project) => {
+            let v6::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                data,
+            } = saved_project;
+            let data = data.into();
+            let saved = v7::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                data,
+            };
+            v7::Project::Saved(saved)
+        }
+        v6::Project::Unsaved(unsaved_project) => v7::Project::Unsaved(unsaved_project.into()),
+    };
+
+    v7::Data { project }
 }

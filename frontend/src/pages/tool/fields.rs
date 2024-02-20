@@ -24,6 +24,9 @@ pub enum FieldId {
     ProjectName,
     Profile(ProfileValueId),
     Scenario(ScenarioFieldId),
+    Ch4EmissionsOpenDigesters(
+        crate::pages::tool::optimization_options::ch4_emissions_open_digesters::Id,
+    ),
 }
 
 impl ValueLabel for FieldId {
@@ -32,6 +35,7 @@ impl ValueLabel for FieldId {
             Self::ProjectName => "Projektname",
             Self::Profile(id) => id.label(),
             Self::Scenario(id) => id.label(),
+            Self::Ch4EmissionsOpenDigesters(id) => id.label(),
         }
     }
 }
@@ -153,7 +157,9 @@ pub fn read_input_fields(
 
     let sewage_sludge_treatment = SewageSludgeTreatment {
         sludge_bags_are_open: Some(true),
+        custom_sludge_bags_factor: None,
         sludge_storage_containers_are_open: Some(true),
+        custom_sludge_storage_containers_factor: None,
         sewage_sludge_for_disposal: s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::SewageSludgeForDisposal).into())
             .and_then(FieldSignal::get_float),
@@ -288,7 +294,9 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
 
     let SewageSludgeTreatment {
         sludge_bags_are_open: _,
+        custom_sludge_bags_factor: _,
         sludge_storage_containers_are_open: _,
+        custom_sludge_storage_containers_factor: _,
         sewage_sludge_for_disposal,
         transport_distance,
         digester_count,

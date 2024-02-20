@@ -91,19 +91,19 @@ pub struct MinMax<T> {
 pub enum FieldType {
     Float {
         initial_value: Option<f64>,
-        placeholder: Option<&'static str>,
+        placeholder: Option<String>,
         limits: MinMax<f64>,
         unit: &'static str, // TODO: use presenter::ValueUnit trait
     },
     UnsignedInteger {
         initial_value: Option<u64>,
-        placeholder: Option<&'static str>,
+        placeholder: Option<String>,
         limits: MinMax<u64>,
         unit: &'static str, // TODO: use presenter::ValueUnit trait
     },
     Text {
         initial_value: Option<String>,
-        placeholder: Option<&'static str>,
+        placeholder: Option<String>,
         max_len: Option<usize>,
     },
     Bool {

@@ -298,7 +298,9 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
     fn try_from(from: SewageSludgeTreatment) -> Result<Self, Self::Error> {
         let SewageSludgeTreatment {
             sludge_bags_are_open,
+            custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
             digester_count,
@@ -319,7 +321,9 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
         let transport_distance = domain::units::Kilometers::new(transport_distance);
         Ok(Self {
             sludge_bags_are_open,
+            custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
             digester_count,
@@ -331,7 +335,9 @@ impl From<domain::SewageSludgeTreatment> for SewageSludgeTreatment {
     fn from(from: domain::SewageSludgeTreatment) -> Self {
         let domain::SewageSludgeTreatment {
             sludge_bags_are_open,
+            custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
             digester_count,
@@ -343,7 +349,9 @@ impl From<domain::SewageSludgeTreatment> for SewageSludgeTreatment {
         let digester_count = digester_count.map(Into::into);
         Self {
             sludge_bags_are_open,
+            custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
             digester_count,
