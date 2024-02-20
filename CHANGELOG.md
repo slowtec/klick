@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.16 (2024-02-20)
+
+- Changed
+  - rework Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung #151
+  - t -> t CO₂-Äq./a #155
+  - Schlammstapelbehälter -> Schlammlagerung #148
+
 ## v0.3.15 (2024-02-19)
 
 - Changed
