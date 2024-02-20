@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "project": {
     "plant_profile": {
       "plant_name": "Muster Klärwerk",
@@ -25,7 +25,9 @@
       },
       "sewage_sludge_treatment": {
         "sludge_bags_are_open": true,
+        "custom_sludge_bags_factor": 1.12,
         "sludge_storage_containers_are_open": true,
+        "custom_sludge_storage_containers_factor": 1.13,
         "sewage_sludge_for_disposal": 3016.5,
         "transport_distance": 150.0,
         "digester_count": 3
