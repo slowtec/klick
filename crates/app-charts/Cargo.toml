@@ -9,7 +9,7 @@ rust-version.workspace = true
 [dependencies]
 klick-presenter = "=0.0.0"
 
-leptos = "0.6.5"
+leptos = "0.6.6"
 log = "0.4.20"
 
 [features]

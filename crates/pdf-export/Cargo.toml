@@ -13,12 +13,12 @@ klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"]
 klick-domain = "=0.0.0"
 klick-presenter = "=0.0.0"
 
-anyhow = "1.0.79"
+anyhow = "1.0.80"
 lazy_static = "1.4.0"
 pandoc = "0.8.11"
-serde = { version = "1.0.196", features = ["derive"] }
+serde = { version = "1.0.197", features = ["derive"] }
 tera = "1.19.1"
-time = { version = "0.3.31", features = ["formatting", "local-offset", "macros"] }
+time = { version = "0.3.34", features = ["formatting", "local-offset", "macros"] }
 tempfile = "3.10.0"
 
 [dev-dependencies]

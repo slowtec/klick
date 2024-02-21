@@ -14,5 +14,5 @@ klick-boundary = "=0.0.0"
 klick-domain = "=0.0.0"
 
 derive_more = "0.99.17"
-serde = { version = "1.0.196", features = ["derive"] }
+serde = { version = "1.0.197", features = ["derive"] }
 strum = { version = "0.26.1", features = ["derive"] }
