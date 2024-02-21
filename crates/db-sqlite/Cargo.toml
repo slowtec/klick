@@ -12,7 +12,7 @@ klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = "=0.0.0"
 
-anyhow = "1.0.79"
+anyhow = "1.0.80"
 diesel = { version = "2.1.4", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
 # Bundle SQLite code to prevent dynamic linking.
@@ -21,7 +21,7 @@ diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
 libsqlite3-sys = { version = "=0.27.0", features = ["bundled"] }
 log = "0.4.20"
 parking_lot = "0.12.1"
-serde_json = "1.0.113"
+serde_json = "1.0.114"
 thiserror = "1.0.57"
 time = "0.3.34"
 uuid = "1.7.0"

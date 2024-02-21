@@ -6,12 +6,12 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
-anyhow = "1.0.79"
+anyhow = "1.0.80"
 derive_more = "0.99.17"
 http = "1.0.0"
 http-serde = "2.0.0"
-serde = { version = "1.0.196", features = ["derive"] }
-serde_json = "1.0.113"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.114"
 thiserror = "1.0.57"
 time = { version = "0.3.34", features = ["serde"] }
 uuid = { version = "1.7.0", features = ["serde"] }
