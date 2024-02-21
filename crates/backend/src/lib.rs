@@ -16,6 +16,7 @@ use serde::Deserialize;
 use time::{Duration, OffsetDateTime};
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
+use url::Url;
 use uuid::Uuid;
 
 use klick_application::{usecases, AccountRepo as _, ProjectRepo};
@@ -62,8 +63,9 @@ pub fn create_db_connection(config: &Config) -> anyhow::Result<Connection> {
 }
 
 pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> {
+    let base_url = config.base_url.clone();
     let notification_gw = notification_gateway::Gateway::new(config);
-    let shared_state = AppState::new(db, notification_gw);
+    let shared_state = AppState::new(db, base_url, notification_gw);
 
     let cors_layer = CorsLayer::new()
         .allow_methods([Method::GET, Method::DELETE, Method::PUT, Method::POST])
@@ -91,6 +93,7 @@ pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> 
         .route("/project/:id", get(get_project))
         .route("/project/:id", delete(delete_project))
         .route("/project/:id/export", get(get_export))
+        .route("/download/:id/:filename", get(get_download))
         .route_layer(cors_layer)
         .with_state(shared_state);
 
@@ -131,16 +134,29 @@ fn not_found() -> Response {
 #[derive(Clone)]
 pub struct AppState {
     db: Connection,
-    tokens: Arc<RwLock<HashMap<Uuid, Account>>>,
+    tokens: Arc<RwLock<HashMap<Uuid, Account>>>, // TODO: use stateless JWT
+    downloads: Arc<RwLock<HashMap<Uuid, Download>>>, // TODO: use stateless JWT
     notification_gw: notification_gateway::Gateway,
+    base_url: Url,
+}
+
+enum Download {
+    PdfReport { project_id: ProjectId },
+    JsonProject { project_id: ProjectId },
 }
 
 impl AppState {
     #[must_use]
-    pub fn new(db: Connection, notification_gw: notification_gateway::Gateway) -> Self {
+    pub fn new(
+        db: Connection,
+        base_url: Url,
+        notification_gw: notification_gateway::Gateway,
+    ) -> Self {
         Self {
             db,
+            base_url,
             tokens: Default::default(),
+            downloads: Default::default(),
             notification_gw,
         }
     }
@@ -319,16 +335,65 @@ async fn get_export(
     Path(uuid): Path<Uuid>,
     Query(params): Query<Export>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-) -> std::result::Result<Response, ApiError> {
+) -> Result<json_api::DownloadRequestResponse> {
     account_from_token(&state, auth)?;
     let id = ProjectId::from_uuid(uuid);
     log::debug!("Export project {id:?}");
-    let Some(project) = state.db.find_project(&id)? else {
+    if state.db.find_project(&id)?.is_none() {
         return Err(ApiError::from(anyhow!("project not found")));
     };
-    let project = boundary::Project::from(project);
-    match params.format {
-        Format::Json => {
+    let file_name = match params.format {
+        Format::Json => "klimabilanz.json",
+        Format::Pdf => "klimabilanz.pdf",
+    };
+    let download = match params.format {
+        Format::Pdf => Download::PdfReport { project_id: id },
+        Format::Json => Download::JsonProject { project_id: id },
+    };
+    let download_id = Uuid::new_v4();
+    state.downloads.write().insert(download_id, download);
+    let download_url = state
+        .base_url
+        .join(&format!("/api/download/{download_id}/{file_name}"))
+        .unwrap()
+        .to_string();
+
+    Ok(Json(json_api::DownloadRequestResponse { download_url }))
+}
+
+async fn get_download(
+    State(state): State<AppState>,
+    Path((download_id, filename)): Path<(Uuid, std::path::PathBuf)>,
+) -> std::result::Result<Response, ApiError> {
+    let Some(download) = state.downloads.write().remove(&download_id) else {
+        return Err(ApiError::from(anyhow!("download not found")));
+    };
+    match download {
+        Download::PdfReport { project_id } => {
+            let Some(project) = state.db.find_project(&project_id)? else {
+                return Err(ApiError::from(anyhow!("project not found")));
+            };
+            let project = boundary::Project::from(project);
+            let project_data = match project {
+                boundary::Project::Saved(p) => p.data,
+                boundary::Project::Unsaved(d) => d,
+            };
+            // FIXME: check if pdf was alread made
+            let bytes = export_to_pdf(project_data)?;
+            let headers = [
+                (header::CONTENT_TYPE, "application/pdf"),
+                (
+                    header::CONTENT_DISPOSITION,
+                    &format!("attachment; filename={}", filename.display()),
+                ),
+            ];
+            Ok((headers, bytes).into_response())
+        }
+        Download::JsonProject { project_id } => {
+            let Some(project) = state.db.find_project(&project_id)? else {
+                return Err(ApiError::from(anyhow!("project not found")));
+            };
+            let project = boundary::Project::from(project);
             let data = boundary::Data { project };
             let json_string = boundary::export_to_string_pretty(&data);
             let headers = [
@@ -339,21 +404,6 @@ async fn get_export(
                 ),
             ];
             Ok((headers, json_string).into_response())
-        }
-        Format::Pdf => {
-            let project_data = match project {
-                boundary::Project::Saved(p) => p.data,
-                boundary::Project::Unsaved(d) => d,
-            };
-            let bytes = export_to_pdf(project_data)?;
-            let headers = [
-                (header::CONTENT_TYPE, "application/pdf"),
-                (
-                    header::CONTENT_DISPOSITION,
-                    "attachment; filename=report.pdf",
-                ),
-            ];
-            Ok((headers, bytes).into_response())
         }
     }
 }
