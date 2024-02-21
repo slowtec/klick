@@ -1,6 +1,6 @@
 use leptos::*;
 
-use klick_boundary::{Project, SavedProject};
+use klick_boundary::{Project, ProjectId, SavedProject};
 
 use crate::{api::AuthorizedApi, Page};
 
@@ -69,6 +69,29 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
         }
     });
 
+    let download_link: NodeRef<leptos::html::A> = create_node_ref();
+
+    let download_pdf = create_action(move |id: &ProjectId| {
+        let api = api.clone();
+        let id = *id;
+        async move {
+            let result = api.get().download_pdf_report(&id).await;
+            match result {
+                Ok(response) => {
+                    log::debug!("{}", &response.download_url);
+                    let link = download_link.get().expect("<a> to exist");
+                    link.set_attribute("href", &response.download_url).unwrap();
+                    link.set_attribute("download", "klimabilanz.pdf").unwrap();
+                    link.click();
+                    link.remove_attribute("href").unwrap();
+                }
+                Err(err) => {
+                    log::warn!("Unable to download PDF report: {err}");
+                }
+            }
+        }
+    });
+
     let on_new_success = move |_| {
         show_new_project.set(false);
         load_projects.dispatch(());
@@ -79,6 +102,7 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
     };
 
     let navigate = leptos_router::use_navigate();
+
     let on_load = move |id| {
         log::debug!("Load project {id:?}");
         let Some(project) = projects.get().iter().find(|p| p.id == id).cloned() else {
@@ -87,6 +111,10 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
         current_project.set(Some(project.into()));
         let nav_options = Default::default();
         navigate(Page::Tool.path(), nav_options);
+    };
+
+    let on_download_pdf = move |id| {
+        download_pdf.dispatch(id);
     };
 
     load_projects.dispatch(());
@@ -114,7 +142,10 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
           projects = projects.into()
           on_load
           on_delete_success
+          on_download_pdf
         />
       </div>
+      // Hidden download anchor
+      <a style="display:none;" node_ref=download_link></a>
     }
 }

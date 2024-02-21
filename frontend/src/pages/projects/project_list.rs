@@ -5,6 +5,7 @@ use time::{
     macros::format_description,
 };
 
+use klick_app_components::icons;
 use klick_boundary::{ProjectId, SavedProject};
 
 use crate::api::AuthorizedApi;
@@ -14,38 +15,38 @@ pub fn ProjectList(
     api: Signal<AuthorizedApi>,
     projects: Signal<Vec<SavedProject>>,
     #[prop(into)] on_load: Callback<ProjectId, ()>,
+    #[prop(into)] on_download_pdf: Callback<ProjectId, ()>,
     #[prop(into)] on_delete_success: Callback<(), ()>,
 ) -> impl IntoView {
     move || {
         if projects.get().is_empty() {
-            view! {
+            return view! {
               <p>"Es wurden noch keine Projekte abgespeichert."</p>
             }
-            .into_view()
-        } else {
-            view! {
-              <ul role="list" class="divide-y divide-gray-100">
-              {
-                let mut projects = projects.get().clone();
-                projects.sort_by(|a,b|{
-                  match (a.modified_at, b.modified_at) {
-                    (Some(x),Some(y)) => x.cmp(&y),
-                    (Some(x),None) => x.cmp(&b.created_at),
-                    (None,Some(y)) => a.created_at.cmp(&y),
-                    (None, None) => a.created_at.cmp(&b.created_at)
-                  }
-                });
-
-                projects.into_iter().rev().map(|project|view!{
-                  <li class="flex items-center justify-between gap-x-6 py-5">
-                    <Project api project load = on_load on_delete_success />
-                  </li>
-                }).collect::<Vec<_>>()
-              }
-              </ul>
-            }
-            .into_view()
+            .into_view();
         }
+        view! {
+          <ul role="list" class="divide-y divide-gray-100">
+          {
+            let mut projects = projects.get().clone();
+            projects.sort_by(|a,b|{
+              match (a.modified_at, b.modified_at) {
+                (Some(x),Some(y)) => x.cmp(&y),
+                (Some(x),None) => x.cmp(&b.created_at),
+                (None,Some(y)) => a.created_at.cmp(&y),
+                (None, None) => a.created_at.cmp(&b.created_at)
+              }
+            });
+
+            projects.into_iter().rev().map(|project|view!{
+              <li class="flex items-center justify-between gap-x-6 py-5">
+                <Project api project load = on_load on_delete_success on_download_pdf />
+              </li>
+            }).collect::<Vec<_>>()
+          }
+          </ul>
+        }
+        .into_view()
     }
 }
 
@@ -57,6 +58,7 @@ fn Project(
     api: Signal<AuthorizedApi>,
     project: SavedProject,
     #[prop(into)] load: Callback<ProjectId, ()>,
+    #[prop(into)] on_download_pdf: Callback<ProjectId, ()>,
     #[prop(into)] on_delete_success: Callback<(), ()>,
 ) -> impl IntoView {
     let error = RwSignal::<Option<String>>::new(None);
@@ -119,6 +121,7 @@ fn Project(
       <Menu
         load = move |_| load.call(project.id)
         delete = move |_| delete_project.dispatch(())
+        download_pdf = move |_| on_download_pdf.call(project.id)
       />
     }
 }
@@ -127,6 +130,7 @@ fn Project(
 fn Menu(
     #[prop(into)] load: Callback<(), ()>,
     #[prop(into)] delete: Callback<(), ()>,
+    #[prop(into)] download_pdf: Callback<(), ()>,
 ) -> impl IntoView {
     let menu_is_open = RwSignal::new(false);
 
@@ -156,7 +160,7 @@ fn Menu(
           //   To: "transform opacity-0 scale-95"
           <Show when = move || menu_is_open.get() >
             <div
-              class="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+              class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               tabindex="-1"
@@ -164,17 +168,12 @@ fn Menu(
               <Entry
                 on:click = move |_| delete.call(())
                 label = "löschen"
-                icon = view! {
-                  <svg
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="mr-3 w-6 h-6 text-gray-400 group-hover:text-gray-500"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                  </svg>
-                }
+                icon = icons::Trash()
+              />
+              <Entry
+                on:click = move |_| download_pdf.call(())
+                label = "erzeuge Bericht (PDF)"
+                icon = icons::DocumentArrowDown()
               />
             </div>
           </Show>
@@ -201,7 +200,7 @@ where
 {
     view! {
       <a
-       href={ href.unwrap_or("#") }
+        href={ href.unwrap_or("#") }
         class="flex group items-center px-3 py-1 text-sm leading-6 text-gray-700 hover:text-gray-900"
         role="menuitem"
         tabindex="-1"

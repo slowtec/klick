@@ -97,3 +97,8 @@ pub struct ResetPassword {
     pub token: String,
     pub new_password: String,
 }
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct DownloadRequestResponse {
+    pub download_url: String,
+}

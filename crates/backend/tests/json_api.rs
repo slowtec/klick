@@ -29,6 +29,7 @@ async fn run_server_with_config(mut config: Config) -> (SocketAddr, Connection) 
         .unwrap();
     let address = listener.local_addr().unwrap();
     config.address = address;
+    config.base_url = format!("http://{}", address).parse().unwrap();
     config.db_connection = ":memory:".to_string();
 
     let db = klick_backend::create_db_connection(&config).unwrap();
@@ -247,6 +248,7 @@ mod projects {
 
 mod export {
     use super::*;
+    use url::Url;
 
     #[ignore]
     // TODO:
@@ -280,7 +282,18 @@ mod export {
             .await
             .unwrap();
         assert_eq!(res.status(), 200);
+        assert_eq!(res.headers()[header::CONTENT_TYPE], "application/json");
+
+        let data = res.json::<Value>().await.unwrap();
+        let download_url = data["download_url"].as_str().unwrap();
+        assert!(download_url.parse::<Url>().is_ok());
+
+        // NOTE: we must not need a token here!
+        let res = client.get(download_url).send().await.unwrap();
+        assert_eq!(res.status(), 200);
         assert_eq!(res.headers()[header::CONTENT_TYPE], "application/pdf");
+        let binary = res.bytes().await.unwrap();
+        assert!(binary.len() > 0);
     }
 
     #[ignore]
