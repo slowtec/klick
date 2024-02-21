@@ -166,21 +166,15 @@ where
             let node_height = node_position.height;
             let value = sankey.nodes[id].value;
             let label = sankey.nodes[id].label.as_ref().map(|label| {
+                let l = format!("{} {}", label, number_format(value));
                 view! {
                   <tspan>
-                    { label }
+                    { l }
                   </tspan>
                 }
             });
 
-            let value_dx = if label.is_some() {
-                font_size / 4.0
-            } else {
-                0.0
-            };
-
             let fill = sankey.nodes[id].color.unwrap_or(Color::new("#555"));
-
             view! {
               <rect
                 x = {x}
@@ -200,9 +194,6 @@ where
                 dominant-baseline = "middle"
               >
                 { label }
-                <tspan dx= {value_dx}>
-                  { number_format(value) }
-                </tspan>
               </text>
             }
         })
