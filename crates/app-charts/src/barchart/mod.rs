@@ -4,6 +4,7 @@ use leptos::*;
 pub struct BarChartArguments {
     pub label: &'static str,
     pub value: f64,
+    pub percentage: Option<f64>,
 }
 
 #[component]
@@ -72,11 +73,11 @@ fn Bars(
       <For
         each = move || {
           data.iter().enumerate().map(|(i,v)|
-            (i, v.label, v.value)
+            (i, v.label, v.value, v.percentage)
           ).collect::<Vec<_>>()
         }
-        key=|(i,_,_)| *i
-        children = move |(i, label, value)| {
+        key=|(i,_,_,_)| *i
+        children = move |(i, label, value, percentage)| {
           let bar_height = (height - 4.0 * gap) * (value/value_max).abs() * 0.5;
           let dx = gap + (bar_width + gap) * i as f64;
 
@@ -89,6 +90,7 @@ fn Bars(
             <Bar
               label
               value
+              percentage
               dx={dx}
               dy={dy}
               bar_width={ bar_width }
@@ -111,6 +113,7 @@ enum LabelPosition {
 fn Bar(
     label: &'static str,
     value: f64,
+    percentage: Option<f64>,
     dx: f64,
     dy: f64,
     bar_width: f64,
@@ -128,6 +131,10 @@ fn Bar(
     let value_dy = match label_position {
         LabelPosition::Top => bar_height + 10.0 + font_size.get(),
         LabelPosition::Bottom => -font_size.get(),
+    };
+    let percentage_label = match percentage {
+        Some(p) => format!(" / {:.2}%", p),
+        None => "".to_string(),
     };
     view! {
       <g class="barchart">
@@ -159,11 +166,9 @@ fn Bar(
           text-anchor = "middle"
           font-size = move || font_size.get()
         >
-        { format!("{value:.1}") }
+        { format!("{value:.1}{percentage_label}") }
         </text>
         </g>
-
       </g>
-
     }
 }
