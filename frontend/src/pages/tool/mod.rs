@@ -420,32 +420,41 @@ pub fn Tool(
                  .0;
             let new = output.co2_equivalents;
 
-            let comp = vec![
-                klick_app_charts::BarChartArguments {
-                    label: "CH₄ Schlupf Schlammtasche",
-                    value: f64::from(new.ch4_sludge_bags) - f64::from(old.ch4_sludge_bags),
-                },
-                klick_app_charts::BarChartArguments {
-                    label: "CH₄ Schlupf Schlammlagerung",
-                    value: f64::from(new.ch4_sludge_storage_containers)
-                        - f64::from(old.ch4_sludge_storage_containers),
-                },
-                klick_app_charts::BarChartArguments {
-                    label: "CH₄ BHKW",
-                    value: f64::from(new.ch4_combined_heat_and_power_plant)
-                        - f64::from(old.ch4_combined_heat_and_power_plant),
-                },
-                klick_app_charts::BarChartArguments {
-                    label: "Strombedarf",
-                    value: -1.0 * f64::from(new.excess_energy_co2_equivalent),
-                },
-                klick_app_charts::BarChartArguments {
-                    label: "Emissionen",
-                    value: f64::from(new.total_emissions)
-                        - f64::from(old.total_emissions)
-                        - f64::from(new.excess_energy_co2_equivalent),
-                },
-            ];
+            let mut comp = vec![];
+            let sludgy = f64::from(new.ch4_sludge_bags) - f64::from(old.ch4_sludge_bags);
+            comp.push(klick_app_charts::BarChartArguments {
+                label: "CH₄ Schlupf Schlammtasche",
+                value: sludgy,
+                percentage: Some(sludgy / f64::from(new.total_emissions) * 100.0),
+            });
+            let schlammy = f64::from(new.ch4_sludge_storage_containers)
+                - f64::from(old.ch4_sludge_storage_containers);
+            comp.push(klick_app_charts::BarChartArguments {
+                label: "CH₄ Schlupf Schlammlagerung",
+                value: schlammy,
+                percentage: Some(schlammy / f64::from(new.total_emissions) * 100.0),
+            });
+            let bhkwy = f64::from(new.ch4_combined_heat_and_power_plant)
+                - f64::from(old.ch4_combined_heat_and_power_plant);
+            comp.push(klick_app_charts::BarChartArguments {
+                label: "CH₄ BHKW",
+                value: bhkwy,
+                percentage: Some(bhkwy / f64::from(new.total_emissions) * 100.0),
+            });
+            let excessy = -1.0 * f64::from(new.excess_energy_co2_equivalent);
+            comp.push(klick_app_charts::BarChartArguments {
+                label: "Strombedarf",
+                value: excessy,
+                percentage: Some(excessy / f64::from(new.total_emissions) * 100.0),
+            });
+            let emissionsy = f64::from(new.total_emissions)
+                - f64::from(old.total_emissions)
+                - f64::from(new.excess_energy_co2_equivalent);
+            comp.push(klick_app_charts::BarChartArguments {
+                label: "Emissionen",
+                value: emissionsy,
+                percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
+            });
             barchart_arguments.set(comp);
             show_handlungsempfehlungen.set(true);
         } else {
@@ -927,7 +936,7 @@ pub fn Tool(
                 "Änderungen durch Optionen der Handlungsmaßnahmen"
               </h3>
               <p class="mt-2 max-w-4xl text-lg text-gray-500">
-                "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr]"
+                "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. % der Gesamtemissionen durch die ausgewählten Handlungsmaßnahmen."
               </p>
               { move || {
                       let barchart_arguments_filtered: Vec<klick_app_charts::BarChartArguments> = barchart_arguments.get()
