@@ -8,10 +8,10 @@ use tera::{Context, Tera};
 use time::{format_description::FormatItem, macros::format_description, OffsetDateTime, UtcOffset};
 
 use klick_app_charts as charts;
-use klick_application::usecases;
 use klick_boundary as boundary;
 use klick_domain::{
-    CO2Equivalents, EmissionFactors, EmissionInfluencingValues, N2oEmissionFactorCalcMethod,
+    self as domain, CO2Equivalents, EmissionFactors, EmissionInfluencingValues,
+    N2oEmissionFactorCalcMethod,
 };
 use klick_presenter::{self as presenter, Lng};
 
@@ -49,7 +49,7 @@ pub fn export_to_pdf(project: boundary::ProjectData) -> anyhow::Result<Vec<u8>> 
         N2oEmissionFactorCalcMethod::Custom(factor) => Some(factor),
         _ => None,
     };
-    let n2o_scenarios = usecases::calculate_all_n2o_emission_factor_scenarios(
+    let n2o_scenarios = domain::calculate_all_n2o_emission_factor_scenarios(
         &emission_influencing_values,
         custom_factor,
         None,
@@ -115,7 +115,7 @@ fn render_svg_bar_chart(
         .map(|(_method, co2_equivalents, emission_factors)| {
             charts::BarChartRadioInputArguments {
                 label: None, // TODO: Render method name
-                value: co2_equivalents.emissions.into(),
+                value: co2_equivalents.total_emissions.into(),
                 emission_factor: emission_factors.n2o.into(),
             }
         })

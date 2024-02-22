@@ -36,13 +36,7 @@ impl ValueLabel for Id {
 }
 
 pub fn options(
-    output: ReadSignal<
-        Option<(
-            domain::CO2Equivalents,
-            domain::EmissionFactors,
-            domain::EmissionFactorCalculationMethods,
-        )>,
-    >,
+    output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
     sludge_bags_are_open: RwSignal<Option<bool>>,
     custom_sludge_bags_factor: RwSignal<Option<f64>>,
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
@@ -201,13 +195,13 @@ pub fn options(
 
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammtaschen"</dt>
                     <dd class="text-lg py-1 px-3">
-                      { format!("{:.1}", f64::from(out.0.ch4_sludge_bags)).replace('.',",") }
+                      { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_bags)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
 
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammlagerung"</dt>
                     <dd class="text-lg py-1 px-3">
-                      { format!("{:.1}", f64::from(out.0.ch4_sludge_storage_containers)).replace('.',",") }
+                      { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_storage_containers)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                   </dl>

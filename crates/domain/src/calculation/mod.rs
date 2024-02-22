@@ -8,20 +8,22 @@ use crate::{
         QubicmetersPerHour, Ratio, Time, Tons, Years,
     },
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
-    EmissionFactorCalculationMethods, EmissionFactors, EmissionInfluencingValues,
-    EnergyConsumption, N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
+    CalculatedScenarios, EmissionFactorCalculationMethods, EmissionFactors,
+    EmissionInfluencingValues, EmissionsCalculationOutcome, EnergyConsumption,
+    N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
 };
+
+pub fn calculate_scenarios(initial_situation: EmissionInfluencingValues) -> CalculatedScenarios {
+    let _ = calculate_all_n2o_emission_factor_scenarios(&initial_situation, None, None);
+    todo!()
+}
 
 #[must_use]
 #[allow(clippy::too_many_lines)]
 pub fn calculate_emissions(
     input: EmissionInfluencingValues,
-    calc_methods: EmissionFactorCalculationMethods,
-) -> (
-    CO2Equivalents,
-    EmissionFactors,
-    EmissionFactorCalculationMethods,
-) {
+    calculation_methods: EmissionFactorCalculationMethods,
+) -> EmissionsCalculationOutcome {
     // -------    ------ //
     //  Unpack variables //
     // -------    ------ //
@@ -74,8 +76,11 @@ pub fn calculate_emissions(
     //     Calculate     //
     // -------    ------ //
 
-    let n2o_emission_factor =
-        calculate_n2o_emission_factor(calc_methods.n2o, nitrogen_influent, nitrogen_effluent);
+    let n2o_emission_factor = calculate_n2o_emission_factor(
+        calculation_methods.n2o,
+        nitrogen_influent,
+        nitrogen_effluent,
+    );
     debug_assert!(n2o_emission_factor < Factor::new(1.0));
 
     let (n2o_plant, n2o_water) = calculate_nitrous_oxide(
@@ -119,7 +124,7 @@ pub fn calculate_emissions(
     let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
     let ch4_water = ch4_water.convert_to::<Tons>() * GWP_CH4;
 
-    let ch4_emission_factor = match calc_methods.ch4 {
+    let ch4_emission_factor = match calculation_methods.ch4 {
         None => Factor::new(0.01),
         Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
         Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
@@ -175,7 +180,7 @@ pub fn calculate_emissions(
         + ch4_sludge_bags;
     let indirect_emissions = electricity_mix;
     let other_indirect_emissions = operating_materials + sewage_sludge_transport;
-    let emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
+    let total_emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
 
     // -------    ------ //
     //   Pack variables  //
@@ -198,7 +203,7 @@ pub fn calculate_emissions(
         electricity_mix,
         operating_materials,
         sewage_sludge_transport,
-        emissions,
+        total_emissions,
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
@@ -210,7 +215,11 @@ pub fn calculate_emissions(
         ch4: ch4_emission_factor,
     };
 
-    (co2_equivalents, emission_factors, calc_methods)
+    EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        calculation_methods,
+    }
 }
 
 #[must_use]
@@ -250,11 +259,11 @@ pub fn calculate_ch4_slippage_sludge_storage(
 
 #[must_use]
 pub fn calculate_n2o_emission_factor(
-    calc_method: N2oEmissionFactorCalcMethod,
+    calculation_method: N2oEmissionFactorCalcMethod,
     nitrogen_influent: MilligramsPerLiter,
     nitrogen_effluent: MilligramsPerLiter,
 ) -> Factor {
-    match calc_method {
+    match calculation_method {
         N2oEmissionFactorCalcMethod::TuWien2016 => {
             extrapolate_according_to_tu_wien_2016(nitrogen_influent, nitrogen_effluent)
         }
@@ -294,4 +303,76 @@ pub fn calculate_nitrous_oxide(
         n2o_anlage.convert_to::<Tons>(),
         n2o_gewaesser.convert_to::<Tons>(),
     )
+}
+
+pub fn calculate_all_n2o_emission_factor_scenarios(
+    values: &EmissionInfluencingValues,
+    custom_factor: Option<Factor>,
+    ch4_chp_calc_method: Option<CH4ChpEmissionFactorCalcMethod>,
+) -> Vec<(N2oEmissionFactorCalcMethod, CO2Equivalents, EmissionFactors)> {
+    let ch4 = ch4_chp_calc_method;
+
+    // TuWien2016
+    let n2o = N2oEmissionFactorCalcMethod::TuWien2016;
+    let methods = EmissionFactorCalculationMethods { n2o, ch4 };
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(values.clone(), methods);
+    let tuwien2016_result = (n2o, co2_equivalents, emission_factors);
+
+    // Optimistic
+    let n2o = N2oEmissionFactorCalcMethod::Optimistic;
+    let methods = EmissionFactorCalculationMethods { n2o, ch4 };
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(values.clone(), methods);
+    let optimistc_result = (n2o, co2_equivalents, emission_factors);
+
+    // Pesimistic
+    let n2o = N2oEmissionFactorCalcMethod::Pesimistic;
+    let methods = EmissionFactorCalculationMethods { n2o, ch4 };
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(values.clone(), methods);
+    let pesimistic_result = (n2o, co2_equivalents, emission_factors);
+
+    // Ipcc2019
+    let n2o = N2oEmissionFactorCalcMethod::Ipcc2019;
+    let methods = EmissionFactorCalculationMethods { n2o, ch4 };
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(values.clone(), methods);
+    let ipcc2019_result = (n2o, co2_equivalents, emission_factors);
+
+    let mut results = vec![
+        tuwien2016_result,
+        optimistc_result,
+        pesimistic_result,
+        ipcc2019_result,
+    ];
+
+    // Custom
+    let Some(factor) = custom_factor else {
+        return results;
+    };
+
+    let n2o = N2oEmissionFactorCalcMethod::Custom(factor);
+    let methods = EmissionFactorCalculationMethods { n2o, ch4 };
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(values.clone(), methods);
+    let custom_result = (n2o, co2_equivalents, emission_factors);
+    results.push(custom_result);
+
+    results
 }

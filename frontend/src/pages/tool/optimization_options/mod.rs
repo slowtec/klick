@@ -18,13 +18,7 @@ const DWA_MERKBLATT_URL: &str =
 
 #[component]
 pub fn OptimizationOptions(
-    output: ReadSignal<
-        Option<(
-            domain::CO2Equivalents,
-            domain::EmissionFactors,
-            domain::EmissionFactorCalculationMethods,
-        )>,
-    >,
+    output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
     sludge_bags_are_open: RwSignal<Option<bool>>,
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
     selected_scenario_bhkw: RwSignal<Option<u64>>,
@@ -119,21 +113,14 @@ fn Cite(source: &'static str, url: &'static str, children: Children) -> impl Int
 }
 
 #[component]
-fn ScenarioHint(
-    output: ReadSignal<
-        Option<(
-            domain::CO2Equivalents,
-            domain::EmissionFactors,
-            domain::EmissionFactorCalculationMethods,
-        )>,
-    >,
-) -> impl IntoView {
+fn ScenarioHint(output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>) -> impl IntoView {
     move || {
         output.get().map(|out| {
-            let f = f64::from(out.1.n2o) * 100.0;
+            let f = f64::from(out.emission_factors.n2o) * 100.0;
             let ef = format!("(N₂O EF = {f:.2}%");
 
-            let scenario = match out.2.n2o {
+            // TODO: use presenter
+            let scenario = match out.calculation_methods.n2o {
                 domain::N2oEmissionFactorCalcMethod::TuWien2016 => {
                     format!("TU Wien 2016 {ef}")
                 }
@@ -148,7 +135,8 @@ fn ScenarioHint(
             view! {
                <p>
                  "Bezogen auf das Szenario " { scenario } ", CH₄ EF = " {
-                  format!("{:.2}%", f64::from(out.1.ch4) * 100.0)
+                  // TODO: use presenter
+                  format!("{:.2}%", f64::from(out.emission_factors.ch4) * 100.0)
                  } ")"
                </p>
             }
