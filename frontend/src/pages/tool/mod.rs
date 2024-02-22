@@ -11,8 +11,8 @@ use klick_boundary::{
     SavedProject,
 };
 use klick_domain as domain;
-use klick_presenter::Lng;
 use klick_presenter::ProfileValueId;
+use klick_presenter::{self as presenter, Lng};
 
 use crate::{
     api::AuthorizedApi,
@@ -506,8 +506,10 @@ pub fn Tool(
                  }| {
                     s.push_str("\n\n# sankey_data_optimizationOptions_model");
                     s.push_str(&co2_equivalents.to_csv());
-                    s.push_str(&emission_factors.to_csv());
-                    s.push_str(&calculation_methods.to_csv());
+                    s.push_str(&presenter::emission_factors_to_csv(&emission_factors));
+                    s.push_str(&presenter::emission_factor_calculation_methods_to_csv(
+                        calculation_methods,
+                    ));
                 },
             );
 

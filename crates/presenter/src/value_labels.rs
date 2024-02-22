@@ -64,6 +64,7 @@ impl ValueLabel for SewageSludgeTreatmentId {
         }
     }
 }
+
 impl ValueLabel for OperatingMaterialId {
     fn label(&self) -> &str {
         match self {
