@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.17 (2024-02-22)
+
+- Changed
+  - barchart percentage value support #164 
+  - Add PDF export to projects menu
+  - export feature to CSV #84
+  - fix for floating points in sankey diagrams #142
+
 ## v0.3.16 (2024-02-20)
 
 - Changed
