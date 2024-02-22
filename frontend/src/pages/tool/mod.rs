@@ -6,7 +6,6 @@ use leptos::*;
 
 use klick_app_charts::{BarChart, BarChartRadioInput};
 use klick_app_components::message::{ErrorMessage, SuccessMessage};
-use klick_application::usecases::calculate_all_n2o_emission_factor_scenarios;
 use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
     SavedProject,
@@ -27,8 +26,9 @@ mod example_data;
 mod field_sets;
 mod fields;
 mod input_data_list;
-pub mod optimization_options;
 mod project_menu;
+
+pub mod optimization_options;
 
 use self::{
     breadcrumbs::Breadcrumbs,
@@ -107,20 +107,10 @@ pub fn Tool(
 
     let save_result_message = RwSignal::new(None);
     let show_handlungsempfehlungen: RwSignal<bool> = RwSignal::new(false);
-    let output_optimizationOptions_model = RwSignal::new(
-        Option::<(
-            domain::CO2Equivalents,
-            domain::EmissionFactors,
-            domain::EmissionFactorCalculationMethods,
-        )>::None,
-    );
-    let sankey_data_optimizationOptions_model = RwSignal::new(
-        Option::<(
-            domain::CO2Equivalents,
-            domain::EmissionFactors,
-            domain::EmissionFactorCalculationMethods,
-        )>::None,
-    );
+    let output_optimizationOptions_model =
+        RwSignal::new(Option::<domain::EmissionsCalculationOutcome>::None);
+    let sankey_data_optimizationOptions_model =
+        RwSignal::new(Option::<domain::EmissionsCalculationOutcome>::None);
     let sankey_header_optimizationOptions_model = RwSignal::new(String::new());
     let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
@@ -277,7 +267,7 @@ pub fn Tool(
             .map(|n| n / 100.0)
             .map(domain::units::Factor::new);
         let ch4_chp_calc_method = None;
-        let n2o_calculations = calculate_all_n2o_emission_factor_scenarios(
+        let n2o_calculations = domain::calculate_all_n2o_emission_factor_scenarios(
             &input_data,
             custom_factor,
             ch4_chp_calc_method,
@@ -324,7 +314,7 @@ pub fn Tool(
                 .map(|(szenario, (co2_equivalents, emission_factors))| {
                     klick_app_charts::BarChartRadioInputArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
-                        value: co2_equivalents.emissions.into(),
+                        value: co2_equivalents.total_emissions.into(),
                         emission_factor: f64::from(emission_factors.n2o),
                     }
                 })
@@ -365,11 +355,7 @@ pub fn Tool(
                 .custom_sludge_storage_containers_factor =
                 custom_sludge_storage_containers_factor.get();
             input_data_optimizationOptions_model.set(Some(input_data.clone()));
-            let output: (
-                domain::CO2Equivalents,
-                domain::EmissionFactors,
-                domain::EmissionFactorCalculationMethods,
-            ) = domain::calculate_emissions(input_data.clone(), scenario);
+            let output = domain::calculate_emissions(input_data.clone(), scenario);
             output_optimizationOptions_model.set(Some(output.clone()));
             sankey_data_optimizationOptions_model.set(Some(output.clone()));
             sankey_header_optimizationOptions_model.set(format!(
@@ -415,18 +401,14 @@ pub fn Tool(
                         .sewage_sludge_treatment
                         .sludge_storage_containers_are_open =
                         sludge_storage_containers_are_open.get().unwrap_or(true);
-                    let output: (
-                        domain::CO2Equivalents,
-                        domain::EmissionFactors,
-                        domain::EmissionFactorCalculationMethods,
-                    ) = domain::calculate_emissions(input_data, scenario);
-                    if f64::from(output.0.ch4_combined_heat_and_power_plant) < 0.1 {
+                    let output = domain::calculate_emissions(input_data, scenario);
+                    if f64::from(output.co2_equivalents.ch4_combined_heat_and_power_plant) < 0.1 {
                         return None;
                     }
                     Some(klick_app_charts::BarChartRadioInputArguments {
                         label: Some(i.1),
-                        value: f64::from(output.0.ch4_combined_heat_and_power_plant),
-                        emission_factor: f64::from(output.1.ch4),
+                        value: f64::from(output.co2_equivalents.ch4_combined_heat_and_power_plant),
+                        emission_factor: f64::from(output.emission_factors.ch4),
                     })
                 })
                 .collect(),
@@ -436,7 +418,7 @@ pub fn Tool(
                 .clone()
                 .1
                  .0;
-            let new = output.0;
+            let new = output.co2_equivalents;
 
             let comp = vec![
                 klick_app_charts::BarChartArguments {
@@ -459,8 +441,8 @@ pub fn Tool(
                 },
                 klick_app_charts::BarChartArguments {
                     label: "Emissionen",
-                    value: f64::from(new.emissions)
-                        - f64::from(old.emissions)
+                    value: f64::from(new.total_emissions)
+                        - f64::from(old.total_emissions)
                         - f64::from(new.excess_energy_co2_equivalent),
                 },
             ];
@@ -517,11 +499,15 @@ pub fn Tool(
             }
             //output_optimizationOptions_model
             sankey_data_optimizationOptions_model.get().map(
-                |(co2_equivalents, emission_factors, emission_factor_calculation_methods)| {
+                |domain::EmissionsCalculationOutcome {
+                     co2_equivalents,
+                     emission_factors,
+                     calculation_methods,
+                 }| {
                     s.push_str("\n\n# sankey_data_optimizationOptions_model");
                     s.push_str(&co2_equivalents.to_csv());
                     s.push_str(&emission_factors.to_csv());
-                    s.push_str(&emission_factor_calculation_methods.to_csv());
+                    s.push_str(&calculation_methods.to_csv());
                 },
             );
 
@@ -918,7 +904,7 @@ pub fn Tool(
                 { move || sankey_header_optimizationOptions_model.get().to_string() }
               </h4>
               { move ||
-               sankey_data_optimizationOptions_model.get().map(|(co2_equivalents, emission_factors,_)| {
+               sankey_data_optimizationOptions_model.get().map(|domain::EmissionsCalculationOutcome{co2_equivalents, emission_factors, ..}| {
                  let data = (co2_equivalents, emission_factors);
                  view!{ <Sankey data /> }
                } )

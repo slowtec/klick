@@ -20,7 +20,7 @@ pub fn create_sankey_chart_data(
         electricity_mix,
         operating_materials,
         sewage_sludge_transport,
-        emissions,
+        total_emissions,
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
@@ -67,7 +67,7 @@ pub fn create_sankey_chart_data(
     let sewage_sludge_transport = nodes.len() - 1;
 
     let red = "red";
-    nodes.push((emissions.into(), "Emission", red));
+    nodes.push((total_emissions.into(), "Emission", red));
     let emissions = nodes.len() - 1;
 
     nodes.push((direct_emissions.into(), "Direkte Emissionen", red));

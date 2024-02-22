@@ -7,7 +7,9 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
 ) -> f64 {
     let mut s2 = scenario;
     s2.ch4 = ch4_chp_emission_factor;
-    let (co2_equivalents, _, _) = calculate_emissions(profile, s2);
+    let EmissionsCalculationOutcome {
+        co2_equivalents, ..
+    } = calculate_emissions(profile, s2);
 
     f64::from(co2_equivalents.ch4_combined_heat_and_power_plant)
 }
@@ -53,7 +55,11 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -72,7 +78,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         electricity_mix,
         operating_materials,
         sewage_sludge_transport,
-        emissions,
+        total_emissions,
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
@@ -87,7 +93,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         f64::from(ch4_sludge_storage_containers),
         251.108_928_000_000_05
     );
-    assert_eq!(f64::from(ch4_sludge_bags), 0.0);
+    assert_eq!(ch4_sludge_bags, Tons::zero());
     assert_eq!(f64::from(ch4_water), 162.54);
     assert_eq!(f64::from(ch4_emissions), 1_343.392_008);
     assert_eq!(f64::from(fecl3), 0.0);
@@ -100,7 +106,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(direct_emissions), 1_797.488_508_000_002);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(emissions), 2_430.061_913_600_002);
+    assert_eq!(f64::from(total_emissions), 2_430.061_913_600_002);
     assert_eq!(f64::from(emission_factors.n2o), 0.001_253_278_688_524_597_2);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
@@ -163,7 +169,11 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -182,7 +192,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         electricity_mix,
         operating_materials,
         sewage_sludge_transport,
-        emissions,
+        total_emissions,
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
@@ -210,7 +220,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(f64::from(direct_emissions), 2_254.588_008);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(emissions), 2_887.161_413_600_000_3);
+    assert_eq!(f64::from(total_emissions), 2_887.161_413_600_000_3);
     assert_eq!(f64::from(emission_factors.n2o), 0.003);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
@@ -274,7 +284,11 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -293,7 +307,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         electricity_mix,
         operating_materials,
         sewage_sludge_transport,
-        emissions,
+        total_emissions,
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
@@ -321,7 +335,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(f64::from(direct_emissions), 3_563.038_008_000_000_4);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(emissions), 4_195.611_413_600_001);
+    assert_eq!(f64::from(total_emissions), 4_195.611_413_600_001);
     assert_eq!(f64::from(emission_factors.n2o), 0.008);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
 
@@ -385,7 +399,11 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -404,7 +422,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         electricity_mix,
         operating_materials,
         sewage_sludge_transport,
-        emissions,
+        total_emissions,
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
@@ -432,7 +450,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(f64::from(direct_emissions), 5_656.558_008);
     assert_eq!(f64::from(indirect_emissions), 202.345_416);
     assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(emissions), 6_289.131_413_6);
+    assert_eq!(f64::from(total_emissions), 6_289.131_413_6);
     assert_eq!(f64::from(emission_factors.n2o), 0.016);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
     assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
@@ -495,7 +513,11 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ch4: None,
     };
 
-    let (co2_equivalents, emission_factors, _) = calculate_emissions(profile, scenario);
+    let EmissionsCalculationOutcome {
+        co2_equivalents,
+        emission_factors,
+        ..
+    } = calculate_emissions(profile, scenario);
 
     let CO2Equivalents {
         n2o_plant,
@@ -514,7 +536,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         electricity_mix,
         operating_materials,
         sewage_sludge_transport,
-        emissions,
+        total_emissions,
         direct_emissions,
         indirect_emissions,
         other_indirect_emissions,
@@ -547,7 +569,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         other_indirect_emissions.round(PRECISION),
         Tons::new(430.228)
     );
-    assert_eq!(emissions.round(PRECISION), Tons::new(4_718.991));
+    assert_eq!(total_emissions.round(PRECISION), Tons::new(4_718.991));
     assert_eq!(emission_factors.n2o.round(PRECISION), Factor::new(0.01));
     assert_eq!(excess_energy_co2_equivalent.round(PRECISION), Tons::zero());
     assert_eq!(

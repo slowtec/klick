@@ -7,6 +7,7 @@ pub struct EmissionFactors {
     pub ch4: Factor,
 }
 
+// FIXME: move to presenter
 impl EmissionFactors {
     pub fn to_csv(&self) -> String {
         let mut output: String = String::new();
@@ -25,6 +26,7 @@ pub struct EmissionFactorCalculationMethods {
     pub ch4: Option<CH4ChpEmissionFactorCalcMethod>,
 }
 
+// FIXME: move to presenter
 impl EmissionFactorCalculationMethods {
     pub fn to_csv(&self) -> String {
         let mut output: String = String::new();
@@ -51,6 +53,7 @@ pub enum N2oEmissionFactorCalcMethod {
     Custom(Factor),
 }
 
+// FIXME: move to presenter
 impl fmt::Display for N2oEmissionFactorCalcMethod {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self {
@@ -71,6 +74,7 @@ pub enum CH4ChpEmissionFactorCalcMethod {
     Custom(Factor),
 }
 
+// FIXME: move to presenter
 impl fmt::Display for CH4ChpEmissionFactorCalcMethod {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self {

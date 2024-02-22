@@ -18,7 +18,7 @@ pub struct CO2Equivalents {
     pub electricity_mix: Tons,
     pub operating_materials: Tons,
     pub sewage_sludge_transport: Tons,
-    pub emissions: Tons,
+    pub total_emissions: Tons,
     pub direct_emissions: Tons,
     pub indirect_emissions: Tons,
     pub other_indirect_emissions: Tons,
@@ -62,7 +62,7 @@ impl CO2Equivalents {
             "\nsewage_sludge_transport, {}",
             f64::from(self.sewage_sludge_transport)
         );
-        output += &format!("\nemissions, {}", f64::from(self.emissions));
+        output += &format!("\nemissions, {}", f64::from(self.total_emissions));
         output += &format!("\ndirect_emissions, {}", f64::from(self.direct_emissions));
         output += &format!(
             "\nindirect_emissions, {}",

@@ -24,13 +24,7 @@ use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
 
 pub fn options(
     // incoming signals
-    output: ReadSignal<
-        Option<(
-            domain::CO2Equivalents,
-            domain::EmissionFactors,
-            domain::EmissionFactorCalculationMethods,
-        )>,
-    >,
+    output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
     // outgoing signals
     selected_scenario_bhkw: RwSignal<Option<u64>>,
     custom_factor_bhkw: RwSignal<Option<f64>>,
@@ -115,12 +109,12 @@ pub fn options(
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
                     <dd class="text-lg py-1 px-3">
-                      { format!("{:.1}", f64::from(out.0.ch4_combined_heat_and_power_plant)).replace('.',",") }
+                      { format!("{:.1}", f64::from(out.co2_equivalents.ch4_combined_heat_and_power_plant)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                     <dd class="text-lg py-1 px-3">
-                      { format!("{:.1}", f64::from(out.0.emissions)).replace('.',",") }
+                      { format!("{:.1}", f64::from(out.co2_equivalents.total_emissions)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                   </dl>
