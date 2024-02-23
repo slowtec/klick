@@ -19,7 +19,7 @@ pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);
 pub const EMISSION_FACTOR_SLUDGE_BAGS: QubicmetersPerHour = QubicmetersPerHour::new(1.25);
 
 /// 1,6 `[%]` of the total digester gas production
-pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(1.6);
+pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(2.0);
 
 /// `[kg co2 / kg]` solution
 pub const EMISSION_FACTOR_FECL3: Factor = Factor::new(0.395);
