@@ -23,7 +23,7 @@ resolver = "2"
 [workspace.package]
 authors = ["slowtec GmbH <post@slowtec.de>"]
 license = "AGPL-3.0-or-later"
-version = "0.0.0"
+version = "0.3.18"
 edition = "2021"
 rust-version = "1.76"
 
@@ -42,7 +42,7 @@ klick-presenter      = { path = "crates/presenter"      }
 
 [package]
 name = "klick"
-version = "0.3.18"
+version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 publish = false

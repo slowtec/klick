@@ -1,6 +1,6 @@
 [package]
 name = "klick-boundary"
-version.workspace = true
+version = "0.0.0"
 edition.workspace = true
 rust-version.workspace = true
 publish = false
@@ -17,7 +17,7 @@ time = { version = "0.3.34", features = ["serde"] }
 uuid = { version = "1.7.0", features = ["serde"] }
 
 [dependencies.klick-domain]
-version = "=0.0.0"
+path = "../domain"
 optional = true
 
 [dependencies.axum]
@@ -28,7 +28,8 @@ optional = true
 
 [dev-dependencies]
 klick-boundary = { version = "=0.0.0", features = ["extra-derive", "conversion"] }
-klick-domain = "=0.0.0"
+klick-domain = { path = "../domain" }
+
 uuid = { version = "1.7.0", features = ["v4"] }
 
 [features]
