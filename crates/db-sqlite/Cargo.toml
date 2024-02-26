@@ -1,8 +1,8 @@
 [package]
 name = "klick-db-sqlite"
+version = "0.0.0"
 authors.workspace = true
 license.workspace = true
-version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 publish = false
@@ -10,7 +10,7 @@ publish = false
 [dependencies]
 klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
-klick-domain = "=0.0.0"
+klick-domain = { path = "../domain" }
 
 anyhow = "1.0.80"
 diesel = { version = "2.1.4", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }

@@ -1,6 +1,6 @@
 [package]
 name = "klick-backend"
-version.workspace = true
+version = "0.0.0"
 edition.workspace = true
 rust-version.workspace = true
 publish = false
@@ -11,7 +11,7 @@ klick-application = "=0.0.0"
 klick-app-charts = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["axum"] }
 klick-db-sqlite = "=0.0.0"
-klick-domain = "=0.0.0"
+klick-domain = { path = "../domain" }
 klick-pdf-export = "=0.0.0"
 
 # External dependencies

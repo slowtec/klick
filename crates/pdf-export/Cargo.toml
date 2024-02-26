@@ -1,15 +1,16 @@
 [package]
 name = "klick-pdf-export"
+version = "0.0.0"
 authors.workspace = true
 license.workspace = true
-version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+publish = false
 
 [dependencies]
 klick-app-charts = { version = "=0.0.0", features = ["ssr"] }
 klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
-klick-domain = "=0.0.0"
+klick-domain = { path = "../domain" }
 klick-presenter = "=0.0.0"
 
 anyhow = "1.0.80"

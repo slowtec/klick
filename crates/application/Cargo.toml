@@ -1,12 +1,13 @@
 [package]
 name = "klick-application"
+version = "0.0.0"
 authors.workspace = true
-version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+publish = false
 
 [dependencies]
-klick-domain = "=0.0.0"
+klick-domain = { path = "../domain" }
 
 anyhow = "1.0.80"
 log = "0.4.20"

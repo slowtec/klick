@@ -1,17 +1,18 @@
 [package]
 name = "klick-presenter"
+version = "0.0.0"
 authors.workspace = true
 license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-version.workspace = true
+publish = false
 
 [lints]
 workspace = true
 
 [dependencies]
 klick-boundary = "=0.0.0"
-klick-domain = "=0.0.0"
+klick-domain = { path = "../domain" }
 
 derive_more = "0.99.17"
 serde = { version = "1.0.197", features = ["derive"] }
