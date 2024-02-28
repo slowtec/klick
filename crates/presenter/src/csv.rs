@@ -27,18 +27,13 @@ pub fn emission_factor_calculation_methods_to_csv(
 
 pub fn emission_factors_to_csv(factors: &EmissionFactors) -> String {
     [
-        [
+        format!("{}, {}\n",
             "emission_factors.n2o",
-            &f64::from(factors.n2o.convert_to::<Percent>()).to_string(),
-        ]
-        .join(","),
-        [
+            &f64::from(factors.n2o.convert_to::<Percent>()).to_string()),
+        format!("{}, {}\n",
             "emission_factors.ch4",
-            &f64::from(factors.ch4.convert_to::<Percent>()).to_string(),
-        ]
-        .join(","),
-    ]
-    .join("\n")
+            &f64::from(factors.ch4.convert_to::<Percent>()).to_string())
+    ].join("")
 }
 
 // TODO: use ValueLabel & ValueId

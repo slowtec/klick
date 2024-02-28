@@ -28,52 +28,52 @@ pub struct CO2Equivalents {
 impl CO2Equivalents {
     pub fn to_csv(&self) -> String {
         let mut output: String = String::new();
-        output += &format!("\nn2o_plant, {}", f64::from(self.n2o_plant));
-        output += &format!("\nn2o_water, {}", f64::from(self.n2o_water));
-        output += &format!("\nn2o_emissions, {}", f64::from(self.n2o_emissions));
+        output += &format!("n2o_plant, {}\n", f64::from(self.n2o_plant));
+        output += &format!("n2o_water, {}\n", f64::from(self.n2o_water));
+        output += &format!("n2o_emissions, {}\n", f64::from(self.n2o_emissions));
         output += &format!(
-            "\nch4_sewage_treatment, {}",
+            "ch4_sewage_treatment, {}\n",
             f64::from(self.ch4_sewage_treatment)
         );
         output += &format!(
-            "\nch4_sludge_storage_containers, {}",
+            "ch4_sludge_storage_containers, {}\n",
             f64::from(self.ch4_sludge_storage_containers)
         );
-        output += &format!("\nch4_sludge_bags, {}", f64::from(self.ch4_sludge_bags));
-        output += &format!("\nch4_water, {}", f64::from(self.ch4_water));
+        output += &format!("ch4_sludge_bags, {}\n", f64::from(self.ch4_sludge_bags));
+        output += &format!("ch4_water, {}\n", f64::from(self.ch4_water));
         output += &format!(
-            "\nch4_combined_heat_and_power_plant, {}",
+            "ch4_combined_heat_and_power_plant, {}\n",
             f64::from(self.ch4_combined_heat_and_power_plant)
         );
-        output += &format!("\nch4_emissions, {}", f64::from(self.ch4_emissions));
-        output += &format!("\nfecl3, {}", f64::from(self.fecl3));
-        output += &format!("\nfeclso4, {}", f64::from(self.feclso4));
-        output += &format!("\ncaoh2, {}", f64::from(self.caoh2));
+        output += &format!("ch4_emissions, {}\n", f64::from(self.ch4_emissions));
+        output += &format!("fecl3, {}\n", f64::from(self.fecl3));
+        output += &format!("feclso4, {}\n", f64::from(self.feclso4));
+        output += &format!("caoh2, {}\n", f64::from(self.caoh2));
         output += &format!(
-            "\nsynthetic_polymers, {}",
+            "synthetic_polymers, {}\n",
             f64::from(self.synthetic_polymers)
         );
-        output += &format!("\nelectricity_mix, {}", f64::from(self.electricity_mix));
+        output += &format!("electricity_mix, {}\n", f64::from(self.electricity_mix));
         output += &format!(
-            "\noperating_materials, {}",
+            "operating_materials, {}\n",
             f64::from(self.operating_materials)
         );
         output += &format!(
-            "\nsewage_sludge_transport, {}",
+            "sewage_sludge_transport, {}\n",
             f64::from(self.sewage_sludge_transport)
         );
-        output += &format!("\nemissions, {}", f64::from(self.total_emissions));
-        output += &format!("\ndirect_emissions, {}", f64::from(self.direct_emissions));
+        output += &format!("emissions, {}\n", f64::from(self.total_emissions));
+        output += &format!("direct_emissions, {}\n", f64::from(self.direct_emissions));
         output += &format!(
-            "\nindirect_emissions, {}",
+            "indirect_emissions, {}\n",
             f64::from(self.indirect_emissions)
         );
         output += &format!(
-            "\nother_indirect_emissions, {}",
+            "other_indirect_emissions, {}\n",
             f64::from(self.other_indirect_emissions)
         );
         output += &format!(
-            "\nexcess_energy_co2_equivalent, {}",
+            "excess_energy_co2_equivalent, {}\n",
             f64::from(self.excess_energy_co2_equivalent)
         );
         output

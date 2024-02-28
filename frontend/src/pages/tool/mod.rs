@@ -1,5 +1,6 @@
 use chrono::prelude::*;
 use std::rc::Rc;
+use std::collections::HashMap;
 
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
@@ -33,7 +34,7 @@ pub mod optimization_options;
 use self::{
     breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
-    fields::{load_project_fields, read_input_fields, FieldId, ScenarioFieldId},
+    fields::{FieldSet, load_project_fields, read_input_fields, FieldId, ScenarioFieldId},
     input_data_list::InputDataList,
     optimization_options::OptimizationOptions,
     project_menu::ProjectMenu,
@@ -43,14 +44,16 @@ use self::{
 pub enum PageSection {
     #[default]
     DataCollection,
-    OptimizationOptions,
+    Sensitivity,
+    Recommendation,
 }
 
 impl PageSection {
     const fn section_id(self) -> &'static str {
         match self {
             PageSection::DataCollection => "data-collection",
-            PageSection::OptimizationOptions => "optimization-options",
+            PageSection::Sensitivity => "data-sensitivity",
+            PageSection::Recommendation => "data-recommendations",
         }
     }
 }
@@ -77,6 +80,8 @@ pub fn Tool(
     let custom_sludge_bags_factor = RwSignal::new(Option::<f64>::None);
     let custom_sludge_storage_containers_factor = RwSignal::new(Option::<f64>::None);
     let input_data = RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
+    let input_data_validation_error = RwSignal::new(false); // FIXME rename
+
     let input_data_optimizationOptions_model =
         RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
     let sankey_data =
@@ -107,11 +112,11 @@ pub fn Tool(
 
     let save_result_message = RwSignal::new(None);
     let show_handlungsempfehlungen: RwSignal<bool> = RwSignal::new(false);
-    let output_optimizationOptions_model =
+    let output_optimization_options_model =
         RwSignal::new(Option::<domain::EmissionsCalculationOutcome>::None);
-    let sankey_data_optimizationOptions_model =
+    let sankey_data_optimization_options_model =
         RwSignal::new(Option::<domain::EmissionsCalculationOutcome>::None);
-    let sankey_header_optimizationOptions_model = RwSignal::new(String::new());
+    let sankey_header_optimization_options_model = RwSignal::new(String::new());
     let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
     let selected_scenario_bhkw = RwSignal::new(Option::<u64>::Some(0));
@@ -192,7 +197,7 @@ pub fn Tool(
     let s = Rc::clone(&signals);
 
     create_effect(move |_| {
-        let Some(input_data) = input_data.get() else {
+        let Some(input_data) = input_data.get() else { // FIXME check also required fields
             sankey_header.update(String::clear);
             show_handlungsempfehlungen.set(false);
             barchart_arguments_radio_inputs.update(Vec::clear);
@@ -207,20 +212,13 @@ pub fn Tool(
             .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
             .and_then(FieldSignal::get_float);
 
-        let use_custom_factor = custom_factor_value.is_some();
-        if !use_custom_factor && selected_scenario.get() == Some(4) {
-            selected_scenario.set(Some(0));
-        }
-
-        let mut input_data_validation_error = false;
-
         if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
             nitrogen_io_warning.set(Some(format!(
                 "Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!",
                 Lng::De.format_number(input_data.effluent_average.nitrogen),
                 Lng::De.format_number(input_data.influent_average.nitrogen)
             )));
-            input_data_validation_error = true;
+            input_data_validation_error.set(true);
         } else {
             nitrogen_io_warning.set(None);
         }
@@ -237,7 +235,7 @@ pub fn Tool(
         //             Lng::De.format_number(input_data.effluent_average.chemical_oxygen_demand),
         //             Lng::De.format_number(chemical_oxygen_demand_influent)
         //         )));
-        //         input_data_validation_error = true;
+        //         input_data_validation_error.set(true);
         //     } else {
         //         chemical_oxygen_io_warning.set(None);
         //     }
@@ -252,14 +250,14 @@ pub fn Tool(
         //                 Lng::De.format_number(phosphorus_effluent),
         //                 Lng::De.format_number(phosphorus_influent),
         //             )));
-        //             input_data_validation_error = true;
+        //             input_data_validation_error.set(true);
         //         } else {
         //             phosphorus_io_warning.set(None);
         //         }
         //     }
         // }
 
-        if input_data_validation_error {
+        if input_data_validation_error.get() {
             sankey_data.set(None);
         }
 
@@ -273,7 +271,7 @@ pub fn Tool(
             ch4_chp_calc_method,
         );
 
-        let szenario_calculations = if input_data_validation_error {
+        let szenario_calculations = if input_data_validation_error.get() {
             vec![]
         } else {
             n2o_calculations
@@ -320,7 +318,7 @@ pub fn Tool(
                 })
                 .collect(),
         );
-        if !input_data_validation_error {
+        if !input_data_validation_error.get() {
             log::info!("computing final output data");
             let ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod> =
                 match selected_scenario_bhkw.get() {
@@ -356,9 +354,9 @@ pub fn Tool(
                 custom_sludge_storage_containers_factor.get();
             input_data_optimizationOptions_model.set(Some(input_data.clone()));
             let output = domain::calculate_emissions(input_data.clone(), scenario);
-            output_optimizationOptions_model.set(Some(output.clone()));
-            sankey_data_optimizationOptions_model.set(Some(output.clone()));
-            sankey_header_optimizationOptions_model.set(format!(
+            output_optimization_options_model.set(Some(output.clone()));
+            sankey_data_optimization_options_model.set(Some(output.clone()));
+            sankey_header_optimization_options_model.set(format!(
                 "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name}",
                 name_ka = name_ka,
                 ew = Lng::De.format_number(ew),
@@ -456,13 +454,18 @@ pub fn Tool(
                 percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
             });
             barchart_arguments.set(comp);
-            show_handlungsempfehlungen.set(true);
+            if missing_fields.get().len() > 0{
+                show_handlungsempfehlungen.set(false);
+            } else {
+                show_handlungsempfehlungen.set(true);
+            }
         } else {
             log::info!("NOT computing final output data, input incomplete");
-            output_optimizationOptions_model.set(None);
-            sankey_header_optimizationOptions_model.set(String::new());
-            sankey_data_optimizationOptions_model.set(None);
+            output_optimization_options_model.set(None);
+            sankey_header_optimization_options_model.set(String::new());
+            sankey_data_optimization_options_model.set(None);
             barchart_arguments.set(vec![]);
+            show_handlungsempfehlungen.set(false);
         }
     });
 
@@ -499,21 +502,21 @@ pub fn Tool(
         move |_| {
             let mut s: String = "".to_string();
             s.push_str(
-                format!("# export from klimabilanzklaeranlage.de - {}", Utc::now()).as_str(),
+                format!("\n# export from klimabilanzklaeranlage.de - {}\n", Utc::now()).as_str(),
             );
 
-            s.push_str("\n\n# input_data_optimizationOptions_model");
+            s.push_str("\n# input_data_optimizationOptions_model\n");
             if let Some(v) = input_data_optimizationOptions_model.get() {
                 s.push_str(&v.to_csv());
             }
-            //output_optimizationOptions_model
-            sankey_data_optimizationOptions_model.get().map(
+            //output_optimization_options_model
+            sankey_data_optimization_options_model.get().map(
                 |domain::EmissionsCalculationOutcome {
                      co2_equivalents,
                      emission_factors,
                      calculation_methods,
                  }| {
-                    s.push_str("\n\n# sankey_data_optimizationOptions_model");
+                    s.push_str("\n# sankey_data_optimization_options_model\n");
                     s.push_str(&co2_equivalents.to_csv());
                     s.push_str(&presenter::emission_factors_to_csv(&emission_factors));
                     s.push_str(&presenter::emission_factor_calculation_methods_to_csv(
@@ -523,7 +526,7 @@ pub fn Tool(
             );
 
             // final result +/- values of emissions FIXME
-            s.push_str("\n\n# final result +/- values of emissions\n");
+            s.push_str("\n# final result +/- values of emissions\n");
             for b in barchart_arguments.get() {
                 s.push_str(&b.label);
                 s.push_str(",");
@@ -668,10 +671,8 @@ pub fn Tool(
 
     let breadcrumps_entries = vec![
         ("Datenerfassung", PageSection::DataCollection),
-        (
-            "Auswertung & Handlungsempfehlungen",
-            PageSection::OptimizationOptions,
-        ),
+        ("Sensitivität", PageSection::Sensitivity),
+        ("Handlungsempfehlungen", PageSection::Recommendation),
     ];
 
     view! {
@@ -712,21 +713,101 @@ pub fn Tool(
               </p>
             }.into_view())
         }
-        <Show when= move || current_section.get() == Some(PageSection::DataCollection)>
+
+        <div
+          class = move || {
+            if current_section.get() == Some(PageSection::DataCollection){
+                None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
+        <DataCollectionView
+          current_section
+          show_handlungsempfehlungen
+          set_views
+          nitrogen_io_warning
+          chemical_oxygen_io_warning
+          phosphorus_io_warning
+          missing_fields
+          input_data
+          barchart_arguments_radio_inputs
+          selected_scenario
+          selected_scenario_name
+          sankey_data
+          sankey_header
+        />
+        </div>
+
+        <div
+          class = move || {
+            if current_section.get() == Some(PageSection::Sensitivity) {
+                None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
+        <SensitivityView
+          current_section
+          show_handlungsempfehlungen
+        />
+        </div>
+
+        <div
+          class = move || {
+            if current_section.get() == Some(PageSection::Recommendation) {
+                None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
+        <RecommendationView
+          current_section
+          show_handlungsempfehlungen
+          output_optimization_options_model
+          sludge_bags_are_open
+          sludge_storage_containers_are_open
+          selected_scenario_bhkw
+          custom_factor_bhkw
+          barchart_arguments
+          barchart_arguments_radio_inputs_bhkw
+          custom_sludge_bags_factor
+          custom_sludge_storage_containers_factor
+          sankey_data_optimization_options_model
+          sankey_header_optimization_options_model
+          field_sets
+          signals = Rc::clone(&signals)
+        />
+        </div>
+      </div>
+    }
+}
+
+#[component]
+#[allow(clippy::too_many_lines)]
+pub fn DataCollectionView(
+    current_section: RwSignal<Option<PageSection>>,
+    show_handlungsempfehlungen: RwSignal<bool>,
+    set_views: Vec<View>,
+    nitrogen_io_warning: RwSignal<Option<String>>,
+    chemical_oxygen_io_warning: RwSignal<Option<String>>,
+    phosphorus_io_warning: RwSignal<Option<String>>,
+    missing_fields: RwSignal<Vec<MissingField<FieldId>>>,
+    input_data: RwSignal<Option<domain::EmissionInfluencingValues>>,
+    barchart_arguments_radio_inputs: RwSignal<Vec<klick_app_charts::BarChartRadioInputArguments>>,
+    selected_scenario: RwSignal<Option<u64>>,
+    selected_scenario_name: RwSignal<String>,
+    sankey_data: RwSignal<Option<(domain::CO2Equivalents, domain::EmissionFactors)>>,
+    sankey_header: RwSignal<String>,
+) -> impl IntoView {
+    view!{
         <div id = PageSection::DataCollection.section_id()>
           { set_views.clone() } // input fields for data collection
         </div>
-        </Show>
-        <Show when= move || current_section.get() == Some(PageSection::OptimizationOptions) && show_handlungsempfehlungen.get()>
-        <div>
-          <InputDataList
-            field_sets = { &field_sets }
-            signals = { &signals }
-          />
-        </div>
-        </Show>
-      </div>
-      <Show when= move || current_section.get() == Some(PageSection::DataCollection)>
+
       { move ||
           if !show_handlungsempfehlungen.get() {
               Some(view! {
@@ -766,15 +847,6 @@ pub fn Tool(
               None
           }
       }
-
-      <Show when = move || current_section.get() == Some(PageSection::DataCollection) && input_data.get().is_none()>
-        <div class="my-8 border-b border-gray-200 pb-5" >
-          <p>
-            "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
-          </p>
-        </div>
-      </Show>
-
       <div
         class = move || {
           if current_section.get() == Some(PageSection::DataCollection) && input_data.get().is_some() {
@@ -794,7 +866,6 @@ pub fn Tool(
                 selected_bar = selected_scenario
                 emission_factor_label = Some("N₂O EF")
               />
-
             }
           }
         }
@@ -810,50 +881,81 @@ pub fn Tool(
         </h4>
         { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
       </div>
-
       <Show when = move || show_handlungsempfehlungen.get()>
         <button
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
-            on:click = move |_| current_section.set(Some(PageSection::OptimizationOptions))
+            on:click = move |_| current_section.set(Some(PageSection::Sensitivity))
           >
-             "zu den Handlungsempfehlungen"
+             "zur Sensitivität"
         </button>
       </Show>
-      </Show>
+    }
+}
 
-      <div
-        class = move || {
-          if current_section.get() == Some(PageSection::OptimizationOptions) {
-              None
-            } else {
-                Some("hidden")
-            }
-          }
-        >
-        <Show when = move || !show_handlungsempfehlungen.get()>
-        <div class="my-8 border-b border-gray-200 pb-5" >
-            <p>
-                "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
-            </p>
-        </div>
+#[component]
+#[allow(clippy::too_many_lines)]
+pub fn SensitivityView(
+    current_section: RwSignal<Option<PageSection>>,
+    show_handlungsempfehlungen: RwSignal<bool>,
+) -> impl IntoView {
+    view!{
+        <DataCollectionEnforcementHelper
+            show_handlungsempfehlungen = show_handlungsempfehlungen
+            current_section = current_section
+        />
+        <Show when = move || show_handlungsempfehlungen.get()>
         <button
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
-            on:click = move |_| current_section.set(Some(PageSection::DataCollection))
+            on:click = move |_| current_section.set(Some(PageSection::Recommendation))
           >
-             "zu der Datenerfassung"
+             "zur den Handlungsempfehlungen"
         </button>
-        </Show>
+      </Show>
+    }
+}
 
+#[component]
+#[allow(clippy::too_many_lines)]
+pub fn RecommendationView(
+    current_section: RwSignal<Option<PageSection>>,
+    show_handlungsempfehlungen: RwSignal<bool>,
+    output_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
+    sludge_bags_are_open: RwSignal<Option<bool>>,
+    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
+    selected_scenario_bhkw: RwSignal<Option<u64>>,
+    custom_factor_bhkw: RwSignal<Option<f64>>,
+    barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>>,
+    barchart_arguments_radio_inputs_bhkw: RwSignal<Vec<klick_app_charts::BarChartRadioInputArguments>>,
+    custom_sludge_bags_factor: RwSignal<Option<f64>>,
+    custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
+    sankey_data_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
+    sankey_header_optimization_options_model: RwSignal<String>,
+    field_sets: Vec<FieldSet>,
+    signals: Rc<HashMap<FieldId, FieldSignal>>,
+) -> impl IntoView {
+    view!{
+        <DataCollectionEnforcementHelper
+            show_handlungsempfehlungen = show_handlungsempfehlungen
+            current_section = current_section
+        />
 
         <div
           class = move || {
-            if current_section.get() == Some(PageSection::OptimizationOptions) && show_handlungsempfehlungen.get() {
+            if show_handlungsempfehlungen.get() {
                 None
             } else {
                 Some("hidden")
             }
           }
         >
+        <Show when= move || show_handlungsempfehlungen.get()>
+        <div>
+          <InputDataList // FIXME refactor name, also compute arguments top level
+            field_sets = { &field_sets }
+            signals = { &signals }
+          />
+        </div>
+        </Show>
         <div class="my-8 border-b border-gray-200 pb-5" >
           <h3 class="text-xl font-semibold leading-6 text-gray-900">
             "Minderungsmaßnahmen für THG-Emissionen an Kläranlagen"
@@ -888,7 +990,7 @@ pub fn Tool(
           { move || {
               view! {
                 <OptimizationOptions
-                  output = output_optimizationOptions_model.read_only()
+                  output = output_optimization_options_model.read_only()
                   sludge_bags_are_open = sludge_bags_are_open
                   sludge_storage_containers_are_open = sludge_storage_containers_are_open
                   selected_scenario_bhkw = selected_scenario_bhkw
@@ -903,7 +1005,7 @@ pub fn Tool(
           </div>
           <div
             class = move || {
-              if sankey_data_optimizationOptions_model.get().is_some() {
+              if sankey_data_optimization_options_model.get().is_some() {
                   None
               } else {
                   Some("hidden")
@@ -912,10 +1014,10 @@ pub fn Tool(
           >
             <div>
               <h4 class="my-8 text-lg font-bold">
-                { move || sankey_header_optimizationOptions_model.get().to_string() }
+                { move || sankey_header_optimization_options_model.get().to_string() }
               </h4>
               { move ||
-               sankey_data_optimizationOptions_model.get().map(|domain::EmissionsCalculationOutcome{co2_equivalents, emission_factors, ..}| {
+               sankey_data_optimization_options_model.get().map(|domain::EmissionsCalculationOutcome{co2_equivalents, emission_factors, ..}| {
                  let data = (co2_equivalents, emission_factors);
                  view!{ <Sankey data /> }
                } )
@@ -960,9 +1062,32 @@ pub fn Tool(
             </div>
           </div>
         </div>
-      </div>
     }
 }
+
+#[component]
+#[allow(clippy::too_many_lines)]
+pub fn DataCollectionEnforcementHelper(
+    show_handlungsempfehlungen: RwSignal<bool>,
+    current_section: RwSignal<Option<PageSection>>,
+) -> impl IntoView {
+    view!{
+      <Show when = move || !show_handlungsempfehlungen.get()>
+        <div class="my-8 border-b border-gray-200 pb-5" >
+        <p>
+        "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
+        </p>
+        </div>
+        <button
+         class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
+         on:click = move |_| current_section.set(Some(PageSection::DataCollection))
+        >
+        "zu der Datenerfassung"
+        </button>
+        </Show>
+    }
+}
+
 
 // TODO: move to presenter layer
 const fn label_of_n2o_emission_factor_calc_method(

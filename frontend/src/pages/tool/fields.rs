@@ -18,6 +18,7 @@ use klick_presenter::{
 use crate::forms::{self, format_f64_into_de_string, FieldSignal, MissingField};
 
 pub type RequiredField = forms::RequiredField<FieldId>;
+pub type FieldSet = forms::FieldSet<FieldId>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize, From)]
 pub enum FieldId {

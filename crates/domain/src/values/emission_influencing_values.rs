@@ -63,48 +63,48 @@ impl EmissionInfluencingValues {
         let mut output: String = String::new();
         // make this multiple lines
         output += &format!(
-            "\npopulation_equivalent, {}",
+            "population_equivalent, {}\n",
             f64::from(self.population_equivalent)
         );
-        output += &format!("\nwastewater, {}", f64::from(self.wastewater));
+        output += &format!("wastewater, {}\n", f64::from(self.wastewater));
         output += &format!(
-            "\ninfluent_average.nitrogen, {}",
+            "influent_average.nitrogen, {}\n",
             f64::from(self.influent_average.nitrogen)
         );
         output += &format!(
-            "\neffluent_average.nitrogen, {}",
+            "effluent_average.nitrogen, {}\n",
             f64::from(self.effluent_average.nitrogen)
         );
         output += &format!(
-            "\neffluent_average.chemical_oxygen_demand, {}",
+            "effluent_average.chemical_oxygen_demand, {}\n",
             f64::from(self.effluent_average.chemical_oxygen_demand)
         );
         output += &format!(
-            "\nenergy_consumption.sewage_gas_produced, {}",
+            "energy_consumption.sewage_gas_produced, {}\n",
             f64::from(self.energy_consumption.sewage_gas_produced)
         );
         output += &format!(
-            "\nenergy_consumption.methane_fraction, {}",
+            "energy_consumption.methane_fraction, {}\n",
             f64::from(self.energy_consumption.methane_fraction)
         );
         output += &format!(
-            "\nenergy_consumption.total_power_consumption, {}",
+            "energy_consumption.total_power_consumption, {}\n",
             f64::from(self.energy_consumption.total_power_consumption)
         );
         output += &format!(
-            "\nenergy_consumption.on_site_power_generation, {}",
+            "energy_consumption.on_site_power_generation, {}\n",
             f64::from(self.energy_consumption.on_site_power_generation)
         );
         output += &format!(
-            "\nenergy_consumption.emission_factor_electricity_mix, {}",
+            "energy_consumption.emission_factor_electricity_mix, {}\n",
             f64::from(self.energy_consumption.emission_factor_electricity_mix)
         );
         output += &format!(
-            "\nsewage_sludge_treatment.sludge_bags_are_open, {}",
+            "sewage_sludge_treatment.sludge_bags_are_open, {}\n",
             self.sewage_sludge_treatment.sludge_bags_are_open
         );
         output += &format!(
-            "\nsewage_sludge_treatment.custom_sludge_bags_factor, {}",
+            "sewage_sludge_treatment.custom_sludge_bags_factor, {}\n",
             f64::from(
                 self.sewage_sludge_treatment
                     .custom_sludge_bags_factor
@@ -112,12 +112,12 @@ impl EmissionInfluencingValues {
             )
         );
         output += &format!(
-            "\nsewage_sludge_treatment.sludge_storage_containers_are_open, {}",
+            "sewage_sludge_treatment.sludge_storage_containers_are_open, {}\n",
             self.sewage_sludge_treatment
                 .sludge_storage_containers_are_open
         );
         output += &format!(
-            "\nsewage_sludge_treatment.custom_sludge_storage_containers_factor, {}",
+            "sewage_sludge_treatment.custom_sludge_storage_containers_factor, {}\n",
             f64::from(
                 self.sewage_sludge_treatment
                     .custom_sludge_storage_containers_factor
@@ -125,31 +125,31 @@ impl EmissionInfluencingValues {
             )
         );
         output += &format!(
-            "\nsewage_sludge_treatment.sewage_sludge_for_disposal, {}",
+            "sewage_sludge_treatment.sewage_sludge_for_disposal, {}\n",
             f64::from(self.sewage_sludge_treatment.sewage_sludge_for_disposal)
         );
         output += &format!(
-            "\nsewage_sludge_treatment.transport_distance, {}",
+            "sewage_sludge_treatment.transport_distance, {}\n",
             f64::from(self.sewage_sludge_treatment.transport_distance)
         );
         output += &format!(
-            "\nsewage_sludge_treatment.digester_count, {}",
+            "sewage_sludge_treatment.digester_count, {}\n",
             self.sewage_sludge_treatment.digester_count.unwrap_or(0)
         );
         output += &format!(
-            "\noperating_materials.fecl3, {}",
+            "operating_materials.fecl3, {}\n",
             f64::from(self.operating_materials.fecl3)
         );
         output += &format!(
-            "\noperating_materials.feclso4, {}",
+            "operating_materials.feclso4, {}\n",
             f64::from(self.operating_materials.feclso4)
         );
         output += &format!(
-            "\noperating_materials.caoh2, {}",
+            "operating_materials.caoh2, {}\n",
             f64::from(self.operating_materials.caoh2)
         );
         output += &format!(
-            "\noperating_materials.synthetic_polymers, {}",
+            "operating_materials.synthetic_polymers, {}\n",
             f64::from(self.operating_materials.synthetic_polymers)
         );
         output

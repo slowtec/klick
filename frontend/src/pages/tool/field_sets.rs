@@ -549,11 +549,11 @@ pub fn field_sets() -> Vec<FieldSet> {
                     Nach Eingabe erscheint eine weitere Auswahlmöglichkeit (Benutzerdefiniert), diese muss
                     manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
-                    initial_value: Some(3.0),
+                    initial_value: Some(2.0),
                     placeholder: Some(
-                        "% des TN(Zulauf)".to_string(),
+                        "2.0 % des TN(Zulauf)".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(

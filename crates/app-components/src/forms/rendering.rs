@@ -10,7 +10,7 @@ pub fn render_field_sets<ID>(
     field_sets: Vec<FieldSet<ID>>,
 ) -> (
     HashMap<ID, FieldSignal>,
-    Vec<impl IntoView + Clone>,
+    Vec<View>,
     Vec<RequiredField<ID>>,
 )
 where
