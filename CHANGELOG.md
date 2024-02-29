@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.18 (2024-02-29)
+
+- Changed
+  - EMISSION_FACTOR_SLUDGE_STORAGE 1.6 -> 2.0 #144
+  - sensitivity updates: lachgasemissionen & methanemissionen bhkw #175
+
 ## v0.3.17 (2024-02-22)
 
 - Changed
