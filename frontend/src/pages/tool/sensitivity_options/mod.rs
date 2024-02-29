@@ -4,35 +4,39 @@ use klick_domain as domain;
 
 use crate::forms::InfoIcon;
 
-pub mod ch4_emissions_open_digesters;
-mod ch4_emissions_pre_treatment;
-mod excess_energy_co2_equivalent;
-mod leak_test;
-mod n2o_emissions_in_secondary_stream_systems;
-mod n2o_emissions_in_the_biological_treatment_stage;
+mod ch4_emissions_chp;
+mod ch4_emissions_open_digesters;
+mod ch4_emissions_open_sludge_storage;
+mod fossil_co2_emissions;
+pub mod n2o_emissions;
 
 const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";
 
 #[component]
-pub fn OptimizationOptions(
+pub fn SensitivityOptions(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
-    sludge_bags_are_open: RwSignal<Option<bool>>,
-    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
-    custom_sludge_bags_factor: RwSignal<Option<f64>>,
-    custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
+    selected_scenario_n2o: RwSignal<Option<u64>>,
+    selected_scenario_chp: RwSignal<Option<u64>>,
+    custom_factor_bhkw: RwSignal<Option<f64>>,
+    barchart_arguments_radio_inputs: ReadSignal<Vec<klick_app_charts::BarChartRadioInputArguments>>,
+    barchart_arguments_radio_inputs_bhkw: ReadSignal<
+        Vec<klick_app_charts::BarChartRadioInputArguments>,
+    >,
+    selected_scenario_name_n2o: RwSignal<String>,
+    selected_scenario_name_chp: RwSignal<String>,
+    custom_factor_n2o: RwSignal<Option<f64>>,
 ) -> impl IntoView {
-    log::info!("OptimizationOptions rendering");
     view! {
-      { n2o_emissions_in_the_biological_treatment_stage::options() }
-      { n2o_emissions_in_secondary_stream_systems::options() }
-      { ch4_emissions_pre_treatment::options() }
-      { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, custom_sludge_bags_factor, sludge_storage_containers_are_open, custom_sludge_storage_containers_factor) }
-      { leak_test::options() }
-      { excess_energy_co2_equivalent::options(output) }
+      { n2o_emissions::options(output, barchart_arguments_radio_inputs, selected_scenario_name_n2o, selected_scenario_n2o, custom_factor_n2o) }
+      { ch4_emissions_chp::options(output, selected_scenario_chp, selected_scenario_name_chp, custom_factor_bhkw, barchart_arguments_radio_inputs_bhkw) }
+      { ch4_emissions_open_digesters::options() }
+      { ch4_emissions_open_sludge_storage::options() }
+      { fossil_co2_emissions::options() }
     }
 }
 
+// FIXME dup of optimization_options
 #[component]
 fn InfoBox(text: &'static str, children: Children) -> impl IntoView {
     let show = RwSignal::<bool>::new(false);
@@ -63,7 +67,7 @@ fn Card(title: &'static str, children: Children) -> impl IntoView {
         class="mt-8 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow-md"
       >
         <div
-          class="px-4 py-3 bg-yellow cursor-pointer flex items-center justify-between"
+          class="px-4 py-3 cursor-pointer flex items-center justify-between" style="background-color: #0af;"
           on:click = move |_| hide.update(|h| *h = !*h)
         >
           <h3 class="font-bold text-lg">{ title }</h3>

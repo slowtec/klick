@@ -5,7 +5,7 @@ use klick_presenter::{
 
 use crate::forms::{self, FieldType, MinMax};
 
-use super::fields::{FieldId, ScenarioFieldId};
+use super::fields::FieldId;
 type Id = FieldId;
 
 pub type FieldSet = forms::FieldSet<Id>;
@@ -532,38 +532,6 @@ pub fn field_sets() -> Vec<FieldSet> {
                         ),
                     },
                     unit: "t",
-                },
-            },
-        ],
-    },
-    FieldSet {
-        title: Some("Parameter für benutzerdefiniertes Lachgasemissionenszenario"),
-        fields: vec![
-            Field {
-                id: Id::Scenario(ScenarioFieldId::N2oCustomFactor),
-                description: Some(
-                    "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
-                    oder einer Messkampagne) einen Wert für den EF N₂O eintragen.
-
-                    <br>Ohne Angabe gibt es keine Auswahl zum Benuzterdefinierten Szenario in der Auswahl zum Szenario für die Lachgasemissionen.
-                    Nach Eingabe erscheint eine weitere Auswahlmöglichkeit (Benutzerdefiniert), diese muss
-                    manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: Some(2.0),
-                    placeholder: Some(
-                        "2.0 % des TN(Zulauf)".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            100.0,
-                        ),
-                    },
-                    unit: "%",
                 },
             },
         ],

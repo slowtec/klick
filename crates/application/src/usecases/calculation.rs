@@ -6,7 +6,7 @@ use klick_domain::{
 
 pub fn calculate_all_n2o_emission_factor_scenarios(
     values: &EmissionInfluencingValues,
-    custom_factor: Option<Factor>,
+    n2o_custom_factor: Option<Factor>,
     ch4_chp_calc_method: Option<CH4ChpEmissionFactorCalcMethod>,
 ) -> Vec<(N2oEmissionFactorCalcMethod, CO2Equivalents, EmissionFactors)> {
     let ch4 = ch4_chp_calc_method;
@@ -43,11 +43,11 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
     ];
 
     // Custom
-    let Some(factor) = custom_factor else {
+    let Some(n2o_custom_factor) = n2o_custom_factor else {
         return results;
     };
 
-    let n2o = N2oEmissionFactorCalcMethod::Custom(factor);
+    let n2o = N2oEmissionFactorCalcMethod::Custom(n2o_custom_factor);
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
     let (emissions, factors, _) = calculate_emissions(values.clone(), methods);
     let custom_result = (n2o, emissions, factors);

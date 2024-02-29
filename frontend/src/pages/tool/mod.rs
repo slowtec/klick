@@ -1,11 +1,11 @@
 use chrono::prelude::*;
-use std::rc::Rc;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 
-use klick_app_charts::{BarChart, BarChartRadioInput};
+use klick_app_charts::BarChart;
 use klick_app_components::message::{ErrorMessage, SuccessMessage};
 use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, N2oEmissionFactorCalcMethod, Project, ProjectId,
@@ -31,13 +31,16 @@ mod project_menu;
 
 pub mod optimization_options;
 
+pub mod sensitivity_options;
+
 use self::{
     breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
-    fields::{FieldSet, load_project_fields, read_input_fields, FieldId, ScenarioFieldId},
+    fields::{load_project_fields, read_input_fields, FieldId, FieldSet},
     input_data_list::InputDataList,
     optimization_options::OptimizationOptions,
     project_menu::ProjectMenu,
+    sensitivity_options::SensitivityOptions,
 };
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -87,8 +90,10 @@ pub fn Tool(
     let sankey_data =
         RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
     let sankey_header = RwSignal::new(String::new());
-    let selected_scenario = RwSignal::new(Option::<u64>::Some(0));
-    let selected_scenario_name = RwSignal::new(String::new());
+    let selected_scenario_chp = RwSignal::new(Option::<u64>::Some(0));
+    let selected_scenario_n2o = RwSignal::new(Option::<u64>::Some(0));
+    let selected_scenario_name_chp = RwSignal::new(String::new());
+    let selected_scenario_name_n2o = RwSignal::new(String::new());
     let barchart_arguments_radio_inputs: RwSignal<
         Vec<klick_app_charts::BarChartRadioInputArguments>,
     > = RwSignal::new(vec![]);
@@ -97,18 +102,11 @@ pub fn Tool(
     > = RwSignal::new(vec![]);
 
     let current_section = RwSignal::new(Option::<PageSection>::Some(PageSection::DataCollection));
-    let n2o_emission_factor_method =
-        RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
 
     let nitrogen_io_warning = RwSignal::new(Option::<String>::None);
     let chemical_oxygen_io_warning = RwSignal::new(Option::<String>::None);
     let phosphorus_io_warning = RwSignal::new(Option::<String>::None);
     let is_logged_in = Signal::derive(move || api.get().is_some());
-
-    let custom_factor_value: RwSignal<Option<f64>> = signals
-        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
-        .and_then(FieldSignal::get_float_output_signal)
-        .unwrap();
 
     let save_result_message = RwSignal::new(None);
     let show_handlungsempfehlungen: RwSignal<bool> = RwSignal::new(false);
@@ -119,8 +117,10 @@ pub fn Tool(
     let sankey_header_optimization_options_model = RwSignal::new(String::new());
     let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
-    let selected_scenario_bhkw = RwSignal::new(Option::<u64>::Some(0));
     let custom_factor_bhkw: RwSignal<Option<f64>> = Some(3.0 as f64).into();
+    let custom_factor_n2o: RwSignal<Option<f64>> = Some(3.0 as f64).into();
+    let n2o_emission_factor_method =
+        RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
 
     let sludge_bags_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
     let sludge_storage_containers_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
@@ -150,7 +150,7 @@ pub fn Tool(
     });
 
     create_effect(move |_| {
-        let Some(n) = selected_scenario.get() else {
+        let Some(n) = selected_scenario_n2o.get() else {
             n2o_emission_factor_method.set(None);
             return;
         };
@@ -161,7 +161,7 @@ pub fn Tool(
             2 => domain::N2oEmissionFactorCalcMethod::Pesimistic,
             3 => domain::N2oEmissionFactorCalcMethod::Ipcc2019,
             4 => domain::N2oEmissionFactorCalcMethod::Custom(domain::units::Factor::new(
-                custom_factor_value.get().unwrap_or_default() / 100.0,
+                custom_factor_n2o.get().unwrap_or_default() / 100.0,
             )),
             _ => {
                 n2o_emission_factor_method.set(None);
@@ -197,7 +197,8 @@ pub fn Tool(
     let s = Rc::clone(&signals);
 
     create_effect(move |_| {
-        let Some(input_data) = input_data.get() else { // FIXME check also required fields
+        let Some(input_data) = input_data.get() else {
+            // FIXME check also required fields
             sankey_header.update(String::clear);
             show_handlungsempfehlungen.set(false);
             barchart_arguments_radio_inputs.update(Vec::clear);
@@ -207,11 +208,6 @@ pub fn Tool(
             phosphorus_io_warning.set(None);
             return;
         };
-
-        let custom_factor_value = s
-            .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
-            .and_then(FieldSignal::get_float);
-
         if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
             nitrogen_io_warning.set(Some(format!(
                 "Ablauf Gesamtstickstoff {} größer als dessen Zulauf {}!",
@@ -261,13 +257,23 @@ pub fn Tool(
             sankey_data.set(None);
         }
 
-        let custom_factor = custom_factor_value
-            .map(|n| n / 100.0)
-            .map(domain::units::Factor::new);
-        let ch4_chp_calc_method = None;
+        let ch4_chp_calc_method = match selected_scenario_chp.get() {
+            Some(0) => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
+            Some(1) => Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine),
+            Some(2) => Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine),
+            Some(3) => match custom_factor_bhkw.get() {
+                Some(f) => Some(domain::CH4ChpEmissionFactorCalcMethod::Custom(
+                    domain::units::Factor::new(f / 100.0),
+                )),
+                None => None,
+            },
+            _ => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
+        };
         let n2o_calculations = domain::calculate_all_n2o_emission_factor_scenarios(
             &input_data,
-            custom_factor,
+            Some(domain::units::Factor::new(
+                custom_factor_n2o.get().unwrap_or_default() / 100.0,
+            )),
             ch4_chp_calc_method,
         );
 
@@ -292,10 +298,10 @@ pub fn Tool(
 
         let einheit = "t CO₂ Äquivalente/Jahr";
 
-        if let Some(i) = selected_scenario.get() {
+        if let Some(i) = selected_scenario_n2o.get() {
             if let Some((method, output_data)) = szenario_calculations.get(i as usize) {
                 let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
-                selected_scenario_name.set(szenario_name.to_string().clone());
+                selected_scenario_name_n2o.set(szenario_name.to_string().clone());
                 let ef =
                     Lng::De.format_number_with_precision(f64::from(output_data.1.n2o) * 100.0, 2);
                 let title = format!(
@@ -321,7 +327,7 @@ pub fn Tool(
         if !input_data_validation_error.get() {
             log::info!("computing final output data");
             let ch4_chp_emission_factor: Option<domain::CH4ChpEmissionFactorCalcMethod> =
-                match selected_scenario_bhkw.get() {
+                match selected_scenario_chp.get() {
                     Some(0) => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
                     Some(1) => Some(domain::CH4ChpEmissionFactorCalcMethod::GasolineEngine),
                     Some(2) => Some(domain::CH4ChpEmissionFactorCalcMethod::JetEngine),
@@ -333,6 +339,20 @@ pub fn Tool(
                     },
                     _ => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
                 };
+            // TODO: move to presenter layer
+            selected_scenario_name_chp.set(
+                selected_scenario_chp
+                    .get()
+                    .map(|x| match x {
+                        0 => "Mikrogasturbinen",
+                        1 => "Ottomotor",
+                        2 => "Zündstrahlmotor",
+                        3 => "Benutzerdefiniert",
+                        _ => "",
+                    })
+                    .unwrap_or("")
+                    .to_string(),
+            );
             let scenario = domain::EmissionFactorCalculationMethods {
                 n2o: n2o_emission_factor_method
                     .get()
@@ -361,9 +381,10 @@ pub fn Tool(
                 name_ka = name_ka,
                 ew = Lng::De.format_number(ew),
                 einheit = einheit,
-                szenario_name = selected_scenario_name.get()
+                szenario_name = selected_scenario_name_chp.get()
             ));
             log::info!("computing barchart_arguments_radio_inputs_bhkw");
+            // TODO: move to presenter layer
             barchart_arguments_radio_inputs_bhkw.set(
                 (vec![
                     (0, "Mikrogasturbinen"),
@@ -412,7 +433,7 @@ pub fn Tool(
                 .collect(),
             );
 
-            let old = szenario_calculations[selected_scenario.get().unwrap_or(0) as usize]
+            let old = szenario_calculations[selected_scenario_n2o.get().unwrap_or(0) as usize]
                 .clone()
                 .1
                  .0;
@@ -454,7 +475,7 @@ pub fn Tool(
                 percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
             });
             barchart_arguments.set(comp);
-            if missing_fields.get().len() > 0{
+            if missing_fields.get().len() > 0 {
                 show_handlungsempfehlungen.set(false);
             } else {
                 show_handlungsempfehlungen.set(true);
@@ -502,7 +523,11 @@ pub fn Tool(
         move |_| {
             let mut s: String = "".to_string();
             s.push_str(
-                format!("\n# export from klimabilanzklaeranlage.de - {}\n", Utc::now()).as_str(),
+                format!(
+                    "\n# export from klimabilanzklaeranlage.de - {}\n",
+                    Utc::now()
+                )
+                .as_str(),
             );
 
             s.push_str("\n# input_data_optimizationOptions_model\n");
@@ -732,9 +757,6 @@ pub fn Tool(
           phosphorus_io_warning
           missing_fields
           input_data
-          barchart_arguments_radio_inputs
-          selected_scenario
-          selected_scenario_name
           sankey_data
           sankey_header
         />
@@ -752,6 +774,17 @@ pub fn Tool(
         <SensitivityView
           current_section
           show_handlungsempfehlungen
+          output_optimization_options_model
+          selected_scenario_n2o
+          selected_scenario_chp
+          custom_factor_bhkw
+          barchart_arguments_radio_inputs
+          barchart_arguments_radio_inputs_bhkw
+          sankey_data
+          sankey_header
+          selected_scenario_name_n2o
+          selected_scenario_name_chp
+          custom_factor_n2o
         />
         </div>
 
@@ -770,10 +803,7 @@ pub fn Tool(
           output_optimization_options_model
           sludge_bags_are_open
           sludge_storage_containers_are_open
-          selected_scenario_bhkw
-          custom_factor_bhkw
           barchart_arguments
-          barchart_arguments_radio_inputs_bhkw
           custom_sludge_bags_factor
           custom_sludge_storage_containers_factor
           sankey_data_optimization_options_model
@@ -797,13 +827,10 @@ pub fn DataCollectionView(
     phosphorus_io_warning: RwSignal<Option<String>>,
     missing_fields: RwSignal<Vec<MissingField<FieldId>>>,
     input_data: RwSignal<Option<domain::EmissionInfluencingValues>>,
-    barchart_arguments_radio_inputs: RwSignal<Vec<klick_app_charts::BarChartRadioInputArguments>>,
-    selected_scenario: RwSignal<Option<u64>>,
-    selected_scenario_name: RwSignal<String>,
     sankey_data: RwSignal<Option<(domain::CO2Equivalents, domain::EmissionFactors)>>,
     sankey_header: RwSignal<String>,
 ) -> impl IntoView {
-    view!{
+    view! {
         <div id = PageSection::DataCollection.section_id()>
           { set_views.clone() } // input fields for data collection
         </div>
@@ -849,32 +876,13 @@ pub fn DataCollectionView(
       }
       <div
         class = move || {
-          if current_section.get() == Some(PageSection::DataCollection) && input_data.get().is_some() {
+          if input_data.get().is_some() {
               None
             } else {
                 Some("hidden")
             }
           }
         >
-        <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Auswahl des Auswertungsszenarios für Lachgasemissionen</h3>
-        { move || {
-            view! {
-              <BarChartRadioInput
-                width = 1200.0
-                height = 400.0
-                data  = barchart_arguments_radio_inputs.get()
-                selected_bar = selected_scenario
-                emission_factor_label = Some("N₂O EF")
-              />
-            }
-          }
-        }
-
-        <p>
-          "Es ist das Szenario \"" { selected_scenario_name.get() } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
-          Durch Anklicken kann ein anderes Szenario ausgewählt werden."
-        </p>
-
         // sankey diagram
         <h4 class="my-8 text-lg font-bold">
           { move || sankey_header.get().to_string() }
@@ -897,12 +905,66 @@ pub fn DataCollectionView(
 pub fn SensitivityView(
     current_section: RwSignal<Option<PageSection>>,
     show_handlungsempfehlungen: RwSignal<bool>,
+    output_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
+    selected_scenario_n2o: RwSignal<Option<u64>>,
+    selected_scenario_chp: RwSignal<Option<u64>>,
+    custom_factor_bhkw: RwSignal<Option<f64>>,
+    barchart_arguments_radio_inputs: RwSignal<Vec<klick_app_charts::BarChartRadioInputArguments>>,
+    barchart_arguments_radio_inputs_bhkw: RwSignal<
+        Vec<klick_app_charts::BarChartRadioInputArguments>,
+    >,
+    sankey_data: RwSignal<Option<(domain::CO2Equivalents, domain::EmissionFactors)>>,
+    sankey_header: RwSignal<String>,
+    selected_scenario_name_n2o: RwSignal<String>,
+    selected_scenario_name_chp: RwSignal<String>,
+    custom_factor_n2o: RwSignal<Option<f64>>,
 ) -> impl IntoView {
-    view!{
+    view! {
         <DataCollectionEnforcementHelper
             show_handlungsempfehlungen = show_handlungsempfehlungen
             current_section = current_section
         />
+        <div
+          class = move || {
+            if show_handlungsempfehlungen.get() {
+                None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
+        { move || {
+            view! {
+              <SensitivityOptions
+                output = output_optimization_options_model.read_only()
+                selected_scenario_n2o
+                selected_scenario_chp
+                custom_factor_bhkw = custom_factor_bhkw
+                barchart_arguments_radio_inputs = barchart_arguments_radio_inputs.read_only()
+                barchart_arguments_radio_inputs_bhkw = barchart_arguments_radio_inputs_bhkw.read_only()
+                selected_scenario_name_n2o
+                selected_scenario_name_chp
+                custom_factor_n2o
+              />
+            }
+          }
+        }
+        <div
+        class = move || {
+          if show_handlungsempfehlungen.get() {
+              None
+            } else {
+                Some("hidden")
+            }
+          }
+        >
+        // sankey diagram
+        <h4 class="my-8 text-lg font-bold">
+          { move || sankey_header.get().to_string() }
+        </h4>
+        { move || sankey_data.get().map(|data| view!{ <Sankey data /> }) }
+        </div>
+        </div>
         <Show when = move || show_handlungsempfehlungen.get()>
         <button
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
@@ -910,7 +972,7 @@ pub fn SensitivityView(
           >
              "zur den Handlungsempfehlungen"
         </button>
-      </Show>
+        </Show>
     }
 }
 
@@ -922,10 +984,7 @@ pub fn RecommendationView(
     output_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
     sludge_bags_are_open: RwSignal<Option<bool>>,
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
-    selected_scenario_bhkw: RwSignal<Option<u64>>,
-    custom_factor_bhkw: RwSignal<Option<f64>>,
     barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>>,
-    barchart_arguments_radio_inputs_bhkw: RwSignal<Vec<klick_app_charts::BarChartRadioInputArguments>>,
     custom_sludge_bags_factor: RwSignal<Option<f64>>,
     custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
     sankey_data_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
@@ -933,7 +992,7 @@ pub fn RecommendationView(
     field_sets: Vec<FieldSet>,
     signals: Rc<HashMap<FieldId, FieldSignal>>,
 ) -> impl IntoView {
-    view!{
+    view! {
         <DataCollectionEnforcementHelper
             show_handlungsempfehlungen = show_handlungsempfehlungen
             current_section = current_section
@@ -991,11 +1050,8 @@ pub fn RecommendationView(
               view! {
                 <OptimizationOptions
                   output = output_optimization_options_model.read_only()
-                  sludge_bags_are_open = sludge_bags_are_open
-                  sludge_storage_containers_are_open = sludge_storage_containers_are_open
-                  selected_scenario_bhkw = selected_scenario_bhkw
-                  custom_factor_bhkw = custom_factor_bhkw
-                  barchart_arguments_radio_inputs_bhkw = barchart_arguments_radio_inputs_bhkw.read_only()
+                  sludge_bags_are_open
+                  sludge_storage_containers_are_open
                   custom_sludge_bags_factor
                   custom_sludge_storage_containers_factor
                 />
@@ -1071,7 +1127,7 @@ pub fn DataCollectionEnforcementHelper(
     show_handlungsempfehlungen: RwSignal<bool>,
     current_section: RwSignal<Option<PageSection>>,
 ) -> impl IntoView {
-    view!{
+    view! {
       <Show when = move || !show_handlungsempfehlungen.get()>
         <div class="my-8 border-b border-gray-200 pb-5" >
         <p>
@@ -1087,7 +1143,6 @@ pub fn DataCollectionEnforcementHelper(
         </Show>
     }
 }
-
 
 // TODO: move to presenter layer
 const fn label_of_n2o_emission_factor_calc_method(
