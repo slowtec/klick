@@ -22,11 +22,14 @@ enum Id {
 
 use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
 
+const CH4_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
+
 pub fn options(
     // incoming signals
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
     // outgoing signals
-    selected_scenario_bhkw: RwSignal<Option<u64>>,
+    selected_scenario_chp: RwSignal<Option<u64>>,
+    selected_scenario_name_chp: RwSignal<String>,
     custom_factor_bhkw: RwSignal<Option<f64>>,
     // incoming signals
     barchart_arguments_radio_inputs_bhkw: ReadSignal<
@@ -43,6 +46,8 @@ pub fn options(
     create_effect(move |_| {
         if let Some(custom_factor) = custom_factor.get() {
             custom_factor_bhkw.set(Some(custom_factor));
+        } else {
+            custom_factor_bhkw.set(Some(CH4_DEFAULT_CUSTOM_FACTOR));
         }
     });
 
@@ -80,13 +85,16 @@ pub fn options(
             width = 900.0
             height = 300.0
             data  = barchart_arguments_radio_inputs_bhkw.get()
-            selected_bar = selected_scenario_bhkw
+            selected_bar = selected_scenario_chp
             emission_factor_label = Some("CH₄ EF")
           />
           }
         }
         { chp_view }
-        </div>
+        <p>
+          "Es ist das Szenario \"" { move || selected_scenario_name_chp.get() } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
+          Durch Anklicken kann ein anderes Szenario ausgewählt werden."
+        </p>
         <InfoBox text = "Zusatzinformation zum Methanschlupf:">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
             "Die Gaszusammensetzung, Brennraumtemperatur (Gasfeuchte), Brennraumgestaltung und Betriebsweise beeinflussen die Verbrennungsvorgänge.
@@ -123,8 +131,9 @@ pub fn options(
             }
           }
         </div>
-      </Card>
         </div>
+      </Card>
+      </div>
     }
 }
 
@@ -133,10 +142,10 @@ fn field_set() -> FieldSet {
     let custom_factor_field = Field {
         id,
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
-        required: true,
+        required: false,
         field_type: FieldType::Float {
-            initial_value: Some(3.0),
-            placeholder: None,
+            initial_value: None,
+            placeholder: Some(CH4_DEFAULT_CUSTOM_FACTOR.to_string()),
             limits: MinMax {
                 min: Some(0.0),
                 max: Some(100.0),

@@ -4,7 +4,7 @@ use super::Card;
 
 pub fn options() -> impl IntoView {
     view! {
-      <Card title = "Fossile CO₂-Emissionen aus Abwasser">
+      <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung">
         <p>
           "xxx"
         </p>

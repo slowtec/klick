@@ -267,7 +267,7 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
     } = plant_profile;
 
     let OptimizationScenario {
-        n2o_emission_factor,
+        n2o_emission_factor: _,
         ch4_chp_emission_factor: _,
     } = optimization_scenario;
 
@@ -432,9 +432,4 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(synthetic_polymers));
-    signals
-        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
-        .and_then(FieldSignal::get_float_signal)
-        .unwrap()
-        .set(float_to_sting_option(n2o_emission_factor.custom_factor));
 }
