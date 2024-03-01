@@ -29,6 +29,8 @@ mod fields;
 mod input_data_list;
 mod project_menu;
 
+pub mod widgets;
+
 pub mod optimization_options;
 
 pub mod sensitivity_options;

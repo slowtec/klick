@@ -4,7 +4,7 @@ use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 pub fn options() -> impl IntoView {
     view! {
-      <Card title="Dichtigkeitsprüfung">
+      <Card title="Dichtigkeitsprüfung" bg_color="bg-yellow">
         <InfoBox
           text = "Die (jährliche) Überprüfung möglicher Leckagen und deren Behebung, kann signifikant zum THG-Minderungspotenzial an Kläranlagen beitragen."
         >

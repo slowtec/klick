@@ -44,6 +44,7 @@ impl ValueLabel for FieldId {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum ScenarioFieldId {
     N2oCustomFactor,
+    N2oSecondaryPowerFactor,
     CH4ChpCalculationMethod,
     CH4ChpCustomFactor,
 }
@@ -52,6 +53,7 @@ impl ValueLabel for ScenarioFieldId {
     fn label(&self) -> &str {
         match self {
             Self::N2oCustomFactor => "N₂O-EF Benutzerdefiniert",
+            Self::N2oSecondaryPowerFactor => "N₂O-EF Nebenstrom",
             Self::CH4ChpCalculationMethod => "BHKW Emmisionsfaktor",
             Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
         }

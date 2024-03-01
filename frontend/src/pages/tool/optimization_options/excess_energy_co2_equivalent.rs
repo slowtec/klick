@@ -25,7 +25,7 @@ pub fn options(output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>) 
         }
     });
     view! {
-      <Card title ="Strombilanz">
+      <Card title ="Strombilanz" bg_color="bg-yellow">
         <p>
           <Show
             when= move || (excess_energy_co2_equivalent.get() > 0.0)
