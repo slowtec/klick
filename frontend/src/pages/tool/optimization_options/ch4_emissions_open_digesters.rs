@@ -143,7 +143,7 @@ pub fn options(
     });
 
     view! {
-      <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung">
+      <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-yellow">
         <p>
           "Das Schließen von "<b>"Schlammtaschen"</b>" an Faultürmen wirkt sich durch die Eindämmung von
           Methanschlupfen positiv auf die Klimabilanz von Kläranlagen aus.

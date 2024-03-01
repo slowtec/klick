@@ -34,7 +34,7 @@ where
 
         set_views.push(
             view! {
-              <fieldset class="border-b border-gray-900/10 pb-12">
+              <fieldset class="border-b border-gray-900/10 pb-12 mb-6">
                 {
                   set.title.map(|title| view! {
                     <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">

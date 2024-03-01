@@ -4,6 +4,7 @@ const colors = require('tailwindcss/colors');
 const utbw = {
   colors: {
     highlight: '#ffed00',
+    blue: '#0af',
     black: '#000000',
     white: '#ffffff',
     gray: {
@@ -36,6 +37,7 @@ module.exports = {
       primary: utbw.colors.highlight,
       highlight: utbw.colors.highlight,
       black: utbw.colors.black,
+      blue: utbw.colors.blue,
       white: utbw.colors.white,
       yellow: utbw.colors.highlight,
       gray: {
@@ -54,7 +56,6 @@ module.exports = {
       green: colors.green,
       red: colors.red,
       orange: colors.orange,
-      blue: colors.blue,
     }
   }
 }
