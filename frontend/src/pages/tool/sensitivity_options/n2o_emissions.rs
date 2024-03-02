@@ -31,14 +31,14 @@ pub fn options(
     let field_set1 = field_set1();
     let (signals1, form1, _required_fields) = render_field_sets(vec![field_set1]);
     let custom_factor1 = signals1
-        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
+        .get(&FieldId::Scenario(ScenarioFieldId::N2OCustomFactor))
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
     let field_set2 = field_set2();
     let (signals2, form2, _required_fields) = render_field_sets(vec![field_set2]);
     let custom_factor2 = signals2
-        .get(&FieldId::Scenario(ScenarioFieldId::N2oSecondaryPowerFactor))
+        .get(&FieldId::Scenario(ScenarioFieldId::N2OSideStreamFactor))
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
@@ -142,7 +142,7 @@ pub fn options(
 }
 
 fn field_set1() -> FieldSet {
-    let id = FieldId::Scenario(ScenarioFieldId::N2oCustomFactor);
+    let id = FieldId::Scenario(ScenarioFieldId::N2OCustomFactor);
     let custom_factor_field = Field {
         id,
         description: Some(
@@ -178,26 +178,20 @@ fn field_set1() -> FieldSet {
 }
 
 fn field_set2() -> FieldSet {
-    let id = FieldId::Scenario(ScenarioFieldId::N2oSecondaryPowerFactor);
+    let id = FieldId::Scenario(ScenarioFieldId::N2OSideStreamFactor);
     let custom_factor_field = Field {
         id,
         description: Some(
             "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
-            oder einer Messkampagne) einen Wert für den EF Nebenstromanlagen eintragen."
+            oder einer Messkampagne) einen Wert für den EF Nebenstromanlagen eintragen.",
         ),
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
-            placeholder: Some(
-                N2O_DEFAULT_CUSTOM_FACTOR.to_string(),
-            ),
+            placeholder: Some(N2O_DEFAULT_CUSTOM_FACTOR.to_string()),
             limits: MinMax {
-                min: Some(
-                    0.0,
-                ),
-                max: Some(
-                    100.0,
-                ),
+                min: Some(0.0),
+                max: Some(100.0),
             },
             unit: "%",
         },

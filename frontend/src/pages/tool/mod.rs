@@ -84,6 +84,7 @@ pub fn Tool(
     let missing_fields = RwSignal::new(Vec::<MissingField<_>>::new());
     let custom_sludge_bags_factor = RwSignal::new(Option::<f64>::None);
     let custom_sludge_storage_containers_factor = RwSignal::new(Option::<f64>::None);
+    let co2_fossil_custom_factor: RwSignal<Option<f64>> = RwSignal::new(Option::<f64>::None);
     let input_data = RwSignal::new(Option::<domain::EmissionInfluencingValues>::None);
     let input_data_validation_error = RwSignal::new(false); // FIXME rename
 
@@ -123,7 +124,7 @@ pub fn Tool(
     let custom_factor_n2o: RwSignal<Option<f64>> = Some(3.0 as f64).into();
     let n2o_emission_factor_method =
         RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
-
+    let n2o_side_stream_cover_is_open: RwSignal<Option<bool>> = None.into();
     let sludge_bags_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
     let sludge_storage_containers_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
 
@@ -787,6 +788,7 @@ pub fn Tool(
           selected_scenario_name_n2o
           selected_scenario_name_chp
           custom_factor_n2o
+          co2_fossil_custom_factor
         />
         </div>
 
@@ -812,6 +814,7 @@ pub fn Tool(
           sankey_header_optimization_options_model
           field_sets
           signals = Rc::clone(&signals)
+          n2o_side_stream_cover_is_open
         />
         </div>
       </div>
@@ -920,6 +923,7 @@ pub fn SensitivityView(
     selected_scenario_name_n2o: RwSignal<String>,
     selected_scenario_name_chp: RwSignal<String>,
     custom_factor_n2o: RwSignal<Option<f64>>,
+    co2_fossil_custom_factor: RwSignal<Option<f64>>,
 ) -> impl IntoView {
     view! {
         <DataCollectionEnforcementHelper
@@ -947,6 +951,7 @@ pub fn SensitivityView(
                 selected_scenario_name_n2o
                 selected_scenario_name_chp
                 custom_factor_n2o
+                co2_fossil_custom_factor
               />
             }
           }
@@ -993,6 +998,7 @@ pub fn RecommendationView(
     sankey_header_optimization_options_model: RwSignal<String>,
     field_sets: Vec<FieldSet>,
     signals: Rc<HashMap<FieldId, FieldSignal>>,
+    n2o_side_stream_cover_is_open: RwSignal<Option<bool>>,
 ) -> impl IntoView {
     view! {
         <DataCollectionEnforcementHelper
@@ -1056,6 +1062,7 @@ pub fn RecommendationView(
                   sludge_storage_containers_are_open
                   custom_sludge_bags_factor
                   custom_sludge_storage_containers_factor
+                  n2o_side_stream_cover_is_open
                 />
               }
             }
