@@ -43,19 +43,23 @@ impl ValueLabel for FieldId {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum ScenarioFieldId {
-    N2oCustomFactor,
-    N2oSecondaryPowerFactor,
+    N2OCustomFactor,
+    N2OSideStreamFactor,
+    N2OSideStreamCoverIsOpen,
     CH4ChpCalculationMethod,
     CH4ChpCustomFactor,
+    CO2FossilCustomFactor,
 }
 
 impl ValueLabel for ScenarioFieldId {
     fn label(&self) -> &str {
         match self {
-            Self::N2oCustomFactor => "N₂O-EF Benutzerdefiniert",
-            Self::N2oSecondaryPowerFactor => "N₂O-EF Nebenstrom",
+            Self::N2OCustomFactor => "N₂O-EF Benutzerdefiniert",
+            Self::N2OSideStreamFactor => "N₂O-EF Nebenstrom",
+            Self::N2OSideStreamCoverIsOpen => "Abdeckung mit Abluftbehandlung Nebenstromanlage",
             Self::CH4ChpCalculationMethod => "BHKW Emmisionsfaktor",
             Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
+            Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",
         }
     }
 }
@@ -206,7 +210,7 @@ pub fn read_input_fields(
 
 pub fn read_scenario_fields(s: &HashMap<FieldId, FieldSignal>) -> OptimizationScenario {
     let custom_factor = s
-        .get(&FieldId::Scenario(ScenarioFieldId::N2oCustomFactor))
+        .get(&FieldId::Scenario(ScenarioFieldId::N2OCustomFactor))
         .and_then(FieldSignal::get_float);
 
     let calculation_method = N2oEmissionFactorCalcMethod::Ipcc2019; // TODO: read from signal

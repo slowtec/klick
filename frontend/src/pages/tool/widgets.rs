@@ -7,7 +7,9 @@ pub const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";
 
 #[component]
-pub fn ScenarioHint(output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>) -> impl IntoView {
+pub fn ScenarioHint(
+    output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
+) -> impl IntoView {
     move || {
         output.get().map(|out| {
             let f = f64::from(out.emission_factors.n2o) * 100.0;

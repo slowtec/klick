@@ -11,20 +11,20 @@ use crate::{
 
 use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
-pub fn options(//custom_factor_bhkw: RwSignal<Option<f64>>, // FIXME needs rename to the correct signal
-) -> impl IntoView {
+const CO2_DEFAULT_FOSSIL_FACTOR: f64 = 3.85;
+
+pub fn options(co2_fossil_custom_factor: RwSignal<Option<f64>>) -> impl IntoView {
     let field_set = field_set();
-    let (signals, form1, _required_fields) = render_field_sets(vec![field_set]);
-    let _custom_factor = signals
-        .get(&FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor))
+    let (signals1, form1, _required_fields) = render_field_sets(vec![field_set]);
+    let custom_factor = signals1
+        .get(&FieldId::Scenario(ScenarioFieldId::CO2FossilCustomFactor))
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
-    // create_effect(move |_| { // FIXME needs to be reactived
-    //     if let Some(custom_factor) = custom_factor.get() {
-    //         custom_factor_bhkw.set(Some(custom_factor));
-    //     }
-    // });
+    create_effect(move |_| match custom_factor.get() {
+        Some(v) => co2_fossil_custom_factor.set(Some(v)),
+        None => co2_fossil_custom_factor.set(Some(CO2_DEFAULT_FOSSIL_FACTOR)),
+    });
     view! {
       <Card title = "Fossile CO₂-Emissionen aus Abwasser" bg_color="bg-blue">
         <p class="my-2">
@@ -67,14 +67,16 @@ pub fn options(//custom_factor_bhkw: RwSignal<Option<f64>>, // FIXME needs renam
 }
 
 fn field_set() -> FieldSet {
-    let id = FieldId::Scenario(ScenarioFieldId::CH4ChpCustomFactor); // FIXME rename needed
+    let id = FieldId::Scenario(ScenarioFieldId::CO2FossilCustomFactor);
     let custom_factor_field = Field {
         id,
-        description: Some("xxx Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
+        description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₄ eintragen."),
         required: false,
         field_type: FieldType::Float {
-            initial_value: Some(3.85), // FIXME needs to be a default value but not set here
-            placeholder: None, // FIXME in grey the default value
+            initial_value: None,
+            placeholder: Some(
+                CO2_DEFAULT_FOSSIL_FACTOR.to_string(),
+            ),
             limits: MinMax {
                 min: Some(0.0),
                 max: Some(100.0),
