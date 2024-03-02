@@ -1,4 +1,6 @@
-{ lib, rustPlatform, fetchFromGitHub, pkg-config, openssl, libiconv }:
+{ lib, stdenv, rustPlatform, fetchFromGitHub, pkg-config, openssl, libiconv,
+  CoreServices, Security, SystemConfiguration
+}:
 
 rustPlatform.buildRustPackage rec {
   pname = "trunk";
@@ -12,12 +14,14 @@ rustPlatform.buildRustPackage rec {
   };
 
   nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ openssl ];
+  buildInputs = if stdenv.isDarwin
+    then [ libiconv CoreServices Security SystemConfiguration]
+    else [ openssl ];
 
   # requires network
   checkFlags = [ "--skip=tools::tests::download_and_install_binaries" ];
 
-  cargoSha256 = "sha256-70nSHOGUIege1JKIt+WRnAm9VJ5/npxMGG57naTVyEs=";
+  cargoSha256 = "sha256-8KGR+yadQ9MKDmJ6eMeCavfNtbHonyJn6BB+D5uZLu4=";
 
   postConfigure = ''
     cargo metadata --offline

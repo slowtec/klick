@@ -13,13 +13,17 @@ This tool is used at https://klimabilanzklaeranlage.de/
     git clone https://codeberg.org/slowtec/klick
     cd klick
 
-### Install Rust
+### Install Dependencies
 
-On NixOS run:
+On [NixOS](https://nixos.org)
+(or MacOS with Nix installed) run:
 
 ```sh
 nix develop
+just setup
 ```
+
+### Build & Run
 
 For a list of available tasks (named _recipes_) run the following command:
 
@@ -34,7 +38,7 @@ just build-release
 scp target/x86_64-unknown-linux-musl/release/klick klick:/home/klick-app/klick-v0.3.x
 ssh klick
 systemctl stop klick-app
-cp /tmp/klick 
+rm /home/klick-app/klick
 ln -s /home/klick-app/klick-v0.3.x /home/klick-app/klick
 systemctl start klick-app
 ```

@@ -26,7 +26,9 @@
         in
         with pkgs;
         rec {
-          packages.mytrunk = pkgs.callPackage ./trunk/default.nix {};
+          packages.mytrunk = pkgs.callPackage ./trunk/default.nix {
+            inherit (darwin.apple_sdk.frameworks) CoreServices Security SystemConfiguration;
+          };
           devShells.default = mkShell {
             buildInputs = [
               rust
@@ -41,7 +43,14 @@
               pandoc                   # required to process markdown files
               texliveMedium            # required to generate PDF reports
               librsvg                  # required to render SVG image
-            ];
+              openssl                  # required for cargo-edit
+            ] ++
+            # Required for Mac OS X
+            (with darwin.apple_sdk.frameworks; [
+              CoreServices
+              Security
+              SystemConfiguration
+            ]);
           };
         }
       );

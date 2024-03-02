@@ -49,7 +49,7 @@ build-release: fmt-check test frontend-release
   cargo zigbuild --release --target x86_64-unknown-linux-musl
 
 # Set up (and update) tooling
-setup:
+setup: frontend-install-npm-packages
   # Ignore rustup failures, because not everyone might use it
   rustup self update || true
   cargo install \
