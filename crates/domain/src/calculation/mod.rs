@@ -319,48 +319,32 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
     values: &EmissionInfluencingValues,
     custom_factor: Option<Factor>,
     ch4_chp_calc_method: Option<CH4ChpEmissionFactorCalcMethod>,
-) -> Vec<(N2oEmissionFactorCalcMethod, CO2Equivalents, EmissionFactors)> {
+) -> Vec<(N2oEmissionFactorCalcMethod, EmissionsCalculationOutcome)> {
     let ch4 = ch4_chp_calc_method;
 
     // TuWien2016
     let n2o = N2oEmissionFactorCalcMethod::TuWien2016;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let EmissionsCalculationOutcome {
-        co2_equivalents,
-        emission_factors,
-        ..
-    } = calculate_emissions(values.clone(), methods);
-    let tuwien2016_result = (n2o, co2_equivalents, emission_factors);
+    let result = calculate_emissions(values.clone(), methods);
+    let tuwien2016_result = (n2o, result);
 
     // Optimistic
     let n2o = N2oEmissionFactorCalcMethod::Optimistic;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let EmissionsCalculationOutcome {
-        co2_equivalents,
-        emission_factors,
-        ..
-    } = calculate_emissions(values.clone(), methods);
-    let optimistc_result = (n2o, co2_equivalents, emission_factors);
+    let result = calculate_emissions(values.clone(), methods);
+    let optimistc_result = (n2o, result);
 
     // Pesimistic
     let n2o = N2oEmissionFactorCalcMethod::Pesimistic;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let EmissionsCalculationOutcome {
-        co2_equivalents,
-        emission_factors,
-        ..
-    } = calculate_emissions(values.clone(), methods);
-    let pesimistic_result = (n2o, co2_equivalents, emission_factors);
+    let result = calculate_emissions(values.clone(), methods);
+    let pesimistic_result = (n2o, result);
 
     // Ipcc2019
     let n2o = N2oEmissionFactorCalcMethod::Ipcc2019;
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let EmissionsCalculationOutcome {
-        co2_equivalents,
-        emission_factors,
-        ..
-    } = calculate_emissions(values.clone(), methods);
-    let ipcc2019_result = (n2o, co2_equivalents, emission_factors);
+    let result = calculate_emissions(values.clone(), methods);
+    let ipcc2019_result = (n2o, result);
 
     let mut results = vec![
         tuwien2016_result,
@@ -376,12 +360,8 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
 
     let n2o = N2oEmissionFactorCalcMethod::Custom(factor);
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let EmissionsCalculationOutcome {
-        co2_equivalents,
-        emission_factors,
-        ..
-    } = calculate_emissions(values.clone(), methods);
-    let custom_result = (n2o, co2_equivalents, emission_factors);
+    let result = calculate_emissions(values.clone(), methods);
+    let custom_result = (n2o, result);
     results.push(custom_result);
 
     results

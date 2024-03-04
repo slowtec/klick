@@ -93,7 +93,7 @@ pub fn Tool(
     let sankey_data =
         RwSignal::new(Option::<(domain::CO2Equivalents, domain::EmissionFactors)>::None);
     let sankey_header = RwSignal::new(String::new());
-    let selected_scenario_chp = RwSignal::new(Option::<u64>::Some(0));
+    let selected_scenario_chp = RwSignal::new(Option::<u64>::Some(1));
     let selected_scenario_n2o = RwSignal::new(Option::<u64>::Some(0));
     let selected_scenario_name_chp = RwSignal::new(String::new());
     let selected_scenario_name_n2o = RwSignal::new(String::new());
@@ -112,6 +112,8 @@ pub fn Tool(
 
     let save_result_message = RwSignal::new(None);
     let show_handlungsempfehlungen: RwSignal<bool> = RwSignal::new(false);
+    let output_sensitivity_model =
+        RwSignal::new(Option::<domain::EmissionsCalculationOutcome>::None);
     let output_optimization_options_model =
         RwSignal::new(Option::<domain::EmissionsCalculationOutcome>::None);
     let sankey_data_optimization_options_model =
@@ -267,7 +269,7 @@ pub fn Tool(
         } else {
             n2o_calculations
                 .into_iter()
-                .map(|(method, emissions, factors)| (method.into(), (emissions, factors)))
+                .map(|(method, outcome)| (method.into(), outcome))
                 .collect()
         };
 
@@ -288,23 +290,24 @@ pub fn Tool(
                 let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
                 selected_scenario_name_n2o.set(szenario_name.to_string().clone());
                 let ef =
-                    Lng::De.format_number_with_precision(f64::from(output_data.1.n2o) * 100.0, 2);
+                    Lng::De.format_number_with_precision(f64::from(output_data.emission_factors.n2o) * 100.0, 2);
                 let title = format!(
                     "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
                 );
                 sankey_header.set(title);
-                sankey_data.set(Some(output_data.clone()));
+                sankey_data.set(Some((output_data.co2_equivalents.clone(), output_data.emission_factors.clone())));
+                output_sensitivity_model.set(Some(output_data.clone()));
             }
         }
 
         barchart_arguments_radio_inputs.set(
             szenario_calculations
                 .iter()
-                .map(|(szenario, (co2_equivalents, emission_factors))| {
+                .map(|(szenario, outcome)| {
                     klick_app_charts::BarChartRadioInputArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
-                        value: co2_equivalents.total_emissions.into(),
-                        emission_factor: f64::from(emission_factors.n2o),
+                        value: outcome.co2_equivalents.total_emissions.into(),
+                        emission_factor: f64::from(outcome.emission_factors.n2o),
                     }
                 })
                 .collect(),
@@ -420,8 +423,7 @@ pub fn Tool(
 
             let old = szenario_calculations[selected_scenario_n2o.get().unwrap_or(0) as usize]
                 .clone()
-                .1
-                 .0;
+                .1.co2_equivalents;
             let new = output.co2_equivalents;
 
             let mut comp = vec![];
@@ -758,7 +760,7 @@ pub fn Tool(
         <SensitivityView
           current_section
           show_handlungsempfehlungen
-          output_optimization_options_model
+          output_model=output_sensitivity_model
           selected_scenario_n2o
           selected_scenario_chp
           custom_factor_bhkw
@@ -789,7 +791,7 @@ pub fn Tool(
         <RecommendationView
           current_section
           show_handlungsempfehlungen
-          output_optimization_options_model
+          output_model=output_optimization_options_model
           sludge_bags_are_open
           sludge_storage_containers_are_open
           barchart_arguments
@@ -885,7 +887,7 @@ pub fn DataCollectionView(
 pub fn SensitivityView(
     current_section: RwSignal<Option<PageSection>>,
     show_handlungsempfehlungen: RwSignal<bool>,
-    output_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
+    output_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>, // FIXME refactor name
     selected_scenario_n2o: RwSignal<Option<u64>>,
     selected_scenario_chp: RwSignal<Option<u64>>,
     custom_factor_bhkw: RwSignal<Option<f64>>,
@@ -921,7 +923,7 @@ pub fn SensitivityView(
         { move || {
             view! {
               <SensitivityOptions
-                output = output_optimization_options_model.read_only()
+                output = output_model.read_only()
                 selected_scenario_n2o
                 selected_scenario_chp
                 custom_factor_bhkw = custom_factor_bhkw
@@ -971,7 +973,7 @@ pub fn SensitivityView(
 pub fn RecommendationView(
     current_section: RwSignal<Option<PageSection>>,
     show_handlungsempfehlungen: RwSignal<bool>,
-    output_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
+    output_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
     sludge_bags_are_open: RwSignal<Option<bool>>,
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
     barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>>,
@@ -1038,7 +1040,7 @@ pub fn RecommendationView(
           { move || {
               view! {
                 <OptimizationOptions
-                  output = output_optimization_options_model.read_only()
+                  output = output_model.read_only()
                   sludge_bags_are_open
                   sludge_storage_containers_are_open
                   n2o_side_stream_cover_is_open

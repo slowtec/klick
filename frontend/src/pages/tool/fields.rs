@@ -25,9 +25,6 @@ pub enum FieldId {
     ProjectName,
     Profile(ProfileValueId),
     Scenario(ScenarioFieldId),
-    Ch4EmissionsOpenDigesters(
-        crate::pages::tool::sensitivity_options::ch4_emissions_open_digesters::Id, // FIXME remove this and make it a global definition in here
-    ),
 }
 
 impl ValueLabel for FieldId {
@@ -36,7 +33,6 @@ impl ValueLabel for FieldId {
             Self::ProjectName => "Projektname",
             Self::Profile(id) => id.label(),
             Self::Scenario(id) => id.label(),
-            Self::Ch4EmissionsOpenDigesters(id) => id.label(),
         }
     }
 }
@@ -49,6 +45,8 @@ pub enum ScenarioFieldId {
     CH4ChpCalculationMethod,
     CH4ChpCustomFactor,
     CO2FossilCustomFactor,
+    SludgeBagsCustomFactor,
+    SludgeStorageCustomFactor,
 }
 
 impl ValueLabel for ScenarioFieldId {
@@ -60,6 +58,8 @@ impl ValueLabel for ScenarioFieldId {
             Self::CH4ChpCalculationMethod => "BHKW Emmisionsfaktor",
             Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
             Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",
+            Self::SludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
+            Self::SludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
         }
     }
 }

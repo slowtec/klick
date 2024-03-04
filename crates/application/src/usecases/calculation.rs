@@ -49,8 +49,8 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
 
     let n2o = N2oEmissionFactorCalcMethod::Custom(n2o_custom_factor);
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
-    let (emissions, factors, _) = calculate_emissions(values.clone(), methods);
-    let custom_result = (n2o, emissions, factors);
+    let result = calculate_emissions(values.clone(), methods);
+    let custom_result = (n2o, result);
     results.push(custom_result);
 
     results

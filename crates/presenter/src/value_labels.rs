@@ -28,7 +28,7 @@ impl ValueLabel for AnnualAverageInfluentId {
         match self {
             Self::Nitrogen => "Gesamtstickstoff",
             Self::ChemicalOxygenDemand => "Chemischer Sauerstoffbedarf",
-            Self::TotalOrganicCarbohydrates => "Gesamter Organischer Stickstoff",
+            Self::TotalOrganicCarbohydrates => "Gesamter organischer Kohlenstoff",
         }
     }
 }
@@ -52,7 +52,7 @@ impl ValueLabel for EnergyConsumptionId {
             Self::TotalPowerConsumption => "Strombedarf gesamt",
             Self::OnSitePowerGeneration => "Eigenstromerzeugung",
             Self::EmissionFactorElectricityMix => "Emissionsfaktor Strommix (Versorger)",
-            Self::HeatingOil => "Heizölbezug (Versorger)",
+            Self::HeatingOil => "Heizölbezug",
         }
     }
 }
