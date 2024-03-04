@@ -21,7 +21,7 @@ rustPlatform.buildRustPackage rec {
   # requires network
   checkFlags = [ "--skip=tools::tests::download_and_install_binaries" ];
 
-  cargoSha256 = "sha256-8KGR+yadQ9MKDmJ6eMeCavfNtbHonyJn6BB+D5uZLu4=";
+  cargoSha256 = "sha256-70nSHOGUIege1JKIt+WRnAm9VJ5/npxMGG57naTVyEs=";
 
   postConfigure = ''
     cargo metadata --offline

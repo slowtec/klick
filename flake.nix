@@ -23,6 +23,17 @@
               "wasm32-unknown-unknown"    # used for the frontend
             ];
           };
+          platform_packages =
+            if pkgs.stdenv.isLinux then
+              with pkgs; [ ]
+            else if pkgs.stdenv.isDarwin then
+              with pkgs.darwin.apple_sdk.frameworks; [
+                CoreFoundation
+                Security
+                SystemConfiguration
+              ]
+            else
+              throw "unsupported platform";
         in
         with pkgs;
         rec {
@@ -44,13 +55,7 @@
               texliveMedium            # required to generate PDF reports
               librsvg                  # required to render SVG image
               openssl                  # required for cargo-edit
-            ] ++
-            # Required for Mac OS X
-            (with darwin.apple_sdk.frameworks; [
-              CoreServices
-              Security
-              SystemConfiguration
-            ]);
+            ] ++ platform_packages;
           };
         }
       );
