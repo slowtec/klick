@@ -15,8 +15,6 @@ pub fn OptimizationOptions(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
     sludge_bags_are_open: RwSignal<Option<bool>>,
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
-    custom_sludge_bags_factor: RwSignal<Option<f64>>,
-    custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
     n2o_side_stream_cover_is_open: RwSignal<Option<bool>>,
 ) -> impl IntoView {
     log::info!("OptimizationOptions rendering");
@@ -24,7 +22,7 @@ pub fn OptimizationOptions(
       { n2o_emissions_in_the_biological_treatment_stage::options() }
       { n2o_emissions_side_stream_system::options(n2o_side_stream_cover_is_open) }
       { ch4_emissions_pre_treatment::options() }
-      { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, custom_sludge_bags_factor, sludge_storage_containers_are_open, custom_sludge_storage_containers_factor) }
+      { ch4_emissions_open_digesters::options() }
       { leak_test::options() }
       { excess_energy_co2_equivalent::options(output) }
     }

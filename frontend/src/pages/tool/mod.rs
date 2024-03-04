@@ -770,6 +770,10 @@ pub fn Tool(
           selected_scenario_name_chp
           custom_factor_n2o
           co2_fossil_custom_factor
+          custom_sludge_bags_factor
+          custom_sludge_storage_containers_factor
+          sludge_bags_are_open
+          sludge_storage_containers_are_open
         />
         </div>
 
@@ -789,8 +793,6 @@ pub fn Tool(
           sludge_bags_are_open
           sludge_storage_containers_are_open
           barchart_arguments
-          custom_sludge_bags_factor
-          custom_sludge_storage_containers_factor
           sankey_data_optimization_options_model
           sankey_header_optimization_options_model
           field_sets
@@ -897,6 +899,10 @@ pub fn SensitivityView(
     selected_scenario_name_chp: RwSignal<String>,
     custom_factor_n2o: RwSignal<Option<f64>>,
     co2_fossil_custom_factor: RwSignal<Option<f64>>,
+    sludge_bags_are_open: RwSignal<Option<bool>>,
+    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
+    custom_sludge_bags_factor: RwSignal<Option<f64>>,
+    custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
 ) -> impl IntoView {
     view! {
         <DataCollectionEnforcementHelper
@@ -925,6 +931,10 @@ pub fn SensitivityView(
                 selected_scenario_name_chp
                 custom_factor_n2o
                 co2_fossil_custom_factor
+                custom_sludge_bags_factor
+                custom_sludge_storage_containers_factor
+                sludge_bags_are_open
+                sludge_storage_containers_are_open
               />
             }
           }
@@ -965,8 +975,6 @@ pub fn RecommendationView(
     sludge_bags_are_open: RwSignal<Option<bool>>,
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
     barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>>,
-    custom_sludge_bags_factor: RwSignal<Option<f64>>,
-    custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
     sankey_data_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
     sankey_header_optimization_options_model: RwSignal<String>,
     field_sets: Vec<FieldSet>,
@@ -1033,8 +1041,6 @@ pub fn RecommendationView(
                   output = output_optimization_options_model.read_only()
                   sludge_bags_are_open
                   sludge_storage_containers_are_open
-                  custom_sludge_bags_factor
-                  custom_sludge_storage_containers_factor
                   n2o_side_stream_cover_is_open
                 />
               }

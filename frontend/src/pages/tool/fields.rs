@@ -26,7 +26,7 @@ pub enum FieldId {
     Profile(ProfileValueId),
     Scenario(ScenarioFieldId),
     Ch4EmissionsOpenDigesters(
-        crate::pages::tool::optimization_options::ch4_emissions_open_digesters::Id,
+        crate::pages::tool::sensitivity_options::ch4_emissions_open_digesters::Id, // FIXME remove this and make it a global definition in here
     ),
 }
 
