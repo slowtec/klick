@@ -51,8 +51,10 @@ fn import_v1() {
 
     let SewageSludgeTreatment {
         sludge_bags_are_open,
+        sludge_bags_are_open_recommendation,
         custom_sludge_bags_factor,
         sludge_storage_containers_are_open,
+        sludge_storage_containers_are_open_recommendation,
         custom_sludge_storage_containers_factor,
         sewage_sludge_for_disposal,
         transport_distance,
@@ -304,5 +306,58 @@ fn import_v7() {
             .sewage_sludge_treatment
             .custom_sludge_storage_containers_factor,
         Some(1.13)
+    );
+}
+
+#[test]
+fn import_v8() {
+    let json = include_str!("example_data_v8.json");
+    let Project::Unsaved(project) = import_from_str(json).unwrap() else {
+        panic!("expected unsaved project");
+    };
+
+    assert_eq!(
+        project
+            .optimization_scenario
+            .n2o_emission_factor
+            .calculation_method,
+        N2oEmissionFactorCalcMethod::Ipcc2019
+    );
+
+    assert_eq!(influent_average.total_organic_carbohydrates, Some(101.99));
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .total_nitrogen,
+        Some(101.4)
+    );
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_bags_are_open,
+        Some(true)
+    );
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_bags_are_open_recommendation,
+        Some(true)
+    );
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_storage_containers_are_open,
+        Some(true)
+    );
+    assert_eq!(
+        project
+            .plant_profile
+            .sewage_sludge_treatment
+            .sludge_storage_containers_are_open_recommendation,
+        Some(true)
     );
 }

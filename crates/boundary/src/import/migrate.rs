@@ -1,4 +1,4 @@
-use crate::{v1, v2, v3, v4, v5, v6, v7};
+use crate::{v1, v2, v3, v4, v5, v6, v7, v8};
 
 const V1_OPERATING_MATERIALS_DIVISOR: f64 = 1_000.0;
 
@@ -361,4 +361,140 @@ pub fn from_v6(data: v6::Data) -> v7::Data {
     };
 
     v7::Data { project }
+}
+
+
+
+impl From<v7::ProjectData> for v8::ProjectData {
+    fn from(from: v7::ProjectData) -> Self {
+
+        let v7::ProjectData {
+            title,
+            plant_profile,
+            optimization_scenario,
+        } = from;
+
+        let v7::PlantProfile {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            operating_materials,
+        } = plant_profile;
+
+        let v7::EnergyConsumption {
+            sewage_gas_produced,
+            methane_fraction,
+            gas_supply,
+            purchase_of_biogas,
+            total_power_consumption,
+            on_site_power_generation,
+            emission_factor_electricity_mix,
+        } = energy_consumption;
+
+        let energy_consumption = v8::EnergyConsumption {
+            sewage_gas_produced,
+            methane_fraction,
+            gas_supply,
+            purchase_of_biogas,
+            total_power_consumption,
+            on_site_power_generation,
+            emission_factor_electricity_mix,
+            heating_oil: None,
+        };
+
+        let v7::AnnualAverage {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        } = influent_average;
+
+        let influent_average = v8::AnnualAverageInfluent {
+            nitrogen,
+            chemical_oxygen_demand,
+            total_organic_carbohydrates: None,
+        };
+
+        let v7::AnnualAverage {
+            nitrogen,
+            chemical_oxygen_demand,
+            phosphorus,
+        } = effluent_average;
+
+        let effluent_average = v8::AnnualAverageEffluent {
+            nitrogen,
+            chemical_oxygen_demand,
+        };
+
+        let v7::SewageSludgeTreatment {
+            sludge_bags_are_open,
+            custom_sludge_bags_factor,
+            sludge_storage_containers_are_open,
+            custom_sludge_storage_containers_factor,
+            sewage_sludge_for_disposal,
+            transport_distance,
+            digester_count,
+        } = sewage_sludge_treatment;
+
+        let sewage_sludge_treatment = v8::SewageSludgeTreatment {
+            sludge_bags_are_open,
+            sludge_bags_are_open_recommendation: Some(false),
+            custom_sludge_bags_factor,
+            sludge_storage_containers_are_open,
+            sludge_storage_containers_are_open_recommendation: Some(false),
+            custom_sludge_storage_containers_factor,
+            sewage_sludge_for_disposal,
+            transport_distance,
+            digester_count,
+        };
+
+        let side_stream_treatment = v8::SideStreamTreatment {
+            total_nitrogen: None,
+        };
+
+        let plant_profile = v8::PlantProfile {
+            plant_name,
+            population_equivalent,
+            wastewater,
+            influent_average,
+            effluent_average,
+            energy_consumption,
+            sewage_sludge_treatment,
+            side_stream_treatment,
+            operating_materials,
+        };
+
+        Self {
+            title,
+            plant_profile,
+            optimization_scenario,
+        }
+    }
+}
+
+pub fn from_v7(data: v7::Data) -> v8::Data {
+    let v7::Data { project } = data;
+    let project = match project {
+        v7::Project::Saved(saved_project) => {
+            let v7::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                data,
+            } = saved_project;
+            let data = data.into();
+            let saved = v8::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                data,
+            };
+            v8::Project::Saved(saved)
+        }
+        v7::Project::Unsaved(unsaved_project) => v8::Project::Unsaved(unsaved_project.into()),
+    };
+    v8::Data { project }
 }

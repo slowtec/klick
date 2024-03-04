@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::{v1, v2, v3, v4, v5, v6, v7, Project, CURRENT_VERSION};
+use crate::{v1, v2, v3, v4, v5, v6, v7, v8, Project, CURRENT_VERSION};
 
 mod migrate;
 
@@ -11,7 +11,7 @@ pub fn import_from_str(json: &str) -> Result<Project> {
 
 pub fn import_from_slice(slice: &[u8]) -> Result<Project> {
     let VersionInfo { version } = serde_json::from_slice(slice)?;
-    let v7::Data { project } = match version {
+    let v8::Data { project } = match version {
         1 => {
             let v1 = import::<v1::Import>(slice)?;
             let v2 = migrate::from_v1(v1);
@@ -19,7 +19,8 @@ pub fn import_from_slice(slice: &[u8]) -> Result<Project> {
             let v4 = migrate::from_v3(v3);
             let v5 = migrate::from_v4(v4);
             let v6 = migrate::from_v5(v5);
-            migrate::from_v6(v6)
+            let v7 = migrate::from_v6(v6);
+            migrate::from_v7(v7)
         }
         2 => {
             let v2 = import::<v2::Import>(slice)?;
@@ -27,31 +28,40 @@ pub fn import_from_slice(slice: &[u8]) -> Result<Project> {
             let v4 = migrate::from_v3(v3);
             let v5 = migrate::from_v4(v4);
             let v6 = migrate::from_v5(v5);
-            migrate::from_v6(v6)
+            let v7 = migrate::from_v6(v6);
+            migrate::from_v7(v7)
         }
         3 => {
             let v3 = import::<v3::Import>(slice)?;
             let v4 = migrate::from_v3(v3);
             let v5 = migrate::from_v4(v4);
             let v6 = migrate::from_v5(v5);
-            migrate::from_v6(v6)
+            let v7 = migrate::from_v6(v6);
+            migrate::from_v7(v7)
         }
         4 => {
             let v4 = import::<v4::Import>(slice)?;
             let v5 = migrate::from_v4(v4);
             let v6 = migrate::from_v5(v5);
-            migrate::from_v6(v6)
+            let v7 = migrate::from_v6(v6);
+            migrate::from_v7(v7)
         }
         5 => {
             let v5 = import::<v5::Data>(slice)?;
             let v6 = migrate::from_v5(v5);
-            migrate::from_v6(v6)
+            let v7 = migrate::from_v6(v6);
+            migrate::from_v7(v7)
         }
         6 => {
             let v6 = import::<v6::Data>(slice)?;
-            migrate::from_v6(v6)
+            let v7 = migrate::from_v6(v6);
+            migrate::from_v7(v7)
         }
-        7 => import(slice)?,
+        7 => {
+            let v7 = import::<v7::Data>(slice)?;
+            migrate::from_v7(v7)
+        }
+        8 => import(slice)?,
         _ => {
             return Err(Error::Version {
                 actual: version,

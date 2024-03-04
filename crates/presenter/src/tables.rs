@@ -16,6 +16,7 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
         effluent_average,
         energy_consumption,
         sewage_sludge_treatment,
+        side_stream_treatment: _, // FIXME implement
         operating_materials,
     } = profile;
 
@@ -57,11 +58,6 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
                         .map(format_number(lang)),
                     AnnualAverageInfluentId::ChemicalOxygenDemand.unit_as_latex(),
                 ),
-                (
-                    AnnualAverageInfluentId::Phosphorus.label(),
-                    influent_average.phosphorus.map(format_number(lang)),
-                    AnnualAverageInfluentId::Phosphorus.unit_as_latex(),
-                ),
             ],
         },
         TableSection {
@@ -78,11 +74,6 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
                         .chemical_oxygen_demand
                         .map(format_number(lang)),
                     AnnualAverageEffluentId::ChemicalOxygenDemand.unit_as_latex(),
-                ),
-                (
-                    AnnualAverageEffluentId::Phosphorus.label(),
-                    effluent_average.phosphorus.map(format_number(lang)),
-                    AnnualAverageEffluentId::Phosphorus.unit_as_latex(),
                 ),
             ],
         },

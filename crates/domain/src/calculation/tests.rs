@@ -32,6 +32,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
+            heating_oil: Qubicmeters::new(1_260_000.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,

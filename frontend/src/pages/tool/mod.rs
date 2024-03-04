@@ -108,7 +108,6 @@ pub fn Tool(
 
     let nitrogen_io_warning = RwSignal::new(Option::<String>::None);
     let chemical_oxygen_io_warning = RwSignal::new(Option::<String>::None);
-    let phosphorus_io_warning = RwSignal::new(Option::<String>::None);
     let is_logged_in = Signal::derive(move || api.get().is_some());
 
     let save_result_message = RwSignal::new(None);
@@ -208,7 +207,6 @@ pub fn Tool(
             sankey_data.set(None);
             nitrogen_io_warning.set(None);
             chemical_oxygen_io_warning.set(None);
-            phosphorus_io_warning.set(None);
             return;
         };
         if input_data.effluent_average.nitrogen > input_data.influent_average.nitrogen {
@@ -237,22 +235,6 @@ pub fn Tool(
         //         input_data_validation_error.set(true);
         //     } else {
         //         chemical_oxygen_io_warning.set(None);
-        //     }
-        // }
-
-        // TODO:
-        // if let Some(phosphorus_influent) = input_data.influent_average.phosphorus {
-        //     if let Some(phosphorus_effluent) = input_data.effluent_average.phosphorus {
-        //         if phosphorus_effluent > phosphorus_influent {
-        //             phosphorus_io_warning.set(Some(format!(
-        //                 "Ablauf Phosphor {} größer als dessen Zulauf {}!",
-        //                 Lng::De.format_number(phosphorus_effluent),
-        //                 Lng::De.format_number(phosphorus_influent),
-        //             )));
-        //             input_data_validation_error.set(true);
-        //         } else {
-        //             phosphorus_io_warning.set(None);
-        //         }
         //     }
         // }
 
@@ -757,7 +739,6 @@ pub fn Tool(
           set_views
           nitrogen_io_warning
           chemical_oxygen_io_warning
-          phosphorus_io_warning
           missing_fields
           input_data
           sankey_data
@@ -829,7 +810,6 @@ pub fn DataCollectionView(
     set_views: Vec<View>,
     nitrogen_io_warning: RwSignal<Option<String>>,
     chemical_oxygen_io_warning: RwSignal<Option<String>>,
-    phosphorus_io_warning: RwSignal<Option<String>>,
     missing_fields: RwSignal<Vec<MissingField<FieldId>>>,
     input_data: RwSignal<Option<domain::EmissionInfluencingValues>>,
     sankey_data: RwSignal<Option<(domain::CO2Equivalents, domain::EmissionFactors)>>,
@@ -862,13 +842,6 @@ pub fn DataCollectionView(
                     <p>
                       <ul class="ml-5 my-4 list-disc list-inside">
                         <li>{ chemical_oxygen_io_warning.get() }</li>
-                      </ul>
-                    </p>
-                  </Show>
-                  <Show when= move || phosphorus_io_warning.get().is_some()>
-                    <p>
-                      <ul class="ml-5 my-4 list-disc list-inside">
-                        <li>{ phosphorus_io_warning.get() }</li>
                       </ul>
                     </p>
                   </Show>

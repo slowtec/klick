@@ -40,6 +40,7 @@ impl ValueUnit for ProfileValueId {
             Self::EffluentAverage(id) => id.unit_as_latex(),
             Self::EnergyConsumption(id) => id.unit_as_latex(),
             Self::SewageSludgeTreatment(id) => id.unit_as_latex(),
+            Self::SideStreamTreatment(id) => None, // FIXME id.unit_as_latex(),
             Self::OperatingMaterials(id) => id.unit_as_latex(),
         }
     }
@@ -48,7 +49,9 @@ impl ValueUnit for ProfileValueId {
 impl ValueUnit for AnnualAverageInfluentId {
     fn unit_as_latex(&self) -> Option<&str> {
         match self {
-            Self::Nitrogen | Self::Phosphorus | Self::ChemicalOxygenDemand => {
+            Self::Nitrogen | Self::ChemicalOxygenDemand => {
+                Some(LATEX_MILLIGRAMSPERLITER)
+            } | Self::TotalOrganicCarbohydrates => {
                 Some(LATEX_MILLIGRAMSPERLITER)
             }
         }
@@ -58,7 +61,7 @@ impl ValueUnit for AnnualAverageInfluentId {
 impl ValueUnit for AnnualAverageEffluentId {
     fn unit_as_latex(&self) -> Option<&str> {
         match self {
-            Self::Nitrogen | Self::Phosphorus | Self::ChemicalOxygenDemand => {
+            Self::Nitrogen | Self::ChemicalOxygenDemand => {
                 Some(LATEX_MILLIGRAMSPERLITER)
             }
         }
@@ -75,6 +78,7 @@ impl ValueUnit for EnergyConsumptionId {
             Self::TotalPowerConsumption => Some(LATEX_KILOWATTHOURS),
             Self::OnSitePowerGeneration => Some(LATEX_KILOWATTHOURS),
             Self::EmissionFactorElectricityMix => Some(LATEX_GRAMSPERKILOWATTHOUR),
+            Self::HeatingOil => Some(LATEX_TONS),
         }
     }
 }
@@ -82,6 +86,10 @@ impl ValueUnit for EnergyConsumptionId {
 impl ValueUnit for SewageSludgeTreatmentId {
     fn unit_as_latex(&self) -> Option<&str> {
         match self {
+            Self::SludgeBags => None, // FIXME implement latex representation
+            Self::SludgeBagsRecommended => None, // FIXME implement latex representation
+            Self::SludgeStorageContainers => None, // FIXME implement latex representation
+            Self::SludgeStorageContainersRecommended => None, // FIXME implement latex representation
             Self::SewageSludgeForDisposal => Some(LATEX_TONS),
             Self::TransportDistance => Some(LATEX_KILOMETERS),
             Self::DigesterCount => None,

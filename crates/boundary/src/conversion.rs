@@ -3,10 +3,10 @@ use anyhow::bail;
 use klick_domain as domain;
 
 use crate::{
-    AnnualAverage, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
+    AnnualAverageInfluent, AnnualAverageEffluent, CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, EnergyConsumption,
     N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
     OptimizationScenario, PlantProfile, Project, ProjectData, ProjectId, SavedProject,
-    SewageSludgeTreatment,
+    SewageSludgeTreatment, SideStreamTreatment,
 };
 
 impl TryFrom<OptimizationScenario> for domain::EmissionFactorCalculationMethods {
@@ -147,6 +147,7 @@ impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
             effluent_average,
             energy_consumption,
             sewage_sludge_treatment,
+            side_stream_treatment,
             operating_materials,
         } = from;
 
@@ -162,6 +163,7 @@ impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
         let effluent_average = effluent_average.try_into()?;
         let energy_consumption = energy_consumption.try_into()?;
         let sewage_sludge_treatment = sewage_sludge_treatment.try_into()?;
+        let side_stream_treatment = side_stream_treatment.try_into()?;
         let operating_materials = operating_materials.try_into()?;
 
         let wastewater = domain::units::Qubicmeters::new(wastewater);
@@ -173,6 +175,7 @@ impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
             effluent_average,
             energy_consumption,
             sewage_sludge_treatment,
+            side_stream_treatment,
             operating_materials,
         })
     }
@@ -187,6 +190,7 @@ impl From<domain::EmissionInfluencingValues> for PlantProfile {
             effluent_average,
             energy_consumption,
             sewage_sludge_treatment,
+            side_stream_treatment,
             operating_materials,
         } = from;
 
@@ -194,6 +198,7 @@ impl From<domain::EmissionInfluencingValues> for PlantProfile {
         let effluent_average = effluent_average.into();
         let energy_consumption = energy_consumption.into();
         let sewage_sludge_treatment = sewage_sludge_treatment.into();
+        let side_stream_treatment = side_stream_treatment.into();
         let operating_materials = operating_materials.into();
 
         let population_equivalent = Some(population_equivalent);
@@ -208,6 +213,7 @@ impl From<domain::EmissionInfluencingValues> for PlantProfile {
             effluent_average,
             energy_consumption,
             sewage_sludge_treatment,
+            side_stream_treatment,
             operating_materials,
         }
     }
@@ -225,6 +231,7 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
+            heating_oil,
         } = from;
 
         let Some(sewage_gas_produced) = sewage_gas_produced else {
@@ -242,6 +249,9 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
         let Some(emission_factor_electricity_mix) = emission_factor_electricity_mix else {
             bail!("missing emission_factor_electricity_mix");
         };
+        let Some(heating_oil) = heating_oil else {
+            bail!("missing heating_oil");
+        };
 
         let methane_fraction = domain::units::Percent::new(methane_fraction);
         let sewage_gas_produced = domain::units::Qubicmeters::new(sewage_gas_produced);
@@ -249,6 +259,7 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
         let total_power_consumption = domain::units::Kilowatthours::new(total_power_consumption);
         let emission_factor_electricity_mix =
             domain::units::GramsPerKilowatthour::new(emission_factor_electricity_mix);
+        let heating_oil = domain::units::Qubicmeters::new(heating_oil);
 
         Ok(Self {
             sewage_gas_produced,
@@ -256,6 +267,7 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
+            heating_oil,
         })
     }
 }
@@ -268,6 +280,7 @@ impl From<domain::EnergyConsumption> for EnergyConsumption {
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
+            heating_oil,
         } = from;
 
         let sewage_gas_produced = Some(sewage_gas_produced.into());
@@ -276,6 +289,7 @@ impl From<domain::EnergyConsumption> for EnergyConsumption {
         let total_power_consumption = Some(total_power_consumption.into());
         let on_site_power_generation = Some(on_site_power_generation.into());
         let emission_factor_electricity_mix = Some(emission_factor_electricity_mix.into());
+        let heating_oil = Some(heating_oil.into());
 
         let gas_supply = None;
         let purchase_of_biogas = None;
@@ -288,6 +302,41 @@ impl From<domain::EnergyConsumption> for EnergyConsumption {
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
+            heating_oil,
+        }
+    }
+}
+
+impl TryFrom<SideStreamTreatment> for domain::SideStreamTreatment {
+    type Error = anyhow::Error;
+
+    fn try_from(from: SideStreamTreatment) -> Result<Self, Self::Error> {
+        let SideStreamTreatment {
+            total_nitrogen,
+        } = from;
+
+        let Some(total_nitrogen) = total_nitrogen else {
+            bail!("missing total_nitrogen");
+        };
+
+        let total_nitrogen = domain::units::Qubicmeters::new(total_nitrogen);
+
+        Ok(Self {
+            total_nitrogen,
+        })
+    }
+}
+
+impl From<domain::SideStreamTreatment> for SideStreamTreatment {
+    fn from(from: domain::SideStreamTreatment) -> Self {
+        let domain::SideStreamTreatment {
+            total_nitrogen,
+        } = from;
+
+        let total_nitrogen = Some(total_nitrogen.into());
+
+        Self {
+            total_nitrogen,
         }
     }
 }
@@ -298,8 +347,10 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
     fn try_from(from: SewageSludgeTreatment) -> Result<Self, Self::Error> {
         let SewageSludgeTreatment {
             sludge_bags_are_open,
+            sludge_bags_are_open_recommendation,
             custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            sludge_storage_containers_are_open_recommendation,
             custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
@@ -308,8 +359,14 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
         let Some(sludge_bags_are_open) = sludge_bags_are_open else {
             bail!("missing sludge_bags_are_open");
         };
+        let Some(sludge_bags_are_open_recommendation) = sludge_bags_are_open_recommendation else {
+            bail!("missing sludge_bags_are_open_recommendation");
+        };
         let Some(sludge_storage_containers_are_open) = sludge_storage_containers_are_open else {
             bail!("missing sludge_storage_containers_are_open");
+        };
+        let Some(sludge_storage_containers_are_open_recommendation) = sludge_storage_containers_are_open_recommendation else {
+            bail!("missing sludge_storage_containers_are_open_recommendation");
         };
         let Some(sewage_sludge_for_disposal) = sewage_sludge_for_disposal else {
             bail!("missing sewage_sludge_for_disposal");
@@ -321,8 +378,10 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
         let transport_distance = domain::units::Kilometers::new(transport_distance);
         Ok(Self {
             sludge_bags_are_open,
+            sludge_bags_are_open_recommendation,
             custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            sludge_storage_containers_are_open_recommendation,
             custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
@@ -335,22 +394,28 @@ impl From<domain::SewageSludgeTreatment> for SewageSludgeTreatment {
     fn from(from: domain::SewageSludgeTreatment) -> Self {
         let domain::SewageSludgeTreatment {
             sludge_bags_are_open,
+            sludge_bags_are_open_recommendation,
             custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            sludge_storage_containers_are_open_recommendation,
             custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
             digester_count,
         } = from;
         let sludge_bags_are_open = Some(sludge_bags_are_open);
+        let sludge_bags_are_open_recommendation = Some(sludge_bags_are_open_recommendation);
         let sludge_storage_containers_are_open = Some(sludge_storage_containers_are_open);
+        let sludge_storage_containers_are_open_recommendation = Some(sludge_storage_containers_are_open_recommendation);
         let sewage_sludge_for_disposal = Some(sewage_sludge_for_disposal.into());
         let transport_distance = Some(transport_distance.into());
         let digester_count = digester_count.map(Into::into);
         Self {
             sludge_bags_are_open,
+            sludge_bags_are_open_recommendation,
             custom_sludge_bags_factor,
             sludge_storage_containers_are_open,
+            sludge_storage_containers_are_open_recommendation,
             custom_sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
@@ -419,51 +484,60 @@ impl From<domain::OperatingMaterials> for OperatingMaterials {
     }
 }
 
-impl TryFrom<AnnualAverage> for domain::AnnualAverageInfluent {
+impl TryFrom<AnnualAverageInfluent> for domain::AnnualAverageInfluent {
     type Error = anyhow::Error;
 
-    fn try_from(from: AnnualAverage) -> Result<Self, Self::Error> {
-        let AnnualAverage {
+    fn try_from(from: AnnualAverageInfluent) -> Result<Self, Self::Error> {
+        let AnnualAverageInfluent {
             nitrogen,
-            chemical_oxygen_demand: _,
-            phosphorus: _,
+            chemical_oxygen_demand,
+            total_organic_carbohydrates,
         } = from;
 
         let Some(nitrogen) = nitrogen else {
             bail!("missing inflow nitrogen");
         };
+        let Some(chemical_oxygen_demand) = chemical_oxygen_demand else {
+            bail!("missing inflow chemical_oxygen_demand");
+        };
+        let Some(total_organic_carbohydrates) = total_organic_carbohydrates else {
+            bail!("missing inflow total_organic_carbohydrates");
+        };
 
         let nitrogen = domain::units::MilligramsPerLiter::new(nitrogen);
-
-        Ok(Self { nitrogen })
+        let chemical_oxygen_demand = domain::units::MilligramsPerLiter::new(chemical_oxygen_demand);
+        let total_organic_carbohydrates = domain::units::MilligramsPerLiter::new(total_organic_carbohydrates);
+        Ok(Self { nitrogen, chemical_oxygen_demand, total_organic_carbohydrates })
     }
 }
 
-impl From<domain::AnnualAverageInfluent> for AnnualAverage {
+impl From<domain::AnnualAverageInfluent> for AnnualAverageInfluent {
     fn from(from: domain::AnnualAverageInfluent) -> Self {
-        let domain::AnnualAverageInfluent { nitrogen } = from;
+        let domain::AnnualAverageInfluent {
+            nitrogen,
+            chemical_oxygen_demand,
+            total_organic_carbohydrates
+        } = from;
 
         let nitrogen = Some(nitrogen.into());
-
-        let phosphorus = None;
+        let total_organic_carbohydrates = Some(total_organic_carbohydrates.into());
         let chemical_oxygen_demand = None;
 
         Self {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus,
+            total_organic_carbohydrates,
         }
     }
 }
 
-impl TryFrom<AnnualAverage> for domain::AnnualAverageEffluent {
+impl TryFrom<AnnualAverageEffluent> for domain::AnnualAverageEffluent {
     type Error = anyhow::Error;
 
-    fn try_from(from: AnnualAverage) -> Result<Self, Self::Error> {
-        let AnnualAverage {
+    fn try_from(from: AnnualAverageEffluent) -> Result<Self, Self::Error> {
+        let AnnualAverageEffluent {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus: _,
         } = from;
 
         let Some(nitrogen) = nitrogen else {
@@ -483,7 +557,7 @@ impl TryFrom<AnnualAverage> for domain::AnnualAverageEffluent {
     }
 }
 
-impl From<domain::AnnualAverageEffluent> for AnnualAverage {
+impl From<domain::AnnualAverageEffluent> for AnnualAverageEffluent {
     fn from(from: domain::AnnualAverageEffluent) -> Self {
         let domain::AnnualAverageEffluent {
             nitrogen,
@@ -493,12 +567,9 @@ impl From<domain::AnnualAverageEffluent> for AnnualAverage {
         let nitrogen = Some(nitrogen.into());
         let chemical_oxygen_demand = Some(chemical_oxygen_demand.into());
 
-        let phosphorus = None;
-
         Self {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus,
         }
     }
 }

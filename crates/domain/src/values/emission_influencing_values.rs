@@ -11,6 +11,7 @@ pub struct EmissionInfluencingValues {
     pub effluent_average: AnnualAverageEffluent,
     pub energy_consumption: EnergyConsumption,
     pub sewage_sludge_treatment: SewageSludgeTreatment,
+    pub side_stream_treatment: SideStreamTreatment,
     pub operating_materials: OperatingMaterials,
 }
 
@@ -18,6 +19,8 @@ pub struct EmissionInfluencingValues {
 #[cfg_attr(test, derive(Copy))]
 pub struct AnnualAverageInfluent {
     pub nitrogen: MilligramsPerLiter,
+    pub chemical_oxygen_demand: MilligramsPerLiter,
+    pub total_organic_carbohydrates: MilligramsPerLiter,
 }
 
 #[derive(Debug, Clone)]
@@ -35,14 +38,23 @@ pub struct EnergyConsumption {
     pub total_power_consumption: Kilowatthours,
     pub on_site_power_generation: Kilowatthours,
     pub emission_factor_electricity_mix: GramsPerKilowatthour,
+    pub heating_oil: Qubicmeters,
+}
+
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
+pub struct SideStreamTreatment {
+    pub total_nitrogen: Qubicmeters,
 }
 
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Copy))]
 pub struct SewageSludgeTreatment {
     pub sludge_bags_are_open: bool,
+    pub sludge_bags_are_open_recommendation: bool,
     pub custom_sludge_bags_factor: Option<f64>,
     pub sludge_storage_containers_are_open: bool,
+    pub sludge_storage_containers_are_open_recommendation: bool,
     pub custom_sludge_storage_containers_factor: Option<f64>,
     pub sewage_sludge_for_disposal: Tons,
     pub transport_distance: Kilometers,

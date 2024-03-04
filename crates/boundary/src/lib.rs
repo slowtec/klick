@@ -7,16 +7,17 @@ mod v4;
 mod v5;
 mod v6;
 mod v7;
+mod v8;
 
 pub mod json_api;
 
 pub use self::{
     export::{export_to_string, export_to_string_pretty, export_to_vec_pretty},
     import::{import_from_slice, import_from_str, Error as ImportError},
-    v7::*,
+    v8::*,
 };
 
 #[cfg(feature = "conversion")]
 mod conversion;
 
-pub const CURRENT_VERSION: u32 = 7;
+pub const CURRENT_VERSION: u32 = 8;

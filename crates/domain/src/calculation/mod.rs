@@ -10,7 +10,7 @@ use crate::{
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
     CalculatedScenarios, EmissionFactorCalculationMethods, EmissionFactors,
     EmissionInfluencingValues, EmissionsCalculationOutcome, EnergyConsumption,
-    N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
+    N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment, SideStreamTreatment,
 };
 
 pub fn calculate_scenarios(initial_situation: EmissionInfluencingValues) -> CalculatedScenarios {
@@ -35,11 +35,14 @@ pub fn calculate_emissions(
         effluent_average,
         energy_consumption,
         sewage_sludge_treatment,
+        side_stream_treatment,
         operating_materials,
     } = input;
 
     let AnnualAverageInfluent {
         nitrogen: nitrogen_influent,
+        chemical_oxygen_demand: _,
+        total_organic_carbohydrates: _,
     } = influent_average;
 
     let AnnualAverageEffluent {
@@ -53,12 +56,15 @@ pub fn calculate_emissions(
         total_power_consumption,
         on_site_power_generation,
         emission_factor_electricity_mix,
+        heating_oil,
     } = energy_consumption;
 
     let SewageSludgeTreatment {
         sludge_bags_are_open,
+        sludge_bags_are_open_recommendation,
         custom_sludge_bags_factor,
         sludge_storage_containers_are_open,
+        sludge_storage_containers_are_open_recommendation,
         custom_sludge_storage_containers_factor,
         sewage_sludge_for_disposal,
         transport_distance,
@@ -71,6 +77,10 @@ pub fn calculate_emissions(
         caoh2,
         synthetic_polymers,
     } = operating_materials;
+
+    let SideStreamTreatment {
+        total_nitrogen,
+    } = side_stream_treatment;
 
     // -------    ------ //
     //     Calculate     //

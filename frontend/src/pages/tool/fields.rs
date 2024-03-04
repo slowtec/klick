@@ -6,13 +6,13 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 use klick_boundary::{
-    AnnualAverage, EnergyConsumption, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
+    AnnualAverageInfluent, AnnualAverageEffluent, EnergyConsumption, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
     OperatingMaterials, OptimizationScenario, PlantProfile, Project, ProjectData, SavedProject,
-    SewageSludgeTreatment,
+    SewageSludgeTreatment, SideStreamTreatment
 };
 use klick_presenter::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, SewageSludgeTreatmentId, ValueLabel,
+    ProfileValueId, SewageSludgeTreatmentId, ValueLabel, SideStreamTreatmentId,
 };
 
 use crate::forms::{self, format_f64_into_de_string, FieldSignal, MissingField};
@@ -114,27 +114,24 @@ pub fn read_input_fields(
         .get(&ProfileValueId::Wastewater.into())
         .and_then(FieldSignal::get_float);
 
-    let influent_average = AnnualAverage {
+    let influent_average = AnnualAverageInfluent {
         nitrogen: s
             .get(&ProfileValueId::from(AnnualAverageInfluentId::Nitrogen).into())
             .and_then(FieldSignal::get_float),
         chemical_oxygen_demand: s
             .get(&ProfileValueId::from(AnnualAverageInfluentId::ChemicalOxygenDemand).into())
             .and_then(FieldSignal::get_float),
-        phosphorus: s
-            .get(&ProfileValueId::from(AnnualAverageInfluentId::Phosphorus).into())
+        total_organic_carbohydrates: s
+            .get(&ProfileValueId::from(AnnualAverageInfluentId::TotalOrganicCarbohydrates).into())
             .and_then(FieldSignal::get_float),
     };
 
-    let effluent_average = AnnualAverage {
+    let effluent_average = AnnualAverageEffluent {
         nitrogen: s
             .get(&ProfileValueId::from(AnnualAverageEffluentId::Nitrogen).into())
             .and_then(FieldSignal::get_float),
         chemical_oxygen_demand: s
             .get(&ProfileValueId::from(AnnualAverageEffluentId::ChemicalOxygenDemand).into())
-            .and_then(FieldSignal::get_float),
-        phosphorus: s
-            .get(&ProfileValueId::from(AnnualAverageEffluentId::Phosphorus).into())
             .and_then(FieldSignal::get_float),
     };
 
@@ -160,12 +157,17 @@ pub fn read_input_fields(
         emission_factor_electricity_mix: s
             .get(&ProfileValueId::from(EnergyConsumptionId::EmissionFactorElectricityMix).into())
             .and_then(FieldSignal::get_float),
+        heating_oil: s
+            .get(&ProfileValueId::from(EnergyConsumptionId::HeatingOil).into())
+            .and_then(FieldSignal::get_float),
     };
 
     let sewage_sludge_treatment = SewageSludgeTreatment {
         sludge_bags_are_open: Some(true),
-        custom_sludge_bags_factor: None,
+        sludge_bags_are_open_recommendation: Some(true),
+        custom_sludge_bags_factor: None, // FIXME no value parsing here?
         sludge_storage_containers_are_open: Some(true),
+        sludge_storage_containers_are_open_recommendation: Some(true),
         custom_sludge_storage_containers_factor: None,
         sewage_sludge_for_disposal: s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::SewageSludgeForDisposal).into())
@@ -176,6 +178,12 @@ pub fn read_input_fields(
         digester_count: s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::DigesterCount).into())
             .and_then(FieldSignal::get_unsigned_integer),
+    };
+
+    let side_stream_treatment = SideStreamTreatment {
+        total_nitrogen: s
+            .get(&ProfileValueId::from(SideStreamTreatmentId::TotalNitrogen).into())
+            .and_then(FieldSignal::get_float),
     };
 
     let operating_materials = OperatingMaterials {
@@ -202,6 +210,7 @@ pub fn read_input_fields(
             effluent_average,
             energy_consumption,
             sewage_sludge_treatment,
+            side_stream_treatment,
             operating_materials,
         },
         missing_fields,
@@ -269,6 +278,7 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         effluent_average,
         energy_consumption,
         sewage_sludge_treatment,
+        side_stream_treatment,
         operating_materials,
     } = plant_profile;
 
@@ -277,16 +287,15 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         ch4_chp_emission_factor: _,
     } = optimization_scenario;
 
-    let AnnualAverage {
+    let AnnualAverageInfluent {
         nitrogen: nitrogen_influent,
         chemical_oxygen_demand: chemical_oxygen_demand_influent,
-        phosphorus: phosphorus_influent,
+        total_organic_carbohydrates,
     } = influent_average;
 
-    let AnnualAverage {
+    let AnnualAverageEffluent {
         nitrogen: nitrogen_effluent,
         chemical_oxygen_demand: chemical_oxygen_demand_effluent,
-        phosphorus: phosphorus_effluent,
     } = effluent_average;
 
     let EnergyConsumption {
@@ -297,17 +306,24 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         total_power_consumption,
         on_site_power_generation,
         emission_factor_electricity_mix,
+        heating_oil,
     } = energy_consumption;
 
     let SewageSludgeTreatment {
         sludge_bags_are_open: _,
+        sludge_bags_are_open_recommendation: _,
         custom_sludge_bags_factor: _,
         sludge_storage_containers_are_open: _,
+        sludge_storage_containers_are_open_recommendation: _,
         custom_sludge_storage_containers_factor: _,
         sewage_sludge_for_disposal,
         transport_distance,
         digester_count,
     } = sewage_sludge_treatment;
+
+    let SideStreamTreatment {
+        total_nitrogen,
+    } = side_stream_treatment;
 
     let OperatingMaterials {
         fecl3,
@@ -336,7 +352,6 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(wastewater));
-
     signals
         .get(&ProfileValueId::from(AnnualAverageInfluentId::Nitrogen).into())
         .and_then(FieldSignal::get_float_signal)
@@ -348,11 +363,10 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .unwrap()
         .set(float_to_sting_option(chemical_oxygen_demand_influent));
     signals
-        .get(&ProfileValueId::from(AnnualAverageInfluentId::Phosphorus).into())
+        .get(&ProfileValueId::from(AnnualAverageInfluentId::TotalOrganicCarbohydrates).into())
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
-        .set(float_to_sting_option(phosphorus_influent));
-
+        .set(float_to_sting_option(total_organic_carbohydrates));
     signals
         .get(&ProfileValueId::from(AnnualAverageEffluentId::Nitrogen).into())
         .and_then(FieldSignal::get_float_signal)
@@ -363,11 +377,6 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(chemical_oxygen_demand_effluent));
-    signals
-        .get(&ProfileValueId::from(AnnualAverageEffluentId::Phosphorus).into())
-        .and_then(FieldSignal::get_float_signal)
-        .unwrap()
-        .set(float_to_sting_option(phosphorus_effluent));
     signals
         .get(&ProfileValueId::from(EnergyConsumptionId::SewageGasProduced).into())
         .and_then(FieldSignal::get_float_signal)
@@ -393,6 +402,11 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         .and_then(FieldSignal::get_float_signal)
         .unwrap()
         .set(float_to_sting_option(emission_factor_electricity_mix));
+    signals
+        .get(&ProfileValueId::from(EnergyConsumptionId::HeatingOil).into())
+        .and_then(FieldSignal::get_float_signal)
+        .unwrap()
+        .set(float_to_sting_option(heating_oil));
     signals
         .get(&ProfileValueId::from(EnergyConsumptionId::PurchaseOfBiogas).into())
         .and_then(FieldSignal::get_bool_signal)

@@ -14,6 +14,7 @@ pub enum ProfileValueId {
     EffluentAverage(AnnualAverageEffluentId),
     EnergyConsumption(EnergyConsumptionId),
     SewageSludgeTreatment(SewageSludgeTreatmentId),
+    SideStreamTreatment(SideStreamTreatmentId),
     OperatingMaterials(OperatingMaterialId),
 }
 
@@ -21,14 +22,13 @@ pub enum ProfileValueId {
 pub enum AnnualAverageInfluentId {
     Nitrogen,
     ChemicalOxygenDemand,
-    Phosphorus,
+    TotalOrganicCarbohydrates
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum AnnualAverageEffluentId {
     Nitrogen,
     ChemicalOxygenDemand,
-    Phosphorus,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
@@ -40,10 +40,21 @@ pub enum EnergyConsumptionId {
     TotalPowerConsumption,
     OnSitePowerGeneration,
     EmissionFactorElectricityMix,
+    HeatingOil,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
+pub enum SideStreamTreatmentId {
+    TotalNitrogen,
+}
+
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum SewageSludgeTreatmentId {
+    SludgeBags,
+    SludgeBagsRecommended,
+    SludgeStorageContainers,
+    SludgeStorageContainersRecommended,
     SewageSludgeForDisposal,
     TransportDistance,
     DigesterCount,

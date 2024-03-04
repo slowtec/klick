@@ -1,6 +1,6 @@
 use crate::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, SewageSludgeTreatmentId,
+    ProfileValueId, SewageSludgeTreatmentId, SideStreamTreatmentId,
 };
 
 pub trait ValueLabel {
@@ -17,6 +17,7 @@ impl ValueLabel for ProfileValueId {
             Self::EffluentAverage(id) => id.label(),
             Self::EnergyConsumption(id) => id.label(),
             Self::SewageSludgeTreatment(id) => id.label(),
+            Self::SideStreamTreatment(id) => id.label(),
             Self::OperatingMaterials(id) => id.label(),
         }
     }
@@ -26,8 +27,8 @@ impl ValueLabel for AnnualAverageInfluentId {
     fn label(&self) -> &str {
         match self {
             Self::Nitrogen => "Gesamtstickstoff",
-            Self::Phosphorus => "Phosphor",
             Self::ChemicalOxygenDemand => "Chemischer Sauerstoffbedarf",
+            Self::TotalOrganicCarbohydrates => "Gesamter Organischer Stickstoff",
         }
     }
 }
@@ -36,7 +37,6 @@ impl ValueLabel for AnnualAverageEffluentId {
     fn label(&self) -> &str {
         match self {
             Self::Nitrogen => "Gesamtstickstoff",
-            Self::Phosphorus => "Phosphor",
             Self::ChemicalOxygenDemand => "Chemischer Sauerstoffbedarf",
         }
     }
@@ -52,15 +52,29 @@ impl ValueLabel for EnergyConsumptionId {
             Self::TotalPowerConsumption => "Strombedarf gesamt",
             Self::OnSitePowerGeneration => "Eigenstromerzeugung",
             Self::EmissionFactorElectricityMix => "Emissionsfaktor Strommix (Versorger)",
+            Self::HeatingOil => "Heizölbezug (Versorger)",
         }
     }
 }
+
+impl ValueLabel for SideStreamTreatmentId {
+    fn label(&self) -> &str {
+        match self {
+            Self::TotalNitrogen => "Gesamtstickstoff",
+        }
+    }
+}
+
 impl ValueLabel for SewageSludgeTreatmentId {
     fn label(&self) -> &str {
         match self {
             Self::SewageSludgeForDisposal => "Klärschlamm zur Entsorgung",
             Self::TransportDistance => "Transportdistanz",
             Self::DigesterCount => "Anzahl Faultürme",
+            Self::SludgeBags => "Schließen der Schlammtaschen",
+            Self::SludgeBagsRecommended => "Schließen der Schlammtaschen",
+            Self::SludgeStorageContainers => "Schließen der Schlammlagerung",
+            Self::SludgeStorageContainersRecommended => "Schließen der Schlammlagerung",
         }
     }
 }
