@@ -37,6 +37,8 @@ const CHANGELOG_URL: &str = concat!(
 const DEFAULT_API_URL: &str = "/api";
 const API_TOKEN_STORAGE_KEY: &str = "api-token";
 
+const SECTION_ID_TOOL_HOME: &str = "tool-home";
+
 #[component]
 #[must_use]
 pub fn App() -> impl IntoView {
@@ -143,7 +145,7 @@ pub fn App() -> impl IntoView {
               set_current_page.update(|p|*p = Page::Tool);
               view! {
                 <Main>
-                  <header class="prose">
+                  <header class="prose" id=SECTION_ID_TOOL_HOME>
                     <h1 class="mb-8">
                       "KlicK-Tool "
                       <span class="font-light text-xl text-gray-600">

@@ -20,6 +20,7 @@ use crate::{
     forms::{self, FieldSignal, MissingField},
     sankey::Sankey,
     Page,
+    SECTION_ID_TOOL_HOME,
 };
 
 mod breadcrumbs;
@@ -56,7 +57,7 @@ pub enum PageSection {
 impl PageSection {
     const fn section_id(self) -> &'static str {
         match self {
-            PageSection::DataCollection => "data-collection",
+            PageSection::DataCollection => SECTION_ID_TOOL_HOME,
             PageSection::Sensitivity => "data-sensitivity",
             PageSection::Recommendation => "data-recommendations",
         }
@@ -820,7 +821,7 @@ pub fn DataCollectionView(
     sankey_header: RwSignal<String>,
 ) -> impl IntoView {
     view! {
-        <div id = PageSection::DataCollection.section_id()>
+        <div>
           { set_views.clone() } // input fields for data collection
         </div>
 
