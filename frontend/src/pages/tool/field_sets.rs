@@ -1,6 +1,6 @@
 use klick_presenter::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, SewageSludgeTreatmentId,
+    ProfileValueId, SewageSludgeTreatmentId, SideStreamTreatmentId,
 };
 
 use crate::forms::{self, FieldType, MinMax};
@@ -151,25 +151,21 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
-                id: ProfileValueId::from(AnnualAverageInfluentId::Phosphorus).into(),
+                id: ProfileValueId::from(AnnualAverageInfluentId::TotalOrganicCarbohydrates).into(),
                 description: Some(
-                    "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+                    "*boak*.",
                 ),
-                required: false,
+                required: true,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "P".to_string(),
+                        "BOAK".to_string(),
                     ),
                     limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            1000.0,
-                        ),
+                        min: None,
+                        max: None,
                     },
-                    unit: "mg/L",
+                    unit: "boak",
                 },
             },
         ],
@@ -216,28 +212,6 @@ pub fn field_sets() -> Vec<FieldSet> {
                         ),
                         max: Some(
                             1000.0,
-                        ),
-                    },
-                    unit: "mg/L",
-                },
-            },
-            Field {
-                id: ProfileValueId::from(AnnualAverageEffluentId::Phosphorus).into(),
-                description: Some(
-                    "Der Gesamt-Phosphor-Gehalt des Abwassers (Pges) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "P".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            50.0,
                         ),
                     },
                     unit: "mg/L",
@@ -382,6 +356,24 @@ pub fn field_sets() -> Vec<FieldSet> {
                     unit: "g CO₂/kWh",
                 },
             },
+            Field {
+                id: ProfileValueId::from(EnergyConsumptionId::HeatingOil).into(),
+                description: Some(
+                    "boak",
+                ),
+                required: false,
+                field_type: FieldType::Float {
+                    initial_value: None,
+                    placeholder: Some(
+                        "boak".to_string(),
+                    ),
+                    limits: MinMax {
+                        min: None,
+                        max: None,
+                    },
+                    unit: "boak",
+                },
+            },
         ],
     },
     FieldSet {
@@ -405,6 +397,26 @@ pub fn field_sets() -> Vec<FieldSet> {
                         ),
                     },
                     unit: "Türme",
+                },
+            },
+            Field {
+                id: ProfileValueId::from(SewageSludgeTreatmentId::SludgeBags).into(),
+                description: Some(
+                    "Falls die Schlammtaschen des Faulturms nicht geschlossen sind, sondern zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken",
+                ),
+                required: false,
+                field_type: FieldType::Bool {
+                    initial_value: None,
+                },
+            },
+            Field {
+                id: ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainers).into(),
+                description: Some(
+                    "Falls die Schlammstapelbehälter nicht geschlossen sind, sondern zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken",
+                ),
+                required: false,
+                field_type: FieldType::Bool {
+                    initial_value: None,
                 },
             },
             Field {
@@ -447,6 +459,29 @@ pub fn field_sets() -> Vec<FieldSet> {
                         ),
                     },
                     unit: "km",
+                },
+            },
+        ],
+    },
+    FieldSet {
+        title: Some("Nebenstrombehandlung"),
+        fields: vec![
+            Field {
+                id: ProfileValueId::from(SideStreamTreatmentId::TotalNitrogen).into(),
+                description: Some(
+                    "boak",
+                ),
+                required: false,
+                field_type: FieldType::Float {
+                    initial_value: None,
+                    placeholder: Some(
+                        "boak".to_string(),
+                    ),
+                    limits: MinMax {
+                        min: None,
+                        max: None,
+                    },
+                    unit: "boak",
                 },
             },
         ],

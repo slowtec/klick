@@ -23,15 +23,14 @@ fn example_input_data() -> ProjectData {
         plant_name: Some("Muster Klärwerk".to_string()),
         population_equivalent: Some(50_000.0),
         wastewater: Some(2_135_250.0),
-        influent_average: AnnualAverage {
+        influent_average: AnnualAverageInfluent {
             nitrogen: Some(94.0),
             chemical_oxygen_demand: Some(1_020.0),
-            phosphorus: Some(15.38),
+            total_organic_carbohydrates: Some(15.38),
         },
-        effluent_average: AnnualAverage {
+        effluent_average: AnnualAverageEffluent {
             nitrogen: Some(15.77),
             chemical_oxygen_demand: Some(47.18),
-            phosphorus: Some(1.02),
         },
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Some(420_000.0),
@@ -41,11 +40,14 @@ fn example_input_data() -> ProjectData {
             total_power_consumption: Some(1_665_000.0),
             on_site_power_generation: Some(810_000.0),
             emission_factor_electricity_mix: Some(420.0),
+            heating_oil: Some(20.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: Some(true),
+            sludge_bags_are_open_recommendation: Some(true),
             custom_sludge_bags_factor: None,
             sludge_storage_containers_are_open: Some(true),
+            sludge_storage_containers_are_open_recommendation: Some(true),
             custom_sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Some(3016.5),
             transport_distance: Some(150.0),
@@ -56,6 +58,9 @@ fn example_input_data() -> ProjectData {
             feclso4: Some(0.0),
             caoh2: Some(0.0),
             synthetic_polymers: Some(12.0),
+        },
+        side_stream_treatment: SideStreamTreatment {
+            total_nitrogen: Some(150.0),
         },
     };
 
