@@ -10,30 +10,12 @@ use crate::{
     forms::{render_field_sets, FieldType, MinMax},
     pages::tool::{
         field_sets::{Field, FieldSet},
-        FieldSignal,
+        fields::{FieldId, ScenarioFieldId},
+        FieldSignal
     },
 };
 
 use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum Id {
-    SludgeBags,
-    SludgeBagsCustomFactor,
-    SludgeStorageContainers,
-    SludgeStorageCustomFactor,
-}
-
-impl ValueLabel for Id {
-    fn label(&self) -> &str {
-        match self {
-            Self::SludgeBags => "Schließen der Schlammtaschen",
-            Self::SludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
-            Self::SludgeStorageContainers => "Schließen der Schlammlagerung",
-            Self::SludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
-        }
-    }
-}
 
 pub fn options(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
@@ -42,16 +24,8 @@ pub fn options(
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
     custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
 ) -> impl IntoView {
-    let sludge_bags_are_open_field = Field {
-        id: Id::SludgeBags.into(),
-        description: None,
-        required: false,
-        field_type: FieldType::Bool {
-            initial_value: None,
-        },
-    };
     let custom_factor_field = Field {
-        id: Id::SludgeBagsCustomFactor.into(),
+        id: FieldId::Scenario(ScenarioFieldId::SludgeBagsCustomFactor),
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
         required: false,
         field_type: FieldType::Float {
@@ -67,21 +41,13 @@ pub fn options(
 
     let field_set = FieldSet {
         title: None,
-        fields: vec![sludge_bags_are_open_field, custom_factor_field],
+        fields: vec![custom_factor_field],
     };
 
     let (signals1, fields_view1, _required_fields) = render_field_sets(vec![field_set]);
 
-    let sludge_storage_containers_are_open_field = Field {
-        id: Id::SludgeStorageContainers.into(),
-        description: None,
-        required: false,
-        field_type: FieldType::Bool {
-            initial_value: None,
-        },
-    };
     let custom_factor_field2 = Field {
-        id: Id::SludgeStorageCustomFactor.into(),
+        id: FieldId::Scenario(ScenarioFieldId::SludgeStorageCustomFactor),
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
         required: false,
         field_type: FieldType::Float {
@@ -97,36 +63,22 @@ pub fn options(
 
     let field_set = FieldSet {
         title: None,
-        fields: vec![
-            sludge_storage_containers_are_open_field,
-            custom_factor_field2,
-        ],
+        fields: vec![custom_factor_field2],
     };
 
     let (signals2, fields_view2, _required_fields) = render_field_sets(vec![field_set]);
 
     let custom_sludge_bags_factor_field = signals1
-        .get(&Id::SludgeBagsCustomFactor.into())
+        .get(&FieldId::Scenario(ScenarioFieldId::SludgeBagsCustomFactor))
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
     let custom_sludge_storage_containers_factor_field = signals2
-        .get(&Id::SludgeStorageCustomFactor.into())
+        .get(&FieldId::Scenario(ScenarioFieldId::SludgeStorageCustomFactor).into())
         .and_then(FieldSignal::get_float_output_signal)
         .unwrap();
 
     create_effect(move |_| {
-        let field_signal = signals1.get(&Id::SludgeBags.into());
-        match field_signal.and_then(FieldSignal::get_bool) {
-            Some(v) => sludge_bags_are_open.set(Some(!v)),
-            None => sludge_bags_are_open.set(None),
-        }
-
-        let field_signal = signals2.get(&Id::SludgeStorageContainers.into());
-        match field_signal.and_then(FieldSignal::get_bool) {
-            Some(v) => sludge_storage_containers_are_open.set(Some(!v)),
-            None => sludge_storage_containers_are_open.set(None),
-        }
         match custom_sludge_bags_factor_field.get() {
             Some(_v) => custom_sludge_bags_factor.set(custom_sludge_bags_factor_field.get()),
             None => custom_sludge_bags_factor.set(Some(f64::from(

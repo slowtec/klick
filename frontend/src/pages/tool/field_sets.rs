@@ -159,13 +159,13 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "BOAK".to_string(),
+                        "TOC".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
                         max: None,
                     },
-                    unit: "boak",
+                    unit: "mg/L",
                 },
             },
         ],
@@ -365,13 +365,13 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "boak".to_string(),
+                        "Heizölbezug".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
                         max: None,
                     },
-                    unit: "boak",
+                    unit: "L/a",
                 },
             },
         ],
@@ -475,13 +475,13 @@ pub fn field_sets() -> Vec<FieldSet> {
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "boak".to_string(),
+                        "Gesamtstickstoff".to_string(),
                     ),
                     limits: MinMax {
                         min: None,
                         max: None,
                     },
-                    unit: "boak",
+                    unit: "t/a",
                 },
             },
         ],
