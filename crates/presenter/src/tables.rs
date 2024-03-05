@@ -18,6 +18,7 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
         sewage_sludge_treatment,
         side_stream_treatment: _, // FIXME implement
         operating_materials,
+        emission_factors: _,
     } = profile;
 
     let lang = Lng::De;

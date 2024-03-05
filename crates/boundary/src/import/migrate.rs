@@ -363,11 +363,8 @@ pub fn from_v6(data: v6::Data) -> v7::Data {
     v7::Data { project }
 }
 
-
-
 impl From<v7::ProjectData> for v8::ProjectData {
     fn from(from: v7::ProjectData) -> Self {
-
         let v7::ProjectData {
             title,
             plant_profile,
@@ -465,6 +462,10 @@ impl From<v7::ProjectData> for v8::ProjectData {
             sewage_sludge_treatment,
             side_stream_treatment,
             operating_materials,
+            emission_factors: v8::CustomEmissionFactors {
+                n2o_side_stream: None,
+                co2_fossil: None,
+            },
         };
 
         Self {

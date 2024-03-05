@@ -15,7 +15,7 @@ use crate::{
 use super::{Card, ScenarioHint};
 
 const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
-const N2O_DEFAULT_SECONDARY_POWER_FACTOR: f64 = 2.0;
+const N2O_DEFAULT_SIDE_STREAM_FACTOR: f64 = 2.0;
 
 pub fn options(
     // incoming signals
@@ -25,6 +25,7 @@ pub fn options(
     // outgoing signals
     selected_scenario_n2o: RwSignal<Option<u64>>,
     custom_factor_n2o: RwSignal<Option<f64>>,
+    n2o_side_stream: RwSignal<Option<f64>>,
     // custom_secondary_factor_n2o: RwSignal<Option<f64>>,// FIXME placeholder
 ) -> impl IntoView {
     let custom_secondary_factor_n2o: RwSignal<Option<f64>> = RwSignal::new(None); // FIXME placeholder
@@ -49,9 +50,9 @@ pub fn options(
             custom_factor_n2o.set(Some(N2O_DEFAULT_CUSTOM_FACTOR));
         }
         if let Some(custom_factor2) = custom_factor2.get() {
-            custom_secondary_factor_n2o.set(Some(custom_factor2));
+            n2o_side_stream.set(Some(custom_factor2));
         } else {
-            custom_secondary_factor_n2o.set(Some(N2O_DEFAULT_SECONDARY_POWER_FACTOR));
+            n2o_side_stream.set(Some(N2O_DEFAULT_SIDE_STREAM_FACTOR));
         }
     });
     view! {

@@ -62,6 +62,10 @@ fn example_input_data() -> ProjectData {
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Some(150.0),
         },
+        emission_factors: CustomEmissionFactors {
+            n2o_side_stream: Some(23.23),
+            co2_fossil: Some(24.24),
+        },
     };
 
     let optimization_scenario = OptimizationScenario {

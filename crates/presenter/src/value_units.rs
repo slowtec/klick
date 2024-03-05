@@ -49,11 +49,8 @@ impl ValueUnit for ProfileValueId {
 impl ValueUnit for AnnualAverageInfluentId {
     fn unit_as_latex(&self) -> Option<&str> {
         match self {
-            Self::Nitrogen | Self::ChemicalOxygenDemand => {
-                Some(LATEX_MILLIGRAMSPERLITER)
-            } | Self::TotalOrganicCarbohydrates => {
-                Some(LATEX_MILLIGRAMSPERLITER)
-            }
+            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(LATEX_MILLIGRAMSPERLITER),
+            Self::TotalOrganicCarbohydrates => Some(LATEX_MILLIGRAMSPERLITER),
         }
     }
 }
@@ -61,9 +58,7 @@ impl ValueUnit for AnnualAverageInfluentId {
 impl ValueUnit for AnnualAverageEffluentId {
     fn unit_as_latex(&self) -> Option<&str> {
         match self {
-            Self::Nitrogen | Self::ChemicalOxygenDemand => {
-                Some(LATEX_MILLIGRAMSPERLITER)
-            }
+            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(LATEX_MILLIGRAMSPERLITER),
         }
     }
 }
@@ -86,7 +81,7 @@ impl ValueUnit for EnergyConsumptionId {
 impl ValueUnit for SewageSludgeTreatmentId {
     fn unit_as_latex(&self) -> Option<&str> {
         match self {
-            Self::SludgeBags => None, // FIXME implement latex representation
+            Self::SludgeBags => None,            // FIXME implement latex representation
             Self::SludgeBagsRecommended => None, // FIXME implement latex representation
             Self::SludgeStorageContainers => None, // FIXME implement latex representation
             Self::SludgeStorageContainersRecommended => None, // FIXME implement latex representation

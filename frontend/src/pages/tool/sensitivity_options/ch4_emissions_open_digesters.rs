@@ -11,7 +11,7 @@ use crate::{
     pages::tool::{
         field_sets::{Field, FieldSet},
         fields::{FieldId, ScenarioFieldId},
-        FieldSignal
+        FieldSignal,
     },
 };
 

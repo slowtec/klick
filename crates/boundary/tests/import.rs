@@ -326,10 +326,7 @@ fn import_v8() {
 
     assert_eq!(influent_average.total_organic_carbohydrates, Some(101.99));
     assert_eq!(
-        project
-            .plant_profile
-            .sewage_sludge_treatment
-            .total_nitrogen,
+        project.plant_profile.sewage_sludge_treatment.total_nitrogen,
         Some(101.4)
     );
     assert_eq!(

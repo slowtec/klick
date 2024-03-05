@@ -1,6 +1,12 @@
 use crate::units::Factor;
 
 #[derive(Debug, Clone, Copy)]
+pub struct CustomEmissionFactors {
+    pub n2o_side_stream: Factor,
+    pub co2_fossil: Factor,
+}
+
+#[derive(Debug, Clone, Copy)]
 pub struct EmissionFactors {
     pub n2o: Factor,
     pub ch4: Factor,
