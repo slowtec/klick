@@ -2,6 +2,8 @@ use crate::units::{
     GramsPerKilowatthour, Kilometers, Kilowatthours, MilligramsPerLiter, Percent, Qubicmeters, Tons,
 };
 
+use crate::CustomEmissionFactors;
+
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Copy))]
 pub struct EmissionInfluencingValues {
@@ -13,6 +15,7 @@ pub struct EmissionInfluencingValues {
     pub sewage_sludge_treatment: SewageSludgeTreatment,
     pub side_stream_treatment: SideStreamTreatment,
     pub operating_materials: OperatingMaterials,
+    pub emission_factors: CustomEmissionFactors,
 }
 
 #[derive(Debug, Clone)]
@@ -44,7 +47,7 @@ pub struct EnergyConsumption {
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Copy))]
 pub struct SideStreamTreatment {
-    pub total_nitrogen: Qubicmeters,
+    pub total_nitrogen: Tons,
 }
 
 #[derive(Debug, Clone)]

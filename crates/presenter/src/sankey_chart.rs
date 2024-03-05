@@ -6,6 +6,7 @@ pub fn create_sankey_chart_data(
     let CO2Equivalents {
         n2o_plant,
         n2o_water,
+        n2o_side_stream,
         n2o_emissions,
         ch4_sewage_treatment,
         ch4_sludge_storage_containers,
@@ -13,6 +14,7 @@ pub fn create_sankey_chart_data(
         ch4_water,
         ch4_combined_heat_and_power_plant,
         ch4_emissions,
+        fossil_emissions,
         fecl3,
         feclso4,
         caoh2,
@@ -82,6 +84,9 @@ pub fn create_sankey_chart_data(
     nodes.push((n2o_plant.into(), "N₂O Anlage", red));
     let n2o_plant = nodes.len() - 1;
 
+    nodes.push((n2o_side_stream.into(), "N₂O Nebenstromanlage", red));
+    let n2o_side_stream = nodes.len() - 1;
+
     nodes.push((n2o_water.into(), "N₂O Gewässer", red));
     let n2o_water = nodes.len() - 1;
 
@@ -104,6 +109,9 @@ pub fn create_sankey_chart_data(
     nodes.push((ch4_combined_heat_and_power_plant.into(), "CH₄ BHKW", red));
     let ch4_combined_heat_and_power_plant = nodes.len() - 1;
 
+    nodes.push((fossil_emissions.into(), "Fossile CO₂-Emissionen", red));
+    let fossil_emissions = nodes.len() - 1;
+
     let unfiltered_edges = [
         (fecl3, operating_materials),
         (synthetic_polymers, operating_materials),
@@ -111,6 +119,7 @@ pub fn create_sankey_chart_data(
         (feclso4, operating_materials),
         (caoh2, operating_materials),
         (n2o_plant, n2o_emissions),
+        (n2o_side_stream, n2o_emissions),
         (n2o_water, n2o_emissions),
         (n2o_emissions, direct_emissions),
         (ch4_sewage_treatment, ch4_emissions),
@@ -119,6 +128,7 @@ pub fn create_sankey_chart_data(
         (ch4_water, ch4_emissions),
         (ch4_combined_heat_and_power_plant, ch4_emissions),
         (ch4_emissions, direct_emissions),
+        (fossil_emissions, direct_emissions),
         (electricity_mix, indirect_emissions),
         (operating_materials, other_indirect_emissions),
         (other_indirect_emissions, emissions),

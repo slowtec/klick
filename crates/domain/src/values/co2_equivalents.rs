@@ -4,6 +4,7 @@ use crate::units::Tons;
 pub struct CO2Equivalents {
     pub n2o_plant: Tons,
     pub n2o_water: Tons,
+    pub n2o_side_stream: Tons,
     pub n2o_emissions: Tons,
     pub ch4_sewage_treatment: Tons,
     pub ch4_sludge_storage_containers: Tons,
@@ -11,6 +12,7 @@ pub struct CO2Equivalents {
     pub ch4_water: Tons,
     pub ch4_combined_heat_and_power_plant: Tons,
     pub ch4_emissions: Tons,
+    pub fossil_emissions: Tons,
     pub fecl3: Tons,
     pub feclso4: Tons,
     pub caoh2: Tons,
@@ -27,6 +29,7 @@ pub struct CO2Equivalents {
 
 impl CO2Equivalents {
     pub fn to_csv(&self) -> String {
+        // FIXME add n2o_side_stream fossil_emissions
         let mut output: String = String::new();
         output += &format!("n2o_plant, {}\n", f64::from(self.n2o_plant));
         output += &format!("n2o_water, {}\n", f64::from(self.n2o_water));

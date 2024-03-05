@@ -3,9 +3,8 @@ use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
 pub use crate::v7::{
-    CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario,
-    N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
-    OptimizationScenario, ProjectId,
+    CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, N2oEmissionFactorCalcMethod,
+    N2oEmissionFactorScenario, OperatingMaterials, OptimizationScenario, ProjectId,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -63,6 +62,17 @@ pub struct PlantProfile {
     pub side_stream_treatment: SideStreamTreatment,
 
     pub operating_materials: OperatingMaterials,
+
+    pub emission_factors: CustomEmissionFactors,
+}
+
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+pub struct CustomEmissionFactors {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub n2o_side_stream: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub co2_fossil: Option<f64>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -82,7 +92,7 @@ pub struct SewageSludgeTreatment {
     pub sludge_bags_are_open_recommendation: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_sludge_bags_factor: Option<f64>,
+    pub custom_sludge_bags_factor: Option<f64>, // FIXME move to EmissionFactors
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sludge_storage_containers_are_open: Option<bool>,
@@ -91,7 +101,7 @@ pub struct SewageSludgeTreatment {
     pub sludge_storage_containers_are_open_recommendation: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_sludge_storage_containers_factor: Option<f64>,
+    pub custom_sludge_storage_containers_factor: Option<f64>, // FIXME move to EmissionFactors
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sewage_sludge_for_disposal: Option<f64>,
@@ -153,4 +163,3 @@ pub struct AnnualAverageEffluent {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub chemical_oxygen_demand: Option<f64>,
 }
-

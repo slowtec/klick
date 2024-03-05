@@ -55,24 +55,24 @@ pub fn export_to_pdf(project: boundary::ProjectData) -> anyhow::Result<Vec<u8>> 
         None,
     );
     todo!(); // FIXME @markus help
-    // let n2o_scenarios_bar_chart = render_svg_bar_chart(n2o_scenarios.clone());
-    // let mut bar_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
-    // bar_svg_file.write_all(n2o_scenarios_bar_chart.as_bytes())?;
-    //
-    // let sankey_chart = render_svg_sankey_chart(n2o_scenarios[0].1.clone());
-    // let mut sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
-    // sankey_svg_file.write_all(sankey_chart.as_bytes())?;
-    //
-    // let markdown = render_markdown_template(
-    //     date,
-    //     plant_profile,
-    //     bar_svg_file.path(),
-    //     sankey_svg_file.path(),
-    // )?;
-    // let bytes = render_pdf(markdown)?;
-    // bar_svg_file.close()?;
-    // sankey_svg_file.close()?;
-    // Ok(bytes)
+             // let n2o_scenarios_bar_chart = render_svg_bar_chart(n2o_scenarios.clone());
+             // let mut bar_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+             // bar_svg_file.write_all(n2o_scenarios_bar_chart.as_bytes())?;
+             //
+             // let sankey_chart = render_svg_sankey_chart(n2o_scenarios[0].1.clone());
+             // let mut sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+             // sankey_svg_file.write_all(sankey_chart.as_bytes())?;
+             //
+             // let markdown = render_markdown_template(
+             //     date,
+             //     plant_profile,
+             //     bar_svg_file.path(),
+             //     sankey_svg_file.path(),
+             // )?;
+             // let bytes = render_pdf(markdown)?;
+             // bar_svg_file.close()?;
+             // sankey_svg_file.close()?;
+             // Ok(bytes)
 }
 
 #[derive(Serialize)]

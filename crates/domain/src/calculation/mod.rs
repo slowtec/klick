@@ -8,7 +8,7 @@ use crate::{
         QubicmetersPerHour, Ratio, Time, Tons, Years,
     },
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
-    CalculatedScenarios, EmissionFactorCalculationMethods, EmissionFactors,
+    CalculatedScenarios, CustomEmissionFactors, EmissionFactorCalculationMethods, EmissionFactors,
     EmissionInfluencingValues, EmissionsCalculationOutcome, EnergyConsumption,
     N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment, SideStreamTreatment,
 };
@@ -23,6 +23,7 @@ pub fn calculate_scenarios(initial_situation: EmissionInfluencingValues) -> Calc
 pub fn calculate_emissions(
     input: EmissionInfluencingValues,
     calculation_methods: EmissionFactorCalculationMethods,
+    // custom_factors: CustomEmissionFactors,
 ) -> EmissionsCalculationOutcome {
     // -------    ------ //
     //  Unpack variables //
@@ -37,12 +38,13 @@ pub fn calculate_emissions(
         sewage_sludge_treatment,
         side_stream_treatment,
         operating_materials,
+        emission_factors,
     } = input;
 
     let AnnualAverageInfluent {
         nitrogen: nitrogen_influent,
         chemical_oxygen_demand: _,
-        total_organic_carbohydrates: _,
+        total_organic_carbohydrates,
     } = influent_average;
 
     let AnnualAverageEffluent {
@@ -78,9 +80,12 @@ pub fn calculate_emissions(
         synthetic_polymers,
     } = operating_materials;
 
-    let SideStreamTreatment {
-        total_nitrogen,
-    } = side_stream_treatment;
+    let SideStreamTreatment { total_nitrogen } = side_stream_treatment;
+
+    let CustomEmissionFactors {
+        n2o_side_stream,
+        co2_fossil,
+    } = emission_factors;
 
     // -------    ------ //
     //     Calculate     //
@@ -127,7 +132,21 @@ pub fn calculate_emissions(
 
     let n2o_plant = n2o_plant * GWP_N2O;
     let n2o_water = n2o_water * GWP_N2O;
-    let n2o_emissions = n2o_plant + n2o_water;
+    log::info!("n2o_side_stream: {}", n2o_side_stream);
+    // let n2o_side_stream = if n2o_side_stream_cover_is_open {
+    let n2o_side_stream: Tons =
+        total_nitrogen * n2o_side_stream * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O; // FIXME add custom factor
+                                                                                 // 10,0 t/a * 2% *44/28 * 273 = 85,8 t CO2-Äq./a
+                                                                                 // 60,0 t/a * 2% *44/28 * 273 = 85,8 t CO2-Äq./a
+
+    let fossil_emissions: Tons =
+        (total_organic_carbohydrates * co2_fossil * wastewater * CONVERSION_FACTOR_C_TO_CO2)
+            .convert_to::<Tons>();
+    // Neues Eingabefeld in der Datenerfassung „TOC“ [mg/L] * 10^-6 [mg auf t und L auf m^3] * Neues Eingabefeld „CO2-EF (fossil)“ [%]  wenn leer dann Wert = 3,85 *
+    // vorhandenes Eingabefeld in Datenerfassung „Abwassermenge“ [m^3/a] * (6+8+8)/6 [Umrechnungsfaktor C-->CO2]
+    //  300 mg/L (exemplarischer TOC_Zulauf) * 10^-6 * 0,0385 (EF) * 2135250 m^3/a (Abwassermenge) * 22/6 (UF) = 90,4 t CO2,fossil /a
+
+    let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
     let ch4_sewage_treatment = ch4_sewage_treatment * GWP_CH4;
     let ch4_sludge_storage_containers = ch4_slippage_sludge_storage * GWP_CH4;
@@ -183,11 +202,13 @@ pub fn calculate_emissions(
 
     let direct_emissions = n2o_plant
         + n2o_water
+        + n2o_side_stream
         + ch4_sewage_treatment
         + ch4_water
         + ch4_combined_heat_and_power_plant
         + ch4_sludge_storage_containers
-        + ch4_sludge_bags;
+        + ch4_sludge_bags
+        + fossil_emissions;
     let indirect_emissions = electricity_mix;
     let other_indirect_emissions = operating_materials + sewage_sludge_transport;
     let total_emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
@@ -199,6 +220,7 @@ pub fn calculate_emissions(
     let co2_equivalents = CO2Equivalents {
         n2o_plant,
         n2o_water,
+        n2o_side_stream,
         n2o_emissions,
         ch4_sewage_treatment,
         ch4_sludge_storage_containers,
@@ -206,6 +228,7 @@ pub fn calculate_emissions(
         ch4_water,
         ch4_combined_heat_and_power_plant,
         ch4_emissions,
+        fossil_emissions,
         fecl3,
         feclso4,
         caoh2,

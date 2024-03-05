@@ -6,13 +6,14 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 use klick_boundary::{
-    AnnualAverageInfluent, AnnualAverageEffluent, EnergyConsumption, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
-    OperatingMaterials, OptimizationScenario, PlantProfile, Project, ProjectData, SavedProject,
-    SewageSludgeTreatment, SideStreamTreatment
+    AnnualAverageEffluent, AnnualAverageInfluent, CustomEmissionFactors, EnergyConsumption,
+    N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
+    OptimizationScenario, PlantProfile, Project, ProjectData, SavedProject, SewageSludgeTreatment,
+    SideStreamTreatment,
 };
 use klick_presenter::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, SewageSludgeTreatmentId, ValueLabel, SideStreamTreatmentId,
+    ProfileValueId, SewageSludgeTreatmentId, SideStreamTreatmentId, ValueLabel,
 };
 
 use crate::forms::{self, format_f64_into_de_string, FieldSignal, MissingField};
@@ -201,6 +202,11 @@ pub fn read_input_fields(
             .and_then(FieldSignal::get_float),
     };
 
+    let emission_factors = CustomEmissionFactors {
+        n2o_side_stream: Some(1.1),
+        co2_fossil: Some(2.2),
+    };
+
     (
         PlantProfile {
             plant_name,
@@ -212,6 +218,7 @@ pub fn read_input_fields(
             sewage_sludge_treatment,
             side_stream_treatment,
             operating_materials,
+            emission_factors,
         },
         missing_fields,
     )
@@ -280,6 +287,7 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         sewage_sludge_treatment,
         side_stream_treatment,
         operating_materials,
+        emission_factors: _,
     } = plant_profile;
 
     let OptimizationScenario {
@@ -321,9 +329,7 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         digester_count,
     } = sewage_sludge_treatment;
 
-    let SideStreamTreatment {
-        total_nitrogen,
-    } = side_stream_treatment;
+    let SideStreamTreatment { total_nitrogen } = side_stream_treatment;
 
     let OperatingMaterials {
         fecl3,

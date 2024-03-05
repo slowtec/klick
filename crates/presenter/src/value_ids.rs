@@ -22,7 +22,7 @@ pub enum ProfileValueId {
 pub enum AnnualAverageInfluentId {
     Nitrogen,
     ChemicalOxygenDemand,
-    TotalOrganicCarbohydrates
+    TotalOrganicCarbohydrates,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
@@ -47,7 +47,6 @@ pub enum EnergyConsumptionId {
 pub enum SideStreamTreatmentId {
     TotalNitrogen,
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum SewageSludgeTreatmentId {

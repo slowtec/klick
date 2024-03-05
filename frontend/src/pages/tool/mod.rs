@@ -123,7 +123,8 @@ pub fn Tool(
     let barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>> =
         RwSignal::new(vec![]);
     let custom_factor_bhkw: RwSignal<Option<f64>> = Some(3.0 as f64).into();
-    let custom_factor_n2o: RwSignal<Option<f64>> = Some(3.0 as f64).into();
+    let custom_factor_n2o: RwSignal<Option<f64>> = None.into();
+    let n2o_side_stream: RwSignal<Option<f64>> = None.into();
     let n2o_emission_factor_method =
         RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
     let n2o_side_stream_cover_is_open: RwSignal<Option<bool>> = None.into();
@@ -150,6 +151,10 @@ pub fn Tool(
         if data.sewage_sludge_treatment.transport_distance.is_none() {
             data.sewage_sludge_treatment.transport_distance = Some(0.0);
         }
+        if data.side_stream_treatment.total_nitrogen.is_none() {
+            data.side_stream_treatment.total_nitrogen = Some(0.0);
+        }
+
         missing_fields.set(filtered_required_fields);
         input_data.set(data.try_into().ok());
     });
@@ -203,6 +208,7 @@ pub fn Tool(
 
     create_effect(move |_| {
         let Some(input_data) = input_data.get() else {
+            log::info!("input_data is None");
             // FIXME check also required fields
             sankey_header.update(String::clear);
             show_handlungsempfehlungen.set(false);
@@ -257,6 +263,23 @@ pub fn Tool(
             },
             _ => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
         };
+        let mut input_data = input_data.clone();
+
+        input_data.emission_factors.n2o_side_stream = match n2o_side_stream.get() {
+            Some(v) => domain::units::Factor::new(v / 100.0),
+            None => unreachable!(),
+        };
+        input_data.emission_factors.co2_fossil = match co2_fossil_custom_factor.get() {
+            Some(v) => domain::units::Factor::new(v / 100.0),
+            None => unreachable!(),
+        };
+        input_data.sewage_sludge_treatment.custom_sludge_bags_factor =
+            custom_sludge_bags_factor.get();
+        input_data
+            .sewage_sludge_treatment
+            .custom_sludge_storage_containers_factor =
+            custom_sludge_storage_containers_factor.get();
+
         let n2o_calculations = domain::calculate_all_n2o_emission_factor_scenarios(
             &input_data,
             Some(domain::units::Factor::new(
@@ -290,13 +313,18 @@ pub fn Tool(
             if let Some((method, output_data)) = szenario_calculations.get(i as usize) {
                 let szenario_name = label_of_n2o_emission_factor_calc_method(&method);
                 selected_scenario_name_n2o.set(szenario_name.to_string().clone());
-                let ef =
-                    Lng::De.format_number_with_precision(f64::from(output_data.emission_factors.n2o) * 100.0, 2);
+                let ef = Lng::De.format_number_with_precision(
+                    f64::from(output_data.emission_factors.n2o) * 100.0,
+                    2,
+                );
                 let title = format!(
                     "{name_ka} ({ew} EW) / Treibhausgasemissionen [{einheit}] - Szenario {szenario_name} (N₂O EF={ef}%)"
                 );
                 sankey_header.set(title);
-                sankey_data.set(Some((output_data.co2_equivalents.clone(), output_data.emission_factors.clone())));
+                sankey_data.set(Some((
+                    output_data.co2_equivalents.clone(),
+                    output_data.emission_factors.clone(),
+                )));
                 output_sensitivity_model.set(Some(output_data.clone()));
             }
         }
@@ -304,13 +332,13 @@ pub fn Tool(
         barchart_arguments_radio_inputs.set(
             szenario_calculations
                 .iter()
-                .map(|(szenario, outcome)| {
-                    klick_app_charts::BarChartRadioInputArguments {
+                .map(
+                    |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
                         label: Some(label_of_n2o_emission_factor_calc_method(szenario)),
                         value: outcome.co2_equivalents.total_emissions.into(),
                         emission_factor: f64::from(outcome.emission_factors.n2o),
-                    }
-                })
+                    },
+                )
                 .collect(),
         );
         if !input_data_validation_error.get() {
@@ -355,12 +383,7 @@ pub fn Tool(
                 .sewage_sludge_treatment
                 .sludge_storage_containers_are_open =
                 sludge_storage_containers_are_open.get().unwrap_or(true);
-            input_data.sewage_sludge_treatment.custom_sludge_bags_factor =
-                custom_sludge_bags_factor.get();
-            input_data
-                .sewage_sludge_treatment
-                .custom_sludge_storage_containers_factor =
-                custom_sludge_storage_containers_factor.get();
+
             input_data_optimizationOptions_model.set(Some(input_data.clone()));
             let output = domain::calculate_emissions(input_data.clone(), scenario);
             output_optimization_options_model.set(Some(output.clone()));
@@ -424,7 +447,8 @@ pub fn Tool(
 
             let old = szenario_calculations[selected_scenario_n2o.get().unwrap_or(0) as usize]
                 .clone()
-                .1.co2_equivalents;
+                .1
+                .co2_equivalents;
             let new = output.co2_equivalents;
 
             let mut comp = vec![];
@@ -464,6 +488,7 @@ pub fn Tool(
             });
             barchart_arguments.set(comp);
             if missing_fields.get().len() > 0 {
+                log::info!("NOT computing final output data, missing fields");
                 show_handlungsempfehlungen.set(false);
             } else {
                 show_handlungsempfehlungen.set(true);
@@ -772,6 +797,7 @@ pub fn Tool(
           selected_scenario_name_n2o
           selected_scenario_name_chp
           custom_factor_n2o
+          n2o_side_stream
           co2_fossil_custom_factor
           custom_sludge_bags_factor
           custom_sludge_storage_containers_factor
@@ -901,6 +927,7 @@ pub fn SensitivityView(
     selected_scenario_name_n2o: RwSignal<String>,
     selected_scenario_name_chp: RwSignal<String>,
     custom_factor_n2o: RwSignal<Option<f64>>,
+    n2o_side_stream: RwSignal<Option<f64>>,
     co2_fossil_custom_factor: RwSignal<Option<f64>>,
     sludge_bags_are_open: RwSignal<Option<bool>>,
     sludge_storage_containers_are_open: RwSignal<Option<bool>>,
@@ -933,6 +960,7 @@ pub fn SensitivityView(
                 selected_scenario_name_n2o
                 selected_scenario_name_chp
                 custom_factor_n2o
+                n2o_side_stream
                 co2_fossil_custom_factor
                 custom_sludge_bags_factor
                 custom_sludge_storage_containers_factor
