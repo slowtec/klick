@@ -8,7 +8,7 @@ publish = false
 [dependencies]
 anyhow = "1.0.80"
 derive_more = "0.99.17"
-http = "1.0.0"
+http = "1.1.0"
 http-serde = "2.0.0"
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.114"

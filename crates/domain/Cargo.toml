@@ -8,8 +8,8 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
-log = "*"
 bs58 = "0.5.0"
+log = "0.4.21"
 mailparse = "0.14.1"
 pwhash = "1.0.0"
 thiserror = "1.0.57"

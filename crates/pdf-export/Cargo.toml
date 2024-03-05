@@ -19,7 +19,7 @@ pandoc = "0.8.11"
 serde = { version = "1.0.197", features = ["derive"] }
 tera = "1.19.1"
 time = { version = "0.3.34", features = ["formatting", "local-offset", "macros"] }
-tempfile = "3.10.0"
+tempfile = "3.10.1"
 
 [dev-dependencies]
 klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }

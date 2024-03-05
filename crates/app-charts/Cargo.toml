@@ -10,8 +10,8 @@ publish = false
 [dependencies]
 klick-presenter = "=0.0.0"
 
-leptos = "0.6.6"
-log = "0.4.20"
+leptos = "0.6.9"
+log = "0.4.21"
 
 [features]
 ssr = []

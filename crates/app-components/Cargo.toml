@@ -11,8 +11,8 @@ publish = false
 klick-presenter = "=0.0.0"
 
 Inflector = { version =  "0.11.4", default-features = false }
-leptos = { version = "0.6.6", features = ["csr"] }
-log = "0.4.20"
+leptos = { version = "0.6.9", features = ["csr"] }
+log = "0.4.21"
 
 [lints]
 workspace = true
