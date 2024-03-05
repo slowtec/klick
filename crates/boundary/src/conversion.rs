@@ -563,7 +563,7 @@ impl From<domain::AnnualAverageInfluent> for AnnualAverageInfluent {
     fn from(from: domain::AnnualAverageInfluent) -> Self {
         let domain::AnnualAverageInfluent {
             nitrogen,
-            chemical_oxygen_demand,
+            chemical_oxygen_demand: _,
             total_organic_carbohydrates,
         } = from;
 

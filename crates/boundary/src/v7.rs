@@ -1,5 +1,5 @@
 use derive_more::From;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use time::OffsetDateTime;
 
 pub use crate::v6::{
@@ -8,30 +8,26 @@ pub use crate::v6::{
     OptimizationScenario, ProjectId,
 };
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
+#[derive(Deserialize)]
 pub struct Data {
     pub project: Project,
 }
 
-#[derive(Serialize, Deserialize, From)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[derive(Deserialize, From)]
 #[serde(untagged)]
 pub enum Project {
     Saved(SavedProject),
     Unsaved(ProjectData),
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Default, Debug, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct ProjectData {
     pub title: Option<String>,
     pub plant_profile: PlantProfile,
     pub optimization_scenario: OptimizationScenario,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct SavedProject {
     pub id: ProjectId,
     pub created_at: OffsetDateTime,
@@ -40,8 +36,7 @@ pub struct SavedProject {
     pub data: ProjectData,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct PlantProfile {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub plant_name: Option<String>,
@@ -63,8 +58,7 @@ pub struct PlantProfile {
     pub operating_materials: OperatingMaterials,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct SewageSludgeTreatment {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sludge_bags_are_open: Option<bool>,

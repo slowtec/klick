@@ -2,10 +2,10 @@ use time::OffsetDateTime;
 use uuid::Uuid;
 
 use klick_boundary::{
-    export_to_string_pretty, import_from_str, AnnualAverage, CH4ChpEmissionFactorCalcMethod,
-    CH4ChpEmissionFactorScenario, Data, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
-    OptimizationScenario, PlantProfile, Project, ProjectData, ProjectId, SavedProject,
-    CURRENT_VERSION,
+    export_to_string_pretty, import_from_str, AnnualAverageInfluent,
+    CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, Data,
+    N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OptimizationScenario, PlantProfile,
+    Project, ProjectData, ProjectId, SavedProject, CURRENT_VERSION,
 };
 
 #[test]
@@ -74,7 +74,7 @@ fn roundtrip() {
     let plant_profile = PlantProfile {
         plant_name: Some("test export".to_string()),
         wastewater: Some(3456.889),
-        influent_average: AnnualAverage {
+        influent_average: AnnualAverageInfluent {
             nitrogen: Some(1.2345000000000000000000000001),
             ..Default::default()
         },

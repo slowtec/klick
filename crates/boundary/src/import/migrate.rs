@@ -406,7 +406,7 @@ impl From<v7::ProjectData> for v8::ProjectData {
         let v7::AnnualAverage {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus,
+            phosphorus: _,
         } = influent_average;
 
         let influent_average = v8::AnnualAverageInfluent {
@@ -418,7 +418,7 @@ impl From<v7::ProjectData> for v8::ProjectData {
         let v7::AnnualAverage {
             nitrogen,
             chemical_oxygen_demand,
-            phosphorus,
+            phosphorus: _,
         } = effluent_average;
 
         let effluent_average = v8::AnnualAverageEffluent {

@@ -29,8 +29,7 @@ pub struct EnergyConsumption {
     pub emission_factor_electricity_mix: Option<f64>,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct AnnualAverage {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nitrogen: Option<f64>,
@@ -42,8 +41,7 @@ pub struct AnnualAverage {
     pub phosphorus: Option<f64>,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct SewageSludgeTreatment {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub open_sludge_bags: Option<bool>,

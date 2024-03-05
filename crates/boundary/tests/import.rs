@@ -37,6 +37,7 @@ fn import_v1() {
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
+        ..
     } = plant_profile;
 
     let EnergyConsumption {
@@ -47,14 +48,15 @@ fn import_v1() {
         total_power_consumption,
         on_site_power_generation,
         emission_factor_electricity_mix,
+        ..
     } = energy_consumption;
 
     let SewageSludgeTreatment {
         sludge_bags_are_open,
-        sludge_bags_are_open_recommendation,
+        sludge_bags_are_open_recommendation: _,
         custom_sludge_bags_factor,
         sludge_storage_containers_are_open,
-        sludge_storage_containers_are_open_recommendation,
+        sludge_storage_containers_are_open_recommendation: _,
         custom_sludge_storage_containers_factor,
         sewage_sludge_for_disposal,
         transport_distance,
@@ -67,11 +69,9 @@ fn import_v1() {
 
     assert_eq!(influent_average.nitrogen, Some(122.0));
     assert_eq!(influent_average.chemical_oxygen_demand, Some(333.0));
-    assert_eq!(influent_average.phosphorus, Some(555.0));
 
     assert_eq!(effluent_average.nitrogen, Some(11.76));
     assert_eq!(effluent_average.chemical_oxygen_demand, Some(129.0));
-    assert_eq!(effluent_average.phosphorus, Some(10.0));
 
     assert_eq!(sewage_gas_produced, Some(1_260_000.0));
     assert_eq!(methane_fraction, Some(62.0));
@@ -127,6 +127,7 @@ fn import_v2() {
         energy_consumption,
         sewage_sludge_treatment,
         operating_materials,
+        ..
     } = plant_profile;
 
     let EnergyConsumption {
@@ -137,6 +138,7 @@ fn import_v2() {
         total_power_consumption,
         on_site_power_generation,
         emission_factor_electricity_mix,
+        ..
     } = energy_consumption;
 
     let SewageSludgeTreatment {
@@ -147,6 +149,7 @@ fn import_v2() {
         sewage_sludge_for_disposal,
         transport_distance,
         digester_count,
+        ..
     } = sewage_sludge_treatment;
 
     assert_eq!(plant_name.as_deref(), Some("Example Plant"));
@@ -155,11 +158,9 @@ fn import_v2() {
 
     assert_eq!(influent_average.nitrogen, Some(122.0));
     assert_eq!(influent_average.chemical_oxygen_demand, Some(333.0));
-    assert_eq!(influent_average.phosphorus, Some(555.0));
 
     assert_eq!(effluent_average.nitrogen, Some(11.76));
     assert_eq!(effluent_average.chemical_oxygen_demand, Some(129.0));
-    assert_eq!(effluent_average.phosphorus, Some(10.0));
 
     assert_eq!(sewage_gas_produced, Some(1_260_000.0));
     assert_eq!(methane_fraction, Some(62.0));
@@ -324,9 +325,15 @@ fn import_v8() {
         N2oEmissionFactorCalcMethod::Ipcc2019
     );
 
-    assert_eq!(influent_average.total_organic_carbohydrates, Some(101.99));
     assert_eq!(
-        project.plant_profile.sewage_sludge_treatment.total_nitrogen,
+        project
+            .plant_profile
+            .influent_average
+            .total_organic_carbohydrates,
+        Some(101.99)
+    );
+    assert_eq!(
+        project.plant_profile.side_stream_treatment.total_nitrogen,
         Some(101.4)
     );
     assert_eq!(
