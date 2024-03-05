@@ -10,7 +10,7 @@ use time::{format_description::FormatItem, macros::format_description, OffsetDat
 use klick_app_charts as charts;
 use klick_boundary as boundary;
 use klick_domain::{
-    self as domain, CO2Equivalents, EmissionFactors, EmissionInfluencingValues,
+    self as domain, CO2Equivalents, EmissionInfluencingValues, EmissionsCalculationOutcome,
     N2oEmissionFactorCalcMethod,
 };
 use klick_presenter::{self as presenter, Lng};
@@ -49,30 +49,29 @@ pub fn export_to_pdf(project: boundary::ProjectData) -> anyhow::Result<Vec<u8>> 
         N2oEmissionFactorCalcMethod::Custom(factor) => Some(factor),
         _ => None,
     };
-    let _n2o_scenarios = domain::calculate_all_n2o_emission_factor_scenarios(
+    let n2o_scenarios = domain::calculate_all_n2o_emission_factor_scenarios(
         &emission_influencing_values,
         custom_factor,
         None,
     );
-    todo!(); // FIXME @markus help
-             // let n2o_scenarios_bar_chart = render_svg_bar_chart(n2o_scenarios.clone());
-             // let mut bar_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
-             // bar_svg_file.write_all(n2o_scenarios_bar_chart.as_bytes())?;
-             //
-             // let sankey_chart = render_svg_sankey_chart(n2o_scenarios[0].1.clone());
-             // let mut sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
-             // sankey_svg_file.write_all(sankey_chart.as_bytes())?;
-             //
-             // let markdown = render_markdown_template(
-             //     date,
-             //     plant_profile,
-             //     bar_svg_file.path(),
-             //     sankey_svg_file.path(),
-             // )?;
-             // let bytes = render_pdf(markdown)?;
-             // bar_svg_file.close()?;
-             // sankey_svg_file.close()?;
-             // Ok(bytes)
+    let n2o_scenarios_bar_chart = render_svg_bar_chart(n2o_scenarios.clone());
+    let mut bar_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+    bar_svg_file.write_all(n2o_scenarios_bar_chart.as_bytes())?;
+
+    let sankey_chart = render_svg_sankey_chart(n2o_scenarios[0].1.co2_equivalents.clone());
+    let mut sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+    sankey_svg_file.write_all(sankey_chart.as_bytes())?;
+
+    let markdown = render_markdown_template(
+        date,
+        plant_profile,
+        bar_svg_file.path(),
+        sankey_svg_file.path(),
+    )?;
+    let bytes = render_pdf(markdown)?;
+    bar_svg_file.close()?;
+    sankey_svg_file.close()?;
+    Ok(bytes)
 }
 
 #[derive(Serialize)]
@@ -109,11 +108,16 @@ const BAR_CHART_WIDTH: f64 = 600.0;
 const BAR_CHART_HEIGHT: f64 = 300.0;
 
 fn render_svg_bar_chart(
-    n2o_scenarios: Vec<(N2oEmissionFactorCalcMethod, CO2Equivalents, EmissionFactors)>,
+    n2o_scenarios: Vec<(N2oEmissionFactorCalcMethod, EmissionsCalculationOutcome)>,
 ) -> String {
     let data = n2o_scenarios
         .into_iter()
-        .map(|(_method, co2_equivalents, emission_factors)| {
+        .map(|(_method, emissions_calculation_outcome)| {
+            let EmissionsCalculationOutcome {
+                co2_equivalents,
+                emission_factors,
+                calculation_methods: _,
+            } = emissions_calculation_outcome;
             charts::BarChartRadioInputArguments {
                 label: None, // TODO: Render method name
                 value: co2_equivalents.total_emissions.into(),
