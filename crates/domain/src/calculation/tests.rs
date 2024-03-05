@@ -21,6 +21,8 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
+            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
+            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
@@ -37,6 +39,8 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
             custom_sludge_bags_factor: None,
+            sludge_bags_are_open_recommendation: false,
+            sludge_storage_containers_are_open_recommendation: false,
             sludge_storage_containers_are_open: true,
             custom_sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Tons::new(3687.6),
@@ -48,6 +52,13 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             feclso4: Tons::new(326.0),
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
+        },
+        emission_factors: CustomEmissionFactors {
+            co2_fossil: Factor::new(0.0),
+            n2o_side_stream: Factor::new(0.0),
+        },
+        side_stream_treatment: SideStreamTreatment {
+            total_nitrogen: Tons::new(0.0),
         },
     };
 
@@ -84,6 +95,8 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
+        n2o_side_stream: _,
+        fossil_emissions: _,
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 327.970_500_000_001_83);
@@ -133,6 +146,8 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
+            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
+            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
@@ -144,11 +159,14 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
+            heating_oil: Qubicmeters::new(0.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
             custom_sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
+            sludge_bags_are_open_recommendation: false,
+            sludge_storage_containers_are_open_recommendation: false,
             custom_sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
@@ -159,6 +177,13 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             feclso4: Tons::new(326.0),
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
+        },
+        emission_factors: CustomEmissionFactors {
+            co2_fossil: Factor::new(0.0),
+            n2o_side_stream: Factor::new(0.0),
+        },
+        side_stream_treatment: SideStreamTreatment {
+            total_nitrogen: Tons::new(0.0),
         },
     };
 
@@ -195,6 +220,8 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
+        n2o_side_stream: _,
+        fossil_emissions: _,
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 785.07);
@@ -245,6 +272,8 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
+            chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
+            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
@@ -256,12 +285,15 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
+            heating_oil: Qubicmeters::new(0.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
             custom_sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
             custom_sludge_storage_containers_factor: None,
+            sludge_bags_are_open_recommendation: false,
+            sludge_storage_containers_are_open_recommendation: false,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -271,6 +303,13 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             feclso4: Tons::new(326.0),
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
+        },
+        emission_factors: CustomEmissionFactors {
+            co2_fossil: Factor::new(0.0),
+            n2o_side_stream: Factor::new(0.0),
+        },
+        side_stream_treatment: SideStreamTreatment {
+            total_nitrogen: Tons::new(0.0),
         },
     };
 
@@ -307,6 +346,8 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
+        n2o_side_stream: _,
+        fossil_emissions: _,
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 2_093.52);
@@ -357,6 +398,8 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
+            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
+            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
@@ -368,12 +411,15 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
+            heating_oil: Qubicmeters::new(0.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
             custom_sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
             custom_sludge_storage_containers_factor: None,
+            sludge_bags_are_open_recommendation: false,
+            sludge_storage_containers_are_open_recommendation: false,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -383,6 +429,13 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             feclso4: Tons::new(326.0),
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
+        },
+        emission_factors: CustomEmissionFactors {
+            co2_fossil: Factor::new(0.0),
+            n2o_side_stream: Factor::new(0.0),
+        },
+        side_stream_treatment: SideStreamTreatment {
+            total_nitrogen: Tons::new(0.0),
         },
     };
 
@@ -419,6 +472,8 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
+        n2o_side_stream: _,
+        fossil_emissions: _,
     } = co2_equivalents;
 
     assert_eq!(f64::from(n2o_plant), 4_187.04);
@@ -468,6 +523,8 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         wastewater: Qubicmeters::new(5_000_000.0),
         influent_average: AnnualAverageInfluent {
             nitrogen: MilligramsPerLiter::new(122.0),
+            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
+            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: MilligramsPerLiter::new(11.76),
@@ -479,12 +536,15 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
+            heating_oil: Qubicmeters::new(0.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
             custom_sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
             custom_sludge_storage_containers_factor: None,
+            sludge_bags_are_open_recommendation: false,
+            sludge_storage_containers_are_open_recommendation: false,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -494,6 +554,13 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             feclso4: Tons::new(326.0),
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
+        },
+        emission_factors: CustomEmissionFactors {
+            co2_fossil: Factor::new(0.0),
+            n2o_side_stream: Factor::new(0.0),
+        },
+        side_stream_treatment: SideStreamTreatment {
+            total_nitrogen: Tons::new(0.0),
         },
     };
 
@@ -530,6 +597,8 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
+        n2o_side_stream: _,
+        fossil_emissions: _,
     } = co2_equivalents;
 
     const PRECISION: usize = 3;
@@ -596,4 +665,17 @@ fn calculate_ch4_slippage_sludge_bags_for_one_digester() {
     );
     assert_eq!(result, expected);
     assert_eq!(result * GWP_CH4, Tons::new(136.391_01));
+}
+
+#[ignore]
+#[test]
+fn calculate_n2o_side_streams() {
+    assert_eq!(
+        calculate_n2o_side_stream(Tons::new(10.0), Factor::new(0.02)),
+        Tons::new(85.8)
+    );
+    assert_eq!(
+        calculate_n2o_side_stream(Tons::new(60.0), Factor::new(0.02)),
+        Tons::new(85.8)
+    );
 }
