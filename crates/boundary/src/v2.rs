@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 pub use crate::v1::{
     AnnualAverage, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
@@ -33,8 +33,7 @@ pub struct InputData {
     pub operating_materials: OperatingMaterials,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct EnergyConsumption {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sewage_gas_produced: Option<f64>,
