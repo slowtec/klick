@@ -23,7 +23,6 @@ pub fn calculate_scenarios(initial_situation: EmissionInfluencingValues) -> Calc
 pub fn calculate_emissions(
     input: EmissionInfluencingValues,
     calculation_methods: EmissionFactorCalculationMethods,
-    // custom_factors: CustomEmissionFactors,
 ) -> EmissionsCalculationOutcome {
     // -------    ------ //
     //  Unpack variables //
@@ -43,7 +42,7 @@ pub fn calculate_emissions(
 
     let AnnualAverageInfluent {
         nitrogen: nitrogen_influent,
-        chemical_oxygen_demand: _,
+        chemical_oxygen_demand: _, // FIXME
         total_organic_carbohydrates,
     } = influent_average;
 
@@ -58,15 +57,15 @@ pub fn calculate_emissions(
         total_power_consumption,
         on_site_power_generation,
         emission_factor_electricity_mix,
-        heating_oil,
+        heating_oil: _, // FIXME
     } = energy_consumption;
 
     let SewageSludgeTreatment {
         sludge_bags_are_open,
-        sludge_bags_are_open_recommendation,
+        sludge_bags_are_open_recommendation: _, // FIXME
         custom_sludge_bags_factor,
         sludge_storage_containers_are_open,
-        sludge_storage_containers_are_open_recommendation,
+        sludge_storage_containers_are_open_recommendation: _, // FIXME
         custom_sludge_storage_containers_factor,
         sewage_sludge_for_disposal,
         transport_distance,
@@ -132,19 +131,11 @@ pub fn calculate_emissions(
 
     let n2o_plant = n2o_plant * GWP_N2O;
     let n2o_water = n2o_water * GWP_N2O;
-    log::info!("n2o_side_stream: {}", n2o_side_stream);
-    // let n2o_side_stream = if n2o_side_stream_cover_is_open {
-    let n2o_side_stream: Tons =
-        total_nitrogen * n2o_side_stream * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O; // FIXME add custom factor
-                                                                                 // 10,0 t/a * 2% *44/28 * 273 = 85,8 t CO2-Äq./a
-                                                                                 // 60,0 t/a * 2% *44/28 * 273 = 85,8 t CO2-Äq./a
 
-    let fossil_emissions: Tons =
-        (total_organic_carbohydrates * co2_fossil * wastewater * CONVERSION_FACTOR_C_TO_CO2)
-            .convert_to::<Tons>();
-    // Neues Eingabefeld in der Datenerfassung „TOC“ [mg/L] * 10^-6 [mg auf t und L auf m^3] * Neues Eingabefeld „CO2-EF (fossil)“ [%]  wenn leer dann Wert = 3,85 *
-    // vorhandenes Eingabefeld in Datenerfassung „Abwassermenge“ [m^3/a] * (6+8+8)/6 [Umrechnungsfaktor C-->CO2]
-    //  300 mg/L (exemplarischer TOC_Zulauf) * 10^-6 * 0,0385 (EF) * 2135250 m^3/a (Abwassermenge) * 22/6 (UF) = 90,4 t CO2,fossil /a
+    let n2o_side_stream = calculate_n2o_side_stream(total_nitrogen, n2o_side_stream);
+
+    let fossil_emissions =
+        calculate_fossil_emissions(total_organic_carbohydrates, co2_fossil, wastewater);
 
     let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
@@ -336,6 +327,25 @@ pub fn calculate_nitrous_oxide(
         n2o_anlage.convert_to::<Tons>(),
         n2o_gewaesser.convert_to::<Tons>(),
     )
+}
+
+pub fn calculate_fossil_emissions(
+    total_organic_carbohydrates: MilligramsPerLiter,
+    co2_fossil_emission_factor: Factor,
+    wastewater: Qubicmeters,
+) -> Tons {
+    let fossil_emissions = total_organic_carbohydrates
+        * co2_fossil_emission_factor
+        * wastewater
+        * CONVERSION_FACTOR_C_TO_CO2;
+    fossil_emissions.convert_to::<Tons>()
+}
+
+pub fn calculate_n2o_side_stream(
+    total_nitrogen: Tons,
+    n2o_side_stream_emission_factor: Factor,
+) -> Tons {
+    total_nitrogen * n2o_side_stream_emission_factor * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O
 }
 
 pub fn calculate_all_n2o_emission_factor_scenarios(

@@ -19,8 +19,7 @@ use crate::{
     api::AuthorizedApi,
     forms::{self, FieldSignal, MissingField},
     sankey::Sankey,
-    Page,
-    SECTION_ID_TOOL_HOME,
+    Page, SECTION_ID_TOOL_HOME,
 };
 
 mod breadcrumbs;

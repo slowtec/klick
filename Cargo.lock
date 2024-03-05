@@ -1520,7 +1520,6 @@ name = "klick-domain"
 version = "0.3.18"
 dependencies = [
  "bs58",
- "log",
  "mailparse",
  "pwhash",
  "thiserror",
