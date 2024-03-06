@@ -80,6 +80,8 @@ pub struct CustomEmissionFactors {
 pub struct SideStreamTreatment {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total_nitrogen: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub side_stream_cover_is_open: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize)]

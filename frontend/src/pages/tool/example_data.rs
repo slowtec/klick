@@ -61,6 +61,7 @@ fn example_input_data() -> ProjectData {
         },
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Some(150.0),
+            side_stream_cover_is_open: Some(true),
         },
         emission_factors: CustomEmissionFactors {
             n2o_side_stream: Some(23.23),

@@ -317,25 +317,41 @@ impl TryFrom<SideStreamTreatment> for domain::SideStreamTreatment {
     type Error = anyhow::Error;
 
     fn try_from(from: SideStreamTreatment) -> Result<Self, Self::Error> {
-        let SideStreamTreatment { total_nitrogen } = from;
+        let SideStreamTreatment {
+            total_nitrogen,
+            side_stream_cover_is_open
+        } = from;
 
         let Some(total_nitrogen) = total_nitrogen else {
             bail!("missing total_nitrogen");
         };
+        let Some(side_stream_cover_is_open) = side_stream_cover_is_open else {
+            bail!("missing side_stream_cover_is_open");
+        };
 
         let total_nitrogen = domain::units::Tons::new(total_nitrogen);
 
-        Ok(Self { total_nitrogen })
+        Ok(Self {
+            total_nitrogen,
+            side_stream_cover_is_open
+        })
     }
 }
 
 impl From<domain::SideStreamTreatment> for SideStreamTreatment {
     fn from(from: domain::SideStreamTreatment) -> Self {
-        let domain::SideStreamTreatment { total_nitrogen } = from;
+        let domain::SideStreamTreatment {
+            total_nitrogen,
+            side_stream_cover_is_open
+        } = from;
 
         let total_nitrogen = Some(total_nitrogen.into());
+        let side_stream_cover_is_open = Some(side_stream_cover_is_open);
 
-        Self { total_nitrogen }
+        Self {
+            total_nitrogen,
+            side_stream_cover_is_open
+        }
     }
 }
 

@@ -48,6 +48,7 @@ pub struct EnergyConsumption {
 #[cfg_attr(test, derive(Copy))]
 pub struct SideStreamTreatment {
     pub total_nitrogen: Tons,
+    pub side_stream_cover_is_open: bool,
 }
 
 #[derive(Debug, Clone)]

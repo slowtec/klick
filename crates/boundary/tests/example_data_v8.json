@@ -37,7 +37,8 @@
       },
       "side_stream_treatment": {
         "total_nitrogen": 101.4,
-        "n2o_emission_factor": 101.4
+        "n2o_emission_factor": 101.4,
+        "side_stream_cover_is_open": true
       },
       "operating_materials": {
         "fecl3": 310.5,

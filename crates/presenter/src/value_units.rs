@@ -40,7 +40,7 @@ impl ValueUnit for ProfileValueId {
             Self::EffluentAverage(id) => id.unit_as_latex(),
             Self::EnergyConsumption(id) => id.unit_as_latex(),
             Self::SewageSludgeTreatment(id) => id.unit_as_latex(),
-            Self::SideStreamTreatment(id) => None, // FIXME id.unit_as_latex(),
+            Self::SideStreamTreatment(_id) => None, // FIXME id.unit_as_latex(),
             Self::OperatingMaterials(id) => id.unit_as_latex(),
         }
     }

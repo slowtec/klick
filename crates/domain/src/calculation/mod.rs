@@ -79,7 +79,10 @@ pub fn calculate_emissions(
         synthetic_polymers,
     } = operating_materials;
 
-    let SideStreamTreatment { total_nitrogen } = side_stream_treatment;
+    let SideStreamTreatment {
+        total_nitrogen,
+        side_stream_cover_is_open,
+    } = side_stream_treatment;
 
     let CustomEmissionFactors {
         n2o_side_stream,
@@ -118,6 +121,8 @@ pub fn calculate_emissions(
     } else {
         Tons::zero()
     };
+    log::info!("sludge_bags_are_open: {:?}", sludge_bags_are_open);
+    log::info!("sludge_storage_containers_are_open: {:?}", sludge_storage_containers_are_open);
 
     let ch4_slippage_sludge_storage = if sludge_storage_containers_are_open {
         calculate_ch4_slippage_sludge_storage(
@@ -132,7 +137,7 @@ pub fn calculate_emissions(
     let n2o_plant = n2o_plant * GWP_N2O;
     let n2o_water = n2o_water * GWP_N2O;
 
-    let n2o_side_stream = calculate_n2o_side_stream(total_nitrogen, n2o_side_stream);
+    let n2o_side_stream = calculate_n2o_side_stream(total_nitrogen, n2o_side_stream, side_stream_cover_is_open);
 
     let fossil_emissions =
         calculate_fossil_emissions(total_organic_carbohydrates, chemical_oxygen_demand_influent, co2_fossil, wastewater);
@@ -357,8 +362,13 @@ pub fn calculate_fossil_emissions(
 pub fn calculate_n2o_side_stream(
     total_nitrogen: Tons,
     n2o_side_stream_emission_factor: Factor,
+    side_stream_cover_is_open: bool,
 ) -> Tons {
-    total_nitrogen * n2o_side_stream_emission_factor * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O
+    if side_stream_cover_is_open {
+        total_nitrogen * n2o_side_stream_emission_factor * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O
+    } else {
+        Tons::zero()
+    }
 }
 
 pub fn calculate_all_n2o_emission_factor_scenarios(
