@@ -41,8 +41,8 @@ pub fn calculate_emissions(
     } = input;
 
     let AnnualAverageInfluent {
+        chemical_oxygen_demand: chemical_oxygen_demand_influent,
         nitrogen: nitrogen_influent,
-        chemical_oxygen_demand: _, // FIXME
         total_organic_carbohydrates,
     } = influent_average;
 
@@ -135,7 +135,7 @@ pub fn calculate_emissions(
     let n2o_side_stream = calculate_n2o_side_stream(total_nitrogen, n2o_side_stream);
 
     let fossil_emissions =
-        calculate_fossil_emissions(total_organic_carbohydrates, co2_fossil, wastewater);
+        calculate_fossil_emissions(total_organic_carbohydrates, chemical_oxygen_demand_influent, co2_fossil, wastewater);
 
     let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
@@ -329,16 +329,29 @@ pub fn calculate_nitrous_oxide(
     )
 }
 
+#[must_use]
 pub fn calculate_fossil_emissions(
     total_organic_carbohydrates: MilligramsPerLiter,
+    chemical_oxygen_demand_influent: MilligramsPerLiter,
     co2_fossil_emission_factor: Factor,
     wastewater: Qubicmeters,
 ) -> Tons {
-    let fossil_emissions = total_organic_carbohydrates
-        * co2_fossil_emission_factor
-        * wastewater
-        * CONVERSION_FACTOR_C_TO_CO2;
-    fossil_emissions.convert_to::<Tons>()
+    if f64::from(total_organic_carbohydrates) > 0.01 {
+        let fossil_emissions =
+            total_organic_carbohydrates
+            * co2_fossil_emission_factor
+            * wastewater
+            * CONVERSION_FACTOR_C_TO_CO2;
+        fossil_emissions.convert_to::<Tons>()
+    } else {
+        let fossil_emissions =
+            chemical_oxygen_demand_influent
+                * CONVERSION_FACTOR_TOC_TO_COD
+                * co2_fossil_emission_factor
+                * wastewater
+                * CONVERSION_FACTOR_C_TO_CO2;
+        fossil_emissions.convert_to::<Tons>()
+    }
 }
 
 pub fn calculate_n2o_side_stream(

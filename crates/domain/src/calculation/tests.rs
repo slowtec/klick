@@ -679,3 +679,25 @@ fn calculate_n2o_side_streams() {
         Tons::new(85.8)
     );
 }
+
+#[test]
+fn test_calculate_fossil_emissions() {
+    assert_eq!(
+        calculate_fossil_emissions(
+            MilligramsPerLiter::new(300.0),
+            MilligramsPerLiter::new(0.0),
+            Factor::new(0.0385),
+            Qubicmeters::new(2135250.0)
+        ),
+        Tons::new(90.42783750000001)
+    );
+    assert_eq!(
+        calculate_fossil_emissions(
+            MilligramsPerLiter::new(0.00001),
+            MilligramsPerLiter::new(1020.0),
+            Factor::new(0.0385),
+            Qubicmeters::new(2135250.0)
+        ),
+        Tons::new(115.29549281249999)
+    );
+}

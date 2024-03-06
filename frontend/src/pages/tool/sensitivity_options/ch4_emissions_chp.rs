@@ -20,7 +20,7 @@ enum Id {
     CustomFactor,
 }
 
-use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
+use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 const CH4_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
 
@@ -108,7 +108,6 @@ pub fn options(
           </Cite>
         </InfoBox>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-          <ScenarioHint output = output.into() />
           { move || {
               output.get().map(|out|
                 view! {

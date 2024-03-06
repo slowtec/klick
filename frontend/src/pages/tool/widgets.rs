@@ -7,40 +7,6 @@ pub const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";
 
 #[component]
-pub fn ScenarioHint(
-    output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
-) -> impl IntoView {
-    move || {
-        output.get().map(|out| {
-            let f = f64::from(out.emission_factors.n2o) * 100.0;
-            let ef = format!("(N₂O EF = {f:.2}%");
-
-            // TODO: use presenter
-            let scenario = match out.calculation_methods.n2o {
-                domain::N2oEmissionFactorCalcMethod::TuWien2016 => {
-                    format!("TU Wien 2016 {ef}")
-                }
-                domain::N2oEmissionFactorCalcMethod::Optimistic => format!("Optimistisch {ef}"),
-                domain::N2oEmissionFactorCalcMethod::Pesimistic => format!("Pesimistisch {ef}"),
-                domain::N2oEmissionFactorCalcMethod::Ipcc2019 => format!("IPCC 2019 {ef}"),
-                domain::N2oEmissionFactorCalcMethod::Custom(f) => {
-                    format!("Benutzerdefiniert (N₂O EF = {:.2}", f64::from(f) * 100.0)
-                }
-            };
-
-            view! {
-               <p>
-                 "Bezogen auf das Szenario " { scenario } ", CH₄ EF = " {
-                  // TODO: use presenter
-                  format!("{:.2}%", f64::from(out.emission_factors.ch4) * 100.0)
-                 } ")"
-               </p>
-            }
-        })
-    }
-}
-
-#[component]
 pub fn InfoBox(text: &'static str, children: Children) -> impl IntoView {
     let show = RwSignal::<bool>::new(false);
     let children = children();

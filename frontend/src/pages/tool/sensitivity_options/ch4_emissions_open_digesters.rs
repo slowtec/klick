@@ -15,7 +15,7 @@ use crate::{
     },
 };
 
-use super::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
+use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 pub fn options(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
@@ -96,64 +96,57 @@ pub fn options(
 
     view! {
       <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue">
-        <p>
-          "Das Schließen von "<b>"Schlammtaschen"</b>" an Faultürmen wirkt sich durch die Eindämmung von
-          Methanschlupfen positiv auf die Klimabilanz von Kläranlagen aus.
-          "
-        <InfoBox text = "Die Anzahl der Faultürme wird hierbei proportional berücksichtigt (siehe Eingabe im Feld „Anzahl der Faultürme“).">
-          <Cite source = "" url = "" >
-          "Der CH₄-EF für den Methanschlupf an einer Schlammtasche betrug in einer Studie von Li (2020) 1,25 m³/h. Falls Sie
-          (in der Datenerfassung) 'offene Schlammtaschen' ausgewählt haben, können Sie nachfolgend anhand dessen die positiven
-          Auswirkungen des Schließens der Schlammtaschen auf Ihre Klimabilanz abschätzen."
-          </Cite>
-        </InfoBox>
+         <p class="my-2">
+        "Durch "<b>"offene Schlammtaschen an Faultürmen"</b>" kann Methan entweichen. Nachfolgend kann für den
+        Methanschlupf (z.B. aus einer Messkampagne oder als Schätzwert) ein Emissionsfaktor CH₄-EF [in m³/h] bilanziert werden."
         </p>
-
-        <p>
-          "Sie können auch einen eigenen CH₄-EF [in m³/h] für den Methanschlupf an Ihrem/Ihren \
-          Faulturm/Faultürmen (z.B. anhand einer Mess-/Monitoringkampagne) eintragen eingeben und bilanzieren lassen."
+         <p class="my-2">
+        "Wenn Sie das Feld leer lassen, wird mit einem gemittelten EF von 1,25 m³/h nach Li (2020) gerechnet.
+        In beiden Fällen wird die Anzahl der Faultürme anteilig berücksichtigt (siehe Eingabe „Anzahl der Faultürme“ in der Datenerfassung)."
         </p>
         <div class="my-4 ml-4">
           { fields_view1 }
         </div>
-        <InfoBox text = "Auch die Schlammlagerung trägt maßgeblich zu Methanemissionen bei, falls diese nicht geschlossen sind/werden.">
+        <InfoBox text = "Die Schlammlagerung trägt maßgeblich zu Methanemissionen bei">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S. 24)" url = DWA_MERKBLATT_URL >
-            "Messungen von OSHITA et al. (2014) zeigen mit einer im Nacheindicker vorliegenden CH"<sub>4</sub>"-Konzentration,
-            die 16 % über der theoretischen Löslichkeit von Methan lag,
-            die Relevanz des Nachgasungspotenzials für die Reduzierung der THG-Emission aus der Schlammbehandlung.
-            Im Klärwerk Köhlbrandhöft werden seit Abdeckung des Nacheindickers ca. 1.100 m"<sup>3</sup>" CH"<sub>4</sub>"/d
-            zusätzlich der Gasverwertung zugeführt,
-            welche ohne Abdeckung und Verwertung als Treibhausgas emittiert worden wären (SCHÄFER 2020),
-            was 1,6 % der täglichen Gasmenge entspricht."
+          "In Abhängigkeit vom technischen Ausfaulgrad der Schlammfaulung und der Lagerzeit können bei der
+          Faulschlammlagerung noch bis zu 15 kg CO"<sub>2</sub>"-Äquivalente/(E·a) emittiert werden (Quelle: DWA 2020).
+          Das entspricht einem Methanbildungspotenzial von 576 g CH"<sub>4</sub>"/(E·a). Für die Methan-Emissionen aus
+          der Lagerung und Entwässerung von ausgefaultem Schlamm wird von PARRAVICINI et al. (2016) ein Bereich
+          von 2 % bis 4,5 % der Methanproduktion angegeben."
           </Cite>
         </InfoBox>
 
-        <p>"Falls Sie (in der Datenerfassung) 'offene Schlammlager' ausgewählt haben, können Sie nachfolgend die positiven
-        Auswirkungen geschlossener Schlammlager auf Ihre Klimabilanz abschätzen. Diese wird anhand des CH₄-EF von 1,6 %
-        Methanschlupf der Gesamtklärgansmenge nach Schäfer (2020) verwendet. Das nebenstehende Eingabefeld ermöglicht es
-        aber auch einen eigenen CH₄-EF [in %] für Ihren Schlammstapelbehälter (z.B. anhand einer Restgas potentialanalyse)
-        eintragen und bilanzieren lassen."
+         <p class="my-2">
+        "Wenn Sie (in der Datenerfassung) 'offene Schlammlager' ausgewählt haben, können Sie die Auswirkungen des
+        Methanschlupfes auf die Klimabilanz Ihrer Kläranlage abschätzen. Das folgende Eingabefeld ermöglicht Ihnen
+        dazu die Bilanzierung eines CH₄-EF [%] für Ihren Schlammstapelbehälter (z.B. auf Basis einer Restgaspotentialanalyse).
+        Wenn Sie das Feld leer lassen, wird der Referenzwert von Parravicini et al. (2016) CH₄-EF = 2 % der gesamten Klärgasmenge verwendet."
         </p>
         <div class="my-4 ml-4">
           { fields_view2 }
         </div>
 
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-          <ScenarioHint output = output />
           { move || {
               output.get().map(|out|
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
 
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammtaschen"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CH₄ Schlupf Schlammtaschen"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_bags)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
 
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Schließen der Schlammlagerung"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CH₄ Schlupf Schlammlagerung"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_storage_containers)).replace('.',",") }
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
+                    </dd>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                    <dd class="text-lg py-1 px-3">
+                      { format!("{:.1}", f64::from(out.co2_equivalents.total_emissions)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                   </dl>

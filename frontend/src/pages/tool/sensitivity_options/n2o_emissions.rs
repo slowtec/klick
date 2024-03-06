@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-use super::{Card, ScenarioHint};
+use super::{Card};
 
 const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
 const N2O_DEFAULT_SIDE_STREAM_FACTOR: f64 = 2.0;
@@ -118,13 +118,22 @@ pub fn options(
         </p>
         { form2 }
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-          <ScenarioHint output = output.into() />
           { move || {
               output.get().map(|out|
                 view! {
                    <p>
                    </p>
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Anlage"</dt>
+                    <dd class="text-lg py-1 px-3">
+                      { format!("{:.1}", f64::from(out.co2_equivalents.n2o_plant)).replace('.',",") }
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
+                    </dd>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Nebenstromanlage"</dt>
+                    <dd class="text-lg py-1 px-3">
+                      { format!("{:.1}", f64::from(out.co2_equivalents.n2o_side_stream)).replace('.',",") }
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
+                    </dd>
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.co2_equivalents.total_emissions)).replace('.',",") }

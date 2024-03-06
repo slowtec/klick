@@ -153,7 +153,12 @@ pub fn Tool(
         if data.side_stream_treatment.total_nitrogen.is_none() {
             data.side_stream_treatment.total_nitrogen = Some(0.0);
         }
-
+        if data.energy_consumption.heating_oil.is_none() {
+            data.energy_consumption.heating_oil = Some(0.0);
+        }
+        if data.influent_average.total_organic_carbohydrates.is_none() {
+            data.influent_average.total_organic_carbohydrates = Some(0.0);
+        }
         missing_fields.set(filtered_required_fields);
         input_data.set(data.try_into().ok());
     });

@@ -7,7 +7,7 @@ mod ch4_emissions_open_sludge_storage;
 mod fossil_co2_emissions;
 pub mod n2o_emissions;
 
-use crate::pages::tool::widgets::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
+use crate::pages::tool::widgets::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 #[component]
 pub fn SensitivityOptions(
@@ -34,6 +34,6 @@ pub fn SensitivityOptions(
       { ch4_emissions_chp::options(output, selected_scenario_chp, selected_scenario_name_chp, custom_factor_bhkw, barchart_arguments_radio_inputs_bhkw) }
       { ch4_emissions_open_digesters::options(output, sludge_bags_are_open, custom_sludge_bags_factor, sludge_storage_containers_are_open, custom_sludge_storage_containers_factor) }
       { ch4_emissions_open_sludge_storage::options() }
-      { fossil_co2_emissions::options(co2_fossil_custom_factor) }
+      { fossil_co2_emissions::options(output, co2_fossil_custom_factor) }
     }
 }

@@ -45,6 +45,8 @@ pub const CONVERSION_FACTOR_CH4_M3_TO_KG: KilogramsPerQubicmeter =
 
 pub const CONVERSION_FACTOR_C_TO_CO2: Factor = Factor::new((6.0 + 8.0 + 8.0) / 6.0);
 
+pub const CONVERSION_FACTOR_TOC_TO_COD: Factor = Factor::new(3.0 / 8.0);
+
 /// Emission factor `[kg CO₂/l]` of diesel.
 ///
 /// # Calculation

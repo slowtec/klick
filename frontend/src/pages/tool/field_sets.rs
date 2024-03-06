@@ -111,7 +111,7 @@ pub fn field_sets() -> Vec<FieldSet> {
                 description: Some(
                     "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
                 ),
-                required: false,
+                required: true,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
@@ -153,17 +153,24 @@ pub fn field_sets() -> Vec<FieldSet> {
             Field {
                 id: ProfileValueId::from(AnnualAverageInfluentId::TotalOrganicCarbohydrates).into(),
                 description: Some(
-                    "*boak*.",
+                    "Der Jahresmittelwert des Gesamten organischen Kohlenstoffs (Total Organic Carbon, TOC)
+                    des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).<br>
+                    Wenn Sie keinen Wert für den TOC haben dann dieses Feld bitte freilassen
+                    (Anm.: für die Berechnung der fossilen CO₂-Emissionen wird in diesem Fall der CSB verwendet). ",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
                         "TOC".to_string(),
                     ),
                     limits: MinMax {
-                        min: None,
-                        max: None,
+                        min: Some(
+                            0.0,
+                        ),
+                        max: Some(
+                            2000.0,
+                        ),
                     },
                     unit: "mg/L",
                 },

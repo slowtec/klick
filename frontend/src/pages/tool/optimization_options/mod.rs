@@ -8,7 +8,7 @@ mod leak_test;
 mod n2o_emissions_in_the_biological_treatment_stage;
 mod n2o_emissions_side_stream_system;
 
-use crate::pages::tool::widgets::{Card, Cite, InfoBox, ScenarioHint, DWA_MERKBLATT_URL};
+use crate::pages::tool::widgets::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 #[component]
 pub fn OptimizationOptions(
@@ -20,9 +20,9 @@ pub fn OptimizationOptions(
     log::info!("OptimizationOptions rendering");
     view! {
       { n2o_emissions_in_the_biological_treatment_stage::options() }
-      { n2o_emissions_side_stream_system::options(n2o_side_stream_cover_is_open) }
+      { n2o_emissions_side_stream_system::options(output, n2o_side_stream_cover_is_open) }
       { ch4_emissions_pre_treatment::options() }
-      { ch4_emissions_open_digesters::options() }
+      { ch4_emissions_open_digesters::options(output) }
       { leak_test::options() }
       { excess_energy_co2_equivalent::options(output) }
     }
