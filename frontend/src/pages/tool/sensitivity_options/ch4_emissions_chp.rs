@@ -2,6 +2,7 @@ use klick_app_charts::BarChartRadioInput;
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
+use klick_presenter::Lng;
 
 use klick_domain as domain;
 
@@ -144,7 +145,7 @@ fn field_set() -> FieldSet {
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
-            placeholder: Some(CH4_DEFAULT_CUSTOM_FACTOR.to_string()),
+            placeholder: Some(Lng::De.format_number(f64::from(CH4_DEFAULT_CUSTOM_FACTOR))),
             limits: MinMax {
                 min: Some(0.0),
                 max: Some(100.0),
