@@ -59,6 +59,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         },
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Tons::new(0.0),
+            side_stream_cover_is_open: true,
         },
     };
 
@@ -184,6 +185,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         },
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Tons::new(0.0),
+            side_stream_cover_is_open: true,
         },
     };
 
@@ -310,6 +312,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         },
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Tons::new(0.0),
+            side_stream_cover_is_open: true,
         },
     };
 
@@ -436,6 +439,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         },
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Tons::new(0.0),
+            side_stream_cover_is_open: true,
         },
     };
 
@@ -561,6 +565,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         },
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Tons::new(0.0),
+            side_stream_cover_is_open: true,
         },
     };
 
@@ -671,12 +676,16 @@ fn calculate_ch4_slippage_sludge_bags_for_one_digester() {
 #[test]
 fn calculate_n2o_side_streams() {
     assert_eq!(
-        calculate_n2o_side_stream(Tons::new(10.0), Factor::new(0.02)),
+        calculate_n2o_side_stream(Tons::new(10.0), Factor::new(0.02), true),
         Tons::new(85.8)
     );
     assert_eq!(
-        calculate_n2o_side_stream(Tons::new(60.0), Factor::new(0.02)),
+        calculate_n2o_side_stream(Tons::new(60.0), Factor::new(0.02), true),
         Tons::new(85.8)
+    );
+    assert_eq!(
+        calculate_n2o_side_stream(Tons::new(60.0), Factor::new(0.02), false),
+        Tons::new(0.0)
     );
 }
 
