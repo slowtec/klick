@@ -1,10 +1,7 @@
 use leptos::*;
-use serde::{Deserialize, Serialize};
-use strum::AsRefStr;
 
 use klick_domain as domain;
 use klick_presenter::Lng;
-use klick_presenter::ValueLabel;
 
 use crate::{
     forms::{render_field_sets, FieldType, MinMax},
@@ -19,9 +16,7 @@ use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 pub fn options(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
-    sludge_bags_are_open: RwSignal<Option<bool>>,
     custom_sludge_bags_factor: RwSignal<Option<f64>>,
-    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
     custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
 ) -> impl IntoView {
     let custom_factor_field = Field {

@@ -1,7 +1,6 @@
 use leptos::*;
 
 use klick_app_components::forms::InfoIcon;
-use klick_domain as domain;
 
 pub const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";

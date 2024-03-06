@@ -164,11 +164,21 @@ pub fn read_input_fields(
     };
 
     let sewage_sludge_treatment = SewageSludgeTreatment {
-        sludge_bags_are_open: Some(true),
-        sludge_bags_are_open_recommendation: Some(true),
-        custom_sludge_bags_factor: None, // FIXME no value parsing here?
-        sludge_storage_containers_are_open: Some(true),
-        sludge_storage_containers_are_open_recommendation: Some(true),
+        sludge_bags_are_open: match s
+            .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeBags).into())
+            .and_then(FieldSignal::get_bool) {
+            Some(v) => Some(!v),
+            None => Some(true),
+        },
+        custom_sludge_bags_factor: None,
+        sludge_storage_containers_are_open: match s
+            .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainers).into())
+            .and_then(FieldSignal::get_bool) {
+            Some(v) => Some(!v),
+            None => Some(true),
+        },
+        sludge_bags_are_open_recommendation: Some(false),
+        sludge_storage_containers_are_open_recommendation: Some(false),
         custom_sludge_storage_containers_factor: None,
         sewage_sludge_for_disposal: s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::SewageSludgeForDisposal).into())
@@ -185,6 +195,7 @@ pub fn read_input_fields(
         total_nitrogen: s
             .get(&ProfileValueId::from(SideStreamTreatmentId::TotalNitrogen).into())
             .and_then(FieldSignal::get_float),
+        side_stream_cover_is_open: Some(true),
     };
 
     let operating_materials = OperatingMaterials {
@@ -329,7 +340,10 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         digester_count,
     } = sewage_sludge_treatment;
 
-    let SideStreamTreatment { total_nitrogen } = side_stream_treatment;
+    let SideStreamTreatment {
+        total_nitrogen: _,
+        side_stream_cover_is_open: _,
+    } = side_stream_treatment;
 
     let OperatingMaterials {
         fecl3,

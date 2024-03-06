@@ -127,8 +127,8 @@ pub fn Tool(
     let n2o_emission_factor_method =
         RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
     let n2o_side_stream_cover_is_open: RwSignal<Option<bool>> = None.into();
-    let sludge_bags_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
-    let sludge_storage_containers_are_open: RwSignal<Option<bool>> = RwSignal::new(None);
+    let sludge_bags_are_open_recommendation: RwSignal<Option<bool>> = RwSignal::new(None);
+    let sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>> = RwSignal::new(None);
 
     let s = Rc::clone(&signals);
 
@@ -267,6 +267,7 @@ pub fn Tool(
             },
             _ => Some(domain::CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
         };
+        // model 1 computation
         let mut input_data = input_data.clone();
 
         input_data.emission_factors.n2o_side_stream = match n2o_side_stream.get() {
@@ -277,13 +278,6 @@ pub fn Tool(
             Some(v) => domain::units::Factor::new(v / 100.0),
             None => unreachable!(),
         };
-        input_data.sewage_sludge_treatment.custom_sludge_bags_factor =
-            custom_sludge_bags_factor.get();
-        input_data
-            .sewage_sludge_treatment
-            .custom_sludge_storage_containers_factor =
-            custom_sludge_storage_containers_factor.get();
-
         let n2o_calculations = domain::calculate_all_n2o_emission_factor_scenarios(
             &input_data,
             Some(domain::units::Factor::new(
@@ -380,13 +374,31 @@ pub fn Tool(
                     .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
                 ch4: ch4_chp_emission_factor,
             };
+            // model 2 computation
             let mut input_data = input_data.clone();
-            input_data.sewage_sludge_treatment.sludge_bags_are_open =
-                sludge_bags_are_open.get().unwrap_or(true);
-            input_data
-                .sewage_sludge_treatment
-                .sludge_storage_containers_are_open =
-                sludge_storage_containers_are_open.get().unwrap_or(true);
+
+            match sludge_bags_are_open_recommendation.get() {
+                Some(v) => match v {
+                    true => {input_data.sewage_sludge_treatment.sludge_bags_are_open = false},
+                    false => {},
+                },
+                None => {},
+            };
+            match sludge_storage_containers_are_open_recommendation.get() {
+                Some(v) => match v {
+                    true => {input_data.sewage_sludge_treatment.sludge_storage_containers_are_open = false},
+                    false => {},
+                },
+                None => {},
+            };
+
+            match n2o_side_stream_cover_is_open.get() {
+                Some(v) => match v {
+                    true => {},
+                    false => {input_data.side_stream_treatment.side_stream_cover_is_open = false},
+                },
+                None => {},
+            };
 
             input_data_optimizationOptions_model.set(Some(input_data.clone()));
             let output = domain::calculate_emissions(input_data.clone(), scenario);
@@ -429,14 +441,7 @@ pub fn Tool(
                             .unwrap_or(domain::N2oEmissionFactorCalcMethod::Ipcc2019),
                         ch4: ch4_chp_emission_factor,
                     };
-                    let mut input_data = input_data.clone();
-                    input_data.sewage_sludge_treatment.sludge_bags_are_open =
-                        sludge_bags_are_open.get().unwrap_or(true);
-                    input_data
-                        .sewage_sludge_treatment
-                        .sludge_storage_containers_are_open =
-                        sludge_storage_containers_are_open.get().unwrap_or(true);
-                    let output = domain::calculate_emissions(input_data, scenario);
+                    let output = domain::calculate_emissions(input_data.clone(), scenario);
                     if f64::from(output.co2_equivalents.ch4_combined_heat_and_power_plant) < 0.1 {
                         return None;
                     }
@@ -481,6 +486,13 @@ pub fn Tool(
                 label: "Strombedarf",
                 value: excessy,
                 percentage: Some(excessy / f64::from(new.total_emissions) * 100.0),
+            });
+            let neb_stromi = f64::from(new.n2o_side_stream)
+                - f64::from(old.n2o_side_stream);
+            comp.push(klick_app_charts::BarChartArguments {
+                label: "N₂O Nebenstromanlage",
+                value: neb_stromi,
+                percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
             });
             let emissionsy = f64::from(new.total_emissions)
                 - f64::from(old.total_emissions)
@@ -805,8 +817,6 @@ pub fn Tool(
           co2_fossil_custom_factor
           custom_sludge_bags_factor
           custom_sludge_storage_containers_factor
-          sludge_bags_are_open
-          sludge_storage_containers_are_open
         />
         </div>
 
@@ -823,8 +833,8 @@ pub fn Tool(
           current_section
           show_handlungsempfehlungen
           output_model=output_optimization_options_model
-          sludge_bags_are_open
-          sludge_storage_containers_are_open
+          sludge_bags_are_open_recommendation
+          sludge_storage_containers_are_open_recommendation
           barchart_arguments
           sankey_data_optimization_options_model
           sankey_header_optimization_options_model
@@ -933,8 +943,6 @@ pub fn SensitivityView(
     custom_factor_n2o: RwSignal<Option<f64>>,
     n2o_side_stream: RwSignal<Option<f64>>,
     co2_fossil_custom_factor: RwSignal<Option<f64>>,
-    sludge_bags_are_open: RwSignal<Option<bool>>,
-    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
     custom_sludge_bags_factor: RwSignal<Option<f64>>,
     custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
 ) -> impl IntoView {
@@ -968,8 +976,6 @@ pub fn SensitivityView(
                 co2_fossil_custom_factor
                 custom_sludge_bags_factor
                 custom_sludge_storage_containers_factor
-                sludge_bags_are_open
-                sludge_storage_containers_are_open
               />
             }
           }
@@ -1007,8 +1013,8 @@ pub fn RecommendationView(
     current_section: RwSignal<Option<PageSection>>,
     show_handlungsempfehlungen: RwSignal<bool>,
     output_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
-    sludge_bags_are_open: RwSignal<Option<bool>>,
-    sludge_storage_containers_are_open: RwSignal<Option<bool>>,
+    sludge_bags_are_open_recommendation: RwSignal<Option<bool>>,
+    sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>>,
     barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>>,
     sankey_data_optimization_options_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
     sankey_header_optimization_options_model: RwSignal<String>,
@@ -1074,8 +1080,8 @@ pub fn RecommendationView(
               view! {
                 <OptimizationOptions
                   output = output_model.read_only()
-                  sludge_bags_are_open
-                  sludge_storage_containers_are_open
+                  sludge_bags_are_open_recommendation
+                  sludge_storage_containers_are_open_recommendation
                   n2o_side_stream_cover_is_open
                 />
               }

@@ -18,9 +18,7 @@ pub fn options(
     let field_set = field_set();
     let (signals1, form1, _required_fields) = render_field_sets(vec![field_set]);
     create_effect(move |_| {
-        let field_signal = signals1.get(&FieldId::Scenario(
-            ScenarioFieldId::N2OSideStreamCoverIsOpen.into(),
-        ));
+        let field_signal = signals1.get(&FieldId::Scenario(ScenarioFieldId::N2OSideStreamCoverIsOpen));
         match field_signal.and_then(FieldSignal::get_bool) {
             Some(v) => n2o_side_stream_cover_is_open.set(Some(!v)),
             None => n2o_side_stream_cover_is_open.set(None),

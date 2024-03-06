@@ -450,6 +450,7 @@ impl From<v7::ProjectData> for v8::ProjectData {
 
         let side_stream_treatment = v8::SideStreamTreatment {
             total_nitrogen: None,
+            side_stream_cover_is_open: None,
         };
 
         let plant_profile = v8::PlantProfile {

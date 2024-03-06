@@ -26,9 +26,7 @@ pub fn options(
     selected_scenario_n2o: RwSignal<Option<u64>>,
     custom_factor_n2o: RwSignal<Option<f64>>,
     n2o_side_stream: RwSignal<Option<f64>>,
-    // custom_secondary_factor_n2o: RwSignal<Option<f64>>,// FIXME placeholder
 ) -> impl IntoView {
-    let custom_secondary_factor_n2o: RwSignal<Option<f64>> = RwSignal::new(None); // FIXME placeholder
     let field_set1 = field_set1();
     let (signals1, form1, _required_fields) = render_field_sets(vec![field_set1]);
     let custom_factor1 = signals1
