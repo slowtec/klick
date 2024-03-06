@@ -1,6 +1,3 @@
-use leptos::*;
-use klick_domain as domain;
-use klick_presenter::Lng;
 use crate::{
     forms::{render_field_sets, FieldType, MinMax},
     pages::tool::{
@@ -9,6 +6,9 @@ use crate::{
         FieldSignal,
     },
 };
+use klick_domain as domain;
+use klick_presenter::Lng;
+use leptos::*;
 
 use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
@@ -16,7 +16,7 @@ const CO2_DEFAULT_FOSSIL_FACTOR: f64 = 3.85;
 
 pub fn options(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
-    co2_fossil_custom_factor: RwSignal<Option<f64>>
+    co2_fossil_custom_factor: RwSignal<Option<f64>>,
 ) -> impl IntoView {
     let field_set = field_set();
     let (signals1, form1, _required_fields) = render_field_sets(vec![field_set]);

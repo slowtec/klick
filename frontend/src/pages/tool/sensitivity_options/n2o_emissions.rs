@@ -1,7 +1,7 @@
 use klick_app_charts::BarChartRadioInput;
-use leptos::*;
-use klick_presenter::Lng;
 use klick_domain as domain;
+use klick_presenter::Lng;
+use leptos::*;
 
 use crate::{
     forms::{render_field_sets, FieldType, MinMax},
@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-use super::{Card};
+use super::Card;
 
 const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
 const N2O_DEFAULT_SIDE_STREAM_FACTOR: f64 = 2.0;

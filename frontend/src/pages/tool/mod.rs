@@ -128,7 +128,8 @@ pub fn Tool(
         RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
     let n2o_side_stream_cover_is_open: RwSignal<Option<bool>> = None.into();
     let sludge_bags_are_open_recommendation: RwSignal<Option<bool>> = RwSignal::new(None);
-    let sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>> = RwSignal::new(None);
+    let sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>> =
+        RwSignal::new(None);
 
     let s = Rc::clone(&signals);
 
@@ -379,25 +380,29 @@ pub fn Tool(
 
             match sludge_bags_are_open_recommendation.get() {
                 Some(v) => match v {
-                    true => {input_data.sewage_sludge_treatment.sludge_bags_are_open = false},
-                    false => {},
+                    true => input_data.sewage_sludge_treatment.sludge_bags_are_open = false,
+                    false => {}
                 },
-                None => {},
+                None => {}
             };
             match sludge_storage_containers_are_open_recommendation.get() {
                 Some(v) => match v {
-                    true => {input_data.sewage_sludge_treatment.sludge_storage_containers_are_open = false},
-                    false => {},
+                    true => {
+                        input_data
+                            .sewage_sludge_treatment
+                            .sludge_storage_containers_are_open = false
+                    }
+                    false => {}
                 },
-                None => {},
+                None => {}
             };
 
             match n2o_side_stream_cover_is_open.get() {
                 Some(v) => match v {
-                    true => {},
-                    false => {input_data.side_stream_treatment.side_stream_cover_is_open = false},
+                    true => {}
+                    false => input_data.side_stream_treatment.side_stream_cover_is_open = false,
                 },
-                None => {},
+                None => {}
             };
 
             input_data_optimizationOptions_model.set(Some(input_data.clone()));
@@ -487,8 +492,7 @@ pub fn Tool(
                 value: excessy,
                 percentage: Some(excessy / f64::from(new.total_emissions) * 100.0),
             });
-            let neb_stromi = f64::from(new.n2o_side_stream)
-                - f64::from(old.n2o_side_stream);
+            let neb_stromi = f64::from(new.n2o_side_stream) - f64::from(old.n2o_side_stream);
             comp.push(klick_app_charts::BarChartArguments {
                 label: "N₂O Nebenstromanlage",
                 value: neb_stromi,

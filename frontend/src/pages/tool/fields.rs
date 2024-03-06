@@ -166,14 +166,16 @@ pub fn read_input_fields(
     let sewage_sludge_treatment = SewageSludgeTreatment {
         sludge_bags_are_open: match s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeBags).into())
-            .and_then(FieldSignal::get_bool) {
+            .and_then(FieldSignal::get_bool)
+        {
             Some(v) => Some(!v),
             None => Some(true),
         },
         custom_sludge_bags_factor: None,
         sludge_storage_containers_are_open: match s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainers).into())
-            .and_then(FieldSignal::get_bool) {
+            .and_then(FieldSignal::get_bool)
+        {
             Some(v) => Some(!v),
             None => Some(true),
         },

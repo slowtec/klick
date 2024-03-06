@@ -1,6 +1,6 @@
 use super::Card;
-use leptos::*;
 use klick_domain as domain;
+use leptos::*;
 
 use crate::{
     forms::{render_field_sets, FieldType},
@@ -13,12 +13,14 @@ use crate::{
 
 pub fn options(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
-    n2o_side_stream_cover_is_open: RwSignal<Option<bool>>
+    n2o_side_stream_cover_is_open: RwSignal<Option<bool>>,
 ) -> impl IntoView {
     let field_set = field_set();
     let (signals1, form1, _required_fields) = render_field_sets(vec![field_set]);
     create_effect(move |_| {
-        let field_signal = signals1.get(&FieldId::Scenario(ScenarioFieldId::N2OSideStreamCoverIsOpen));
+        let field_signal = signals1.get(&FieldId::Scenario(
+            ScenarioFieldId::N2OSideStreamCoverIsOpen,
+        ));
         match field_signal.and_then(FieldSignal::get_bool) {
             Some(v) => n2o_side_stream_cover_is_open.set(Some(!v)),
             None => n2o_side_stream_cover_is_open.set(None),
