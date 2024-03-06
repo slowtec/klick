@@ -26,7 +26,7 @@ fn example_input_data() -> ProjectData {
         influent_average: AnnualAverageInfluent {
             nitrogen: Some(94.0),
             chemical_oxygen_demand: Some(1_020.0),
-            total_organic_carbohydrates: Some(15.38),
+            total_organic_carbohydrates: Some(382.5),
         },
         effluent_average: AnnualAverageEffluent {
             nitrogen: Some(15.77),

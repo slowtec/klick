@@ -44,6 +44,27 @@ pub fn options(output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>) 
             " t CO₂ Äquivalente/Jahr."
           </Show>
         </p>
+        <div class="border-t pt-3 mt-4 border-gray-900/10">
+          { move || {
+              output.get().map(|out|
+                view! {
+                  <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Stommix"</dt>
+                    <dd class="text-lg py-1 px-3">
+                      { format!("{:.1}", f64::from(out.co2_equivalents.electricity_mix)).replace('.',",") }
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
+                    </dd>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                    <dd class="text-lg py-1 px-3">
+                      { format!("{:.1}", f64::from(out.co2_equivalents.total_emissions)).replace('.',",") }
+                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
+                    </dd>
+                  </dl>
+                }
+              )
+            }
+          }
+        </div>
       </Card>
     }
 }
