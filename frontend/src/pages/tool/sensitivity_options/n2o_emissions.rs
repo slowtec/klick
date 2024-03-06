@@ -1,6 +1,6 @@
 use klick_app_charts::BarChartRadioInput;
 use leptos::*;
-
+use klick_presenter::Lng;
 use klick_domain as domain;
 
 use crate::{
@@ -165,7 +165,7 @@ fn field_set1() -> FieldSet {
         field_type: FieldType::Float {
             initial_value: None,
             placeholder: Some(
-                N2O_DEFAULT_CUSTOM_FACTOR.to_string(),
+                Lng::De.format_number(N2O_DEFAULT_CUSTOM_FACTOR),
             ),
             limits: MinMax {
                 min: Some(
@@ -196,7 +196,7 @@ fn field_set2() -> FieldSet {
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
-            placeholder: Some(N2O_DEFAULT_CUSTOM_FACTOR.to_string()),
+            placeholder: Some(Lng::De.format_number(f64::from(N2O_DEFAULT_CUSTOM_FACTOR))),
             limits: MinMax {
                 min: Some(0.0),
                 max: Some(100.0),

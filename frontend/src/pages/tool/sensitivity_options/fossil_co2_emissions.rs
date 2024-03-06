@@ -1,6 +1,6 @@
 use leptos::*;
 use klick_domain as domain;
-
+use klick_presenter::Lng;
 use crate::{
     forms::{render_field_sets, FieldType, MinMax},
     pages::tool::{
@@ -100,7 +100,7 @@ fn field_set() -> FieldSet {
         field_type: FieldType::Float {
             initial_value: None,
             placeholder: Some(
-                CO2_DEFAULT_FOSSIL_FACTOR.to_string(),
+                Lng::De.format_number(f64::from(CO2_DEFAULT_FOSSIL_FACTOR))
             ),
             limits: MinMax {
                 min: Some(0.0),
