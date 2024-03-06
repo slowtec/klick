@@ -122,7 +122,10 @@ pub fn calculate_emissions(
         Tons::zero()
     };
     log::info!("sludge_bags_are_open: {:?}", sludge_bags_are_open);
-    log::info!("sludge_storage_containers_are_open: {:?}", sludge_storage_containers_are_open);
+    log::info!(
+        "sludge_storage_containers_are_open: {:?}",
+        sludge_storage_containers_are_open
+    );
 
     let ch4_slippage_sludge_storage = if sludge_storage_containers_are_open {
         calculate_ch4_slippage_sludge_storage(
@@ -137,10 +140,15 @@ pub fn calculate_emissions(
     let n2o_plant = n2o_plant * GWP_N2O;
     let n2o_water = n2o_water * GWP_N2O;
 
-    let n2o_side_stream = calculate_n2o_side_stream(total_nitrogen, n2o_side_stream, side_stream_cover_is_open);
+    let n2o_side_stream =
+        calculate_n2o_side_stream(total_nitrogen, n2o_side_stream, side_stream_cover_is_open);
 
-    let fossil_emissions =
-        calculate_fossil_emissions(total_organic_carbohydrates, chemical_oxygen_demand_influent, co2_fossil, wastewater);
+    let fossil_emissions = calculate_fossil_emissions(
+        total_organic_carbohydrates,
+        chemical_oxygen_demand_influent,
+        co2_fossil,
+        wastewater,
+    );
 
     let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
@@ -342,19 +350,17 @@ pub fn calculate_fossil_emissions(
     wastewater: Qubicmeters,
 ) -> Tons {
     if f64::from(total_organic_carbohydrates) > 0.01 {
-        let fossil_emissions =
-            total_organic_carbohydrates
+        let fossil_emissions = total_organic_carbohydrates
             * co2_fossil_emission_factor
             * wastewater
             * CONVERSION_FACTOR_C_TO_CO2;
         fossil_emissions.convert_to::<Tons>()
     } else {
-        let fossil_emissions =
-            chemical_oxygen_demand_influent
-                * CONVERSION_FACTOR_TOC_TO_COD
-                * co2_fossil_emission_factor
-                * wastewater
-                * CONVERSION_FACTOR_C_TO_CO2;
+        let fossil_emissions = chemical_oxygen_demand_influent
+            * CONVERSION_FACTOR_TOC_TO_COD
+            * co2_fossil_emission_factor
+            * wastewater
+            * CONVERSION_FACTOR_C_TO_CO2;
         fossil_emissions.convert_to::<Tons>()
     }
 }

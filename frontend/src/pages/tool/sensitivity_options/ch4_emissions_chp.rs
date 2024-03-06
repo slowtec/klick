@@ -1,8 +1,8 @@
 use klick_app_charts::BarChartRadioInput;
+use klick_presenter::Lng;
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
-use klick_presenter::Lng;
 
 use klick_domain as domain;
 

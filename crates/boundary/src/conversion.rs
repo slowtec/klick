@@ -319,7 +319,7 @@ impl TryFrom<SideStreamTreatment> for domain::SideStreamTreatment {
     fn try_from(from: SideStreamTreatment) -> Result<Self, Self::Error> {
         let SideStreamTreatment {
             total_nitrogen,
-            side_stream_cover_is_open
+            side_stream_cover_is_open,
         } = from;
 
         let Some(total_nitrogen) = total_nitrogen else {
@@ -333,7 +333,7 @@ impl TryFrom<SideStreamTreatment> for domain::SideStreamTreatment {
 
         Ok(Self {
             total_nitrogen,
-            side_stream_cover_is_open
+            side_stream_cover_is_open,
         })
     }
 }
@@ -342,7 +342,7 @@ impl From<domain::SideStreamTreatment> for SideStreamTreatment {
     fn from(from: domain::SideStreamTreatment) -> Self {
         let domain::SideStreamTreatment {
             total_nitrogen,
-            side_stream_cover_is_open
+            side_stream_cover_is_open,
         } = from;
 
         let total_nitrogen = Some(total_nitrogen.into());
@@ -350,7 +350,7 @@ impl From<domain::SideStreamTreatment> for SideStreamTreatment {
 
         Self {
             total_nitrogen,
-            side_stream_cover_is_open
+            side_stream_cover_is_open,
         }
     }
 }
