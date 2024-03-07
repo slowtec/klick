@@ -71,9 +71,9 @@ impl ValueLabel for SewageSludgeTreatmentId {
             Self::SewageSludgeForDisposal => "Klärschlamm zur Entsorgung",
             Self::TransportDistance => "Transportdistanz",
             Self::DigesterCount => "Anzahl Faultürme",
-            Self::SludgeBags => "Schließen der Schlammtaschen",
+            Self::SludgeBags => "Schlammtaschen sind geschlossen",
             Self::SludgeBagsRecommended => "Schließen der Schlammtaschen",
-            Self::SludgeStorageContainers => "Schließen der Schlammlagerung",
+            Self::SludgeStorageContainers => "Schlammlagerung ist geschlossen",
             Self::SludgeStorageContainersRecommended => "Schließen der Schlammlagerung",
         }
     }
