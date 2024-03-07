@@ -52,10 +52,12 @@ pub fn options(
         } else {
             n2o_side_stream.set(Some(N2O_DEFAULT_SIDE_STREAM_FACTOR));
         }
+
     });
+
     view! {
       <div class =move || {
-        if 1 > 0 {
+        if 1 > 0 { // FIXME use it or loose it
           None
         } else {
           Some("hidden")
@@ -67,7 +69,7 @@ pub fn options(
         <p class="my-2">
         "Lachgasemissionen tragen wesentlich zum gesamten Treibhausgaspotenzial von Kläranlagen bei.
         Die erste Abschätzung dieses Potenzials bei der Datenerhebung erfolgt mit einem Emissionsfaktor
-        für Lachgas (N2O-EF) von XX % nach Parravicini et al. (2016, TU Wien)."
+        für Lachgas (N2O-EF) nach Parravicini et al. (2016, TU Wien), Wert siehe erster Balken im untenstehenden Diagramm."
         </p>
         <p class="my-2">
         "Da das Auftreten von N₂O-Emissionen in der Regel anlagenspezifisch ist, bietet das KlicK-Tool weitere
