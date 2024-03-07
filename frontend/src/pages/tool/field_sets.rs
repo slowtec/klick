@@ -409,7 +409,7 @@ pub fn field_sets() -> Vec<FieldSet> {
             Field {
                 id: ProfileValueId::from(SewageSludgeTreatmentId::SludgeBags).into(),
                 description: Some(
-                    "Falls die Schlammtaschen des Faulturms nicht geschlossen sind, sondern zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken",
+                    "Falls die Schlammtaschen des Faulturms / der Faultürme Ihrer Kläranlage geschlossen sind und nicht zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.",
                 ),
                 required: false,
                 field_type: FieldType::Bool {
@@ -419,7 +419,7 @@ pub fn field_sets() -> Vec<FieldSet> {
             Field {
                 id: ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainers).into(),
                 description: Some(
-                    "Falls die Schlammstapelbehälter nicht geschlossen sind, sondern zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken",
+                    "Falls die Schlammstapelbehälter Ihrer Kläranlage dicht abgedeckt sind, dann dieses Feld bitte anklicken.",
                 ),
                 required: false,
                 field_type: FieldType::Bool {
