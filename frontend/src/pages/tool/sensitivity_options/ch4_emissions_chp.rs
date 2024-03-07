@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 use klick_domain as domain;
+use klick_domain::constants::CH4_DEFAULT_CUSTOM_FACTOR;
 
 use crate::{
     forms::{render_field_sets, FieldType, MinMax},
@@ -15,15 +16,13 @@ use crate::{
     },
 };
 
+use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 enum Id {
     CalcMethod,
     CustomFactor,
 }
-
-use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
-
-const CH4_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
 
 pub fn options(
     // incoming signals
