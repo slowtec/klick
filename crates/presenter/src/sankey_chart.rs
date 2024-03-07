@@ -84,7 +84,7 @@ pub fn create_sankey_chart_data(
     nodes.push((n2o_plant.into(), "N₂O Anlage", red));
     let n2o_plant = nodes.len() - 1;
 
-    nodes.push((n2o_side_stream.into(), "N₂O Nebenstromanlage", red));
+    nodes.push((n2o_side_stream.into(), "N₂O Prozesswasserbehandlung", red));
     let n2o_side_stream = nodes.len() - 1;
 
     nodes.push((n2o_water.into(), "N₂O Gewässer", red));

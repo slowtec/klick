@@ -493,7 +493,7 @@ pub fn Tool(
             });
             let neb_stromi = f64::from(new.n2o_side_stream) - f64::from(old.n2o_side_stream);
             comp.push(klick_app_charts::BarChartArguments {
-                label: "N₂O Nebenstromanlage",
+                label: "N₂O Prozesswasserbehandlung",
                 value: neb_stromi,
                 percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
             });

@@ -127,7 +127,7 @@ pub fn options(
                       { format!("{:.1}", f64::from(out.co2_equivalents.n2o_plant)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Nebenstromanlage"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Prozesswasserbehandlung"</dt>
                     <dd class="text-lg py-1 px-3">
                       { format!("{:.1}", f64::from(out.co2_equivalents.n2o_side_stream)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
@@ -191,7 +191,7 @@ fn field_set2() -> FieldSet {
         id,
         description: Some(
             "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
-            oder einer Messkampagne) einen Wert für den EF Nebenstromanlagen eintragen.",
+            oder einer Messkampagne) einen Wert für den EF Prozesswasserbehandlung eintragen.",
         ),
         required: false,
         field_type: FieldType::Float {
