@@ -12,7 +12,7 @@ Kommune oder Interessierte/-r in folgenden Schlüsselaktivitäten unterstützt:
 Das KlicK-Tool kann dabei sowohl **anonym als auch nach Anmeldung** genutzt werden.
 Ihre Daten bleiben in beiden Fällen geschützt und können allein von Ihnen eingesehen werden.
 Das Tool ist kostenlos und bietet eine einfache Bedienbarkeit.
-Bei Fragen kommen Sie gerne auf uns zu: [KlicK-tool@umwelttechnik-bw.de](mailto:KlicK-tool@umwelttechnik-bw.de)
+Bei Fragen kommen Sie gerne auf uns zu: [KlickTool@umwelttechnik-bw.de](mailto:klicktool@umwelttechnik-bw.de)
 
 Gerne können Sie auch an unserem [interaktiven KlicK-Wiki](https://codeberg.org/slowtec/klick/wiki) teilnehmen;
 dort finden Sie u.a. nützliche Informationen zu Berechnungsgrundlagen und Literaturhinweisen.
