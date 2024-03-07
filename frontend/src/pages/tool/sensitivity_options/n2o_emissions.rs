@@ -103,18 +103,18 @@ pub fn options(
         </p>
         { form1 }
 
-        <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Lachgasemissionen aus Nebenstromanlagen</h3>
+        <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Lachgasemissionen aus Prozesswasserbehandlung</h3>
         <p class="my-2">
-        "Nebenstrombehandlungen in Kläranlagen können mit erheblichen zusätzlichen Lachgasemissionen verbunden sein.
-        Vasilaki et al. (2019) geben in ihrer Metastudie einen Lachgas-EF von 1,7-5,1 % des Gesamtstickstoffs im Nebenstrom an."
+        "Die Prozesswasserbehandlung in Kläranlagen kann mit erheblichen zusätzlichen Lachgasemissionen verbunden sein.
+        Vasilaki et al. (2019) geben in ihrer Metastudie einen Lachgas-EF von 1,7-5,1% des Gesamtstickstoffs im Nebenstrom an."
         </p>
         <p class="my-2">
-        "Durch die Eingabe der jährlich behandelten Stickstoffmenge des Nebenstromprozesses [t/a] können Sie den
-        resultierenden Anteil an den Treibhausgasemissionen [CO2-Äq./a] abschätzen."
+        "Durch die Eingabe der jährlich behandelten Stickstoffmenge des Prozesswassers [t/a] können
+        Sie den resultierenden Anteil an den Treibhausgasemissionen [CO₂-Äq./a] abschätzen."
         </p>
         <p class="my-2">
-        "Den hierfür verwendeten N2O-EF können Sie über das Eingabefeld „N2O-EF Nebenstrom“ unten frei wählen oder
-        leer lassen, um mit einem mittleren EF von 2 % (nach Vasilaki et al. 2019) zu rechnen."
+        "Den hierfür verwendeten N₂O-EF können Sie über das Eingabefeld „N₂O-EF Nebenstrom“ unten frei
+        wählen oder leer lassen, um mit einem mittleren EF von 2% (nach Vasilaki et al. 2019) zu rechnen."
         </p>
         { form2 }
         <div class="border-t pt-3 mt-4 border-gray-900/10">
