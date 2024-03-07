@@ -27,7 +27,7 @@ pub fn options(
         }
     });
     view! {
-      <Card title = "Lachgasemissionen von Nebenstromanlagen" bg_color="bg-yellow">
+      <Card title = "Lachgasemissionen bei der Prozesswasserbehandlung" bg_color="bg-yellow">
         <p class="my-2">
           "Da es sich bei Prozesswasserbehandlungsanlagen um relativ kleine Becken handelt, können die
           Lachgasemissionen hier durch Abdeckung und Abluftbehandlung (Oxidation) beseitigt werden."

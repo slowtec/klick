@@ -77,7 +77,7 @@ pub fn options(
         einschließlich der daraus resultierenden Lachgasemissionen [als CO2-Äquivalente]."
         </p>
         <p class="my-2">
-        "Durch Anklicken der einzelnen Balken im Diagramm wird das jeweilige Szenario für \
+        "Durch Anklicken der einzelnen Balken im Diagramm wird das jeweilige Szenario für
         die untenstehende Gesamtbilanz (im Sankey-Diagramm) verwendet."
         </p>
         { move || {
@@ -103,7 +103,7 @@ pub fn options(
         </p>
         { form1 }
 
-        <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Lachgasemissionen aus Prozesswasserbehandlung</h3>
+        <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Lachgasemissionen bei der Prozesswasserbehandlung</h3>
         <p class="my-2">
         "Die Prozesswasserbehandlung in Kläranlagen kann mit erheblichen zusätzlichen Lachgasemissionen verbunden sein.
         Vasilaki et al. (2019) geben in ihrer Metastudie einen Lachgas-EF von 1,7-5,1% des Gesamtstickstoffs im Nebenstrom an."
