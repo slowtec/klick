@@ -107,8 +107,6 @@ pub fn calculate_emissions(
         n2o_emission_factor,
     );
 
-    let ch4_sewage_treatment =
-        Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT).convert_to::<Tons>();
 
     let ch4_water = chemical_oxygen_demand_effluent * wastewater * EMISSION_FACTOR_CH4_WATER;
 
@@ -152,7 +150,6 @@ pub fn calculate_emissions(
 
     let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
-    let ch4_sewage_treatment = ch4_sewage_treatment * GWP_CH4;
     let ch4_sludge_storage_containers = ch4_slippage_sludge_storage * GWP_CH4;
     let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
     let ch4_water = ch4_water.convert_to::<Tons>() * GWP_CH4;
@@ -171,7 +168,14 @@ pub fn calculate_emissions(
 
     let ch4_combined_heat_and_power_plant = ch4_chp * GWP_CH4;
 
-    let ch4_emissions = ch4_sewage_treatment
+    let ch4_plant = calculate_ch4_plant (
+        population_equivalent,
+        ch4_sludge_storage_containers,
+        ch4_sludge_bags,
+        ch4_combined_heat_and_power_plant
+    );
+
+    let ch4_emissions = ch4_plant
         + ch4_sludge_storage_containers
         + ch4_sludge_bags
         + ch4_water
@@ -207,7 +211,7 @@ pub fn calculate_emissions(
     let direct_emissions = n2o_plant
         + n2o_water
         + n2o_side_stream
-        + ch4_sewage_treatment
+        + ch4_plant
         + ch4_water
         + ch4_combined_heat_and_power_plant
         + ch4_sludge_storage_containers
@@ -226,7 +230,7 @@ pub fn calculate_emissions(
         n2o_water,
         n2o_side_stream,
         n2o_emissions,
-        ch4_sewage_treatment,
+        ch4_plant,
         ch4_sludge_storage_containers,
         ch4_sludge_bags,
         ch4_water,
@@ -374,6 +378,21 @@ pub fn calculate_n2o_side_stream(
         total_nitrogen * n2o_side_stream_emission_factor * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O
     } else {
         Tons::zero()
+    }
+}
+
+pub fn calculate_ch4_plant(
+    population_equivalent: f64,
+    ch4_sludge_storage_containers: Tons,
+    ch4_sludge_bags: Tons,
+    ch4_combined_heat_and_power_plant: Tons,
+) -> Tons {
+    let ch4_plant = Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4).convert_to::<Tons>();
+    let ch4_processes = ch4_sludge_storage_containers + ch4_sludge_bags + ch4_combined_heat_and_power_plant;
+    if ch4_processes >= ch4_plant {
+        Tons::zero()
+    } else {
+        ch4_plant - ch4_processes
     }
 }
 

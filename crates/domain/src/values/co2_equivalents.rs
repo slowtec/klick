@@ -6,7 +6,7 @@ pub struct CO2Equivalents {
     pub n2o_water: Tons,
     pub n2o_side_stream: Tons,
     pub n2o_emissions: Tons,
-    pub ch4_sewage_treatment: Tons,
+    pub ch4_plant: Tons,
     pub ch4_sludge_storage_containers: Tons,
     pub ch4_sludge_bags: Tons,
     pub ch4_water: Tons,
@@ -35,8 +35,8 @@ impl CO2Equivalents {
         output += &format!("n2o_water, {}\n", f64::from(self.n2o_water));
         output += &format!("n2o_emissions, {}\n", f64::from(self.n2o_emissions));
         output += &format!(
-            "ch4_sewage_treatment, {}\n",
-            f64::from(self.ch4_sewage_treatment)
+            "ch4_plant, {}\n",
+            f64::from(self.ch4_plant)
         );
         output += &format!(
             "ch4_sludge_storage_containers, {}\n",
