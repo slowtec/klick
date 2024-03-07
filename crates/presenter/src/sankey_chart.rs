@@ -8,7 +8,7 @@ pub fn create_sankey_chart_data(
         n2o_water,
         n2o_side_stream,
         n2o_emissions,
-        ch4_sewage_treatment,
+        ch4_plant,
         ch4_sludge_storage_containers,
         ch4_sludge_bags,
         ch4_water,
@@ -90,8 +90,8 @@ pub fn create_sankey_chart_data(
     nodes.push((n2o_water.into(), "N₂O Gewässer", red));
     let n2o_water = nodes.len() - 1;
 
-    nodes.push((ch4_sewage_treatment.into(), "CH₄ Anlage (unspez.)", red));
-    let ch4_sewage_treatment = nodes.len() - 1;
+    nodes.push((ch4_plant.into(), "CH₄ Anlage (unspez.)", red));
+    let ch4_plant = nodes.len() - 1;
 
     nodes.push((
         ch4_sludge_storage_containers.into(),
@@ -122,7 +122,7 @@ pub fn create_sankey_chart_data(
         (n2o_side_stream, n2o_emissions),
         (n2o_water, n2o_emissions),
         (n2o_emissions, direct_emissions),
-        (ch4_sewage_treatment, ch4_emissions),
+        (ch4_plant, ch4_emissions),
         (ch4_sludge_storage_containers, ch4_emissions),
         (ch4_sludge_bags, ch4_emissions),
         (ch4_water, ch4_emissions),
