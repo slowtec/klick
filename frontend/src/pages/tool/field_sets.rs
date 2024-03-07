@@ -471,12 +471,13 @@ pub fn field_sets() -> Vec<FieldSet> {
         ],
     },
     FieldSet {
-        title: Some("Nebenstrombehandlung"),
+        title: Some("Prozesswasserbehandlung"),
         fields: vec![
             Field {
                 id: ProfileValueId::from(SideStreamTreatmentId::TotalNitrogen).into(),
                 description: Some(
-                    "boak",
+                    "Falls auf Ihrer Kläranlage eine Prozesswasserbehandlung vorhanden ist, dann geben Sie bitte deren jährliche
+                    Gesamtsticksoffmenge in Tonnen [t/a] ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein. ",
                 ),
                 required: false,
                 field_type: FieldType::Float {
