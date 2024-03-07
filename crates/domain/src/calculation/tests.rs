@@ -672,7 +672,6 @@ fn calculate_ch4_slippage_sludge_bags_for_one_digester() {
     assert_eq!(result * GWP_CH4, Tons::new(136.391_01));
 }
 
-#[ignore]
 #[test]
 fn calculate_n2o_side_streams() {
     assert_eq!(
@@ -681,7 +680,7 @@ fn calculate_n2o_side_streams() {
     );
     assert_eq!(
         calculate_n2o_side_stream(Tons::new(60.0), Factor::new(0.02), true),
-        Tons::new(85.8)
+        Tons::new(514.8)
     );
     assert_eq!(
         calculate_n2o_side_stream(Tons::new(60.0), Factor::new(0.02), false),

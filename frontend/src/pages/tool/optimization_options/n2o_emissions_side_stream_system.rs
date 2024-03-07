@@ -29,12 +29,12 @@ pub fn options(
     view! {
       <Card title = "Lachgasemissionen von Nebenstromanlagen" bg_color="bg-yellow">
         <p class="my-2">
-          "Da es sich bei den Nebenstromanlagen um relativ kleine Becken handelt, können die
+          "Da es sich bei Prozesswasserbehandlungsanlagen um relativ kleine Becken handelt, können die
           Lachgasemissionen hier durch Abdeckung und Abluftbehandlung (Oxidation) beseitigt werden."
         </p>
         { form1 }
         <p class="my-2">
-        "Im Sinne der Nachhaltigkeit und der Kreislaufschließung kann anstelle der Nebenstromanlage eine Stickstoffrückgewinnungsanlage errichtet werden."
+        "Im Sinne der Nachhaltigkeit und der Kreislaufschließung kann eine Stickstoffrückgewinnungsanlage integriert werden."
         </p>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
           { move || {

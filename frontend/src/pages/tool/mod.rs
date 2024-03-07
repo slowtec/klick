@@ -295,7 +295,6 @@ pub fn Tool(
                 .map(|(method, outcome)| (method.into(), outcome))
                 .collect()
         };
-
         let name_ka: String = s
             .get(&ProfileValueId::PlantName.into())
             .and_then(FieldSignal::get_text)
