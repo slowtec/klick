@@ -14,7 +14,7 @@ use crate::{
 
 use super::Card;
 
-const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
+const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 2.0;
 const N2O_DEFAULT_SIDE_STREAM_FACTOR: f64 = 2.0;
 
 pub fn options(
