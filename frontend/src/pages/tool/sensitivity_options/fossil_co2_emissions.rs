@@ -39,14 +39,14 @@ pub fn options(
           an gewerblichen/industriellen Einleitern (> 45 %) kann die fossile CO₂ -Fracht sogar höher liegen (UBA 2022)."
         </p>
         <p class="my-2">
-          "Im Folgenden können Sie auf Basis des gesamten organischer Kohlenstoffs (total organic carbon, TOCZulauf)
+          "Im Folgenden können Sie auf Basis des gesamten organischer Kohlenstoffs (total organic carbon, TOC"<sub>"Zulauf"</sub>")
           des Kläranlagenzulaufs abgeschätzt, wie hoch/niedrig der Anteil an fossilem CO₂ in der biologischen Reinigung
           ist. Über einen wählbaren CO₂-EF (fossil) können sie berechnen wie sich dies auf die Klimabilanz Ihrer
           Kläranlage auswirkt."
         </p>
         <p class="my-2">
-          "Wenn Sie in der Datenerfassung keinen Wert im „TOCZulauf“- Eingabefeld eingetragen haben schätzt das Tool die
-          fossilen CO₂-Emissionen aus der biologischen Reinigung über den angegebenen CSBZulauf mittels des theoretischen
+          "Wenn Sie in der Datenerfassung keinen Wert im „TOC"<sub>"Zulauf"</sub>"“- Eingabefeld eingetragen haben schätzt das Tool die
+          fossilen CO₂-Emissionen aus der biologischen Reinigung über den angegebenen CSB"<sub>"Zulauf"</sub>" mittels des theoretischen
           Umrechnungsfaktors von CSB:TOC von 1:2, 6) abgeleitet aus der chemischen Gleichung C + O₂ --> CO₂). Wenn Sie das
           untenstehende „CO₂-EF (fossil)“-Eingabefeld freilassen wird ein gemittelter CO₂-EF (fossil) von
           3,85 (nach Law et al. 2013) angenommen."
