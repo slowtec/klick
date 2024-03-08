@@ -312,6 +312,10 @@ pub fn Tool(
             Some(v) => domain::units::Factor::new(v / 100.0),
             None => unreachable!(),
         };
+
+        input_data.sewage_sludge_treatment.custom_sludge_bags_factor = custom_sludge_bags_factor.get();
+        input_data.sewage_sludge_treatment.custom_sludge_storage_containers_factor = custom_sludge_storage_containers_factor.get();
+
         let n2o_calculations = domain::calculate_all_n2o_emission_factor_scenarios(
             &input_data,
             Some(domain::units::Factor::new(
