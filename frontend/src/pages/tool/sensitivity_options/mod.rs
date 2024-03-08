@@ -26,11 +26,14 @@ pub fn SensitivityOptions(
     co2_fossil_custom_factor: RwSignal<Option<f64>>,
     custom_sludge_bags_factor: RwSignal<Option<f64>>,
     custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
+    show_sludge_bags_controls: RwSignal<bool>,
+    show_sludge_storage_containers_controls: RwSignal<bool>,
+    show_side_stream_controls: RwSignal<bool>,
 ) -> impl IntoView {
     view! {
-      { n2o_emissions::options(output, barchart_arguments_radio_inputs, selected_scenario_name_n2o, selected_scenario_n2o, custom_factor_n2o, n2o_side_stream ) }
+      { n2o_emissions::options(output, barchart_arguments_radio_inputs, selected_scenario_name_n2o, selected_scenario_n2o, custom_factor_n2o, n2o_side_stream, show_side_stream_controls ) }
       { ch4_emissions_chp::options(output, selected_scenario_chp, selected_scenario_name_chp, custom_factor_bhkw, barchart_arguments_radio_inputs_bhkw) }
-      { ch4_emissions_open_digesters::options(output, custom_sludge_bags_factor, custom_sludge_storage_containers_factor) }
+      { ch4_emissions_open_digesters::options(output, custom_sludge_bags_factor, custom_sludge_storage_containers_factor, show_sludge_bags_controls, show_sludge_storage_containers_controls) }
       { ch4_emissions_open_sludge_storage::options() }
       { fossil_co2_emissions::options(output, co2_fossil_custom_factor) }
     }

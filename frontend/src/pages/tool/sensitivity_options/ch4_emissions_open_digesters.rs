@@ -18,6 +18,9 @@ pub fn options(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
     custom_sludge_bags_factor: RwSignal<Option<f64>>,
     custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
+    // show_sludge_storage_containers_controls: RwSignal<Option<bool>>,
+    show_sludge_bags_controls: RwSignal<bool>,
+    show_sludge_storage_containers_controls: RwSignal<bool>,
 ) -> impl IntoView {
     let custom_factor_field = Field {
         id: FieldId::Scenario(ScenarioFieldId::SludgeBagsCustomFactor),
@@ -90,8 +93,10 @@ pub fn options(
     });
 
     view! {
+      <div class = move || { if show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get() { None } else { Some("hidden") } }>
       <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue">
-         <p class="my-2">
+        <div class = move || { if show_sludge_bags_controls.get() { None } else { Some("hidden") } }>
+        <p class="my-2">
         "Durch "<b>"offene Schlammtaschen an Faultürmen"</b>" kann Methan entweichen. Nachfolgend kann für den
         Methanschlupf (z.B. aus einer Messkampagne oder als Schätzwert) ein Emissionsfaktor CH₄-EF [in m³/h] bilanziert werden."
         </p>
@@ -102,6 +107,8 @@ pub fn options(
         <div class="my-4 ml-4">
           { fields_view1 }
         </div>
+        </div>
+        <div class = move || { if show_sludge_storage_containers_controls.get() { None } else { Some("hidden") } }>
         <InfoBox text = "Die Schlammlagerung trägt maßgeblich zu Methanemissionen bei">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S. 24)" url = DWA_MERKBLATT_URL >
           "In Abhängigkeit vom technischen Ausfaulgrad der Schlammfaulung und der Lagerzeit können bei der
@@ -121,21 +128,28 @@ pub fn options(
         <div class="my-4 ml-4">
           { fields_view2 }
         </div>
+        </div>
 
         <div class="border-t pt-3 mt-4 border-gray-900/10">
           { move || {
+              let show_sludge_bags_controls_class = match show_sludge_bags_controls.get() {
+                    false => "hidden".to_string(),
+                    true => "".to_string(),
+              };
+              let show_sludge_storage_containers_controls_class = match show_sludge_storage_containers_controls.get() {
+                  false => "hidden".to_string(),
+                  true => "".to_string(),
+              };
               output.get().map(|out|
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
-
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CH₄ Schlupf Schlammtaschen"</dt>
-                    <dd class="text-lg py-1 px-3">
+                    <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_sludge_bags_controls_class) }>"CH₄ Schlupf Schlammtaschen"</dt>
+                    <dd class={ format!("text-lg py-1 px-3 {}", show_sludge_bags_controls_class) }>
                       { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_bags)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
-
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CH₄ Schlupf Schlammlagerung"</dt>
-                    <dd class="text-lg py-1 px-3">
+                    <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_sludge_storage_containers_controls_class) }>"CH₄ Schlupf Schlammlagerung"</dt>
+                    <dd class={ format!("text-lg py-1 px-3 {}", show_sludge_storage_containers_controls_class) }>
                       { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_storage_containers)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
@@ -151,5 +165,6 @@ pub fn options(
           }
         </div>
       </Card>
+      </div>
     }
 }
