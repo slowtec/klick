@@ -62,10 +62,10 @@ pub fn calculate_emissions(
 
     let SewageSludgeTreatment {
         sludge_bags_are_open,
-        sludge_bags_are_open_recommendation: _, // FIXME
+        sludge_bags_are_open_recommendation: _,
         custom_sludge_bags_factor,
         sludge_storage_containers_are_open,
-        sludge_storage_containers_are_open_recommendation: _, // FIXME
+        sludge_storage_containers_are_open_recommendation: _,
         custom_sludge_storage_containers_factor,
         sewage_sludge_for_disposal,
         transport_distance,
@@ -107,7 +107,6 @@ pub fn calculate_emissions(
         n2o_emission_factor,
     );
 
-
     let ch4_water = chemical_oxygen_demand_effluent * wastewater * EMISSION_FACTOR_CH4_WATER;
 
     let ch4_slippage_sludge_bags = if sludge_bags_are_open {
@@ -119,11 +118,6 @@ pub fn calculate_emissions(
     } else {
         Tons::zero()
     };
-    log::info!("sludge_bags_are_open: {:?}", sludge_bags_are_open);
-    log::info!(
-        "sludge_storage_containers_are_open: {:?}",
-        sludge_storage_containers_are_open
-    );
 
     let ch4_slippage_sludge_storage = if sludge_storage_containers_are_open {
         calculate_ch4_slippage_sludge_storage(
@@ -148,7 +142,9 @@ pub fn calculate_emissions(
         wastewater,
     );
 
-    let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
+    let n2o_emissions = n2o_plant
+        + n2o_water
+        + n2o_side_stream;
 
     let ch4_sludge_storage_containers = ch4_slippage_sludge_storage * GWP_CH4;
     let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
@@ -208,14 +204,8 @@ pub fn calculate_emissions(
         * EMISSION_FACTOR_DIESEL)
         .convert_to();
 
-    let direct_emissions = n2o_plant
-        + n2o_water
-        + n2o_side_stream
-        + ch4_plant
-        + ch4_water
-        + ch4_combined_heat_and_power_plant
-        + ch4_sludge_storage_containers
-        + ch4_sludge_bags
+    let direct_emissions = ch4_emissions
+        + n2o_emissions
         + fossil_emissions;
     let indirect_emissions = electricity_mix;
     let other_indirect_emissions = operating_materials + sewage_sludge_transport;
