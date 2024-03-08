@@ -1,8 +1,8 @@
 use klick_app_charts::BarChartRadioInput;
 use klick_domain as domain;
+use klick_domain::constants::{N2O_DEFAULT_CUSTOM_FACTOR, N2O_DEFAULT_SIDE_STREAM_FACTOR};
 use klick_presenter::Lng;
 use leptos::*;
-use klick_domain::constants::{N2O_DEFAULT_SIDE_STREAM_FACTOR, N2O_DEFAULT_CUSTOM_FACTOR};
 
 use crate::{
     forms::{render_field_sets, FieldType, MinMax},
@@ -51,7 +51,6 @@ pub fn options(
         } else {
             n2o_side_stream.set(Some(N2O_DEFAULT_SIDE_STREAM_FACTOR));
         }
-
     });
 
     view! {

@@ -230,74 +230,6 @@ pub fn field_sets() -> Vec<FieldSet> {
         title: Some("Energiebedarf"),
         fields: vec![
             Field {
-                id: ProfileValueId::from(EnergyConsumptionId::SewageGasProduced).into(),
-                description: Some(
-                    "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m³) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Klärgas".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(0.0),
-                        max: Some(
-                            100_000_000.0,
-                        ),
-                    },
-                    unit: "m³",
-                },
-            },
-            Field {
-                id: ProfileValueId::from(EnergyConsumptionId::MethaneFraction).into(),
-                description: Some(
-                    "Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "62".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(0.0),
-                        max: Some(
-                            90.0,
-                        ),
-                    },
-                    unit: "%",
-                },
-            },
-            Field {
-                id: ProfileValueId::from(EnergyConsumptionId::GasSupply).into(),
-                description: Some(
-                    "Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Gasbezug".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: None,
-                        max: None,
-                    },
-                    unit: "kWh/a",
-                },
-            },
-            Field {
-                id: ProfileValueId::from(EnergyConsumptionId::PurchaseOfBiogas).into(),
-                description: Some(
-                    "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
-                ),
-                required: false,
-                field_type: FieldType::Bool {
-                    initial_value: None,
-                },
-            },
-            Field {
                 id: ProfileValueId::from(EnergyConsumptionId::TotalPowerConsumption).into(),
                 description: Some(
                     "Der Gesamt-Strombedarf Ihrer Kläranlage in Kilowattstunden (kWh) pro Jahr (a).",
@@ -364,9 +296,37 @@ pub fn field_sets() -> Vec<FieldSet> {
                 },
             },
             Field {
+                id: ProfileValueId::from(EnergyConsumptionId::GasSupply).into(),
+                description: Some(
+                    "Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
+                ),
+                required: false,
+                field_type: FieldType::Float {
+                    initial_value: None,
+                    placeholder: Some(
+                        "Gasbezug".to_string(),
+                    ),
+                    limits: MinMax {
+                        min: None,
+                        max: None,
+                    },
+                    unit: "m³/a",
+                },
+            },
+            Field {
+                id: ProfileValueId::from(EnergyConsumptionId::PurchaseOfBiogas).into(),
+                description: Some(
+                    "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
+                ),
+                required: false,
+                field_type: FieldType::Bool {
+                    initial_value: None,
+                },
+            },
+            Field {
                 id: ProfileValueId::from(EnergyConsumptionId::HeatingOil).into(),
                 description: Some(
-                    "boak",
+                    "Menge an Heizöl in Liter (L) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Heizöl von extern bezogen wird, dieses Feld bitte freilassen.",
                 ),
                 required: false,
                 field_type: FieldType::Float {
@@ -379,6 +339,46 @@ pub fn field_sets() -> Vec<FieldSet> {
                         max: None,
                     },
                     unit: "L/a",
+                },
+            },
+            Field {
+                id: ProfileValueId::from(EnergyConsumptionId::SewageGasProduced).into(),
+                description: Some(
+                    "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m³) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
+                ),
+                required: false,
+                field_type: FieldType::Float {
+                    initial_value: None,
+                    placeholder: Some(
+                        "Klärgas".to_string(),
+                    ),
+                    limits: MinMax {
+                        min: Some(0.0),
+                        max: Some(
+                            100_000_000.0,
+                        ),
+                    },
+                    unit: "m³/a",
+                },
+            },
+            Field {
+                id: ProfileValueId::from(EnergyConsumptionId::MethaneFraction).into(),
+                description: Some(
+                    "Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
+                ),
+                required: false,
+                field_type: FieldType::Float {
+                    initial_value: None,
+                    placeholder: Some(
+                        "62".to_string(),
+                    ),
+                    limits: MinMax {
+                        min: Some(0.0),
+                        max: Some(
+                            90.0,
+                        ),
+                    },
+                    unit: "%",
                 },
             },
         ],

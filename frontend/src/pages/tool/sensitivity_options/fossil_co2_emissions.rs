@@ -7,9 +7,9 @@ use crate::{
     },
 };
 use klick_domain as domain;
+use klick_domain::constants::CO2_DEFAULT_FOSSIL_FACTOR;
 use klick_presenter::Lng;
 use leptos::*;
-use klick_domain::constants::CO2_DEFAULT_FOSSIL_FACTOR;
 
 use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 

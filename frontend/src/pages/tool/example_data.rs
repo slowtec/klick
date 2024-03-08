@@ -35,12 +35,12 @@ fn example_input_data() -> ProjectData {
         energy_consumption: EnergyConsumption {
             sewage_gas_produced: Some(420_000.0),
             methane_fraction: Some(62.0),
-            gas_supply: None,
-            purchase_of_biogas: None,
+            purchase_of_biogas: Some(false),
             total_power_consumption: Some(1_665_000.0),
             on_site_power_generation: Some(810_000.0),
             emission_factor_electricity_mix: Some(420.0),
-            heating_oil: Some(20.0),
+            heating_oil: None,
+            gas_supply: None,
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: Some(true),

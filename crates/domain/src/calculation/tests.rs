@@ -34,7 +34,9 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Qubicmeters::new(1_260_000.0),
+            heating_oil: Liters::new(0.0),
+            gas_supply: Qubicmeters::new(0.0),
+            purchase_of_biogas: false,
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
@@ -89,6 +91,8 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
+        oil_emissions: _,
+        gas_emissions: _,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -160,7 +164,9 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Qubicmeters::new(0.0),
+            heating_oil: Liters::new(0.0),
+            gas_supply: Qubicmeters::new(0.0),
+            purchase_of_biogas: false,
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
@@ -215,6 +221,8 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
+        oil_emissions: _,
+        gas_emissions: _,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -287,7 +295,9 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Qubicmeters::new(0.0),
+            heating_oil: Liters::new(0.0),
+            gas_supply: Qubicmeters::new(0.0),
+            purchase_of_biogas: false,
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
@@ -342,6 +352,8 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
+        oil_emissions: _,
+        gas_emissions: _,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -414,7 +426,9 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Qubicmeters::new(0.0),
+            heating_oil: Liters::new(0.0),
+            gas_supply: Qubicmeters::new(0.0),
+            purchase_of_biogas: false,
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
@@ -469,6 +483,8 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
+        oil_emissions: _,
+        gas_emissions: _,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -540,7 +556,9 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             total_power_consumption: Kilowatthours::new(2_683_259.0),
             on_site_power_generation: Kilowatthours::new(2_250_897.0),
             emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Qubicmeters::new(0.0),
+            heating_oil: Liters::new(0.0),
+            gas_supply: Qubicmeters::new(0.0),
+            purchase_of_biogas: false,
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
@@ -595,6 +613,8 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
+        oil_emissions: _,
+        gas_emissions: _,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -719,5 +739,28 @@ fn test_calculate_fossil_emissions() {
             Qubicmeters::new(2135250.0)
         ),
         Tons::new(115.29549281249999)
+    );
+}
+
+#[test]
+fn calculate_oil_emissions_test() {
+    // Heizöl 15.000 L/a * 2,6763kg CO2-Äq./L * 10-3 = 40,15 t CO2-Äq./a (Einfamilienhaus 3000 L/a)
+    assert_eq!(
+        calculate_oil_emissions(Liters::new(15000.0)),
+        Tons::new(40.1445)
+    );
+}
+
+#[test]
+fn calculate_gas_emissions_test() {
+    // Erdgas 10.000 m3/a * 2,0kg CO2-Äq./m3 * 10-3 = 20 t CO2-Äq./a
+    assert_eq!(
+        calculate_gas_emissions(Qubicmeters::new(10000.0), false),
+        Tons::new(20.4)
+    );
+    // Biogas = 10.000 m3/a * 165,48 g CO2-Äq./m3 * 10-6 = 1,65 t CO2-Äq./a
+    assert_eq!(
+        calculate_gas_emissions(Qubicmeters::new(10000.0), true),
+        Tons::new(1.654815)
     );
 }

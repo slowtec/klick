@@ -174,6 +174,9 @@ pub fn Tool(
         if data.energy_consumption.heating_oil.is_none() {
             data.energy_consumption.heating_oil = Some(0.0);
         }
+        if data.energy_consumption.gas_supply.is_none() {
+            data.energy_consumption.gas_supply = Some(0.0);
+        }
         if data.influent_average.total_organic_carbohydrates.is_none() {
             data.influent_average.total_organic_carbohydrates = Some(0.0);
         }
@@ -183,14 +186,16 @@ pub fn Tool(
 
         let q: RwSignal<Option<bool>> = s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeBags).into())
-            .and_then(FieldSignal::get_bool).into();
+            .and_then(FieldSignal::get_bool)
+            .into();
         match q.get() {
             Some(v) => show_sludge_bags_controls.set(!v),
             None => {}
         }
         let q2: RwSignal<Option<bool>> = s
             .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainers).into())
-            .and_then(FieldSignal::get_bool).into();
+            .and_then(FieldSignal::get_bool)
+            .into();
         match q2.get() {
             Some(v) => show_sludge_storage_containers_controls.set(!v),
             None => {}
@@ -313,8 +318,12 @@ pub fn Tool(
             None => unreachable!(),
         };
 
-        input_data.sewage_sludge_treatment.custom_sludge_bags_factor = custom_sludge_bags_factor.get();
-        input_data.sewage_sludge_treatment.custom_sludge_storage_containers_factor = custom_sludge_storage_containers_factor.get();
+        input_data.sewage_sludge_treatment.custom_sludge_bags_factor =
+            custom_sludge_bags_factor.get();
+        input_data
+            .sewage_sludge_treatment
+            .custom_sludge_storage_containers_factor =
+            custom_sludge_storage_containers_factor.get();
 
         let n2o_calculations = domain::calculate_all_n2o_emission_factor_scenarios(
             &input_data,

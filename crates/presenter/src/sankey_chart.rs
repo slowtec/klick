@@ -20,6 +20,8 @@ pub fn create_sankey_chart_data(
         caoh2,
         synthetic_polymers,
         electricity_mix,
+        oil_emissions,
+        gas_emissions,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -37,6 +39,12 @@ pub fn create_sankey_chart_data(
 
     nodes.push((electricity_mix.into(), "Strommix", orange));
     let electricity_mix = nodes.len() - 1;
+
+    nodes.push((oil_emissions.into(), "Heizöl", orange));
+    let oil_emissions = nodes.len() - 1;
+
+    nodes.push((gas_emissions.into(), "Gas", orange));
+    let gas_emissions = nodes.len() - 1;
 
     let yellow = "#fd0";
     nodes.push((
@@ -130,6 +138,8 @@ pub fn create_sankey_chart_data(
         (ch4_emissions, direct_emissions),
         (fossil_emissions, direct_emissions),
         (electricity_mix, indirect_emissions),
+        (oil_emissions, indirect_emissions),
+        (gas_emissions, indirect_emissions),
         (operating_materials, other_indirect_emissions),
         (other_indirect_emissions, emissions),
         (direct_emissions, emissions),

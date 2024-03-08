@@ -55,7 +55,9 @@ impl ValueLabel for ScenarioFieldId {
         match self {
             Self::N2OCustomFactor => "N₂O-EF Benutzerdefiniert",
             Self::N2OSideStreamFactor => "N₂O-EF Nebenstrom",
-            Self::N2OSideStreamCoverIsOpen => "Abdeckung mit Abluftbehandlung Prozesswasserbehandlungsanlage",
+            Self::N2OSideStreamCoverIsOpen => {
+                "Abdeckung mit Abluftbehandlung Prozesswasserbehandlungsanlage"
+            }
             Self::CH4ChpCalculationMethod => "BHKW Emmisionsfaktor",
             Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
             Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",

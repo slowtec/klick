@@ -77,3 +77,6 @@ pub const EMISSION_FACTOR_N2O_PESIMISTIC: Percent = Percent::new(0.8);
 
 /// 1,6 `[%]` of the nitrogen inflow
 pub const EMISSION_FACTOR_N2O_IPCC2019: Percent = Percent::new(1.6);
+pub const EMISSION_FACTOR_OIL: KilogramsPerLiter = KilogramsPerLiter::new(2.6763);
+pub const EMISSION_FACTOR_GAS: KilogramsPerQubicmeter = KilogramsPerQubicmeter::new(2.04);
+pub const EMISSION_FACTOR_BIOGAS: KilogramsPerQubicmeter = KilogramsPerQubicmeter::new(0.1654815);
