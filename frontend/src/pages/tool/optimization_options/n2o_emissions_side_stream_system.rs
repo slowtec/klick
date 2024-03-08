@@ -14,6 +14,7 @@ use crate::{
 pub fn options(
     output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
     n2o_side_stream_cover_is_open: RwSignal<Option<bool>>,
+    show_side_stream_controls: RwSignal<bool>,
 ) -> impl IntoView {
     let field_set = field_set();
     let (signals1, form1, _required_fields) = render_field_sets(vec![field_set]);
@@ -27,6 +28,7 @@ pub fn options(
         }
     });
     view! {
+      <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } }>
       <Card title = "Lachgasemissionen bei der Prozesswasserbehandlung" bg_color="bg-yellow">
         <p class="my-2">
           "Da es sich bei Prozesswasserbehandlungsanlagen um relativ kleine Becken handelt, können die
@@ -58,6 +60,7 @@ pub fn options(
           }
         </div>
       </Card>
+      </div>
     }
 }
 

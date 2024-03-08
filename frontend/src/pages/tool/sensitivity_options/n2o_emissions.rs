@@ -24,6 +24,7 @@ pub fn options(
     selected_scenario_n2o: RwSignal<Option<u64>>,
     custom_factor_n2o: RwSignal<Option<f64>>,
     n2o_side_stream: RwSignal<Option<f64>>,
+    show_side_stream_controls: RwSignal<bool>,
 ) -> impl IntoView {
     let field_set1 = field_set1();
     let (signals1, form1, _required_fields) = render_field_sets(vec![field_set1]);
@@ -101,6 +102,7 @@ pub fn options(
         </p>
         { form1 }
 
+        <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } }>
         <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">Lachgasemissionen bei der Prozesswasserbehandlung</h3>
         <p class="my-2">
         "Die Prozesswasserbehandlung in Kläranlagen kann mit erheblichen zusätzlichen Lachgasemissionen verbunden sein.
@@ -117,6 +119,10 @@ pub fn options(
         { form2 }
         <div class="border-t pt-3 mt-4 border-gray-900/10">
           { move || {
+              let show_side_stream_controls_class = match show_side_stream_controls.get() {
+                  false => "hidden".to_string(),
+                  true => "".to_string(),
+              };
               output.get().map(|out|
                 view! {
                    <p>
@@ -127,8 +133,8 @@ pub fn options(
                       { format!("{:.1}", f64::from(out.co2_equivalents.n2o_plant)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Prozesswasserbehandlung"</dt>
-                    <dd class="text-lg py-1 px-3">
+                    <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_side_stream_controls_class) }>"N₂O Prozesswasserbehandlung"</dt>
+                    <dd class={ format!("text-lg py-1 px-3 {}", show_side_stream_controls_class) }>
                       { format!("{:.1}", f64::from(out.co2_equivalents.n2o_side_stream)).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
@@ -142,6 +148,7 @@ pub fn options(
               )
             }
           }
+        </div>
         </div>
         </div>
       </Card>

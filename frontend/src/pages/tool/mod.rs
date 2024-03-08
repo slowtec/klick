@@ -22,6 +22,8 @@ use crate::{
     Page, SECTION_ID_TOOL_HOME,
 };
 
+use klick_presenter::SewageSludgeTreatmentId;
+
 mod breadcrumbs;
 mod example_data;
 mod field_sets;
@@ -127,6 +129,11 @@ pub fn Tool(
     let n2o_emission_factor_method =
         RwSignal::new(Option::<domain::N2oEmissionFactorCalcMethod>::None);
     let n2o_side_stream_cover_is_open: RwSignal<Option<bool>> = None.into();
+    // FIXME <these two signals don't work and need to be set by the create_effect below>
+    let show_side_stream_controls: RwSignal<bool> = RwSignal::new(false);
+    let show_sludge_bags_controls: RwSignal<bool> = RwSignal::new(true);
+    let show_sludge_storage_containers_controls: RwSignal<bool> = RwSignal::new(true);
+    // FIXME </these two signals don't work and need to be set by the create_effect below>
     let sludge_bags_are_open_recommendation: RwSignal<Option<bool>> = RwSignal::new(None);
     let sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>> =
         RwSignal::new(None);
@@ -151,8 +158,18 @@ pub fn Tool(
         if data.sewage_sludge_treatment.transport_distance.is_none() {
             data.sewage_sludge_treatment.transport_distance = Some(0.0);
         }
-        if data.side_stream_treatment.total_nitrogen.is_none() {
-            data.side_stream_treatment.total_nitrogen = Some(0.0);
+        match data.side_stream_treatment.total_nitrogen {
+            Some(v) => {
+                if v > 0.0 {
+                    show_side_stream_controls.set(true);
+                } else {
+                    show_side_stream_controls.set(false);
+                }
+            }
+            None => {
+                data.side_stream_treatment.total_nitrogen = Some(0.0);
+                show_side_stream_controls.set(false);
+            }
         }
         if data.energy_consumption.heating_oil.is_none() {
             data.energy_consumption.heating_oil = Some(0.0);
@@ -160,8 +177,24 @@ pub fn Tool(
         if data.influent_average.total_organic_carbohydrates.is_none() {
             data.influent_average.total_organic_carbohydrates = Some(0.0);
         }
+
         missing_fields.set(filtered_required_fields);
         input_data.set(data.try_into().ok());
+
+        let q: RwSignal<Option<bool>> = s
+            .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeBags).into())
+            .and_then(FieldSignal::get_bool).into();
+        match q.get() {
+            Some(v) => show_sludge_bags_controls.set(!v),
+            None => {}
+        }
+        let q2: RwSignal<Option<bool>> = s
+            .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainers).into())
+            .and_then(FieldSignal::get_bool).into();
+        match q2.get() {
+            Some(v) => show_sludge_storage_containers_controls.set(!v),
+            None => {}
+        }
     });
 
     create_effect(move |_| {
@@ -820,6 +853,9 @@ pub fn Tool(
           co2_fossil_custom_factor
           custom_sludge_bags_factor
           custom_sludge_storage_containers_factor
+          show_sludge_bags_controls
+          show_sludge_storage_containers_controls
+          show_side_stream_controls
         />
         </div>
 
@@ -836,6 +872,8 @@ pub fn Tool(
           current_section
           show_handlungsempfehlungen
           output_model=output_optimization_options_model
+          show_sludge_bags_controls
+          show_sludge_storage_containers_controls
           sludge_bags_are_open_recommendation
           sludge_storage_containers_are_open_recommendation
           barchart_arguments
@@ -844,6 +882,7 @@ pub fn Tool(
           field_sets
           signals = Rc::clone(&signals)
           n2o_side_stream_cover_is_open
+          show_side_stream_controls
         />
         </div>
       </div>
@@ -867,7 +906,6 @@ pub fn DataCollectionView(
         <div>
           { set_views.clone() } // input fields for data collection
         </div>
-
       { move ||
           if !show_handlungsempfehlungen.get() {
               Some(view! {
@@ -948,6 +986,9 @@ pub fn SensitivityView(
     co2_fossil_custom_factor: RwSignal<Option<f64>>,
     custom_sludge_bags_factor: RwSignal<Option<f64>>,
     custom_sludge_storage_containers_factor: RwSignal<Option<f64>>,
+    show_sludge_bags_controls: RwSignal<bool>,
+    show_sludge_storage_containers_controls: RwSignal<bool>,
+    show_side_stream_controls: RwSignal<bool>,
 ) -> impl IntoView {
     view! {
         <DataCollectionEnforcementHelper
@@ -979,6 +1020,9 @@ pub fn SensitivityView(
                 co2_fossil_custom_factor
                 custom_sludge_bags_factor
                 custom_sludge_storage_containers_factor
+                show_sludge_bags_controls
+                show_sludge_storage_containers_controls
+                show_side_stream_controls
               />
             }
           }
@@ -1016,6 +1060,8 @@ pub fn RecommendationView(
     current_section: RwSignal<Option<PageSection>>,
     show_handlungsempfehlungen: RwSignal<bool>,
     output_model: RwSignal<Option<domain::EmissionsCalculationOutcome>>,
+    show_sludge_bags_controls: RwSignal<bool>,
+    show_sludge_storage_containers_controls: RwSignal<bool>,
     sludge_bags_are_open_recommendation: RwSignal<Option<bool>>,
     sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>>,
     barchart_arguments: RwSignal<Vec<klick_app_charts::BarChartArguments>>,
@@ -1024,6 +1070,7 @@ pub fn RecommendationView(
     field_sets: Vec<FieldSet>,
     signals: Rc<HashMap<FieldId, FieldSignal>>,
     n2o_side_stream_cover_is_open: RwSignal<Option<bool>>,
+    show_side_stream_controls: RwSignal<bool>,
 ) -> impl IntoView {
     view! {
         <DataCollectionEnforcementHelper
@@ -1083,9 +1130,12 @@ pub fn RecommendationView(
               view! {
                 <OptimizationOptions
                   output = output_model.read_only()
+                  show_sludge_bags_controls
+                  show_sludge_storage_containers_controls
                   sludge_bags_are_open_recommendation
                   sludge_storage_containers_are_open_recommendation
                   n2o_side_stream_cover_is_open
+                  show_side_stream_controls
                 />
               }
             }
