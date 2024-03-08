@@ -4,8 +4,8 @@ mod tests;
 use crate::{
     constants::*,
     units::{
-        Factor, Grams, Hours, Kilowatthours, Mass, MilligramsPerLiter, Percent, Qubicmeters,
-        QubicmetersPerHour, Ratio, Time, Tons, Years,
+        Factor, Grams, Hours, Kilowatthours, Liters, Mass, MilligramsPerLiter, Percent,
+        Qubicmeters, QubicmetersPerHour, Ratio, Time, Tons, Years,
     },
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
     CalculatedScenarios, CustomEmissionFactors, EmissionFactorCalculationMethods, EmissionFactors,
@@ -57,7 +57,9 @@ pub fn calculate_emissions(
         total_power_consumption,
         on_site_power_generation,
         emission_factor_electricity_mix,
-        heating_oil: _, // FIXME
+        heating_oil,
+        gas_supply,
+        purchase_of_biogas,
     } = energy_consumption;
 
     let SewageSludgeTreatment {
@@ -142,9 +144,7 @@ pub fn calculate_emissions(
         wastewater,
     );
 
-    let n2o_emissions = n2o_plant
-        + n2o_water
-        + n2o_side_stream;
+    let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
     let ch4_sludge_storage_containers = ch4_slippage_sludge_storage * GWP_CH4;
     let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
@@ -164,11 +164,11 @@ pub fn calculate_emissions(
 
     let ch4_combined_heat_and_power_plant = ch4_chp * GWP_CH4;
 
-    let ch4_plant = calculate_ch4_plant (
+    let ch4_plant = calculate_ch4_plant(
         population_equivalent,
         ch4_sludge_storage_containers,
         ch4_sludge_bags,
-        ch4_combined_heat_and_power_plant
+        ch4_combined_heat_and_power_plant,
     );
 
     let ch4_emissions = ch4_plant
@@ -191,6 +191,11 @@ pub fn calculate_emissions(
     .convert_to::<Tons>();
 
     let electricity_mix = (external_energy * emission_factor_electricity_mix).convert_to::<Tons>();
+
+    let oil_emissions = calculate_oil_emissions(heating_oil);
+
+    let gas_emissions = calculate_gas_emissions(gas_supply, purchase_of_biogas);
+
     let synthetic_polymers = synthetic_polymers * EMISSION_FACTOR_POLYMERS;
     let fecl3 = fecl3 * EMISSION_FACTOR_FECL3;
     let feclso4 = feclso4 * EMISSION_FACTOR_FECLSO4;
@@ -204,10 +209,9 @@ pub fn calculate_emissions(
         * EMISSION_FACTOR_DIESEL)
         .convert_to();
 
-    let direct_emissions = ch4_emissions
-        + n2o_emissions
-        + fossil_emissions;
-    let indirect_emissions = electricity_mix;
+    let direct_emissions = ch4_emissions + n2o_emissions + fossil_emissions;
+
+    let indirect_emissions = electricity_mix + oil_emissions + gas_emissions;
     let other_indirect_emissions = operating_materials + sewage_sludge_transport;
     let total_emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
 
@@ -232,6 +236,8 @@ pub fn calculate_emissions(
         caoh2,
         synthetic_polymers,
         electricity_mix,
+        oil_emissions,
+        gas_emissions,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -377,13 +383,30 @@ pub fn calculate_ch4_plant(
     ch4_sludge_bags: Tons,
     ch4_combined_heat_and_power_plant: Tons,
 ) -> Tons {
-    let ch4_plant = Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4).convert_to::<Tons>();
-    let ch4_processes = ch4_sludge_storage_containers + ch4_sludge_bags + ch4_combined_heat_and_power_plant;
+    let ch4_plant = Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4)
+        .convert_to::<Tons>();
+    let ch4_processes =
+        ch4_sludge_storage_containers + ch4_sludge_bags + ch4_combined_heat_and_power_plant;
     if ch4_processes >= ch4_plant {
         Tons::zero()
     } else {
         ch4_plant - ch4_processes
     }
+}
+
+//Heizöl [CO2-Äq./a] = neues Eingabefeld Heizölbezug (Versorger) [L/a] * EF-Heizöl [CO2-Äq./ L]
+pub fn calculate_oil_emissions(oil_supply: Liters) -> Tons {
+    (oil_supply * EMISSION_FACTOR_OIL).convert_to::<Tons>()
+}
+
+//Erdgas [CO2-Äq./a] = vorhandenes Eingabefeld Gasbezug (Versorger) [m3 kWh/a] * EF-Erdgas [CO2-Äq./m3]
+pub fn calculate_gas_emissions(gas_supply: Qubicmeters, purchase_of_biogas: bool) -> Tons {
+    let ef_gas = if purchase_of_biogas {
+        EMISSION_FACTOR_BIOGAS
+    } else {
+        EMISSION_FACTOR_GAS
+    };
+    (gas_supply * ef_gas).convert_to::<Tons>()
 }
 
 pub fn calculate_all_n2o_emission_factor_scenarios(

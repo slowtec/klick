@@ -232,8 +232,8 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
         let EnergyConsumption {
             sewage_gas_produced,
             methane_fraction,
-            gas_supply: _,
-            purchase_of_biogas: _,
+            gas_supply,
+            purchase_of_biogas,
             total_power_consumption,
             on_site_power_generation,
             emission_factor_electricity_mix,
@@ -258,6 +258,12 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
         let Some(heating_oil) = heating_oil else {
             bail!("missing heating_oil");
         };
+        let Some(gas_supply) = gas_supply else {
+            bail!("missing gas_supply");
+        };
+        let Some(purchase_of_biogas) = purchase_of_biogas else {
+            bail!("missing purchase_of_biogas");
+        };
 
         let methane_fraction = domain::units::Percent::new(methane_fraction);
         let sewage_gas_produced = domain::units::Qubicmeters::new(sewage_gas_produced);
@@ -265,7 +271,8 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
         let total_power_consumption = domain::units::Kilowatthours::new(total_power_consumption);
         let emission_factor_electricity_mix =
             domain::units::GramsPerKilowatthour::new(emission_factor_electricity_mix);
-        let heating_oil = domain::units::Qubicmeters::new(heating_oil);
+        let heating_oil = domain::units::Liters::new(heating_oil);
+        let gas_supply = domain::units::Qubicmeters::new(gas_supply);
 
         Ok(Self {
             sewage_gas_produced,
@@ -274,6 +281,8 @@ impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
             on_site_power_generation,
             emission_factor_electricity_mix,
             heating_oil,
+            gas_supply,
+            purchase_of_biogas,
         })
     }
 }
@@ -287,6 +296,8 @@ impl From<domain::EnergyConsumption> for EnergyConsumption {
             on_site_power_generation,
             emission_factor_electricity_mix,
             heating_oil,
+            gas_supply,
+            purchase_of_biogas,
         } = from;
 
         let sewage_gas_produced = Some(sewage_gas_produced.into());
@@ -297,8 +308,8 @@ impl From<domain::EnergyConsumption> for EnergyConsumption {
         let emission_factor_electricity_mix = Some(emission_factor_electricity_mix.into());
         let heating_oil = Some(heating_oil.into());
 
-        let gas_supply = None;
-        let purchase_of_biogas = None;
+        let gas_supply = Some(gas_supply.into());
+        let purchase_of_biogas = Some(purchase_of_biogas.into());
 
         Self {
             sewage_gas_produced,

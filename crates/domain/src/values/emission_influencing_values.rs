@@ -1,5 +1,6 @@
 use crate::units::{
-    GramsPerKilowatthour, Kilometers, Kilowatthours, MilligramsPerLiter, Percent, Qubicmeters, Tons,
+    GramsPerKilowatthour, Kilometers, Kilowatthours, Liters, MilligramsPerLiter, Percent,
+    Qubicmeters, Tons,
 };
 
 use crate::CustomEmissionFactors;
@@ -41,7 +42,9 @@ pub struct EnergyConsumption {
     pub total_power_consumption: Kilowatthours,
     pub on_site_power_generation: Kilowatthours,
     pub emission_factor_electricity_mix: GramsPerKilowatthour,
-    pub heating_oil: Qubicmeters,
+    pub heating_oil: Liters,
+    pub gas_supply: Qubicmeters,
+    pub purchase_of_biogas: bool,
 }
 
 #[derive(Debug, Clone)]

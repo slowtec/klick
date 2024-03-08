@@ -18,6 +18,8 @@ pub struct CO2Equivalents {
     pub caoh2: Tons,
     pub synthetic_polymers: Tons,
     pub electricity_mix: Tons,
+    pub oil_emissions: Tons,
+    pub gas_emissions: Tons,
     pub operating_materials: Tons,
     pub sewage_sludge_transport: Tons,
     pub total_emissions: Tons,
@@ -30,14 +32,13 @@ pub struct CO2Equivalents {
 impl CO2Equivalents {
     pub fn to_csv(&self) -> String {
         // FIXME add n2o_side_stream fossil_emissions
+        // FIXME add     pub oil_emissions: Tons,
+        //     pub gas_emissions: Tons,
         let mut output: String = String::new();
         output += &format!("n2o_plant, {}\n", f64::from(self.n2o_plant));
         output += &format!("n2o_water, {}\n", f64::from(self.n2o_water));
         output += &format!("n2o_emissions, {}\n", f64::from(self.n2o_emissions));
-        output += &format!(
-            "ch4_plant, {}\n",
-            f64::from(self.ch4_plant)
-        );
+        output += &format!("ch4_plant, {}\n", f64::from(self.ch4_plant));
         output += &format!(
             "ch4_sludge_storage_containers, {}\n",
             f64::from(self.ch4_sludge_storage_containers)
