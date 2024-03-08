@@ -534,9 +534,7 @@ pub fn Tool(
                 value: neb_stromi,
                 percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
             });
-            let emissionsy = f64::from(new.total_emissions)
-                - f64::from(old.total_emissions)
-                - f64::from(new.excess_energy_co2_equivalent);
+            let emissionsy = f64::from(old.total_emissions) - f64::from(new.total_emissions);
             comp.push(klick_app_charts::BarChartArguments {
                 label: "Emissionen",
                 value: emissionsy,
