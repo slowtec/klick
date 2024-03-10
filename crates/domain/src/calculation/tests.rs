@@ -63,6 +63,17 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             total_nitrogen: Tons::new(0.0),
             side_stream_cover_is_open: true,
         },
+        energy_emission_factors: EnergyEmissionFactors {
+            process_energy_savings: Percent::new(0.0),
+            fossil_energy_savings: Percent::new(0.0),
+            district_heating: Kilowatthours::new(0.0),
+            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_photovoltaic_usage: Percent::new(0.0),
+            wind_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_wind_energy_usage: Percent::new(0.0),
+            water_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_water_energy_usage: Percent::new(0.0),
+        },
     };
 
     let scenario = EmissionFactorCalculationMethods {
@@ -97,6 +108,12 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
@@ -193,6 +210,17 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             total_nitrogen: Tons::new(0.0),
             side_stream_cover_is_open: true,
         },
+        energy_emission_factors: EnergyEmissionFactors {
+            process_energy_savings: Percent::new(0.0),
+            fossil_energy_savings: Percent::new(0.0),
+            district_heating: Kilowatthours::new(0.0),
+            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_photovoltaic_usage: Percent::new(0.0),
+            wind_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_wind_energy_usage: Percent::new(0.0),
+            water_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_water_energy_usage: Percent::new(0.0),
+        },
     };
 
     let scenario = EmissionFactorCalculationMethods {
@@ -227,6 +255,12 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
@@ -324,6 +358,17 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             total_nitrogen: Tons::new(0.0),
             side_stream_cover_is_open: true,
         },
+        energy_emission_factors: EnergyEmissionFactors {
+            process_energy_savings: Percent::new(0.0),
+            fossil_energy_savings: Percent::new(0.0),
+            district_heating: Kilowatthours::new(0.0),
+            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_photovoltaic_usage: Percent::new(0.0),
+            wind_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_wind_energy_usage: Percent::new(0.0),
+            water_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_water_energy_usage: Percent::new(0.0),
+        },
     };
 
     let scenario = EmissionFactorCalculationMethods {
@@ -358,6 +403,12 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
@@ -455,6 +506,17 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             total_nitrogen: Tons::new(0.0),
             side_stream_cover_is_open: true,
         },
+        energy_emission_factors: EnergyEmissionFactors {
+            process_energy_savings: Percent::new(0.0),
+            fossil_energy_savings: Percent::new(0.0),
+            district_heating: Kilowatthours::new(0.0),
+            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_photovoltaic_usage: Percent::new(0.0),
+            wind_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_wind_energy_usage: Percent::new(0.0),
+            water_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_water_energy_usage: Percent::new(0.0),
+        },
     };
 
     let scenario = EmissionFactorCalculationMethods {
@@ -489,6 +551,12 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
@@ -585,6 +653,17 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             total_nitrogen: Tons::new(0.0),
             side_stream_cover_is_open: true,
         },
+        energy_emission_factors: EnergyEmissionFactors {
+            process_energy_savings: Percent::new(0.0),
+            fossil_energy_savings: Percent::new(0.0),
+            district_heating: Kilowatthours::new(0.0),
+            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_photovoltaic_usage: Percent::new(0.0),
+            wind_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_wind_energy_usage: Percent::new(0.0),
+            water_energy_expansion: Kilowatthours::new(0.0),
+            estimated_self_water_energy_usage: Percent::new(0.0),
+        },
     };
 
     let scenario = EmissionFactorCalculationMethods {
@@ -619,6 +698,12 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
@@ -762,5 +847,45 @@ fn calculate_gas_emissions_test() {
     assert_eq!(
         calculate_gas_emissions(Qubicmeters::new(10000.0), true),
         Tons::new(1.654815)
+    );
+}
+
+#[test]
+fn calculate_process_energy_savings_test() {
+    assert_eq!(
+        calculate_process_energy_savings(Kilowatthours::new(1665000.0), Percent::new(20.0)),
+        Tons::new(155.844)
+    );
+}
+
+#[test]
+fn calculate_photovoltaic_expansion_savings_test() {
+    assert_eq!(
+        calculate_photovoltaic_expansion_savings(Kilowatthours::new(5000.0), Percent::new(70.0)),
+        Tons::new(1.638)
+    );
+}
+
+#[test]
+fn calculate_wind_expansion_savings_test() {
+    assert_eq!(
+        calculate_wind_expansion_savings(Kilowatthours::new(8500.0), Percent::new(30.0)),
+        Tons::new(1.1934)
+    );
+}
+
+#[test]
+fn calculate_water_expansion_savings_test() {
+    assert_eq!(
+        calculate_water_expansion_savings(Kilowatthours::new(10000.0), Percent::new(20.0)),
+        Tons::new(0.936)
+    );
+}
+
+#[test]
+fn calculate_oil_gas_savings_test() {
+    assert_eq!(
+        calculate_oil_gas_savings(Tons::new(40.15), Tons::new(20.0), Percent::new(20.0)),
+        Tons::new(12.03)
     );
 }

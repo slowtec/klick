@@ -67,6 +67,17 @@ fn example_input_data() -> ProjectData {
             n2o_side_stream: Some(23.23),
             co2_fossil: Some(24.24),
         },
+        energy_emission_factors: EnergyEmissionFactors {
+            process_energy_savings: None,
+            fossil_energy_savings: None,
+            district_heating: None,
+            photovoltaic_energy_expansion: None,
+            estimated_self_photovoltaic_usage: None,
+            wind_energy_expansion: None,
+            estimated_self_wind_energy_usage: None,
+            water_energy_expansion: None,
+            estimated_self_water_energy_usage: None,
+        },
     };
 
     let optimization_scenario = OptimizationScenario {

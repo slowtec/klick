@@ -37,6 +37,8 @@ pub mod optimization_options;
 
 pub mod sensitivity_options;
 
+use klick_domain::units::{Kilowatthours, Percent};
+
 use self::{
     breadcrumbs::Breadcrumbs,
     field_sets::field_sets,
@@ -138,6 +140,19 @@ pub fn Tool(
     let sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>> =
         RwSignal::new(None);
 
+    let process_energy_savings: RwSignal<Option<f64>> = None.into();
+    let fossil_energy_savings: RwSignal<Option<f64>> = None.into();
+    let district_heating: RwSignal<Option<f64>> = None.into();
+
+    let photovoltaic_energy_expansion: RwSignal<Option<f64>> = None.into();
+    let estimated_self_photovoltaic_usage: RwSignal<Option<f64>> = None.into();
+
+    let wind_energy_expansion: RwSignal<Option<f64>> = None.into();
+    let estimated_self_wind_energy_usage: RwSignal<Option<f64>> = None.into();
+
+    let water_energy_expansion: RwSignal<Option<f64>> = None.into();
+    let estimated_self_water_energy_usage: RwSignal<Option<f64>> = None.into();
+
     let s = Rc::clone(&signals);
 
     // -----   ----- //
@@ -180,7 +195,60 @@ pub fn Tool(
         if data.influent_average.total_organic_carbohydrates.is_none() {
             data.influent_average.total_organic_carbohydrates = Some(0.0);
         }
-
+        if data
+            .energy_emission_factors
+            .process_energy_savings
+            .is_none()
+        {
+            data.energy_emission_factors.process_energy_savings = Some(0.0);
+        }
+        if data.energy_emission_factors.fossil_energy_savings.is_none() {
+            data.energy_emission_factors.fossil_energy_savings = Some(0.0);
+        }
+        if data.energy_emission_factors.district_heating.is_none() {
+            data.energy_emission_factors.district_heating = Some(0.0);
+        }
+        if data
+            .energy_emission_factors
+            .photovoltaic_energy_expansion
+            .is_none()
+        {
+            data.energy_emission_factors.photovoltaic_energy_expansion = Some(0.0);
+        }
+        if data
+            .energy_emission_factors
+            .estimated_self_photovoltaic_usage
+            .is_none()
+        {
+            data.energy_emission_factors
+                .estimated_self_photovoltaic_usage = Some(0.0);
+        }
+        if data.energy_emission_factors.wind_energy_expansion.is_none() {
+            data.energy_emission_factors.wind_energy_expansion = Some(0.0);
+        }
+        if data
+            .energy_emission_factors
+            .estimated_self_wind_energy_usage
+            .is_none()
+        {
+            data.energy_emission_factors
+                .estimated_self_wind_energy_usage = Some(0.0);
+        }
+        if data
+            .energy_emission_factors
+            .water_energy_expansion
+            .is_none()
+        {
+            data.energy_emission_factors.water_energy_expansion = Some(0.0);
+        }
+        if data
+            .energy_emission_factors
+            .estimated_self_water_energy_usage
+            .is_none()
+        {
+            data.energy_emission_factors
+                .estimated_self_water_energy_usage = Some(0.0);
+        }
         missing_fields.set(filtered_required_fields);
         input_data.set(data.try_into().ok());
 
@@ -422,6 +490,97 @@ pub fn Tool(
             };
             // model 2 computation
             let mut input_data = input_data.clone();
+            match process_energy_savings.get() {
+                Some(v) => {
+                    input_data.energy_emission_factors.process_energy_savings = Percent::new(v)
+                }
+                None => {
+                    input_data.energy_emission_factors.process_energy_savings = Percent::new(0.0)
+                }
+            }
+            match fossil_energy_savings.get() {
+                Some(v) => {
+                    input_data.energy_emission_factors.fossil_energy_savings = Percent::new(v)
+                }
+                None => {
+                    input_data.energy_emission_factors.fossil_energy_savings = Percent::new(0.0)
+                }
+            }
+            match district_heating.get() {
+                Some(v) => {
+                    input_data.energy_emission_factors.district_heating = Kilowatthours::new(v)
+                }
+                None => {
+                    input_data.energy_emission_factors.district_heating = Kilowatthours::new(0.0)
+                }
+            }
+            match photovoltaic_energy_expansion.get() {
+                Some(v) => {
+                    input_data
+                        .energy_emission_factors
+                        .photovoltaic_energy_expansion = Kilowatthours::new(v)
+                }
+                None => {
+                    input_data
+                        .energy_emission_factors
+                        .photovoltaic_energy_expansion = Kilowatthours::new(0.0)
+                }
+            }
+            match estimated_self_photovoltaic_usage.get() {
+                Some(v) => {
+                    input_data
+                        .energy_emission_factors
+                        .estimated_self_photovoltaic_usage = Percent::new(v)
+                }
+                None => {
+                    input_data
+                        .energy_emission_factors
+                        .estimated_self_photovoltaic_usage = Percent::new(0.0)
+                }
+            }
+            match wind_energy_expansion.get() {
+                Some(v) => {
+                    input_data.energy_emission_factors.wind_energy_expansion = Kilowatthours::new(v)
+                }
+                None => {
+                    input_data.energy_emission_factors.wind_energy_expansion =
+                        Kilowatthours::new(0.0)
+                }
+            }
+            match estimated_self_wind_energy_usage.get() {
+                Some(v) => {
+                    input_data
+                        .energy_emission_factors
+                        .estimated_self_wind_energy_usage = Percent::new(v)
+                }
+                None => {
+                    input_data
+                        .energy_emission_factors
+                        .estimated_self_wind_energy_usage = Percent::new(0.0)
+                }
+            }
+            match water_energy_expansion.get() {
+                Some(v) => {
+                    input_data.energy_emission_factors.water_energy_expansion =
+                        Kilowatthours::new(v)
+                }
+                None => {
+                    input_data.energy_emission_factors.water_energy_expansion =
+                        Kilowatthours::new(0.0)
+                }
+            }
+            match estimated_self_water_energy_usage.get() {
+                Some(v) => {
+                    input_data
+                        .energy_emission_factors
+                        .estimated_self_water_energy_usage = Percent::new(v)
+                }
+                None => {
+                    input_data
+                        .energy_emission_factors
+                        .estimated_self_water_energy_usage = Percent::new(0.0)
+                }
+            }
 
             match sludge_bags_are_open_recommendation.get() {
                 Some(v) => match v {
@@ -531,12 +690,12 @@ pub fn Tool(
                 value: bhkwy,
                 percentage: Some(bhkwy / f64::from(new.total_emissions) * 100.0),
             });
-            let excessy = -1.0 * f64::from(new.excess_energy_co2_equivalent);
-            comp.push(klick_app_charts::BarChartArguments {
-                label: "Strombedarf",
-                value: excessy,
-                percentage: Some(excessy / f64::from(new.total_emissions) * 100.0),
-            });
+            // let excessy = -1.0 * f64::from(new.excess_energy_co2_equivalent);
+            // comp.push(klick_app_charts::BarChartArguments {
+            //     label: "Strombedarf",
+            //     value: excessy,
+            //     percentage: Some(excessy / f64::from(new.total_emissions) * 100.0),
+            // });
             let neb_stromi = f64::from(new.n2o_side_stream) - f64::from(old.n2o_side_stream);
             comp.push(klick_app_charts::BarChartArguments {
                 label: "N₂O Prozesswasserbehandlung",
@@ -894,6 +1053,15 @@ pub fn Tool(
           signals = Rc::clone(&signals)
           n2o_side_stream_cover_is_open
           show_side_stream_controls
+          process_energy_savings
+          fossil_energy_savings
+          district_heating
+          photovoltaic_energy_expansion
+          estimated_self_photovoltaic_usage
+          wind_energy_expansion
+          estimated_self_wind_energy_usage
+          water_energy_expansion
+          estimated_self_water_energy_usage
         />
         </div>
       </div>
@@ -1082,6 +1250,15 @@ pub fn RecommendationView(
     signals: Rc<HashMap<FieldId, FieldSignal>>,
     n2o_side_stream_cover_is_open: RwSignal<Option<bool>>,
     show_side_stream_controls: RwSignal<bool>,
+    process_energy_savings: RwSignal<Option<f64>>,
+    fossil_energy_savings: RwSignal<Option<f64>>,
+    district_heating: RwSignal<Option<f64>>,
+    photovoltaic_energy_expansion: RwSignal<Option<f64>>,
+    estimated_self_photovoltaic_usage: RwSignal<Option<f64>>,
+    wind_energy_expansion: RwSignal<Option<f64>>,
+    estimated_self_wind_energy_usage: RwSignal<Option<f64>>,
+    water_energy_expansion: RwSignal<Option<f64>>,
+    estimated_self_water_energy_usage: RwSignal<Option<f64>>,
 ) -> impl IntoView {
     view! {
         <DataCollectionEnforcementHelper
@@ -1147,6 +1324,15 @@ pub fn RecommendationView(
                   sludge_storage_containers_are_open_recommendation
                   n2o_side_stream_cover_is_open
                   show_side_stream_controls
+                  process_energy_savings
+                  fossil_energy_savings
+                  district_heating
+                  photovoltaic_energy_expansion
+                  estimated_self_photovoltaic_usage
+                  wind_energy_expansion
+                  estimated_self_wind_energy_usage
+                  water_energy_expansion
+                  estimated_self_water_energy_usage
                 />
               }
             }

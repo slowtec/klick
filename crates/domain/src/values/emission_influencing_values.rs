@@ -17,6 +17,7 @@ pub struct EmissionInfluencingValues {
     pub side_stream_treatment: SideStreamTreatment,
     pub operating_materials: OperatingMaterials,
     pub emission_factors: CustomEmissionFactors,
+    pub energy_emission_factors: EnergyEmissionFactors,
 }
 
 #[derive(Debug, Clone)]
@@ -75,6 +76,20 @@ pub struct OperatingMaterials {
     pub feclso4: Tons,
     pub caoh2: Tons,
     pub synthetic_polymers: Tons,
+}
+
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Copy))]
+pub struct EnergyEmissionFactors {
+    pub process_energy_savings: Percent,
+    pub fossil_energy_savings: Percent,
+    pub district_heating: Kilowatthours,
+    pub photovoltaic_energy_expansion: Kilowatthours,
+    pub estimated_self_photovoltaic_usage: Percent,
+    pub wind_energy_expansion: Kilowatthours,
+    pub estimated_self_wind_energy_usage: Percent,
+    pub water_energy_expansion: Kilowatthours,
+    pub estimated_self_water_energy_usage: Percent,
 }
 
 impl EmissionInfluencingValues {
