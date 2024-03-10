@@ -10,7 +10,8 @@ use crate::{
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
     CalculatedScenarios, CustomEmissionFactors, EmissionFactorCalculationMethods, EmissionFactors,
     EmissionInfluencingValues, EmissionsCalculationOutcome, EnergyConsumption,
-    N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment, SideStreamTreatment,
+    EnergyEmissionFactors, N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
+    SideStreamTreatment,
 };
 
 pub fn calculate_scenarios(initial_situation: EmissionInfluencingValues) -> CalculatedScenarios {
@@ -38,6 +39,7 @@ pub fn calculate_emissions(
         side_stream_treatment,
         operating_materials,
         emission_factors,
+        energy_emission_factors,
     } = input;
 
     let AnnualAverageInfluent {
@@ -90,6 +92,18 @@ pub fn calculate_emissions(
         n2o_side_stream,
         co2_fossil,
     } = emission_factors;
+
+    let EnergyEmissionFactors {
+        process_energy_savings,
+        fossil_energy_savings,
+        district_heating,
+        photovoltaic_energy_expansion,
+        estimated_self_photovoltaic_usage,
+        wind_energy_expansion,
+        estimated_self_wind_energy_usage,
+        water_energy_expansion,
+        estimated_self_water_energy_usage,
+    } = energy_emission_factors;
 
     // -------    ------ //
     //     Calculate     //
@@ -177,18 +191,24 @@ pub fn calculate_emissions(
         + ch4_water
         + ch4_combined_heat_and_power_plant;
 
-    let mut external_energy = total_power_consumption - on_site_power_generation;
+    let power_production_consumption_difference =
+        total_power_consumption - on_site_power_generation;
 
-    if external_energy.is_sign_negative() {
-        external_energy = Kilowatthours::zero();
-    }
+    let excess_energy_co2_equivalent =
+        if power_production_consumption_difference.is_sign_negative() {
+            power_production_consumption_difference
+                * emission_factor_electricity_mix
+                * Factor::new(-1.0)
+        } else {
+            Grams::zero()
+        }
+        .convert_to::<Tons>();
 
-    let excess_energy_co2_equivalent = if external_energy.is_sign_negative() {
-        external_energy * emission_factor_electricity_mix * Factor::new(-1.0)
+    let external_energy = if power_production_consumption_difference.is_sign_negative() {
+        Kilowatthours::zero()
     } else {
-        Grams::zero()
-    }
-    .convert_to::<Tons>();
+        power_production_consumption_difference
+    };
 
     let electricity_mix = (external_energy * emission_factor_electricity_mix).convert_to::<Tons>();
 
@@ -214,6 +234,24 @@ pub fn calculate_emissions(
     let indirect_emissions = electricity_mix + oil_emissions + gas_emissions;
     let other_indirect_emissions = operating_materials + sewage_sludge_transport;
     let total_emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
+
+    let process_energy_savings =
+        calculate_process_energy_savings(total_power_consumption, process_energy_savings);
+    let photovoltaic_expansion_savings = calculate_photovoltaic_expansion_savings(
+        photovoltaic_energy_expansion,
+        estimated_self_photovoltaic_usage,
+    );
+    let wind_expansion_savings =
+        calculate_wind_expansion_savings(wind_energy_expansion, estimated_self_wind_energy_usage);
+    let water_expansion_savings = calculate_water_expansion_savings(
+        water_energy_expansion,
+        estimated_self_water_energy_usage,
+    );
+
+    let district_heating_savings: Tons =
+        (district_heating * (EF_STROM_MIX - EF_HEAT_NETWORK)).convert_to::<Tons>();
+    let fossil_energy_savings =
+        calculate_oil_gas_savings(oil_emissions, gas_emissions, fossil_energy_savings);
 
     // -------    ------ //
     //   Pack variables  //
@@ -242,6 +280,12 @@ pub fn calculate_emissions(
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
@@ -407,6 +451,42 @@ pub fn calculate_gas_emissions(gas_supply: Qubicmeters, purchase_of_biogas: bool
         EMISSION_FACTOR_GAS
     };
     (gas_supply * ef_gas).convert_to::<Tons>()
+}
+
+pub fn calculate_process_energy_savings(
+    total_power_consumption: Kilowatthours,
+    process_energy_savings: Percent,
+) -> Tons {
+    (total_power_consumption * process_energy_savings * EF_STROM_MIX).convert_to::<Tons>()
+}
+
+pub fn calculate_photovoltaic_expansion_savings(
+    photovoltaic_energy_expansion: Kilowatthours,
+    estimated_self_photovoltaic_usage: Percent,
+) -> Tons {
+    (photovoltaic_energy_expansion * estimated_self_photovoltaic_usage * EF_STROM_MIX)
+        .convert_to::<Tons>()
+}
+
+pub fn calculate_wind_expansion_savings(
+    wind_energy_expansion: Kilowatthours,
+    estimated_self_wind_energy_usage: Percent,
+) -> Tons {
+    (wind_energy_expansion * estimated_self_wind_energy_usage * EF_STROM_MIX).convert_to::<Tons>()
+}
+
+pub fn calculate_water_expansion_savings(
+    water_energy_expansion: Kilowatthours,
+    estimated_self_water_energy_usage: Percent,
+) -> Tons {
+    (water_energy_expansion * estimated_self_water_energy_usage * EF_STROM_MIX).convert_to::<Tons>()
+}
+pub fn calculate_oil_gas_savings(
+    oil_emissions: Tons,
+    gas_emissions: Tons,
+    fossil_energy_savings: Percent,
+) -> Tons {
+    (oil_emissions + gas_emissions) * fossil_energy_savings
 }
 
 pub fn calculate_all_n2o_emission_factor_scenarios(

@@ -4,7 +4,7 @@ use klick_domain as domain;
 
 use crate::{
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod,
-    CH4ChpEmissionFactorScenario, CustomEmissionFactors, EnergyConsumption,
+    CH4ChpEmissionFactorScenario, CustomEmissionFactors, EnergyConsumption, EnergyEmissionFactors,
     N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
     OptimizationScenario, PlantProfile, Project, ProjectData, ProjectId, SavedProject,
     SewageSludgeTreatment, SideStreamTreatment,
@@ -151,6 +151,7 @@ impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
             side_stream_treatment,
             operating_materials,
             emission_factors,
+            energy_emission_factors,
         } = from;
 
         let Some(population_equivalent) = population_equivalent else {
@@ -169,6 +170,7 @@ impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
         let operating_materials = operating_materials.try_into()?;
         let emission_factors = emission_factors.try_into()?;
         let wastewater = domain::units::Qubicmeters::new(wastewater);
+        let energy_emission_factors = energy_emission_factors.try_into()?;
 
         Ok(Self {
             population_equivalent,
@@ -180,6 +182,7 @@ impl TryFrom<PlantProfile> for domain::EmissionInfluencingValues {
             side_stream_treatment,
             operating_materials,
             emission_factors,
+            energy_emission_factors,
         })
     }
 }
@@ -196,6 +199,7 @@ impl From<domain::EmissionInfluencingValues> for PlantProfile {
             side_stream_treatment,
             operating_materials,
             emission_factors,
+            energy_emission_factors,
         } = from;
 
         let influent_average = influent_average.into();
@@ -205,6 +209,7 @@ impl From<domain::EmissionInfluencingValues> for PlantProfile {
         let side_stream_treatment = side_stream_treatment.into();
         let operating_materials = operating_materials.into();
         let emission_factors = emission_factors.into();
+        let energy_emission_factors = energy_emission_factors.into();
 
         let population_equivalent = Some(population_equivalent);
         let wastewater = Some(wastewater.into());
@@ -221,6 +226,7 @@ impl From<domain::EmissionInfluencingValues> for PlantProfile {
             side_stream_treatment,
             operating_materials,
             emission_factors,
+            energy_emission_factors,
         }
     }
 }
@@ -590,13 +596,13 @@ impl From<domain::AnnualAverageInfluent> for AnnualAverageInfluent {
     fn from(from: domain::AnnualAverageInfluent) -> Self {
         let domain::AnnualAverageInfluent {
             nitrogen,
-            chemical_oxygen_demand: _,
+            chemical_oxygen_demand,
             total_organic_carbohydrates,
         } = from;
 
         let nitrogen = Some(nitrogen.into());
         let total_organic_carbohydrates = Some(total_organic_carbohydrates.into());
-        let chemical_oxygen_demand = None;
+        let chemical_oxygen_demand = Some(chemical_oxygen_demand.into());
 
         Self {
             nitrogen,
@@ -646,6 +652,115 @@ impl From<domain::AnnualAverageEffluent> for AnnualAverageEffluent {
             nitrogen,
             chemical_oxygen_demand,
         }
+    }
+}
+
+impl From<domain::EnergyEmissionFactors> for EnergyEmissionFactors {
+    fn from(from: domain::EnergyEmissionFactors) -> Self {
+        let domain::EnergyEmissionFactors {
+            process_energy_savings,
+            fossil_energy_savings,
+            district_heating,
+            photovoltaic_energy_expansion,
+            estimated_self_photovoltaic_usage,
+            wind_energy_expansion,
+            estimated_self_wind_energy_usage,
+            water_energy_expansion,
+            estimated_self_water_energy_usage,
+        } = from;
+
+        let process_energy_savings = Some(process_energy_savings.into());
+        let fossil_energy_savings = Some(fossil_energy_savings.into());
+        let district_heating = Some(district_heating.into());
+        let photovoltaic_energy_expansion = Some(photovoltaic_energy_expansion.into());
+        let estimated_self_photovoltaic_usage = Some(estimated_self_photovoltaic_usage.into());
+        let wind_energy_expansion = Some(wind_energy_expansion.into());
+        let estimated_self_wind_energy_usage = Some(estimated_self_wind_energy_usage.into());
+        let water_energy_expansion = Some(water_energy_expansion.into());
+        let estimated_self_water_energy_usage = Some(estimated_self_water_energy_usage.into());
+
+        Self {
+            process_energy_savings,
+            fossil_energy_savings,
+            district_heating,
+            photovoltaic_energy_expansion,
+            estimated_self_photovoltaic_usage,
+            wind_energy_expansion,
+            estimated_self_wind_energy_usage,
+            water_energy_expansion,
+            estimated_self_water_energy_usage,
+        }
+    }
+}
+
+impl TryFrom<EnergyEmissionFactors> for domain::EnergyEmissionFactors {
+    type Error = anyhow::Error;
+
+    fn try_from(from: EnergyEmissionFactors) -> Result<Self, Self::Error> {
+        let EnergyEmissionFactors {
+            process_energy_savings,
+            fossil_energy_savings,
+            district_heating,
+            photovoltaic_energy_expansion,
+            estimated_self_photovoltaic_usage,
+            wind_energy_expansion,
+            estimated_self_wind_energy_usage,
+            water_energy_expansion,
+            estimated_self_water_energy_usage,
+        } = from;
+        let Some(process_energy_savings) = process_energy_savings else {
+            bail!("missing process_energy_savings");
+        };
+        let Some(fossil_energy_savings) = fossil_energy_savings else {
+            bail!("missing fossil_energy_savings");
+        };
+        let Some(district_heating) = district_heating else {
+            bail!("missing district_heating");
+        };
+        let Some(photovoltaic_energy_expansion) = photovoltaic_energy_expansion else {
+            bail!("missing photovoltaic_energy_expansion");
+        };
+        let Some(estimated_self_photovoltaic_usage) = estimated_self_photovoltaic_usage else {
+            bail!("missing estimated_self_photovoltaic_usage");
+        };
+        let Some(wind_energy_expansion) = wind_energy_expansion else {
+            bail!("missing wind_energy_expansion");
+        };
+        let Some(estimated_self_wind_energy_usage) = estimated_self_wind_energy_usage else {
+            bail!("missing estimated_self_wind_energy_usage");
+        };
+        let Some(water_energy_expansion) = water_energy_expansion else {
+            bail!("missing water_energy_expansion");
+        };
+        let Some(estimated_self_water_energy_usage) = estimated_self_water_energy_usage else {
+            bail!("missing estimated_self_water_energy_usage");
+        };
+
+        let process_energy_savings = domain::units::Percent::new(process_energy_savings);
+        let fossil_energy_savings = domain::units::Percent::new(fossil_energy_savings);
+        let district_heating = domain::units::Kilowatthours::new(district_heating);
+        let photovoltaic_energy_expansion =
+            domain::units::Kilowatthours::new(photovoltaic_energy_expansion);
+        let estimated_self_photovoltaic_usage =
+            domain::units::Percent::new(estimated_self_photovoltaic_usage);
+        let wind_energy_expansion = domain::units::Kilowatthours::new(wind_energy_expansion);
+        let estimated_self_wind_energy_usage =
+            domain::units::Percent::new(estimated_self_wind_energy_usage);
+        let water_energy_expansion = domain::units::Kilowatthours::new(water_energy_expansion);
+        let estimated_self_water_energy_usage =
+            domain::units::Percent::new(estimated_self_water_energy_usage);
+
+        Ok(Self {
+            process_energy_savings,
+            fossil_energy_savings,
+            district_heating,
+            photovoltaic_energy_expansion,
+            estimated_self_photovoltaic_usage,
+            wind_energy_expansion,
+            estimated_self_wind_energy_usage,
+            water_energy_expansion,
+            estimated_self_water_energy_usage,
+        })
     }
 }
 

@@ -453,6 +453,18 @@ impl From<v7::ProjectData> for v8::ProjectData {
             side_stream_cover_is_open: None,
         };
 
+        let energy_emission_factors = v8::EnergyEmissionFactors {
+            process_energy_savings: None,
+            fossil_energy_savings: None,
+            district_heating: None,
+            photovoltaic_energy_expansion: None,
+            estimated_self_photovoltaic_usage: None,
+            wind_energy_expansion: None,
+            estimated_self_wind_energy_usage: None,
+            water_energy_expansion: None,
+            estimated_self_water_energy_usage: None,
+        };
+
         let plant_profile = v8::PlantProfile {
             plant_name,
             population_equivalent,
@@ -467,6 +479,7 @@ impl From<v7::ProjectData> for v8::ProjectData {
                 n2o_side_stream: None,
                 co2_fossil: None,
             },
+            energy_emission_factors,
         };
 
         Self {

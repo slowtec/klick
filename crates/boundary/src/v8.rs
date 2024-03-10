@@ -64,6 +64,8 @@ pub struct PlantProfile {
     pub operating_materials: OperatingMaterials,
 
     pub emission_factors: CustomEmissionFactors,
+
+    pub energy_emission_factors: EnergyEmissionFactors,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -154,6 +156,37 @@ pub struct AnnualAverageInfluent {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub total_organic_carbohydrates: Option<f64>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+pub struct EnergyEmissionFactors {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub process_energy_savings: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fossil_energy_savings: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub district_heating: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub photovoltaic_energy_expansion: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub estimated_self_photovoltaic_usage: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wind_energy_expansion: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub estimated_self_wind_energy_usage: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub water_energy_expansion: Option<f64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub estimated_self_water_energy_usage: Option<f64>,
 }
 
 #[derive(Serialize, Deserialize)]

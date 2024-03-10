@@ -7,9 +7,9 @@ use strum::AsRefStr;
 
 use klick_boundary::{
     AnnualAverageEffluent, AnnualAverageInfluent, CustomEmissionFactors, EnergyConsumption,
-    N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
-    OptimizationScenario, PlantProfile, Project, ProjectData, SavedProject, SewageSludgeTreatment,
-    SideStreamTreatment,
+    EnergyEmissionFactors, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
+    OperatingMaterials, OptimizationScenario, PlantProfile, Project, ProjectData, SavedProject,
+    SewageSludgeTreatment, SideStreamTreatment,
 };
 use klick_presenter::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
@@ -48,6 +48,15 @@ pub enum ScenarioFieldId {
     CO2FossilCustomFactor,
     SludgeBagsCustomFactor,
     SludgeStorageCustomFactor,
+    ProcessEnergySaving,
+    FossilEnergySaving,
+    DistrictHeating,
+    PhotovoltaicEnergyExpansion,
+    EstimatedSelfPhotovolaticUsage,
+    WindEnergyExpansion,
+    EstimatedSelfWindEnergyUsage,
+    WaterEnergyExpansion,
+    EstimatedSelfWaterEnergyUsage,
 }
 
 impl ValueLabel for ScenarioFieldId {
@@ -63,6 +72,16 @@ impl ValueLabel for ScenarioFieldId {
             Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",
             Self::SludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
             Self::SludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
+
+            Self::ProcessEnergySaving => "Energieeinsparung bei Prozessen",
+            Self::FossilEnergySaving => "Energieeinsparung bei fossilen Energiequellen",
+            Self::DistrictHeating => "Abgabe Fern-/Nahwärme (an Dritte)",
+            Self::PhotovoltaicEnergyExpansion => "Zubau PV",
+            Self::EstimatedSelfPhotovolaticUsage => "Geschätzte Eigennutzung",
+            Self::WindEnergyExpansion => "Zubau Wind",
+            Self::EstimatedSelfWindEnergyUsage => "Geschätzte Eigennutzung",
+            Self::WaterEnergyExpansion => "Zubau Wasserkraft",
+            Self::EstimatedSelfWaterEnergyUsage => "Geschätzte Eigennutzung",
         }
     }
 }
@@ -222,6 +241,18 @@ pub fn read_input_fields(
         co2_fossil: Some(2.2),
     };
 
+    let energy_emission_factors = EnergyEmissionFactors {
+        process_energy_savings: None,
+        fossil_energy_savings: None,
+        district_heating: None,
+        photovoltaic_energy_expansion: None,
+        estimated_self_photovoltaic_usage: None,
+        wind_energy_expansion: None,
+        estimated_self_wind_energy_usage: None,
+        water_energy_expansion: None,
+        estimated_self_water_energy_usage: None,
+    };
+
     (
         PlantProfile {
             plant_name,
@@ -234,6 +265,7 @@ pub fn read_input_fields(
             side_stream_treatment,
             operating_materials,
             emission_factors,
+            energy_emission_factors,
         },
         missing_fields,
     )
@@ -303,6 +335,7 @@ pub fn load_project_fields(signals: &HashMap<FieldId, FieldSignal>, project: Pro
         side_stream_treatment,
         operating_materials,
         emission_factors: _,
+        energy_emission_factors: _, // FIXME implement?
     } = plant_profile;
 
     let OptimizationScenario {
