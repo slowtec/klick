@@ -20,16 +20,12 @@ pub fn field_sets() -> Vec<FieldSet> {
             Field {
                 id: Id::ProjectName,
                 description: Some(
-                    "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. <br>
+                    "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. In der <b>angemeldeten</b> Version,
+                    dient der Projektname der Speicherung Ihrer Eingaben/Ergebnisse unter dem Reiter „Projekte“.
 
-                    Falls Sie sich <b>angemeldet</b> haben,
-                    wird der Projektname zur Speicherung Ihrer Eingabewerte und Ergebnisse unter dem Reiter Projekte verwendet.
-                    Diese Daten werden unverschluesselt auf einem Server hinterlegt, Dritte können diese Daten allerdings
-                    nicht einsehen und die UTBW wird diese Daten nicht weitergeben oder weiterverarbeiten.<br>
-
-                    Wenn Sie sich <b>nicht angemeldet</b> haben, können Sie das Tool natürlich dennoch in vollem Umfang nutzen.
-                    Ihre Daten inkl. des Projektnamens werden dabei ausschließlich lokal auf Ihrer Festplatte gespeichert
-                    sowie nur in Ihrem Browser verarbeitet."
+                    Wenn Sie sich <b>nicht angemeldet</b> haben, wird der Projektname ausschließlich nur auf Ihrer Festplatte
+                    gespeichert und in Ihrem lokalen Browser verarbeitet. Weitere Informationen zur Datenverarbeitung
+                    finden Sie in den <b>FAQ</b>."
                 ),
                 required: false,
                 field_type: FieldType::Text {
