@@ -51,7 +51,7 @@ impl ValueLabel for EnergyConsumptionId {
             Self::PurchaseOfBiogas => "Bezug von Biogas",
             Self::TotalPowerConsumption => "Strombedarf gesamt",
             Self::OnSitePowerGeneration => "Eigenstromerzeugung",
-            Self::EmissionFactorElectricityMix => "Emissionsfaktor Strommix (Versorger)",
+            Self::EmissionFactorElectricityMix => "Strommix-EF (Versorger)",
             Self::HeatingOil => "Heizölbezug",
         }
     }
