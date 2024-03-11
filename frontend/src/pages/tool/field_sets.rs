@@ -322,7 +322,7 @@ pub fn field_sets() -> Vec<FieldSet> {
             Field {
                 id: ProfileValueId::from(EnergyConsumptionId::HeatingOil).into(),
                 description: Some(
-                    "Menge an Heizöl in Liter (L) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Heizöl von extern bezogen wird, dieses Feld bitte freilassen.",
+                    "Menge an Heizöl (z.B. für die Beheizung von Gebäuden) in Litern (L) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Heizöl von extern bezogen wird, dieses Feld bitte freilassen."
                 ),
                 required: false,
                 field_type: FieldType::Float {
