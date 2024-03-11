@@ -252,7 +252,7 @@ fn field_sets() -> Vec<FieldSet> {
                             min: None,
                             max: None,
                         },
-                        unit: "kWh",
+                        unit: "kWh/a",
                     },
                 },
                 Field {
@@ -285,7 +285,7 @@ fn field_sets() -> Vec<FieldSet> {
                             min: None,
                             max: None,
                         },
-                        unit: "kWh",
+                        unit: "kWh/a",
                     },
                 },
                 Field {
@@ -318,7 +318,7 @@ fn field_sets() -> Vec<FieldSet> {
                             min: None,
                             max: None,
                         },
-                        unit: "kWh",
+                        unit: "kWh/a",
                     },
                 },
                 Field {
@@ -350,7 +350,7 @@ fn field_sets() -> Vec<FieldSet> {
                         min: None,
                         max: None,
                     },
-                    unit: "kWh",
+                    unit: "kWh/a",
                 },
             }],
         },
