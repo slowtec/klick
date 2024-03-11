@@ -409,6 +409,11 @@ impl TryFrom<SewageSludgeTreatment> for domain::SewageSludgeTreatment {
         };
         let sewage_sludge_for_disposal = domain::units::Tons::new(sewage_sludge_for_disposal);
         let transport_distance = domain::units::Kilometers::new(transport_distance);
+        let custom_sludge_bags_factor =
+            custom_sludge_bags_factor.map(domain::units::QubicmetersPerHour::new);
+        let custom_sludge_storage_containers_factor =
+            custom_sludge_storage_containers_factor.map(domain::units::Percent::new);
+
         Ok(Self {
             sludge_bags_are_open,
             sludge_bags_are_open_recommendation,
@@ -444,6 +449,10 @@ impl From<domain::SewageSludgeTreatment> for SewageSludgeTreatment {
         let sewage_sludge_for_disposal = Some(sewage_sludge_for_disposal.into());
         let transport_distance = Some(transport_distance.into());
         let digester_count = digester_count.map(Into::into);
+        let custom_sludge_bags_factor = custom_sludge_bags_factor.map(Into::into);
+        let custom_sludge_storage_containers_factor =
+            custom_sludge_storage_containers_factor.map(Into::into);
+
         Self {
             sludge_bags_are_open,
             sludge_bags_are_open_recommendation,
@@ -518,7 +527,7 @@ impl From<domain::OperatingMaterials> for OperatingMaterials {
     }
 }
 
-impl TryFrom<CustomEmissionFactors> for domain::CustomEmissionFactors {
+impl TryFrom<CustomEmissionFactors> for domain::EmissionFactors {
     // FIXME rename into something better
     type Error = anyhow::Error;
 
@@ -543,9 +552,9 @@ impl TryFrom<CustomEmissionFactors> for domain::CustomEmissionFactors {
     }
 }
 
-impl From<domain::CustomEmissionFactors> for CustomEmissionFactors {
-    fn from(from: domain::CustomEmissionFactors) -> Self {
-        let domain::CustomEmissionFactors {
+impl From<domain::EmissionFactors> for CustomEmissionFactors {
+    fn from(from: domain::EmissionFactors) -> Self {
+        let domain::EmissionFactors {
             n2o_side_stream,
             co2_fossil,
         } = from;

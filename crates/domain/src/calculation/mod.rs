@@ -8,16 +8,11 @@ use crate::{
         Qubicmeters, QubicmetersPerHour, Ratio, Time, Tons, Years,
     },
     AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
-    CalculatedScenarios, CustomEmissionFactors, EmissionFactorCalculationMethods, EmissionFactors,
+    CalculatedEmissionFactors, EmissionFactorCalculationMethods, EmissionFactors,
     EmissionInfluencingValues, EmissionsCalculationOutcome, EnergyConsumption,
     EnergyEmissionFactors, N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
     SideStreamTreatment,
 };
-
-pub fn calculate_scenarios(initial_situation: EmissionInfluencingValues) -> CalculatedScenarios {
-    let _ = calculate_all_n2o_emission_factor_scenarios(&initial_situation, None, None);
-    todo!()
-}
 
 #[must_use]
 #[allow(clippy::too_many_lines)]
@@ -88,7 +83,7 @@ pub fn calculate_emissions(
         side_stream_cover_is_open,
     } = side_stream_treatment;
 
-    let CustomEmissionFactors {
+    let EmissionFactors {
         n2o_side_stream,
         co2_fossil,
     } = emission_factors;
@@ -248,8 +243,9 @@ pub fn calculate_emissions(
         estimated_self_water_energy_usage,
     );
 
-    let district_heating_savings: Tons =
-        (district_heating * (EF_STROM_MIX - EF_HEAT_NETWORK)).convert_to::<Tons>();
+    let district_heating_savings: Tons = (district_heating
+        * (EMISSION_FACTOR_STROM_MIX - EMISSION_FACTOR_HEAT_NETWORK))
+        .convert_to::<Tons>();
     let fossil_energy_savings =
         calculate_oil_gas_savings(oil_emissions, gas_emissions, fossil_energy_savings);
 
@@ -291,7 +287,7 @@ pub fn calculate_emissions(
         excess_energy_co2_equivalent,
     };
 
-    let emission_factors = EmissionFactors {
+    let emission_factors = CalculatedEmissionFactors {
         n2o: n2o_emission_factor,
         ch4: ch4_emission_factor,
     };
@@ -307,14 +303,12 @@ pub fn calculate_emissions(
 pub fn calculate_ch4_slippage_sludge_bags(
     digester_count: Option<u64>,
     methane_fraction: Percent,
-    custom_sludge_bags_factor: Option<f64>,
+    custom_sludge_bags_factor: Option<QubicmetersPerHour>,
 ) -> Tons {
     let count = Factor::new(digester_count.unwrap_or(0) as f64);
     let hours_per_year = Years::new(1.0).convert_to::<Hours>();
-    let custom_sludge_bags_factor = match custom_sludge_bags_factor {
-        Some(v) => QubicmetersPerHour::new(v),
-        None => EMISSION_FACTOR_SLUDGE_BAGS,
-    };
+    let custom_sludge_bags_factor =
+        custom_sludge_bags_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_BAGS);
     let kilograms = custom_sludge_bags_factor
         * hours_per_year
         * count
@@ -327,12 +321,10 @@ pub fn calculate_ch4_slippage_sludge_bags(
 pub fn calculate_ch4_slippage_sludge_storage(
     sewage_gas_produced: Qubicmeters,
     methane_fraction: Percent,
-    custom_sludge_storage_containers_factor: Option<f64>,
+    custom_sludge_storage_containers_factor: Option<Percent>,
 ) -> Tons {
-    let custom_sludge_storage_containers_factor = match custom_sludge_storage_containers_factor {
-        Some(v) => Percent::new(v),
-        None => EMISSION_FACTOR_SLUDGE_STORAGE,
-    };
+    let custom_sludge_storage_containers_factor =
+        custom_sludge_storage_containers_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_STORAGE);
     let volume = sewage_gas_produced * methane_fraction * custom_sludge_storage_containers_factor;
     let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
     mass.convert_to()
@@ -393,20 +385,13 @@ pub fn calculate_fossil_emissions(
     co2_fossil_emission_factor: Factor,
     wastewater: Qubicmeters,
 ) -> Tons {
-    if f64::from(total_organic_carbohydrates) > 0.01 {
-        let fossil_emissions = total_organic_carbohydrates
-            * co2_fossil_emission_factor
-            * wastewater
-            * CONVERSION_FACTOR_C_TO_CO2;
-        fossil_emissions.convert_to::<Tons>()
+    let base = if total_organic_carbohydrates > MilligramsPerLiter::new(0.01) {
+        total_organic_carbohydrates
     } else {
-        let fossil_emissions = chemical_oxygen_demand_influent
-            * CONVERSION_FACTOR_TOC_TO_COD
-            * co2_fossil_emission_factor
-            * wastewater
-            * CONVERSION_FACTOR_C_TO_CO2;
-        fossil_emissions.convert_to::<Tons>()
-    }
+        chemical_oxygen_demand_influent * CONVERSION_FACTOR_TOC_TO_COD
+    };
+    let emissions = base * co2_fossil_emission_factor * wastewater * CONVERSION_FACTOR_C_TO_CO2;
+    emissions.convert_to()
 }
 
 pub fn calculate_n2o_side_stream(
@@ -414,11 +399,10 @@ pub fn calculate_n2o_side_stream(
     n2o_side_stream_emission_factor: Factor,
     side_stream_cover_is_open: bool,
 ) -> Tons {
-    if side_stream_cover_is_open {
-        total_nitrogen * n2o_side_stream_emission_factor * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O
-    } else {
-        Tons::zero()
+    if !side_stream_cover_is_open {
+        return Tons::zero();
     }
+    total_nitrogen * n2o_side_stream_emission_factor * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O
 }
 
 pub fn calculate_ch4_plant(
@@ -438,12 +422,10 @@ pub fn calculate_ch4_plant(
     }
 }
 
-//Heizöl [CO2-Äq./a] = neues Eingabefeld Heizölbezug (Versorger) [L/a] * EF-Heizöl [CO2-Äq./ L]
 pub fn calculate_oil_emissions(oil_supply: Liters) -> Tons {
     (oil_supply * EMISSION_FACTOR_OIL).convert_to::<Tons>()
 }
 
-//Erdgas [CO2-Äq./a] = vorhandenes Eingabefeld Gasbezug (Versorger) [m3 kWh/a] * EF-Erdgas [CO2-Äq./m3]
 pub fn calculate_gas_emissions(gas_supply: Qubicmeters, purchase_of_biogas: bool) -> Tons {
     let ef_gas = if purchase_of_biogas {
         EMISSION_FACTOR_BIOGAS
@@ -457,14 +439,15 @@ pub fn calculate_process_energy_savings(
     total_power_consumption: Kilowatthours,
     process_energy_savings: Percent,
 ) -> Tons {
-    (total_power_consumption * process_energy_savings * EF_STROM_MIX).convert_to::<Tons>()
+    (total_power_consumption * process_energy_savings * EMISSION_FACTOR_STROM_MIX)
+        .convert_to::<Tons>()
 }
 
 pub fn calculate_photovoltaic_expansion_savings(
     photovoltaic_energy_expansion: Kilowatthours,
     estimated_self_photovoltaic_usage: Percent,
 ) -> Tons {
-    (photovoltaic_energy_expansion * estimated_self_photovoltaic_usage * EF_STROM_MIX)
+    (photovoltaic_energy_expansion * estimated_self_photovoltaic_usage * EMISSION_FACTOR_STROM_MIX)
         .convert_to::<Tons>()
 }
 
@@ -472,14 +455,16 @@ pub fn calculate_wind_expansion_savings(
     wind_energy_expansion: Kilowatthours,
     estimated_self_wind_energy_usage: Percent,
 ) -> Tons {
-    (wind_energy_expansion * estimated_self_wind_energy_usage * EF_STROM_MIX).convert_to::<Tons>()
+    (wind_energy_expansion * estimated_self_wind_energy_usage * EMISSION_FACTOR_STROM_MIX)
+        .convert_to::<Tons>()
 }
 
 pub fn calculate_water_expansion_savings(
     water_energy_expansion: Kilowatthours,
     estimated_self_water_energy_usage: Percent,
 ) -> Tons {
-    (water_energy_expansion * estimated_self_water_energy_usage * EF_STROM_MIX).convert_to::<Tons>()
+    (water_energy_expansion * estimated_self_water_energy_usage * EMISSION_FACTOR_STROM_MIX)
+        .convert_to::<Tons>()
 }
 pub fn calculate_oil_gas_savings(
     oil_emissions: Tons,
