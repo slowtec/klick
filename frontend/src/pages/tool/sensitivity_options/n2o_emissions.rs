@@ -184,8 +184,8 @@ fn field_set2() -> FieldSet {
     let custom_factor_field = Field {
         id,
         description: Some(
-            "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
-            oder einer Messkampagne) einen Wert für den EF Prozesswasserbehandlung eintragen.",
+            "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder
+            einer Messkampagne) einen Wert für den EF der Prozesswasserbehandlung eintragen.",
         ),
         required: false,
         field_type: FieldType::Float {
