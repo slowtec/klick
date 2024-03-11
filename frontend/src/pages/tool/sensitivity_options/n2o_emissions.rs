@@ -153,9 +153,7 @@ fn field_set1() -> FieldSet {
             "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
             oder einer Messkampagne) einen Wert für den EF N₂O eintragen.
 
-            <br>Ohne Angabe gibt es keine Auswahl zum Benuzterdefinierten Szenario in der Auswahl zum Szenario
-            für die Lachgasemissionen. Nach Eingabe erscheint eine weitere Auswahlmöglichkeit (Benutzerdefiniert),
-            diese muss manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.",
+            <br>Weiter muss die Auswahlmöglichkeit (Benutzerdefiniert) manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.",
         ),
         required: false,
         field_type: FieldType::Float {
