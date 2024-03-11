@@ -127,7 +127,7 @@ pub fn field_sets() -> Vec<FieldSet> {
             Field {
                 id: ProfileValueId::from(AnnualAverageInfluentId::Nitrogen).into(),
                 description: Some(
-                    "Der Gesamtstickstoff-Gehalt des Abwassers (TKN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+                    "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
                 required: true,
                 field_type: FieldType::Float {
@@ -201,7 +201,7 @@ pub fn field_sets() -> Vec<FieldSet> {
             Field {
                 id: ProfileValueId::from(AnnualAverageEffluentId::Nitrogen).into(),
                 description: Some(
-                    "Der Gesamtstickstoff-Gehalt des Abwassers (TKN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+                    "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
                 required: true,
                 field_type: FieldType::Float {
