@@ -80,6 +80,5 @@ pub const EMISSION_FACTOR_N2O_IPCC2019: Percent = Percent::new(1.6);
 pub const EMISSION_FACTOR_OIL: KilogramsPerLiter = KilogramsPerLiter::new(2.6763);
 pub const EMISSION_FACTOR_GAS: KilogramsPerQubicmeter = KilogramsPerQubicmeter::new(2.04);
 pub const EMISSION_FACTOR_BIOGAS: KilogramsPerQubicmeter = KilogramsPerQubicmeter::new(0.1654815);
-
-pub const EF_HEAT_NETWORK: GramsPerKilowatthour = GramsPerKilowatthour::new(243.9);
-pub const EF_STROM_MIX: GramsPerKilowatthour = GramsPerKilowatthour::new(468.0);
+pub const EMISSION_FACTOR_HEAT_NETWORK: GramsPerKilowatthour = GramsPerKilowatthour::new(243.9);
+pub const EMISSION_FACTOR_STROM_MIX: GramsPerKilowatthour = GramsPerKilowatthour::new(468.0);

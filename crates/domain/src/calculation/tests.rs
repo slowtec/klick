@@ -55,7 +55,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
         },
-        emission_factors: CustomEmissionFactors {
+        emission_factors: EmissionFactors {
             co2_fossil: Factor::new(0.0),
             n2o_side_stream: Factor::new(0.0),
         },
@@ -202,7 +202,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
         },
-        emission_factors: CustomEmissionFactors {
+        emission_factors: EmissionFactors {
             co2_fossil: Factor::new(0.0),
             n2o_side_stream: Factor::new(0.0),
         },
@@ -350,7 +350,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
         },
-        emission_factors: CustomEmissionFactors {
+        emission_factors: EmissionFactors {
             co2_fossil: Factor::new(0.0),
             n2o_side_stream: Factor::new(0.0),
         },
@@ -498,7 +498,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
         },
-        emission_factors: CustomEmissionFactors {
+        emission_factors: EmissionFactors {
             co2_fossil: Factor::new(0.0),
             n2o_side_stream: Factor::new(0.0),
         },
@@ -645,7 +645,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             caoh2: Tons::new(326.26),
             synthetic_polymers: Tons::new(23.62),
         },
-        emission_factors: CustomEmissionFactors {
+        emission_factors: EmissionFactors {
             co2_fossil: Factor::new(0.0),
             n2o_side_stream: Factor::new(0.0),
         },
@@ -767,7 +767,7 @@ fn calculate_ch4_slippage_sludge_bags_for_one_digester() {
     let expected = Tons::new(4.8711075);
     let digester_count = Some(1);
     let methane_fraction = Percent::new(62.0);
-    let custom_sludge_bags_factor: Option<f64> = Some(1.25);
+    let custom_sludge_bags_factor = Some(QubicmetersPerHour::new(1.25));
     let result = calculate_ch4_slippage_sludge_bags(
         digester_count,
         methane_fraction,
