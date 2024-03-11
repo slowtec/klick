@@ -94,7 +94,7 @@ fn field_set() -> FieldSet {
     let id = FieldId::Scenario(ScenarioFieldId::CO2FossilCustomFactor);
     let custom_factor_field = Field {
         id,
-        description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₄ eintragen."),
+        description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₂ eintragen."),
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
