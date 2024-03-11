@@ -2,8 +2,9 @@ use std::{fs::File, io::prelude::*};
 
 use klick_boundary::{
     AnnualAverageEffluent, AnnualAverageInfluent, CustomEmissionFactors, EnergyConsumption,
-    N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario, OperatingMaterials,
-    OptimizationScenario, PlantProfile, ProjectData, SewageSludgeTreatment, SideStreamTreatment,
+    EnergyEmissionFactors, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
+    OperatingMaterials, OptimizationScenario, PlantProfile, ProjectData, SewageSludgeTreatment,
+    SideStreamTreatment,
 };
 use klick_pdf_export::export_to_pdf;
 
@@ -64,6 +65,17 @@ fn project_example_data() -> ProjectData {
         emission_factors: CustomEmissionFactors {
             co2_fossil: Some(0.0),
             n2o_side_stream: Some(0.0),
+        },
+        energy_emission_factors: EnergyEmissionFactors {
+            process_energy_savings: None,
+            fossil_energy_savings: None,
+            district_heating: None,
+            photovoltaic_energy_expansion: None,
+            estimated_self_photovoltaic_usage: None,
+            wind_energy_expansion: None,
+            estimated_self_wind_energy_usage: None,
+            water_energy_expansion: None,
+            estimated_self_water_energy_usage: None,
         },
     };
 
