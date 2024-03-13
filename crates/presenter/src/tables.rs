@@ -7,7 +7,24 @@ use crate::{
     OperatingMaterialId, ProfileValueId, SewageSludgeTreatmentId, ValueLabel, ValueUnit,
 };
 
-pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
+pub enum UnitFormatting {
+    Text,
+    LaTeX,
+}
+
+impl UnitFormatting {
+    fn fmt<V>(&self, v: V) -> Option<&'static str>
+    where
+        V: ValueUnit,
+    {
+        match self {
+            Self::Text => v.unit_as_text(),
+            Self::LaTeX => v.unit_as_latex(),
+        }
+    }
+}
+
+pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> Table {
     let PlantProfile {
         plant_name,
         population_equivalent,
@@ -18,8 +35,8 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
         sewage_sludge_treatment,
         side_stream_treatment: _, // FIXME implement
         operating_materials,
-        emission_factors: _,
-        energy_emission_factors: _, // FIXME implement
+        // FIXME: emission_factors: _,
+        // FIXME: energy_emission_factors: _, // FIXME implement
     } = profile;
 
     let lang = Lng::De;
@@ -31,17 +48,17 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
                 (
                     ProfileValueId::PlantName.label(),
                     plant_name.clone(),
-                    ProfileValueId::PlantName.unit_as_latex(),
+                    unit.fmt(ProfileValueId::PlantName),
                 ),
                 (
                     ProfileValueId::PopulationEquivalent.label(),
                     population_equivalent.map(format_number_with_thousands_seperator(lang)),
-                    ProfileValueId::PopulationEquivalent.unit_as_latex(),
+                    unit.fmt(ProfileValueId::PopulationEquivalent),
                 ),
                 (
                     ProfileValueId::Wastewater.label(),
                     wastewater.map(format_number_with_thousands_seperator(lang)),
-                    ProfileValueId::Wastewater.unit_as_latex(),
+                    unit.fmt(ProfileValueId::Wastewater),
                 ),
             ],
         },
@@ -50,15 +67,15 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
             rows: vec![
                 (
                     AnnualAverageInfluentId::Nitrogen.label(),
-                    influent_average.nitrogen.map(format_number(lang)),
-                    AnnualAverageInfluentId::Nitrogen.unit_as_latex(),
+                    influent_average.total_nitrogen.map(format_number(lang)),
+                    unit.fmt(AnnualAverageInfluentId::Nitrogen),
                 ),
                 (
                     AnnualAverageInfluentId::ChemicalOxygenDemand.label(),
                     influent_average
                         .chemical_oxygen_demand
                         .map(format_number(lang)),
-                    AnnualAverageInfluentId::ChemicalOxygenDemand.unit_as_latex(),
+                    unit.fmt(AnnualAverageInfluentId::ChemicalOxygenDemand),
                 ),
             ],
         },
@@ -67,15 +84,15 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
             rows: vec![
                 (
                     AnnualAverageEffluentId::Nitrogen.label(),
-                    effluent_average.nitrogen.map(format_number(lang)),
-                    AnnualAverageEffluentId::Nitrogen.unit_as_latex(),
+                    effluent_average.total_nitrogen.map(format_number(lang)),
+                    unit.fmt(AnnualAverageEffluentId::Nitrogen),
                 ),
                 (
                     AnnualAverageEffluentId::ChemicalOxygenDemand.label(),
                     effluent_average
                         .chemical_oxygen_demand
                         .map(format_number(lang)),
-                    AnnualAverageEffluentId::ChemicalOxygenDemand.unit_as_latex(),
+                    unit.fmt(AnnualAverageEffluentId::ChemicalOxygenDemand),
                 ),
             ],
         },
@@ -87,43 +104,43 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
                     energy_consumption
                         .sewage_gas_produced
                         .map(format_number_with_thousands_seperator(lang)),
-                    EnergyConsumptionId::SewageGasProduced.unit_as_latex(),
+                    unit.fmt(EnergyConsumptionId::SewageGasProduced),
                 ),
                 (
                     EnergyConsumptionId::MethaneFraction.label(),
                     energy_consumption.methane_fraction.map(format_number(lang)),
-                    EnergyConsumptionId::MethaneFraction.unit_as_latex(),
+                    unit.fmt(EnergyConsumptionId::MethaneFraction),
                 ),
                 (
                     EnergyConsumptionId::GasSupply.label(),
                     energy_consumption.gas_supply.map(format_number(lang)),
-                    EnergyConsumptionId::GasSupply.unit_as_latex(),
+                    unit.fmt(EnergyConsumptionId::GasSupply),
                 ),
                 (
                     EnergyConsumptionId::PurchaseOfBiogas.label(),
                     energy_consumption.purchase_of_biogas.map(format_bool(lang)),
-                    EnergyConsumptionId::PurchaseOfBiogas.unit_as_latex(),
+                    unit.fmt(EnergyConsumptionId::PurchaseOfBiogas),
                 ),
                 (
                     EnergyConsumptionId::TotalPowerConsumption.label(),
                     energy_consumption
                         .total_power_consumption
                         .map(format_number_with_thousands_seperator(lang)),
-                    EnergyConsumptionId::TotalPowerConsumption.unit_as_latex(),
+                    unit.fmt(EnergyConsumptionId::TotalPowerConsumption),
                 ),
                 (
                     EnergyConsumptionId::OnSitePowerGeneration.label(),
                     energy_consumption
                         .on_site_power_generation
                         .map(format_number_with_thousands_seperator(lang)),
-                    EnergyConsumptionId::OnSitePowerGeneration.unit_as_latex(),
+                    unit.fmt(EnergyConsumptionId::OnSitePowerGeneration),
                 ),
                 (
                     EnergyConsumptionId::EmissionFactorElectricityMix.label(),
                     energy_consumption
                         .emission_factor_electricity_mix
                         .map(format_number(lang)),
-                    EnergyConsumptionId::EmissionFactorElectricityMix.unit_as_latex(),
+                    unit.fmt(EnergyConsumptionId::EmissionFactorElectricityMix),
                 ),
             ],
         },
@@ -135,21 +152,21 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
                     sewage_sludge_treatment
                         .sewage_sludge_for_disposal
                         .map(format_number(lang)),
-                    SewageSludgeTreatmentId::SewageSludgeForDisposal.unit_as_latex(),
+                    unit.fmt(SewageSludgeTreatmentId::SewageSludgeForDisposal),
                 ),
                 (
                     SewageSludgeTreatmentId::TransportDistance.label(),
                     sewage_sludge_treatment
                         .transport_distance
                         .map(format_number(lang)),
-                    SewageSludgeTreatmentId::TransportDistance.unit_as_latex(),
+                    unit.fmt(SewageSludgeTreatmentId::TransportDistance),
                 ),
                 (
                     SewageSludgeTreatmentId::DigesterCount.label(),
                     sewage_sludge_treatment
                         .digester_count
                         .map(|n| n.to_string()),
-                    SewageSludgeTreatmentId::DigesterCount.unit_as_latex(),
+                    unit.fmt(SewageSludgeTreatmentId::DigesterCount),
                 ),
             ],
         },
@@ -159,24 +176,24 @@ pub fn plant_profile_as_table(profile: &PlantProfile) -> Table {
                 (
                     OperatingMaterialId::FeCl3.label(),
                     operating_materials.fecl3.map(format_number(lang)),
-                    OperatingMaterialId::FeCl3.unit_as_latex(),
+                    unit.fmt(OperatingMaterialId::FeCl3),
                 ),
                 (
                     OperatingMaterialId::FeClSO4.label(),
                     operating_materials.feclso4.map(format_number(lang)),
-                    OperatingMaterialId::FeClSO4.unit_as_latex(),
+                    unit.fmt(OperatingMaterialId::FeClSO4),
                 ),
                 (
                     OperatingMaterialId::CaOH2.label(),
                     operating_materials.caoh2.map(format_number(lang)),
-                    OperatingMaterialId::CaOH2.unit_as_latex(),
+                    unit.fmt(OperatingMaterialId::CaOH2),
                 ),
                 (
                     OperatingMaterialId::SyntheticPolymers.label(),
                     operating_materials
                         .synthetic_polymers
                         .map(format_number(lang)),
-                    OperatingMaterialId::SyntheticPolymers.unit_as_latex(),
+                    unit.fmt(OperatingMaterialId::SyntheticPolymers),
                 ),
             ],
         },

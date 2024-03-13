@@ -1,15 +1,13 @@
 use leptos::*;
 
 #[component]
-pub fn Breadcrumbs<E>(
-    entries: Vec<(&'static str, E)>,
-    current: RwSignal<Option<E>>,
-) -> impl IntoView
+pub fn Breadcrumbs<E>(entries: &'static [(&'static str, E)], current: RwSignal<E>) -> impl IntoView
 where
     E: Copy + PartialEq + 'static,
 {
     let crumbs: Vec<_> = entries
-        .into_iter()
+        .iter()
+        .copied()
         .map(|(title, entry)| view! { <Entry title entry current /> })
         .collect();
 
@@ -42,7 +40,7 @@ where
 }
 
 #[component]
-fn Entry<E>(title: &'static str, entry: E, current: RwSignal<Option<E>>) -> impl IntoView
+fn Entry<E>(title: &'static str, entry: E, current: RwSignal<E>) -> impl IntoView
 where
     E: Copy + PartialEq + 'static,
 {
@@ -61,13 +59,13 @@ where
           <a
             href="#"
             class= move ||
-              if current.get() == Some(entry) {
+              if current.get() == entry {
                 "ml-4 text-sm font-bold text-black hover:text-gray-700"
               } else {
                 "ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
               }
             aria-current="page"
-            on:click = move |_| current.set(Some(entry))
+            on:click = move |_| current.set(entry)
           >
             { title }
           </a>

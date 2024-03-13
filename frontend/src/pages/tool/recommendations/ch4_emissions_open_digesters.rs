@@ -1,45 +1,52 @@
 use leptos::*;
 
-use super::Card;
-use klick_domain as domain;
-use klick_presenter::ProfileValueId;
-use klick_presenter::SewageSludgeTreatmentId;
+use klick_app_components::forms::*;
+use klick_boundary::FormData;
+use klick_presenter::*;
 
-use crate::{
-    forms::{render_field_sets, FieldType},
-    pages::tool::{
-        field_sets::{Field, FieldSet},
-        FieldSignal,
-    },
-};
+use crate::pages::tool::{CalculationOutcome, Card};
+
 pub fn options(
-    output: ReadSignal<Option<domain::EmissionsCalculationOutcome>>,
-    show_sludge_bags_controls: RwSignal<bool>,
-    show_sludge_storage_containers_controls: RwSignal<bool>,
-    sludge_bags_are_open_recommendation: RwSignal<Option<bool>>,
-    sludge_storage_containers_are_open_recommendation: RwSignal<Option<bool>>,
+    form_data: RwSignal<FormData>,
+    input_data: ReadSignal<FormData>,
+    outcome: Signal<Option<CalculationOutcome>>,
 ) -> impl IntoView {
-    let field_set = field_set1();
-    let (signals1, form1, _required_fields) = render_field_sets(vec![field_set]);
-    let field_set = field_set2();
-    let (signals2, form2, _required_fields) = render_field_sets(vec![field_set]);
-    create_effect(move |_| {
-        let field_signal1 = signals1
-            .get(&ProfileValueId::from(SewageSludgeTreatmentId::SludgeBagsRecommended).into());
+    // -----   ----- //
+    //    Signals    //
+    // -----   ----- //
 
-        match field_signal1.and_then(FieldSignal::get_bool) {
-            Some(v) => sludge_bags_are_open_recommendation.set(Some(v)),
-            None => sludge_bags_are_open_recommendation.set(None),
-        }
-        let field_signal2 = signals2.get(
-            &ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainersRecommended)
-                .into(),
-        );
-        match field_signal2.and_then(FieldSignal::get_bool) {
-            Some(v) => sludge_storage_containers_are_open_recommendation.set(Some(v)),
-            None => sludge_storage_containers_are_open_recommendation.set(None),
-        }
+    let show_sludge_bags_controls = Signal::derive(move || {
+        form_data.with(|d| {
+            d.plant_profile
+                .sewage_sludge_treatment
+                .sludge_bags_are_closed
+                != Some(true)
+        })
     });
+
+    let show_sludge_storage_containers_controls = Signal::derive(move || {
+        form_data.with(|d| {
+            d.plant_profile
+                .sewage_sludge_treatment
+                .sludge_storage_containers_are_closed
+                != Some(true)
+        })
+    });
+
+    // -----   ----- //
+    //    Fields     //
+    // -----   ----- //
+
+    let field_set = field_set1(form_data.write_only(), input_data);
+    let (form1, _, _) = render_field_sets(vec![field_set]);
+
+    let field_set = field_set2(form_data.write_only(), input_data);
+    let (form2, _, _) = render_field_sets(vec![field_set]);
+
+    // -----   ----- //
+    //     View      //
+    // -----   ----- //
+
     view! {
       <div class = move || { if show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get() { None } else { Some("hidden") } }>
       <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-yellow">
@@ -62,7 +69,8 @@ pub fn options(
                   false => "hidden".to_string(),
                   true => "".to_string(),
               };
-              output.get().map(|out|
+              outcome.with(|out|out.as_ref().map(|out|{
+                let out = &out.recommendation;
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_sludge_bags_controls_class) }>"CH₄ Schlupf Schlammtaschen"</dt>
@@ -82,7 +90,7 @@ pub fn options(
                     </dd>
                   </dl>
                 }
-              )
+              }))
             }
           }
         </div>
@@ -91,14 +99,28 @@ pub fn options(
     }
 }
 
-fn field_set1() -> FieldSet {
-    let id1 = ProfileValueId::from(SewageSludgeTreatmentId::SludgeBagsRecommended).into();
+fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let custom_factor_field1 = Field {
-        id: id1,
+        label: SewageSludgeTreatmentId::SludgeBagsRecommended.label(),
         description: None,
         required: false,
         field_type: FieldType::Bool {
             initial_value: None,
+            on_change: Callback::new(move |v| {
+                form_data.update(|d| {
+                    d.optimization_scenario
+                        .sewage_sludge_treatment
+                        .sludge_bags_are_closed = Some(v);
+                });
+            }),
+            input: Signal::derive(move || {
+                input_data.with(|d| {
+                    d.optimization_scenario
+                        .sewage_sludge_treatment
+                        .sludge_bags_are_closed
+                        .unwrap_or(false)
+                })
+            }),
         },
     };
     let fields = vec![custom_factor_field1];
@@ -108,15 +130,28 @@ fn field_set1() -> FieldSet {
     }
 }
 
-fn field_set2() -> FieldSet {
-    let id2 =
-        ProfileValueId::from(SewageSludgeTreatmentId::SludgeStorageContainersRecommended).into();
+fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let custom_factor_field2 = Field {
-        id: id2,
+        label: SewageSludgeTreatmentId::SludgeStorageContainersRecommended.label(),
         description: None,
         required: false,
         field_type: FieldType::Bool {
             initial_value: None,
+            on_change: Callback::new(move |v| {
+                form_data.update(|d| {
+                    d.optimization_scenario
+                        .sewage_sludge_treatment
+                        .sludge_storage_containers_are_closed = Some(v);
+                });
+            }),
+            input: Signal::derive(move || {
+                input_data.with(|d| {
+                    d.optimization_scenario
+                        .sewage_sludge_treatment
+                        .sludge_storage_containers_are_closed
+                        .unwrap_or(false)
+                })
+            }),
         },
     };
     let fields = vec![custom_factor_field2];

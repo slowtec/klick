@@ -3,7 +3,7 @@ use diesel::{prelude::*, sqlite::SqliteConnection};
 use klick_boundary as boundary;
 use klick_domain::{self as domain, authentication::EmailAddress, ProjectId};
 
-type Project = domain::Project<boundary::ProjectData>;
+type Project = domain::Project<boundary::FormData>;
 
 use crate::{account, project::models, schema};
 

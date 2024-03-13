@@ -1,6 +1,6 @@
 use leptos::*;
 
-use super::{Card, Cite, DWA_MERKBLATT_URL};
+use crate::pages::tool::{Card, Cite, DWA_MERKBLATT_URL};
 
 pub fn options() -> impl IntoView {
     view! {

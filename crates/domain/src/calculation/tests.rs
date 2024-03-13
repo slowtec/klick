@@ -40,11 +40,9 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
-            custom_sludge_bags_factor: None,
-            sludge_bags_are_open_recommendation: false,
-            sludge_storage_containers_are_open_recommendation: false,
+            sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
-            custom_sludge_storage_containers_factor: None,
+            sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -187,11 +185,9 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
-            custom_sludge_bags_factor: None,
+            sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
-            sludge_bags_are_open_recommendation: false,
-            sludge_storage_containers_are_open_recommendation: false,
-            custom_sludge_storage_containers_factor: None,
+            sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -335,11 +331,9 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
-            custom_sludge_bags_factor: None,
+            sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
-            custom_sludge_storage_containers_factor: None,
-            sludge_bags_are_open_recommendation: false,
-            sludge_storage_containers_are_open_recommendation: false,
+            sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -483,11 +477,9 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
-            custom_sludge_bags_factor: None,
+            sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
-            custom_sludge_storage_containers_factor: None,
-            sludge_bags_are_open_recommendation: false,
-            sludge_storage_containers_are_open_recommendation: false,
+            sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -630,11 +622,9 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
             sludge_bags_are_open: true,
-            custom_sludge_bags_factor: None,
+            sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
-            custom_sludge_storage_containers_factor: None,
-            sludge_bags_are_open_recommendation: false,
-            sludge_storage_containers_are_open_recommendation: false,
+            sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal: Tons::new(3687.6),
             transport_distance: Kilometers::new(47.0),
             digester_count: None,
@@ -767,12 +757,9 @@ fn calculate_ch4_slippage_sludge_bags_for_one_digester() {
     let expected = Tons::new(4.8711075);
     let digester_count = Some(1);
     let methane_fraction = Percent::new(62.0);
-    let custom_sludge_bags_factor = Some(QubicmetersPerHour::new(1.25));
-    let result = calculate_ch4_slippage_sludge_bags(
-        digester_count,
-        methane_fraction,
-        custom_sludge_bags_factor,
-    );
+    let sludge_bags_factor = Some(QubicmetersPerHour::new(1.25));
+    let result =
+        calculate_ch4_slippage_sludge_bags(digester_count, methane_fraction, sludge_bags_factor);
     assert_eq!(result, expected);
     assert_eq!(result * GWP_CH4, Tons::new(136.391_01));
 }

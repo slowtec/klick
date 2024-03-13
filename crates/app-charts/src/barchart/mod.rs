@@ -1,6 +1,6 @@
 use leptos::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BarChartArguments {
     pub label: &'static str,
     pub value: f64,

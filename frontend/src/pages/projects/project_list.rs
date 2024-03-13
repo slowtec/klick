@@ -94,7 +94,7 @@ fn Project(
     view! {
       <div class="min-w-0">
         <div class="flex items-start gap-x-3">
-          <p class="text-sm font-semibold leading-6 text-gray-900">{ project.data.title }</p>
+          <p class="text-sm font-semibold leading-6 text-gray-900">{ project.data.project_title }</p>
         </div>
         <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
           <p class="whitespace-nowrap">
@@ -130,7 +130,9 @@ fn Project(
 fn Menu(
     #[prop(into)] load: Callback<(), ()>,
     #[prop(into)] delete: Callback<(), ()>,
-    #[prop(into)] download_pdf: Callback<(), ()>,
+    #[allow(unused)]
+    #[prop(into)]
+    download_pdf: Callback<(), ()>,
 ) -> impl IntoView {
     let menu_is_open = RwSignal::new(false);
 
@@ -170,11 +172,12 @@ fn Menu(
                 label = "löschen"
                 icon = icons::Trash()
               />
-              <Entry
-                on:click = move |_| download_pdf.call(())
-                label = "erzeuge Bericht (PDF)"
-                icon = icons::DocumentArrowDown()
-              />
+              // FIXME:
+              // <Entry
+              //   on:click = move |_| download_pdf.call(())
+              //   label = "erzeuge Bericht (PDF)"
+              //   icon = icons::DocumentArrowDown()
+              // />
             </div>
           </Show>
         </div>

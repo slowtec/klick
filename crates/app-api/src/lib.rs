@@ -10,7 +10,7 @@ use klick_boundary::{
         self, ApiToken, ConfirmEmailAddress, Credentials, DownloadRequestResponse,
         RequestPasswordReset, ResetPassword, UserInfo,
     },
-    ProjectData, ProjectId, SavedProject,
+    FormData, ProjectId, SavedProject,
 };
 
 #[derive(Clone, Copy)]
@@ -143,7 +143,7 @@ impl AuthorizedApi {
         &self.token
     }
 
-    pub async fn create_project(&self, project: &ProjectData) -> Result<ProjectId, Value> {
+    pub async fn create_project(&self, project: &FormData) -> Result<ProjectId, Value> {
         let url = format!("{}/project", self.url);
         self.send_with_json(Request::post(&url), project).await
     }

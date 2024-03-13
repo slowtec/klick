@@ -27,6 +27,7 @@ leptos = { version = "0.6.9", features = ["csr"] }
 leptos_meta = { version = "0.6.9", features = ["csr"] }
 leptos_router = { version = "0.6.9", features = ["csr"] }
 log = "0.4.21"
+num-traits = "0.2.18"
 pulldown-cmark = "0.10.0"
 serde_json = "1.0.114"
 serde = { version = "1.0.197", features = ["derive"] }

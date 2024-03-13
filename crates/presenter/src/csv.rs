@@ -66,7 +66,8 @@ fn ch4_chp_emission_factor_calc_method_to_csv_name(
     }
 }
 
-pub fn emission_influencing_values_to_csv(v: EmissionInfluencingValues) -> String {
+pub fn emission_influencing_values_to_csv(_v: EmissionInfluencingValues) -> String {
+    // FIXME:
     // let mut output: String = String::new();
     // // make this multiple lines
     // output += &format!(
@@ -163,7 +164,7 @@ pub fn emission_influencing_values_to_csv(v: EmissionInfluencingValues) -> Strin
     todo!()
 }
 
-pub fn co2_equivalents_to_csv(eq: CO2Equivalents) -> String {
+pub fn co2_equivalents_to_csv(_eq: CO2Equivalents) -> String {
     // // FIXME add n2o_side_stream fossil_emissions
     // // FIXME add     pub oil_emissions: Tons,
     // //     pub gas_emissions: Tons,

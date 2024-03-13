@@ -60,15 +60,9 @@ pub struct SideStreamTreatment {
 #[cfg_attr(test, derive(Copy))]
 pub struct SewageSludgeTreatment {
     pub sludge_bags_are_open: bool,
-    // TODO: remove
-    pub sludge_bags_are_open_recommendation: bool,
-    // TODO: rename
-    pub custom_sludge_bags_factor: Option<QubicmetersPerHour>,
+    pub sludge_bags_factor: Option<QubicmetersPerHour>,
     pub sludge_storage_containers_are_open: bool,
-    // TODO: remove
-    pub sludge_storage_containers_are_open_recommendation: bool,
-    // TODO: rename
-    pub custom_sludge_storage_containers_factor: Option<Percent>,
+    pub sludge_storage_containers_factor: Option<Percent>,
     pub sewage_sludge_for_disposal: Tons,
     pub transport_distance: Kilometers,
     pub digester_count: Option<u64>,

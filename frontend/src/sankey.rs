@@ -40,7 +40,7 @@ where
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
-pub fn Sankey(data: (domain::CO2Equivalents, domain::EmissionFactors)) -> impl IntoView {
+pub fn Sankey(data: (domain::CO2Equivalents, domain::CalculatedEmissionFactors)) -> impl IntoView {
     let (co2_equivalents, _) = data;
     let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
 

@@ -17,7 +17,11 @@ pub trait ValueUnit {
     /// The package `siunitx` is required
     /// in your LaTeX document, so add
     /// `\usepackage{siunitx}` to the header.
-    fn unit_as_latex(&self) -> Option<&str> {
+    fn unit_as_latex(&self) -> Option<&'static str> {
+        None
+    }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
         None
     }
 }
@@ -30,8 +34,16 @@ const LATEX_MILLIGRAMSPERLITER: &str = r#"\si{\milli\gram\per\liter}"#;
 const LATEX_KILOWATTHOURS: &str = r#"\si{\kilo\watt\hour}"#;
 const LATEX_GRAMSPERKILOWATTHOUR: &str = r#"\si{\gram\per\kilo\watt\hour}"#;
 
+const TEXT_PERCENT: &str = "%";
+const TEXT_QUBICMETERS: &str = "m³";
+const TEXT_KILOMETERS: &str = "km";
+const TEXT_TONS: &str = "t";
+const TEXT_MILLIGRAMSPERLITER: &str = "mg/l";
+const TEXT_KILOWATTHOURS: &str = "kWh";
+const TEXT_GRAMSPERKILOWATTHOUR: &str = "g/kWh";
+
 impl ValueUnit for ProfileValueId {
-    fn unit_as_latex(&self) -> Option<&str> {
+    fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
             Self::PlantName => None,
             Self::PopulationEquivalent => None,
@@ -44,27 +56,52 @@ impl ValueUnit for ProfileValueId {
             Self::OperatingMaterials(id) => id.unit_as_latex(),
         }
     }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::PlantName => None,
+            Self::PopulationEquivalent => None,
+            Self::Wastewater => Some(TEXT_QUBICMETERS),
+            Self::InfluentAverage(id) => id.unit_as_text(),
+            Self::EffluentAverage(id) => id.unit_as_text(),
+            Self::EnergyConsumption(id) => id.unit_as_text(),
+            Self::SewageSludgeTreatment(id) => id.unit_as_text(),
+            Self::SideStreamTreatment(_id) => None, // FIXME id.unit_as_latex(),
+            Self::OperatingMaterials(id) => id.unit_as_text(),
+        }
+    }
 }
 
 impl ValueUnit for AnnualAverageInfluentId {
-    fn unit_as_latex(&self) -> Option<&str> {
+    fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
             Self::Nitrogen | Self::ChemicalOxygenDemand => Some(LATEX_MILLIGRAMSPERLITER),
             Self::TotalOrganicCarbohydrates => Some(LATEX_MILLIGRAMSPERLITER),
         }
     }
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(TEXT_MILLIGRAMSPERLITER),
+            Self::TotalOrganicCarbohydrates => Some(TEXT_MILLIGRAMSPERLITER),
+        }
+    }
 }
 
 impl ValueUnit for AnnualAverageEffluentId {
-    fn unit_as_latex(&self) -> Option<&str> {
+    fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
             Self::Nitrogen | Self::ChemicalOxygenDemand => Some(LATEX_MILLIGRAMSPERLITER),
+        }
+    }
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(TEXT_MILLIGRAMSPERLITER),
         }
     }
 }
 
 impl ValueUnit for EnergyConsumptionId {
-    fn unit_as_latex(&self) -> Option<&str> {
+    fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
             Self::SewageGasProduced => Some(LATEX_QUBICMETERS),
             Self::MethaneFraction => Some(LATEX_PERCENT),
@@ -76,10 +113,23 @@ impl ValueUnit for EnergyConsumptionId {
             Self::HeatingOil => Some(LATEX_TONS),
         }
     }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::SewageGasProduced => Some(TEXT_QUBICMETERS),
+            Self::MethaneFraction => Some(TEXT_PERCENT),
+            Self::GasSupply => Some(TEXT_KILOWATTHOURS),
+            Self::PurchaseOfBiogas => None,
+            Self::TotalPowerConsumption => Some(TEXT_KILOWATTHOURS),
+            Self::OnSitePowerGeneration => Some(TEXT_KILOWATTHOURS),
+            Self::EmissionFactorElectricityMix => Some(TEXT_GRAMSPERKILOWATTHOUR),
+            Self::HeatingOil => Some(TEXT_TONS),
+        }
+    }
 }
 
 impl ValueUnit for SewageSludgeTreatmentId {
-    fn unit_as_latex(&self) -> Option<&str> {
+    fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
             Self::SludgeBags => None,            // FIXME implement latex representation
             Self::SludgeBagsRecommended => None, // FIXME implement latex representation
@@ -90,11 +140,29 @@ impl ValueUnit for SewageSludgeTreatmentId {
             Self::DigesterCount => None,
         }
     }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::SludgeBags => None,
+            Self::SludgeBagsRecommended => None,
+            Self::SludgeStorageContainers => None,
+            Self::SludgeStorageContainersRecommended => None,
+            Self::SewageSludgeForDisposal => Some(TEXT_TONS),
+            Self::TransportDistance => Some(TEXT_KILOMETERS),
+            Self::DigesterCount => None,
+        }
+    }
 }
 impl ValueUnit for OperatingMaterialId {
-    fn unit_as_latex(&self) -> Option<&str> {
+    fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
             Self::FeCl3 | Self::FeClSO4 | Self::CaOH2 | Self::SyntheticPolymers => Some(LATEX_TONS),
+        }
+    }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::FeCl3 | Self::FeClSO4 | Self::CaOH2 | Self::SyntheticPolymers => Some(TEXT_TONS),
         }
     }
 }

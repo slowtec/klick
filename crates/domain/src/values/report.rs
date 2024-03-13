@@ -3,6 +3,7 @@ use crate::{
     N2oEmissionFactorCalcMethod,
 };
 
+// TODO: Adjust to acutal model
 pub struct Report {
     pub initial_situation: EmissionInfluencingValues,
     pub scenarios: CalculatedScenarios,

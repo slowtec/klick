@@ -5,7 +5,7 @@ use klick_domain as domain;
 
 use crate::schema;
 
-type Project = domain::Project<boundary::ProjectData>;
+type Project = domain::Project<boundary::FormData>;
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = schema::projects)]
@@ -24,19 +24,17 @@ pub struct ProjectChangeset<'a> {
     pub data: &'a str,
 }
 
-impl TryFrom<ProjectQuery> for Project {
-    type Error = anyhow::Error;
-
-    fn try_from(from: ProjectQuery) -> Result<Self, Self::Error> {
+impl From<ProjectQuery> for Project {
+    fn from(from: ProjectQuery) -> Self {
         let ProjectQuery { project_id, data } = from;
         let project = project_from_json_str(&data).expect("valid project json data");
         debug_assert_eq!(project_id.parse::<domain::ProjectId>().unwrap(), project.id);
-        Ok(project)
+        project
     }
 }
 
 pub fn project_to_json_string(project: Project) -> anyhow::Result<String> {
-    let project = boundary::Project::try_from(project)?;
+    let project = boundary::Project::from(project);
     let data = boundary::Data { project };
     let string = boundary::export_to_string(&data);
     Ok(string)
@@ -48,5 +46,5 @@ pub fn project_from_json_str(json: &str) -> anyhow::Result<Project> {
         boundary::Project::Saved(project) => project,
         boundary::Project::Unsaved(_) => unreachable!(),
     };
-    Ok(Project::try_from(project)?)
+    Ok(Project::from(project))
 }

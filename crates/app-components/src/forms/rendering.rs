@@ -1,35 +1,36 @@
-use std::{collections::HashMap, fmt::Write, hash::Hash};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Write,
+    hash::Hash,
+    rc::Rc,
+};
 
 use leptos::*;
 
 use klick_presenter::ValueLabel;
 
-use super::{Field, FieldSet, FieldSignal, FieldType, MinMax, RequiredField, SelectOption};
+use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 
-pub fn render_field_sets<ID>(
-    field_sets: Vec<FieldSet<ID>>,
-) -> (HashMap<ID, FieldSignal>, Vec<View>, Vec<RequiredField<ID>>)
-where
-    ID: AsRef<str> + Copy + Hash + Eq + ValueLabel + 'static,
-{
-    let mut signals = HashMap::new();
+pub fn render_field_sets(
+    field_sets: Vec<FieldSet>,
+) -> (
+    Vec<View>,
+    ReadSignal<HashSet<FieldId>>,
+    HashMap<FieldId, &'static str>,
+) {
     let mut set_views = vec![];
-    let mut required_fields = vec![];
+    let mut missing_fields = RwSignal::new(HashSet::new());
+    let mut labels = HashMap::new();
 
     for set in field_sets {
         let mut field_views = vec![];
 
         for field in set.fields {
-            let id = field.id;
             let required = field.required;
-            let field_id = crate::forms::dom_node_id(&field.id);
-
-            let (field_signal, view) = render_field(field, field_id.clone());
+            let id = crate::forms::dom_node_id();
+            labels.insert(id, field.label.clone());
+            let view = render_field(field, id, missing_fields);
             field_views.push(view);
-            signals.insert(id, field_signal);
-            if required {
-                required_fields.push(RequiredField { id, field_id });
-            }
         }
 
         set_views.push(
@@ -50,15 +51,16 @@ where
             .into_view(),
         );
     }
-    (signals, set_views, required_fields)
+    (set_views, missing_fields.read_only(), labels)
 }
 
-pub fn render_field<ID>(field: Field<ID>, field_id: String) -> (FieldSignal, impl IntoView)
-where
-    ID: AsRef<str> + Copy + ValueLabel + 'static,
-{
+pub fn render_field(
+    field: Field,
+    id: FieldId,
+    missing_fields: RwSignal<HashSet<FieldId>>,
+) -> impl IntoView {
     let Field {
-        id,
+        label,
         description,
         required,
         ..
@@ -69,154 +71,179 @@ where
             placeholder,
             initial_value,
             max_len,
+            on_change,
+            input,
         } => {
-            let signal = create_rw_signal(initial_value);
-            let field_signal = FieldSignal::Text(signal);
+            if required && initial_value.is_none() {
+                missing_fields.update(|x| {
+                    x.insert(id);
+                });
+            }
+            let input_signal = RwSignal::new(initial_value);
+
+            let on_txt_change = Callback::new(move |txt: Option<String>| {
+                if required {
+                    if txt.is_some() {
+                        missing_fields.update(|x| {
+                            x.remove(&id);
+                        });
+                    } else {
+                        missing_fields.update(|x| {
+                            x.insert(id);
+                        });
+                    }
+                }
+                on_change.call(txt);
+            });
+            create_effect(move |_| {
+                let new_value = input.get();
+                input_signal.set(new_value);
+            });
             let view = view! {
               <TextInput
-                label = id.label().to_string()
-                field_id
+                label
+                id
                 placeholder = placeholder.unwrap_or_default()
-                value = signal
                 max_len
                 description
                 required
+                input_value = input_signal
+                on_change = on_txt_change
               />
             }
             .into_view();
-            (field_signal, view)
+            view
         }
         FieldType::Float {
             placeholder,
             unit,
             initial_value,
             limits,
+            on_change,
+            input,
             ..
         } => {
+            if required && initial_value.is_none() {
+                missing_fields.update(|x| {
+                    x.insert(id);
+                });
+            }
             let i_value = initial_value.map(format_f64_into_de_string);
-
             let input_signal = RwSignal::new(i_value);
-            let output_signal = RwSignal::new(Option::<f64>::None);
-
-            let field_signal = FieldSignal::Float {
-                input: input_signal,
-                output: output_signal,
+            let on_float_change = move |v: Option<f64>| {
+                if required {
+                    if v.is_some() {
+                        missing_fields.update(|x| {
+                            x.remove(&id);
+                        });
+                    } else {
+                        missing_fields.update(|x| {
+                            x.insert(id);
+                        });
+                    }
+                }
+                on_change.call(v);
             };
-
+            create_effect(move |_| {
+                let new_value = input.get().map(format_f64_into_de_string);
+                input_signal.set(new_value);
+            });
             let view = view! {
               <FloatInput
-                label = id.label().to_string()
-                field_id
+                label
+                id
                 placeholder = placeholder.unwrap_or_default()
-                input_value = input_signal
-                output_value = output_signal
                 unit
                 description
                 limits
                 required
+                input_value = input_signal
+                on_change = on_float_change
               />
             }
             .into_view();
-            (field_signal, view)
+            view
         }
         FieldType::UnsignedInteger {
             placeholder,
             unit,
             initial_value,
             limits,
+            on_change,
+            input,
             ..
         } => {
+            if required && initial_value.is_none() {
+                missing_fields.update(|x| {
+                    x.insert(id);
+                });
+            }
             let i_value = initial_value.map(|v| format!("{}", v));
-
             let input_signal = RwSignal::new(i_value);
-            let output_signal = RwSignal::new(Option::<u64>::None);
-
-            let field_signal = FieldSignal::UnsignedInteger {
-                input: input_signal,
-                output: output_signal,
+            let on_uint_change = move |v: Option<u64>| {
+                if required {
+                    if v.is_some() {
+                        missing_fields.update(|x| {
+                            x.remove(&id);
+                        });
+                    } else {
+                        missing_fields.update(|x| {
+                            x.insert(id);
+                        });
+                    }
+                }
+                on_change.call(v);
             };
-
+            create_effect(move |_| {
+                let new_value = input.get().map(|v| format!("{}", v));
+                input_signal.set(new_value);
+            });
             let view = view! {
               <UnsignedIntegerInput
-                label = id.label().to_string()
-                field_id
+                label
+                id
                 placeholder = placeholder.unwrap_or_default()
-                input_value = input_signal
-                output_value = output_signal
                 unit
                 description
                 limits
                 required
+                input_value = input_signal
+                on_change = on_uint_change
               />
             }
             .into_view();
-            (field_signal, view)
+            view
         }
-        FieldType::Bool { initial_value } => {
-            let signal = create_rw_signal(initial_value.unwrap_or_default());
-            let field_signal = FieldSignal::Bool(signal);
+        FieldType::Bool {
+            initial_value,
+            on_change,
+            input,
+        } => {
+            let input_signal = RwSignal::new(initial_value.unwrap_or_default());
+            create_effect(move |_| {
+                let new_value = input.get();
+                input_signal.set(new_value);
+            });
             let view = view! {
               <BoolInput
-                label = id.label().to_string()
-                field_id
-                value = signal
+                label
+                id
+                input_value = input_signal
                 description
+                on_change
               />
             }
             .into_view();
-            (field_signal, view)
-        }
-        FieldType::Selection {
-            initial_value,
-            options,
-        } => {
-            let signal = create_rw_signal(initial_value);
-            let field_signal = FieldSignal::Selection(signal);
-            let view = view! {
-              // <SelectInput
-              //   label
-              //   field_id
-              //   value = signal
-              //   options
-              // />
-              <RadioInput
-                field_id
-                value = signal
-                options
-              />
-            }
-            .into_view();
-            (field_signal, view)
+            view
         }
     }
 }
 
-#[component]
-pub fn InfoIcon() -> impl IntoView {
-    view! {
-      <svg
-        aria-haspopup="true"
-        class="icon"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="#A0AEC0"
-        fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" />
-        <circle cx="12" cy="12" r="9" />
-        <line x1="12" y1="8" x2="12.01" y2="8" />
-        <polyline points="11 12 12 12 12 16 13 16" />
-      </svg>
-    }
-}
+pub use crate::icons::InformationCircle as InfoIcon;
 
 // TODO: don't render if description is None
 fn create_tooltip(
-    label: String,
+    label: &'static str,
     description: Option<&'static str>,
     required: bool,
     _unit: Option<&'static str>,
@@ -281,19 +308,21 @@ fn create_tooltip(
 
 #[component]
 fn TextInput(
-    label: String,
-    field_id: String,
+    label: &'static str,
+    id: FieldId,
     placeholder: String,
-    value: RwSignal<Option<String>>,
     max_len: Option<usize>,
     description: Option<&'static str>,
     required: bool,
+    input_value: RwSignal<Option<String>>,
+    #[prop(into)] on_change: Callback<Option<String>, ()>,
 ) -> impl IntoView {
     let required_label = format!("{} {label}", if required { "*" } else { "" });
+
     view! {
-      <div id={format!("focus-{field_id}")}>
+      <div id={format!("focus-{id}")}>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-          <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
+          <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }
           </label>
           { create_tooltip(label, description, required, None) }
@@ -302,16 +331,18 @@ fn TextInput(
         <div class="relative mt-2 rounded-md shadow-sm group">
           <input
             type = "text"
-            id = { field_id }
+            id = { id.to_string() }
             maxlength = { max_len }
             class="block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             placeholder= { placeholder }
             // TODO: aria-describedby
-            prop:value = move || value.get().unwrap_or_default()
+            prop:value = move || {
+                input_value.get().unwrap_or_default()
+            }
             on:input = move |ev| {
               let target_value = event_target_value(&ev);
               let v = if target_value.is_empty() { None } else { Some(target_value) };
-              value.set(v);
+              on_change.call(v);
             }
           />
         </div>
@@ -331,6 +362,7 @@ pub fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
     }
 }
 
+// TODO: move this out of this layer (e.g. to the  presenter)
 pub fn format_f64_into_de_string(number: f64) -> String {
     let num_str = format!("{number:.}");
 
@@ -361,15 +393,15 @@ pub fn format_f64_into_de_string(number: f64) -> String {
 
 #[component]
 fn FloatInput(
-    label: String,
+    label: &'static str,
     unit: &'static str,
     placeholder: String,
-    field_id: String,
-    input_value: RwSignal<Option<String>>,
-    output_value: RwSignal<Option<f64>>,
+    id: FieldId,
     description: Option<&'static str>,
     limits: MinMax<f64>,
     required: bool,
+    input_value: RwSignal<Option<String>>,
+    #[prop(into)] on_change: Callback<Option<f64>, ()>,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
@@ -377,7 +409,7 @@ fn FloatInput(
     view! {
       <div>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-          <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
+          <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }
           </label>
           { create_tooltip(label, description, required, Some(unit)) }
@@ -385,20 +417,20 @@ fn FloatInput(
 
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
-            id = { field_id }
+            id = { id.to_string() }
             type="text"
             class = move || {
               let bg = if error.get().is_some() { "bg-red-100" } else { "" };
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
             placeholder = { placeholder }
-            on:focusin = move |_ev| {
-              if let Some(v) = input_value.get() {
-                  let v = v.replace('.', "");
-                  input_value.set(Some(v));
-              }
+            on:focusin = move |_| {
+                if let Some(v) = input_value.get() {
+                    let v = v.replace('.', "");
+                    input_value.set(Some(v));
+                }
             }
-            on:focusout = move |_ev| {
+            on:focusout = move |_| {
                 let Some(v) = input_value.get() else {
                     input_value.set(None);
                     if required {
@@ -413,37 +445,37 @@ fn FloatInput(
             }
             prop:value = move || {
                 let Some(v) = input_value.get() else {
-                    output_value.set(None);
+                    on_change.call(None);
                     error.set(None);
                     return String::new();
                 };
                 let Ok(t) = parse_de_str_as_f64(&v) else {
                     error.set(Some("Fehlerhafte Eingabe!".to_string()));
-                    output_value.set(None);
+                    on_change.call(None);
                     return v;
                 };
                 if let Some(min) = limits.min {
                     if t < min {
                         error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
-                        output_value.set(None);
+                        on_change.call(None);
                         return v;
                     }
                 }
                 if let Some(max) = limits.max {
                     if t > max {
                         error.set(Some("Eingabe überschreitet das Maximum".to_string()));
-                        output_value.set(None);
+                        on_change.call(None);
                         return v;
                     }
                 }
                 error.set(None);
-                output_value.set(Some(t));
+                on_change.call(Some(t));
                 v
             }
             on:input = move |ev| {
-              let input = event_target_value(&ev);
-              let v = if input.is_empty() { None } else { Some(input) };
-              input_value.set(v);
+                let input = event_target_value(&ev);
+                let v = if input.is_empty() { None } else { Some(input) };
+                input_value.set(v);
             }
           />
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -459,15 +491,15 @@ fn FloatInput(
 
 #[component]
 fn UnsignedIntegerInput(
-    label: String,
+    label: &'static str,
     unit: &'static str,
     placeholder: String,
-    field_id: String,
-    input_value: RwSignal<Option<String>>,
-    output_value: RwSignal<Option<u64>>,
+    id: FieldId,
     description: Option<&'static str>,
     limits: MinMax<u64>,
     required: bool,
+    input_value: RwSignal<Option<String>>,
+    #[prop(into)] on_change: Callback<Option<u64>, ()>,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
@@ -475,7 +507,7 @@ fn UnsignedIntegerInput(
     view! {
       <div>
         <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-          <label for={ &field_id } class="block text-sm font-bold leading-6 text-gray-900">
+          <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
             { required_label }
           </label>
           { create_tooltip(label, description, required, Some(unit)) }
@@ -483,7 +515,7 @@ fn UnsignedIntegerInput(
 
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
-            id = { field_id }
+            id = { id.to_string() }
             type="text"
             class = move || {
               let bg = if error.get().is_some() { "bg-red-100" } else { "" };
@@ -516,31 +548,31 @@ fn UnsignedIntegerInput(
             }
             prop:value = move || {
                 let Some(v) = input_value.get() else {
-                    output_value.set(None);
+                    on_change.call(None);
                     error.set(None);
                     return String::new();
                 };
                 let Ok(t) = v.parse::<u64>() else {
                     error.set(Some("Fehlerhafte Eingabe!".to_string()));
-                    output_value.set(None);
+                    on_change.call(None);
                     return v;
                 };
                 if let Some(min) = limits.min {
                     if t < min {
                         error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
-                        output_value.set(None);
+                        on_change.call(None);
                         return v;
                     }
                 }
                 if let Some(max) = limits.max {
                     if t > max {
                         error.set(Some("Eingabe überschreitet das Maximum".to_string()));
-                        output_value.set(None);
+                        on_change.call(None);
                         return v;
                     }
                 }
                 error.set(None);
-                output_value.set(Some(t));
+                on_change.call(Some(t));
                 v
             }
             on:input = move |ev| {
@@ -562,123 +594,32 @@ fn UnsignedIntegerInput(
 
 #[component]
 fn BoolInput(
-    label: String,
-    field_id: String,
-    value: RwSignal<bool>,
+    label: &'static str,
+    id: FieldId,
+    input_value: RwSignal<bool>,
     description: Option<&'static str>,
+    #[prop(into)] on_change: Callback<bool, ()>,
 ) -> impl IntoView {
     view! {
       <div class="relative flex items-start">
         <div class="flex h-6 items-center">
           <input
-            id = { &field_id }
+            id = { id.to_string() }
             type="checkbox"
             class="h-4 w-4 rounded border-gray-300 text-highlight focus:ring-highlight"
             // TODO: aria-describedby
-            prop:checked = move || value.get()
-            on:input = move |_| { value.update(|v| *v = !*v); }
+            prop:checked = move || input_value.get()
+            on:input = move |_| {
+                let v = !input_value.get();
+                input_value.set(v);
+                on_change.call(v);
+            }
           />
         </div>
         <div class="ml-3 text-sm leading-6">
-          <label for={ field_id } class="font-bold text-gray-900">{ label }</label>
+          <label for={ id.to_string() } class="font-bold text-gray-900">{ label }</label>
           <p class="text-gray-500">{ description }</p>
         </div>
-      </div>
-    }
-}
-
-#[component]
-fn SelectInput(
-    label: String,
-    field_id: String,
-    value: RwSignal<Option<usize>>,
-    options: Vec<SelectOption>,
-) -> impl IntoView {
-    view! {
-      <div>
-        <label
-          for={ &field_id }
-          class="block text-sm font-bold leading-6 text-gray-900"
-        >
-          { label }
-        </label>
-        <select
-          id = { field_id }
-          class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          on:change = move |ev| {
-              let target_value = event_target_value(&ev);
-              if target_value.is_empty() {
-                  value.set(None);
-              } else if let Ok(v) = target_value.parse() {
-                  value.set(Some(v));
-              } else {
-                  value.set(None);
-                  log::error!("Unexpected option value {target_value}");
-              }
-          }
-        >
-          <Options value options />
-        </select>
-      </div>
-    }
-}
-
-#[component]
-fn Options(value: RwSignal<Option<usize>>, options: Vec<SelectOption>) -> impl IntoView {
-    view! {
-      <option prop:selected = move || value.get().is_none()>
-        " - Bitte wählen - "
-      </option>
-      <For
-        each = move || options.clone()
-        key = |option| option.value
-        let:option
-      >
-        <option
-          value = option.value
-          prop:selected = move || value.get() == Some(option.value)
-        >
-          { option.label }
-        </option>
-      </For>
-    }
-}
-
-#[component]
-fn RadioInput(
-    field_id: String,
-    value: RwSignal<Option<usize>>,
-    options: Vec<SelectOption>,
-) -> impl IntoView {
-    let options: Vec<_> = options
-        .into_iter()
-        .map(|o| {
-            let option_id = format!("{field_id}-{}", o.value);
-            view! {
-              <div class="flex items-center ml-4 gap-x-2">
-                <input
-                  class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                  id = { option_id.clone() }
-                  name = field_id.clone()
-                  type="radio"
-                  on:change = move |_| {
-                    value.set(Some(o.value));
-                  }
-                />
-                <label
-                  class="block text-sm font-semibold leading-6 text-gray-900"
-                  for = { option_id }
-                >
-                  { o.label }
-                </label>
-              </div>
-            }
-        })
-        .collect();
-
-    view! {
-      <div id = { field_id } class="mt-2 space-y-2">
-        { options }
       </div>
     }
 }

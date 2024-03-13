@@ -47,11 +47,6 @@ pub const CONVERSION_FACTOR_C_TO_CO2: Factor = Factor::new((6.0 + 8.0 + 8.0) / 6
 
 pub const CONVERSION_FACTOR_TOC_TO_COD: Factor = Factor::new(3.0 / 8.0);
 
-pub const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 2.0;
-pub const N2O_DEFAULT_SIDE_STREAM_FACTOR: f64 = 2.0;
-pub const CO2_DEFAULT_FOSSIL_FACTOR: f64 = 3.85;
-pub const CH4_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
-
 /// Emission factor `[kg CO₂/l]` of diesel.
 ///
 /// # Calculation
