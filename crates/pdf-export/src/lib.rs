@@ -1,3 +1,5 @@
+#![allow(unused)] // FIXME
+
 use std::{io::Write, path::Path};
 
 use anyhow::bail;
@@ -13,7 +15,7 @@ use klick_domain::{
     self as domain, CO2Equivalents, EmissionInfluencingValues, EmissionsCalculationOutcome,
     N2oEmissionFactorCalcMethod,
 };
-use klick_presenter::{self as presenter, Lng};
+use klick_presenter::{self as presenter, Lng, UnitFormatting};
 
 const MARKDOWN_TEMPLATE: &str = include_str!("../templates/report.md.template");
 const MARKDOWN_TEMPLATE_NAME: &str = "report.md";
@@ -31,47 +33,49 @@ lazy_static! {
     };
 }
 
-pub fn export_to_pdf(project: boundary::ProjectData) -> anyhow::Result<Vec<u8>> {
+pub fn export_to_pdf(_project: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     let date = current_date_as_string()?;
-    let boundary::ProjectData {
-        plant_profile,
-        optimization_scenario,
-        ..
-    } = project;
-    let boundary::OptimizationScenario {
-        n2o_emission_factor,
-        ch4_chp_emission_factor: _,
-    } = optimization_scenario;
-    let emission_influencing_values = EmissionInfluencingValues::try_from(plant_profile.clone())?;
-    let n2o_emission_factor_calc_method =
-        N2oEmissionFactorCalcMethod::try_from(n2o_emission_factor)?;
-    let custom_factor = match n2o_emission_factor_calc_method {
-        N2oEmissionFactorCalcMethod::Custom(factor) => Some(factor),
-        _ => None,
-    };
-    let n2o_scenarios = domain::calculate_all_n2o_emission_factor_scenarios(
-        &emission_influencing_values,
-        custom_factor,
-        None,
-    );
-    let n2o_scenarios_bar_chart = render_svg_bar_chart(n2o_scenarios.clone());
-    let mut bar_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
-    bar_svg_file.write_all(n2o_scenarios_bar_chart.as_bytes())?;
+    // FIXME:
+    // let boundary::FormData {
+    //     //plant_profile,
+    //     //optimization_scenario,
+    //     ..
+    // } = project;
+    // let boundary::OptimizationScenario {
+    //     n2o_emission_factor,
+    //     ch4_chp_emission_factor: _,
+    // } = optimization_scenario;
+    // let emission_influencing_values = EmissionInfluencingValues::try_from(plant_profile.clone())?;
+    // let n2o_emission_factor_calc_method =
+    //     N2oEmissionFactorCalcMethod::try_from(n2o_emission_factor)?;
+    // let custom_factor = match n2o_emission_factor_calc_method {
+    //     N2oEmissionFactorCalcMethod::Custom(factor) => Some(factor),
+    //     _ => None,
+    // };
+    // let n2o_scenarios = domain::calculate_all_n2o_emission_factor_scenarios(
+    //     &emission_influencing_values,
+    //     custom_factor,
+    //     None,
+    // );
+    // let n2o_scenarios_bar_chart = render_svg_bar_chart(n2o_scenarios.clone());
+    // let mut bar_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+    // bar_svg_file.write_all(n2o_scenarios_bar_chart.as_bytes())?;
 
-    let sankey_chart = render_svg_sankey_chart(n2o_scenarios[0].1.co2_equivalents.clone());
-    let mut sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
-    sankey_svg_file.write_all(sankey_chart.as_bytes())?;
+    // let sankey_chart = render_svg_sankey_chart(n2o_scenarios[0].1.co2_equivalents.clone());
+    // let mut sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+    // sankey_svg_file.write_all(sankey_chart.as_bytes())?;
 
-    let markdown = render_markdown_template(
-        date,
-        plant_profile,
-        bar_svg_file.path(),
-        sankey_svg_file.path(),
-    )?;
-    let bytes = render_pdf(markdown)?;
-    bar_svg_file.close()?;
-    sankey_svg_file.close()?;
-    Ok(bytes)
+    // let markdown = render_markdown_template(
+    //     date,
+    //     plant_profile,
+    //     bar_svg_file.path(),
+    //     sankey_svg_file.path(),
+    // )?;
+    // let bytes = render_pdf(markdown)?;
+    // bar_svg_file.close()?;
+    // sankey_svg_file.close()?;
+    // Ok(bytes)
+    todo!()
 }
 
 #[derive(Serialize)]
@@ -89,7 +93,7 @@ fn render_markdown_template(
     n2o_svg_barchart_file: &Path,
     sankey_svg_file: &Path,
 ) -> anyhow::Result<String> {
-    let table_data = presenter::plant_profile_as_table(&profile);
+    let table_data = presenter::plant_profile_as_table(&profile, UnitFormatting::LaTeX);
     let table = create_latex_table(&table_data)?;
     let n2o_svg_barchart_file_path = n2o_svg_barchart_file.display().to_string();
     let sankey_svg_file_path = sankey_svg_file.display().to_string();

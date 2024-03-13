@@ -223,7 +223,7 @@ mod projects {
         set_email_address_as_confirmed(&db, TEST_ACCOUNT_EMAIL);
         let client = reqwest::Client::new();
         let endpoint = endpoint(addr, "/project");
-        let project = boundary::ProjectData::default();
+        let project = boundary::FormData::default();
         let req = client.post(endpoint).bearer_auth(token).json(&project);
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 200);

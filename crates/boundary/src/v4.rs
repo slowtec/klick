@@ -1,3 +1,5 @@
+#[cfg(feature = "extra-derive")]
+use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
 
 pub use crate::v3::{
@@ -12,14 +14,12 @@ pub struct Import {
 }
 
 #[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct Scenario {
     pub n2o_emission_factor: N2oEmissionFactorScenario,
     pub ch4_chp_emission_factor: Option<CH4ChpEmissionFactorScenario>,
 }
 
 #[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
 pub struct N2oEmissionFactorScenario {
     pub calculation_method: N2oEmissionFactorCalcMethod,
     pub custom_factor: Option<f64>,
@@ -27,7 +27,10 @@ pub struct N2oEmissionFactorScenario {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq, Eq))]
+#[cfg_attr(
+    feature = "extra-derive",
+    derive(Debug, Default, Clone, Copy, PartialEq, Eq, FromPrimitive, ToPrimitive)
+)]
 pub enum N2oEmissionFactorCalcMethod {
     #[cfg_attr(feature = "extra-derive", default)]
     TuWien2016,

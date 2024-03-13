@@ -3,6 +3,7 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 
+use derive_more::Display;
 use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
 
@@ -15,36 +16,29 @@ fn unique_id() -> usize {
     ID_COUNTER.fetch_add(1, Ordering::SeqCst)
 }
 
-pub fn dom_node_id<ID>(field_id: &ID) -> String
-where
-    ID: Copy + AsRef<str>,
+pub fn dom_node_id() -> FieldId // String
 {
     // DOM element IDs needs to be locally unique
     // within the HTML document.
     let id = unique_id();
-
-    // The name is only for humans for better readability.
-    let name = to_kebab_case(field_id.as_ref());
-
-    format!("{name}-{id}")
+    FieldId(id)
 }
 
 #[derive(Debug, Clone)]
-pub struct FieldSet<ID> {
+pub struct FieldSet {
     pub title: Option<&'static str>,
-    pub fields: Vec<Field<ID>>,
+    pub fields: Vec<Field>,
 }
 
 #[derive(Debug, Clone)]
-pub struct Field<ID> {
-    pub id: ID,
+pub struct Field {
+    pub label: &'static str,
     pub description: Option<&'static str>,
     pub required: bool,
     pub field_type: FieldType,
 }
 
-// TODO: use presenter::ValueUnit trait
-impl<ID> Field<ID> {
+impl Field {
     pub const fn unit(&self) -> Option<&'static str> {
         match self.field_type {
             FieldType::Float { unit, .. } => Some(unit),
@@ -53,32 +47,9 @@ impl<ID> Field<ID> {
     }
 }
 
-#[derive(Clone)]
-pub struct RequiredField<ID>
-where
-    ID: AsRef<str> + Copy + Hash + Eq,
-{
-    pub id: ID,
-    pub field_id: String, //FIXME: rename dom_node_id
-}
-
-#[derive(Clone)]
-pub struct MissingField<ID>
-where
-    ID: Clone,
-{
-    pub id: ID,
-    pub field_id: String, //FIXME: rename dom_node_id
-}
-
-impl<ID> MissingField<ID>
-where
-    ID: Clone,
-{
-    pub const fn new(id: ID, field_id: String) -> Self {
-        Self { id, field_id }
-    }
-}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Display)]
+#[display(fmt = "field-{}", _0)]
+pub struct FieldId(usize);
 
 #[derive(Debug, Clone, Copy)]
 pub struct MinMax<T> {
@@ -94,147 +65,27 @@ pub enum FieldType {
         placeholder: Option<String>,
         limits: MinMax<f64>,
         unit: &'static str, // TODO: use presenter::ValueUnit trait
+        on_change: Callback<Option<f64>, ()>,
+        input: Signal<Option<f64>>,
     },
     UnsignedInteger {
         initial_value: Option<u64>,
         placeholder: Option<String>,
         limits: MinMax<u64>,
         unit: &'static str, // TODO: use presenter::ValueUnit trait
+        on_change: Callback<Option<u64>, ()>,
+        input: Signal<Option<u64>>,
     },
     Text {
         initial_value: Option<String>,
         placeholder: Option<String>,
         max_len: Option<usize>,
+        on_change: Callback<Option<String>, ()>,
+        input: Signal<Option<String>>,
     },
     Bool {
         initial_value: Option<bool>,
+        on_change: Callback<bool, ()>,
+        input: Signal<bool>,
     },
-    // TODO: support enums
-    Selection {
-        initial_value: Option<usize>,
-        options: Vec<SelectOption>,
-    },
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct SelectOption {
-    pub label: &'static str,
-    pub value: usize,
-}
-
-#[derive(Clone, Copy)]
-pub enum FieldSignal {
-    Float {
-        input: RwSignal<Option<String>>,
-        output: RwSignal<Option<f64>>,
-    },
-    UnsignedInteger {
-        input: RwSignal<Option<String>>,
-        output: RwSignal<Option<u64>>,
-    },
-    Text(RwSignal<Option<String>>),
-    Bool(RwSignal<bool>),
-    Selection(RwSignal<Option<usize>>),
-}
-
-impl FieldSignal {
-    pub fn get_float(&self) -> Option<f64> {
-        match self {
-            Self::Float { output, .. } => output.get(),
-            _ => None,
-        }
-    }
-
-    pub fn get_unsigned_integer(&self) -> Option<u64> {
-        match self {
-            Self::UnsignedInteger { output, .. } => output.get(),
-            _ => None,
-        }
-    }
-
-    pub fn get_text(&self) -> Option<String> {
-        match self {
-            Self::Text(s) => s.get(),
-            _ => None,
-        }
-    }
-
-    pub fn get_bool(&self) -> Option<bool> {
-        match self {
-            Self::Bool(s) => Some(s.get()),
-            _ => None,
-        }
-    }
-
-    #[allow(unused)]
-    pub fn get_selection(&self) -> Option<usize> {
-        match self {
-            Self::Selection(s) => s.get(),
-            _ => None,
-        }
-    }
-
-    // TODO: rename to : get_float_input_signal
-    pub const fn get_float_signal(&self) -> Option<RwSignal<Option<String>>> {
-        match self {
-            Self::Float { input, .. } => Some(*input),
-            _ => None,
-        }
-    }
-
-    pub const fn get_float_output_signal(&self) -> Option<RwSignal<Option<f64>>> {
-        match self {
-            Self::Float { output, .. } => Some(*output),
-            _ => None,
-        }
-    }
-
-    // TODO: rename to get_unsigned_integer_input_signal
-    pub const fn get_unsigned_integer_signal(&self) -> Option<RwSignal<Option<String>>> {
-        match self {
-            Self::UnsignedInteger { input, .. } => Some(*input),
-            _ => None,
-        }
-    }
-
-    pub const fn get_text_signal(&self) -> Option<RwSignal<Option<String>>> {
-        match self {
-            Self::Text(s) => Some(*s),
-            _ => None,
-        }
-    }
-
-    pub const fn get_bool_signal(&self) -> Option<RwSignal<bool>> {
-        match self {
-            Self::Bool(s) => Some(*s),
-            _ => None,
-        }
-    }
-
-    pub const fn get_selection_signal(&self) -> Option<RwSignal<Option<usize>>> {
-        match self {
-            Self::Selection(s) => Some(*s),
-            _ => None,
-        }
-    }
-
-    pub fn clear(&self) {
-        match self {
-            Self::Float { input, .. } => input.set(None),
-            Self::UnsignedInteger { input, .. } => input.set(None),
-            Self::Text(s) => s.set(None),
-            Self::Bool(s) => s.set(false),
-            Self::Selection(s) => s.set(None),
-        }
-    }
-
-    pub fn as_formatted_string(&self) -> Option<String> {
-        match self {
-            Self::Float { input, .. } => input.get(),
-            Self::UnsignedInteger { input, .. } => input.get(),
-            Self::Text(s) => s.get(),
-            Self::Bool(s) => Some(if s.get() { "Ja" } else { "Nein" }.to_string()),
-            Self::Selection(_) => todo!(),
-        }
-    }
 }

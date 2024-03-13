@@ -10,6 +10,9 @@ anyhow = "1.0.80"
 derive_more = "0.99.17"
 http = "1.1.0"
 http-serde = "2.0.0"
+log = "0.4.21"
+num-derive = "0.4.2"
+num-traits = { version = "0.2.18", default-features = false }
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.114"
 thiserror = "1.0.57"

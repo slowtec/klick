@@ -1,3 +1,5 @@
+#[cfg(feature = "extra-derive")]
+use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
 
 pub use crate::v2::{
@@ -40,7 +42,6 @@ pub struct Scenario {
 }
 
 #[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct CH4ChpEmissionFactorScenario {
     pub calculation_method: CH4ChpEmissionFactorCalcMethod,
     pub custom_factor: Option<f64>,
@@ -48,7 +49,10 @@ pub struct CH4ChpEmissionFactorScenario {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, Copy, PartialEq, Eq))]
+#[cfg_attr(
+    feature = "extra-derive",
+    derive(Debug, Clone, Copy, PartialEq, Eq, FromPrimitive, ToPrimitive)
+)]
 pub enum CH4ChpEmissionFactorCalcMethod {
     MicroGasTurbines,
     GasolineEngine,

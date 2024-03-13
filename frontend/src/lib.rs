@@ -158,7 +158,10 @@ pub fn App() -> impl IntoView {
                       </span>
                     </h1>
                   </header>
-                  <Tool api = authorized_api.into() current_project />
+                  <Tool
+                    api = authorized_api.into()
+                    current_project
+                  />
                 </Main>
               }
             }

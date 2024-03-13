@@ -1,8 +1,9 @@
 use leptos::*;
 
-use super::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
+use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
-pub fn options() -> impl IntoView {
+#[component]
+pub fn CH4EmissionsOpenSludgeStorage() -> impl IntoView {
     view! {
       <Card title = "Methanemissionen aus der Schlammlagerung" bg_color="bg-blue">
         <InfoBox text = " Emissionen aus der Schlammlagerung aerob-stabilisierter Schlämme weisen ein deutliches Emissionspotenzial auf">

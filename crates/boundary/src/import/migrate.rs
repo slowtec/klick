@@ -363,10 +363,10 @@ pub fn from_v6(data: v6::Data) -> v7::Data {
     v7::Data { project }
 }
 
-impl From<v7::ProjectData> for v8::ProjectData {
+impl From<v7::ProjectData> for v8::FormData {
     fn from(from: v7::ProjectData) -> Self {
         let v7::ProjectData {
-            title,
+            title: project_title,
             plant_profile,
             optimization_scenario,
         } = from;
@@ -404,13 +404,13 @@ impl From<v7::ProjectData> for v8::ProjectData {
         };
 
         let v7::AnnualAverage {
-            nitrogen,
+            nitrogen: total_nitrogen,
             chemical_oxygen_demand,
             phosphorus: _,
         } = influent_average;
 
         let influent_average = v8::AnnualAverageInfluent {
-            nitrogen,
+            total_nitrogen,
             chemical_oxygen_demand,
             total_organic_carbohydrates: None,
         };
@@ -422,7 +422,7 @@ impl From<v7::ProjectData> for v8::ProjectData {
         } = effluent_average;
 
         let effluent_average = v8::AnnualAverageEffluent {
-            nitrogen,
+            total_nitrogen: nitrogen,
             chemical_oxygen_demand,
         };
 
@@ -436,13 +436,12 @@ impl From<v7::ProjectData> for v8::ProjectData {
             digester_count,
         } = sewage_sludge_treatment;
 
+        let sludge_bags_are_closed = sludge_bags_are_open.map(|x| !x);
+        let sludge_storage_containers_are_closed = sludge_storage_containers_are_open.map(|x| !x);
+
         let sewage_sludge_treatment = v8::SewageSludgeTreatment {
-            sludge_bags_are_open,
-            sludge_bags_are_open_recommendation: Some(false),
-            custom_sludge_bags_factor,
-            sludge_storage_containers_are_open,
-            sludge_storage_containers_are_open_recommendation: Some(false),
-            custom_sludge_storage_containers_factor,
+            sludge_bags_are_closed,
+            sludge_storage_containers_are_closed,
             sewage_sludge_for_disposal,
             transport_distance,
             digester_count,
@@ -450,19 +449,6 @@ impl From<v7::ProjectData> for v8::ProjectData {
 
         let side_stream_treatment = v8::SideStreamTreatment {
             total_nitrogen: None,
-            side_stream_cover_is_open: None,
-        };
-
-        let energy_emission_factors = v8::EnergyEmissionFactors {
-            process_energy_savings: None,
-            fossil_energy_savings: None,
-            district_heating: None,
-            photovoltaic_energy_expansion: None,
-            estimated_self_photovoltaic_usage: None,
-            wind_energy_expansion: None,
-            estimated_self_wind_energy_usage: None,
-            water_energy_expansion: None,
-            estimated_self_water_energy_usage: None,
         };
 
         let plant_profile = v8::PlantProfile {
@@ -475,16 +461,81 @@ impl From<v7::ProjectData> for v8::ProjectData {
             sewage_sludge_treatment,
             side_stream_treatment,
             operating_materials,
-            emission_factors: v8::CustomEmissionFactors {
-                n2o_side_stream: None,
-                co2_fossil: None,
-            },
-            energy_emission_factors,
+        };
+
+        let v7::OptimizationScenario {
+            n2o_emission_factor,
+            ch4_chp_emission_factor,
+        } = optimization_scenario;
+
+        let v7::N2oEmissionFactorScenario {
+            calculation_method,
+            custom_factor: custom_emission_factor,
+        } = n2o_emission_factor;
+        let calculation_method = Some(calculation_method);
+        let n2o_emissions = v8::N2OEmissionsSensitivity {
+            calculation_method,
+            custom_emission_factor,
+            side_stream_emission_factor: None,
+        };
+
+        let (calculation_method, custom_emission_factor) = match ch4_chp_emission_factor {
+            Some(v7::CH4ChpEmissionFactorScenario {
+                calculation_method,
+                custom_factor,
+            }) => (Some(calculation_method), custom_factor),
+            None => (None, None),
+        };
+        let ch4_chp_emissions = v8::CH4ChpEmissionsSensitivity {
+            calculation_method,
+            custom_emission_factor,
+        };
+
+        let ch4_sewage_sludge_emissions = v8::SewageSludgeTreatmentEmissionsSensitivity {
+            emission_factor_sludge_bags: custom_sludge_bags_factor,
+            emission_factor_sludge_storage_containers: custom_sludge_storage_containers_factor,
+        };
+        let co2_fossil_emissions = v8::FossilEmissonsSensitivity {
+            emission_factor: None,
+        };
+
+        let sensitivity_parameters = v8::SensitivityParameters {
+            n2o_emissions,
+            ch4_chp_emissions,
+            ch4_sewage_sludge_emissions,
+            co2_fossil_emissions,
+        };
+        let sewage_sludge_treatment = v8::SewageSludgeTreatmentScenario {
+            sludge_bags_are_closed: None,
+            sludge_storage_containers_are_closed: None,
+        };
+
+        let energy_emissions = v8::EnergyEmissionScenario {
+            process_energy_savings: None,
+            fossil_energy_savings: None,
+            photovoltaic_energy_expansion: None,
+            estimated_self_photovoltaic_usage: None,
+            wind_energy_expansion: None,
+            estimated_self_wind_energy_usage: None,
+            water_energy_expansion: None,
+            estimated_self_water_energy_usage: None,
+            district_heating: None,
+        };
+
+        let side_stream_treatment = v8::SideStreamTreatmentScenario {
+            side_stream_cover_is_closed: None,
+        };
+
+        let optimization_scenario = v8::OptimizationScenario {
+            sewage_sludge_treatment,
+            energy_emissions,
+            side_stream_treatment,
         };
 
         Self {
-            title,
+            project_title,
             plant_profile,
+            sensitivity_parameters,
             optimization_scenario,
         }
     }

@@ -61,11 +61,9 @@ pub fn calculate_emissions(
 
     let SewageSludgeTreatment {
         sludge_bags_are_open,
-        sludge_bags_are_open_recommendation: _,
-        custom_sludge_bags_factor,
+        sludge_bags_factor,
         sludge_storage_containers_are_open,
-        sludge_storage_containers_are_open_recommendation: _,
-        custom_sludge_storage_containers_factor,
+        sludge_storage_containers_factor,
         sewage_sludge_for_disposal,
         transport_distance,
         digester_count,
@@ -121,11 +119,7 @@ pub fn calculate_emissions(
     let ch4_water = chemical_oxygen_demand_effluent * wastewater * EMISSION_FACTOR_CH4_WATER;
 
     let ch4_slippage_sludge_bags = if sludge_bags_are_open {
-        calculate_ch4_slippage_sludge_bags(
-            digester_count,
-            methane_fraction,
-            custom_sludge_bags_factor,
-        )
+        calculate_ch4_slippage_sludge_bags(digester_count, methane_fraction, sludge_bags_factor)
     } else {
         Tons::zero()
     };
@@ -134,7 +128,7 @@ pub fn calculate_emissions(
         calculate_ch4_slippage_sludge_storage(
             sewage_gas_produced,
             methane_fraction,
-            custom_sludge_storage_containers_factor,
+            sludge_storage_containers_factor,
         )
     } else {
         Tons::zero()
@@ -159,19 +153,12 @@ pub fn calculate_emissions(
     let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
     let ch4_water = ch4_water.convert_to::<Tons>() * GWP_CH4;
 
-    let ch4_emission_factor = match calculation_methods.ch4 {
-        None => Factor::new(0.01),
-        Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
-        Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
-        Some(CH4ChpEmissionFactorCalcMethod::JetEngine) => Factor::new(0.025),
-        Some(CH4ChpEmissionFactorCalcMethod::Custom(f)) => f,
-    };
-
-    let volume = sewage_gas_produced * methane_fraction * ch4_emission_factor;
-    let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
-    let ch4_chp = mass.convert_to::<Tons>();
-
-    let ch4_combined_heat_and_power_plant = ch4_chp * GWP_CH4;
+    let (ch4_combined_heat_and_power_plant, ch4_emission_factor) =
+        calculate_ch4_combined_heat_and_power_plant(
+            calculation_methods.ch4,
+            sewage_gas_produced,
+            methane_fraction,
+        );
 
     let ch4_plant = calculate_ch4_plant(
         population_equivalent,
@@ -303,13 +290,12 @@ pub fn calculate_emissions(
 pub fn calculate_ch4_slippage_sludge_bags(
     digester_count: Option<u64>,
     methane_fraction: Percent,
-    custom_sludge_bags_factor: Option<QubicmetersPerHour>,
+    sludge_bags_factor: Option<QubicmetersPerHour>,
 ) -> Tons {
     let count = Factor::new(digester_count.unwrap_or(0) as f64);
     let hours_per_year = Years::new(1.0).convert_to::<Hours>();
-    let custom_sludge_bags_factor =
-        custom_sludge_bags_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_BAGS);
-    let kilograms = custom_sludge_bags_factor
+    let sludge_bags_factor = sludge_bags_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_BAGS);
+    let kilograms = sludge_bags_factor
         * hours_per_year
         * count
         * methane_fraction
@@ -321,11 +307,11 @@ pub fn calculate_ch4_slippage_sludge_bags(
 pub fn calculate_ch4_slippage_sludge_storage(
     sewage_gas_produced: Qubicmeters,
     methane_fraction: Percent,
-    custom_sludge_storage_containers_factor: Option<Percent>,
+    sludge_storage_containers_factor: Option<Percent>,
 ) -> Tons {
-    let custom_sludge_storage_containers_factor =
-        custom_sludge_storage_containers_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_STORAGE);
-    let volume = sewage_gas_produced * methane_fraction * custom_sludge_storage_containers_factor;
+    let sludge_storage_containers_factor =
+        sludge_storage_containers_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_STORAGE);
+    let volume = sewage_gas_produced * methane_fraction * sludge_storage_containers_factor;
     let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
     mass.convert_to()
 }
@@ -512,16 +498,84 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
         ipcc2019_result,
     ];
 
-    // Custom
     let Some(factor) = custom_factor else {
         return results;
     };
 
+    // Custom
     let n2o = N2oEmissionFactorCalcMethod::Custom(factor);
     let methods = EmissionFactorCalculationMethods { n2o, ch4 };
     let result = calculate_emissions(values.clone(), methods);
     let custom_result = (n2o, result);
     results.push(custom_result);
+
+    results
+}
+
+pub fn calculate_ch4_combined_heat_and_power_plant(
+    calculation_method: Option<CH4ChpEmissionFactorCalcMethod>,
+    sewage_gas_produced: Qubicmeters,
+    methane_fraction: Percent,
+) -> (Tons, Factor) {
+    let ch4_emission_factor = match calculation_method {
+        None => Factor::new(0.01),
+        Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
+        Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
+        Some(CH4ChpEmissionFactorCalcMethod::JetEngine) => Factor::new(0.025),
+        Some(CH4ChpEmissionFactorCalcMethod::Custom(f)) => f,
+    };
+
+    let volume = sewage_gas_produced * methane_fraction * ch4_emission_factor;
+    let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
+    let ch4_chp = mass.convert_to::<Tons>();
+
+    (ch4_chp * GWP_CH4, ch4_emission_factor)
+}
+
+const CH4_CHP_CALC_METHODS: [CH4ChpEmissionFactorCalcMethod; 3] = [
+    CH4ChpEmissionFactorCalcMethod::MicroGasTurbines,
+    CH4ChpEmissionFactorCalcMethod::GasolineEngine,
+    CH4ChpEmissionFactorCalcMethod::JetEngine,
+];
+
+pub fn calculate_all_ch4_chp_emission_factor_scenarios(
+    values: &EmissionInfluencingValues,
+    custom_factor: Option<Factor>,
+) -> Vec<(CH4ChpEmissionFactorCalcMethod, Tons, Factor)> {
+    let EmissionInfluencingValues {
+        energy_consumption:
+            EnergyConsumption {
+                sewage_gas_produced,
+                methane_fraction,
+                ..
+            },
+        ..
+    } = values;
+
+    let mut results = CH4_CHP_CALC_METHODS
+        .into_iter()
+        .map(|method| {
+            let (result, factor) = calculate_ch4_combined_heat_and_power_plant(
+                Some(method),
+                *sewage_gas_produced,
+                *methane_fraction,
+            );
+            (method, result, factor)
+        })
+        .collect();
+
+    let Some(factor) = custom_factor else {
+        return results;
+    };
+
+    // Custom
+    let method = CH4ChpEmissionFactorCalcMethod::Custom(factor);
+    let (result, factor) = calculate_ch4_combined_heat_and_power_plant(
+        Some(method),
+        *sewage_gas_produced,
+        *methane_fraction,
+    );
+    results.push((method, result, factor));
 
     results
 }

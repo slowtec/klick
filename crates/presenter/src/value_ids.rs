@@ -66,3 +66,24 @@ pub enum OperatingMaterialId {
     CaOH2,
     SyntheticPolymers,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
+pub enum ScenarioFieldId {
+    N2OCustomFactor,
+    N2OSideStreamFactor,
+    N2OSideStreamCoverIsOpen,
+    CH4ChpCalculationMethod,
+    CH4ChpCustomFactor,
+    CO2FossilCustomFactor,
+    SludgeBagsCustomFactor,
+    SludgeStorageCustomFactor,
+    ProcessEnergySaving,
+    FossilEnergySaving,
+    DistrictHeating,
+    PhotovoltaicEnergyExpansion,
+    EstimatedSelfPhotovolaticUsage,
+    WindEnergyExpansion,
+    EstimatedSelfWindEnergyUsage,
+    WaterEnergyExpansion,
+    EstimatedSelfWaterEnergyUsage,
+}

@@ -288,7 +288,7 @@ async fn reset_password(
 async fn new_project(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-    Json(data): Json<boundary::ProjectData>,
+    Json(data): Json<boundary::FormData>,
 ) -> Result<boundary::ProjectId> {
     let account = account_from_token(&state, auth)?;
     let id = usecases::create_new_project(&state.db, &account, data)?;

@@ -1,10 +1,11 @@
+use std::collections::HashSet;
+
 use leptos::*;
-use strum::AsRefStr;
 
-use klick_boundary::{ProjectData, ProjectId};
-use klick_presenter::ValueLabel;
+use klick_app_components::forms::*;
+use klick_boundary::{FormData, ProjectId};
 
-use crate::{api::AuthorizedApi, forms};
+use crate::api::AuthorizedApi;
 
 use super::{DISABLED_BUTTON_CLASS, ENABLED_BUTTON_CLASS};
 
@@ -14,28 +15,35 @@ pub fn NewProject(
     on_cancel: Callback<(), ()>,
     on_success: Callback<ProjectId, ()>,
 ) -> impl IntoView {
+    let title = RwSignal::<Option<String>>::new(None);
+
     let field = Field {
-        id: Id::Name,
+        label: "Projektname".into(),
         description: None,
         required: true,
-        field_type: forms::FieldType::Text {
+        field_type: FieldType::Text {
             initial_value: None,
             placeholder: Some("Projektname".to_string()),
             max_len: None,
+            on_change: Callback::new(move |txt: Option<String>| {
+                title.update(|t| *t = txt);
+            }),
+            input: Signal::derive(move || None),
         },
     };
 
-    let error = RwSignal::new(None);
+    let error = RwSignal::<Option<String>>::new(None);
     let wait_for_response = RwSignal::new(false);
-    let field_id = forms::dom_node_id(&field.id);
+    let field_id = dom_node_id();
+    let missing_fields = RwSignal::new(HashSet::new());
 
-    let (field_signal, field_view) = forms::render_field(field, field_id);
+    let field_view = render_field(field, field_id, missing_fields);
 
     let create_project = create_action(move |_: &()| {
-        let title = field_signal.get_text().expect("Project name");
         let api = api.clone();
-        let mut project = ProjectData::default();
-        project.title = Some(title.clone());
+        let mut project = FormData::default();
+        project.project_title = title.get();
+
         async move {
             wait_for_response.set(true);
             let result = api.get().create_project(&project).await;
@@ -56,7 +64,7 @@ pub fn NewProject(
     });
 
     let enable_create_button = Signal::derive(move || {
-        let Some(txt) = field_signal.get_text() else {
+        let Some(txt) = title.get() else {
             return false;
         };
         !txt.is_empty()
@@ -86,18 +94,3 @@ pub fn NewProject(
       </div>
     }
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr)]
-enum Id {
-    Name,
-}
-
-impl ValueLabel for Id {
-    fn label(&self) -> &str {
-        match self {
-            Self::Name => "Projektname",
-        }
-    }
-}
-
-type Field = forms::Field<Id>;
