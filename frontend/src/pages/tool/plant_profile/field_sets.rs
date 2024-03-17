@@ -658,7 +658,7 @@ pub fn field_sets(
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Eisenchloridsulfat (FeClSO4) in Tonnen (t).",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
@@ -684,7 +684,7 @@ pub fn field_sets(
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Kalkhydrat (Ca(OH)2) in Tonnen (t).",
                 ),
-                required: true,
+                required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(

@@ -33,8 +33,8 @@ pub fn example_form_data() -> FormData {
         },
         operating_materials: OperatingMaterials {
             fecl3: Some(310.5),
-            feclso4: Some(0.0),
-            caoh2: Some(0.0),
+            feclso4: None,
+            caoh2: None,
             synthetic_polymers: Some(12.0),
         },
         side_stream_treatment: SideStreamTreatment {
