@@ -48,6 +48,13 @@ pub fn Recommendations(
                     percentage: Some(schlammy / f64::from(new.total_emissions) * 100.0),
                 });
 
+                let ch4_plant = f64::from(diff.ch4_plant);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "CH₄ Anlage (unspez.)",
+                    value: ch4_plant,
+                    percentage: Some(ch4_plant / f64::from(new.total_emissions) * 100.0),
+                });
+
                 let bhkwy = f64::from(diff.ch4_combined_heat_and_power_plant);
                 comp.push(klick_app_charts::BarChartArguments {
                     label: "CH₄ BHKW",
