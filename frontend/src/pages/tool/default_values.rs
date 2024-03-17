@@ -59,6 +59,7 @@ fn add_missing_profile_values(profile: &mut PlantProfile) {
         energy_consumption,
         sewage_sludge_treatment,
         side_stream_treatment,
+        operating_materials,
         ..
     } = profile;
 
@@ -105,6 +106,11 @@ fn add_missing_profile_values(profile: &mut PlantProfile) {
     // -- Side Stream Treatment -- //
 
     side_stream_treatment.total_nitrogen.get_or_insert(0.0);
+
+    // -- Operating Materials -- //
+
+    operating_materials.feclso4.get_or_insert(0.0);
+    operating_materials.caoh2.get_or_insert(0.0);
 }
 
 fn add_missing_sensitivity_parameters(s: &mut SensitivityParameters) {
