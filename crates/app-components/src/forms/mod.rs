@@ -4,7 +4,6 @@ use std::{
 };
 
 use derive_more::Display;
-use inflector::cases::kebabcase::to_kebab_case;
 use leptos::*;
 
 mod rendering;
