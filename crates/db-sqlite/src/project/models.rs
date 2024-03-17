@@ -24,12 +24,18 @@ pub struct ProjectChangeset<'a> {
     pub data: &'a str,
 }
 
-impl From<ProjectQuery> for Project {
-    fn from(from: ProjectQuery) -> Self {
+impl TryFrom<ProjectQuery> for Project {
+    type Error = anyhow::Error;
+
+    fn try_from(from: ProjectQuery) -> Result<Self, Self::Error> {
         let ProjectQuery { project_id, data } = from;
-        let project = project_from_json_str(&data).expect("valid project json data");
+        // Theoretically, this should never fail
+        // but we already had a test version online that used an unpublished data schema.
+        // And at that moment a user saved his data in the corrupt format in the DB.
+        // When restoring, it then paniced.
+        let project = project_from_json_str(&data)?;
         debug_assert_eq!(project_id.parse::<domain::ProjectId>().unwrap(), project.id);
-        project
+        Ok(project)
     }
 }
 
