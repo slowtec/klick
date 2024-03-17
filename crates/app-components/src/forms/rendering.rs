@@ -1,13 +1,9 @@
 use std::{
     collections::{HashMap, HashSet},
     fmt::Write,
-    hash::Hash,
-    rc::Rc,
 };
 
 use leptos::*;
-
-use klick_presenter::ValueLabel;
 
 use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 
@@ -19,16 +15,15 @@ pub fn render_field_sets(
     HashMap<FieldId, &'static str>,
 ) {
     let mut set_views = vec![];
-    let mut missing_fields = RwSignal::new(HashSet::new());
     let mut labels = HashMap::new();
+    let missing_fields = RwSignal::new(HashSet::new());
 
     for set in field_sets {
         let mut field_views = vec![];
 
         for field in set.fields {
-            let required = field.required;
             let id = crate::forms::dom_node_id();
-            labels.insert(id, field.label.clone());
+            labels.insert(id, field.label);
             let view = render_field(field, id, missing_fields);
             field_views.push(view);
         }
