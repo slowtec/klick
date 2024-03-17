@@ -1,11 +1,7 @@
 use std::{fs::File, io::prelude::*};
 
-use klick_boundary::{
-    AnnualAverageEffluent, AnnualAverageInfluent, CustomEmissionFactors, EnergyConsumption,
-    EnergyEmissionFactors, N2oEmissionFactorCalcMethod, N2oEmissionFactorScenario,
-    OperatingMaterials, OptimizationScenario, PlantProfile, ProjectData, SewageSludgeTreatment,
-    SideStreamTreatment,
-};
+use klick_boundary::*;
+
 use klick_pdf_export::export_to_pdf;
 
 pub fn main() -> anyhow::Result<()> {
@@ -17,18 +13,18 @@ pub fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn project_example_data() -> ProjectData {
+fn project_example_data() -> FormData {
     let plant_profile = PlantProfile {
         plant_name: Some("Muster Klärwerk".to_string()),
         population_equivalent: Some(50_000.0),
         wastewater: Some(2_135_250.0),
         influent_average: AnnualAverageInfluent {
-            nitrogen: Some(94.0),
+            total_nitrogen: Some(94.0),
             chemical_oxygen_demand: Some(1_020.0),
             total_organic_carbohydrates: Some(0.0),
         },
         effluent_average: AnnualAverageEffluent {
-            nitrogen: Some(15.77),
+            total_nitrogen: Some(15.77),
             chemical_oxygen_demand: Some(47.18),
         },
         energy_consumption: EnergyConsumption {
@@ -42,12 +38,8 @@ fn project_example_data() -> ProjectData {
             heating_oil: Some(0.0),
         },
         sewage_sludge_treatment: SewageSludgeTreatment {
-            sludge_bags_are_open: Some(true),
-            sludge_bags_are_open_recommendation: Some(true),
-            custom_sludge_bags_factor: None,
-            sludge_storage_containers_are_open: Some(true),
-            sludge_storage_containers_are_open_recommendation: Some(true),
-            custom_sludge_storage_containers_factor: None,
+            sludge_bags_are_closed: Some(false),
+            sludge_storage_containers_are_closed: Some(false),
             sewage_sludge_for_disposal: Some(3016.5),
             transport_distance: Some(150.0),
             digester_count: Some(3),
@@ -60,36 +52,33 @@ fn project_example_data() -> ProjectData {
         },
         side_stream_treatment: SideStreamTreatment {
             total_nitrogen: Some(0.0),
-            side_stream_cover_is_open: Some(true),
         },
-        emission_factors: CustomEmissionFactors {
-            co2_fossil: Some(0.0),
-            n2o_side_stream: Some(0.0),
-        },
-        energy_emission_factors: EnergyEmissionFactors {
-            process_energy_savings: None,
-            fossil_energy_savings: None,
-            district_heating: None,
-            photovoltaic_energy_expansion: None,
-            estimated_self_photovoltaic_usage: None,
-            wind_energy_expansion: None,
-            estimated_self_wind_energy_usage: None,
-            water_energy_expansion: None,
-            estimated_self_water_energy_usage: None,
+    };
+
+    let sensitivity_parameters = SensitivityParameters {
+        n2o_emissions: Default::default(),
+        ch4_chp_emissions: Default::default(),
+        ch4_sewage_sludge_emissions: Default::default(),
+        co2_fossil_emissions: FossilEmissonsSensitivity {
+            emission_factor: Some(0.0),
         },
     };
 
     let optimization_scenario = OptimizationScenario {
-        n2o_emission_factor: N2oEmissionFactorScenario {
-            custom_factor: None,
-            calculation_method: N2oEmissionFactorCalcMethod::Ipcc2019,
+        sewage_sludge_treatment: SewageSludgeTreatmentScenario {
+            sludge_bags_are_closed: Some(false),
+            sludge_storage_containers_are_closed: Some(false),
         },
-        ch4_chp_emission_factor: None,
+        energy_emissions: Default::default(),
+        side_stream_treatment: SideStreamTreatmentScenario {
+            side_stream_cover_is_closed: Some(false),
+        },
     };
 
-    ProjectData {
-        title: None,
+    FormData {
+        project_title: None,
         plant_profile,
+        sensitivity_parameters,
         optimization_scenario,
     }
 }
