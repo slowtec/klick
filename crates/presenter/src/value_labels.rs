@@ -14,7 +14,7 @@ impl ValueLabel for ProfileValueId {
     fn label(&self) -> &'static str {
         match self {
             Self::PlantName => "Name oder Ort",
-            Self::PopulationEquivalent => "Ausbaugröße",
+            Self::PopulationEquivalent => "Angeschlossene Einwohner",
             Self::Wastewater => "Abwassermenge",
             Self::InfluentAverage(id) => id.label(),
             Self::EffluentAverage(id) => id.label(),
