@@ -1,4 +1,22 @@
 use klick_domain::CO2Equivalents;
+use klick_domain::units::{Ratio, Percent};
+use klick_boundary::PlantProfile;
+use crate::value_labels::ValueLabel;
+use crate::Lng;
+
+pub fn create_sankey_chart_header(
+    profile: &PlantProfile,
+    emission_factors: klick_domain::CalculatedEmissionFactors,
+    calculation_methods: klick_domain::EmissionFactorCalculationMethods,
+) -> String {
+    format!(
+        "{} ({} EW) / Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] - Szenario {} (N₂O-EF={})",
+        match &profile.plant_name { Some(v) => format!("{v}"), None => "".to_string() },
+        match &profile.population_equivalent { Some(v) => format!("{v}"), None => "".to_string() },
+        calculation_methods.n2o.label(),
+        Lng::De.format_number_with_precision(f64::from(emission_factors.n2o.convert_to::<Percent>()), 3),
+    )
+}
 
 pub fn create_sankey_chart_data(
     co2_equivalents: CO2Equivalents,
