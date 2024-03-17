@@ -67,6 +67,17 @@ pub fn DataCollection(
             anhand verschiedener Szenarien, berechnet werden können:"
           </p>
         </Show>
+        <h4 class="my-8 text-lg font-bold">
+        { move || outcome.with(|out|out.as_ref().map(|out|{
+              let out = &out.profile;
+              klick_presenter::create_sankey_chart_header(
+                &form_data.with(|d| d.plant_profile.clone()),
+                out.emission_factors,
+                out.calculation_methods,
+              )
+            }))
+        }
+        </h4>
         { move || outcome.get().map(|outcome|{
           let outcome = outcome.profile;
           let data = (outcome.co2_equivalents, outcome.emission_factors);
