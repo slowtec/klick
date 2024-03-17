@@ -23,20 +23,12 @@ pub fn DataCollection(
     outcome: Signal<Option<CalculationOutcome>>,
 ) -> impl IntoView {
     // -----   ----- //
-    //    Signals    //
-    // -----   ----- //
-
-    // -----   ----- //
     //     Form      //
     // -----   ----- //
 
     let field_sets = field_sets(form_data.write_only(), input_data);
     let (field_views, missing_fields, labels) = render_field_sets(field_sets);
     let labels = Rc::new(labels);
-
-    // -----   ----- //
-    //     Effects   //
-    // -----   ----- //
 
     // -----   ----- //
     //     View      //

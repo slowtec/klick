@@ -6,9 +6,7 @@ use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, FormData, Project, ProjectId, SavedProject,
 };
 
-use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
-
-use self::calculation::{calculate, CalculationOutcome};
+use crate::{api::AuthorizedApi, Page, SECTION_ID_TOOL_HOME};
 
 mod breadcrumbs;
 mod calculation;
@@ -22,8 +20,13 @@ mod sensitivity_parameters;
 mod widgets;
 
 use self::{
-    breadcrumbs::Breadcrumbs, plant_profile::DataCollection, project_menu::ProjectMenu,
-    recommendations::Recommendations, sensitivity_parameters::SensitivityParameters, widgets::*,
+    breadcrumbs::Breadcrumbs,
+    calculation::{calculate, CalculationOutcome},
+    plant_profile::DataCollection,
+    project_menu::ProjectMenu,
+    recommendations::Recommendations,
+    sensitivity_parameters::SensitivityParameters,
+    widgets::*,
 };
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -35,7 +38,6 @@ pub enum PageSection {
 }
 
 impl PageSection {
-    #[allow(unused)] // TODO
     const fn section_id(self) -> &'static str {
         match self {
             PageSection::DataCollection => SECTION_ID_TOOL_HOME,
@@ -245,6 +247,16 @@ pub fn Tool(
     //    Effects    //
     // -----   ----- //
 
+    // TODO: Use router:
+    // e.g. /tool/plant-profile/ instead of /tool#plant-profile
+    create_effect(move |_| {
+        let s = current_section.get();
+        let id = s.section_id();
+        let path = Page::Tool.path();
+        let href = format!("{path}#{id}");
+        window().location().set_href(&href).unwrap();
+    });
+
     // -----   ----- //
     //     Views     //
     // -----   ----- //
@@ -281,7 +293,7 @@ pub fn Tool(
     };
 
     view! {
-      <div class="space-y-10">
+      <div class="space-y-10" id = move || current_section.get().section_id() >
         <div class="flex center-items justify-between">
           <Breadcrumbs
             entries = { BREADCRUMPS_ENTRIES }
