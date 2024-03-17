@@ -29,9 +29,9 @@ pub fn FossilCO2Emissions(
          </p>
          <p class="my-2">
            "Im Folgenden können Sie auf Basis des gesamten organischer Kohlenstoffs (total organic carbon, TOC"<sub>"Zulauf"</sub>")
-                des Kläranlagenzulaufs abgeschätzt, wie hoch/niedrig der Anteil an fossilem CO₂ in der biologischen Reinigung
-                ist. Über einen wählbaren CO₂-EF (fossil) können sie berechnen wie sich dies auf die Klimabilanz Ihrer
-                Kläranlage auswirkt."
+                des Kläranlagenzulaufs abgeschätzt, wie hoch/niedrig der Anteil an fossilem CO₂ ist. Das fossile CO₂ emittiert aus
+                der biologischen Reinigung, aus der Klärgas- und der Klärschlamm-Verwertung. Über einen wählbaren CO₂-EF (fossil)
+                können sie berechnen wie sich dies auf die Klimabilanz Ihrer Kläranlage auswirkt."
          </p>
          <p class="my-2">
            "Wenn Sie in der Datenerfassung keinen Wert im „TOC"<sub>"Zulauf"</sub>"“- Eingabefeld eingetragen haben schätzt das Tool die
