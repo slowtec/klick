@@ -129,7 +129,7 @@ pub fn N2OEmissionsSensitivity(
 
             <p class="my-2">
               "Die Prozesswasserbehandlung in Kläranlagen kann mit erheblichen zusätzlichen Lachgasemissionen verbunden sein.
-              Vasilaki et al. (2019) geben in ihrer Metastudie einen Lachgas-EF von 1,7-5,1% des Gesamtstickstoffs im Nebenstrom an."
+              Vasilaki et al. (2019) geben in ihrer Metastudie einen Lachgas-EF von 1,7-5,1% des Gesamtstickstoffs im Prozesswasser an."
             </p>
 
             <p class="my-2">
@@ -138,7 +138,7 @@ pub fn N2OEmissionsSensitivity(
             </p>
 
             <p class="my-2">
-              "Den hierfür verwendeten N₂O-EF können Sie über das Eingabefeld „N₂O-EF Nebenstrom“ unten frei
+              "Den hierfür verwendeten N₂O-EF können Sie über das Eingabefeld „N₂O-EF Prozesswasser“ unten frei
               wählen oder leer lassen, um mit einem mittleren EF von 2% (nach Vasilaki et al. 2019) zu rechnen."
             </p>
 
@@ -230,7 +230,7 @@ fn side_stream_factor(
     input_data: ReadSignal<FormData>,
 ) -> Vec<FieldSet> {
     let custom_factor_field = Field {
-        label: "N₂O-EF Nebenstrom",
+        label: "N₂O-EF Prozesswasser",
         description: Some(
             "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder
             einer Messkampagne) einen Wert für den EF der Prozesswasserbehandlung eintragen.",

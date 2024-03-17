@@ -97,7 +97,7 @@ impl ValueLabel for ScenarioFieldId {
     fn label(&self) -> &'static str {
         match self {
             Self::N2OCustomFactor => "N₂O-EF Benutzerdefiniert",
-            Self::N2OSideStreamFactor => "N₂O-EF Nebenstrom",
+            Self::N2OSideStreamFactor => "N₂O-EF Prozesswasser",
             Self::N2OSideStreamCoverIsOpen => {
                 "Abdeckung mit Abluftbehandlung Prozesswasserbehandlungsanlage"
             }
