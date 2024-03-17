@@ -21,7 +21,6 @@ use self::{
 #[component]
 pub fn SensitivityParameters(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
     current_section: RwSignal<PageSection>,
     outcome: Signal<Option<CalculationOutcome>>,
     show_side_stream_controls: Signal<bool>,
@@ -39,24 +38,23 @@ pub fn SensitivityParameters(
       </div>
       <N2OEmissionsSensitivity
         form_data
-        input_data
         outcome
         show_side_stream_controls
       />
       <CH4EmissionsCHP
         form_data
-        input_data
+        input_data = form_data.read_only()
         outcome
       />
       <CH4EmissionsOpenDigesters
         form_data
-        input_data
+        input_data = form_data.read_only()
         outcome
       />
       <CH4EmissionsOpenSludgeStorage />
       <FossilCO2Emissions
         form_data
-        input_data
+        input_data = form_data.read_only()
         outcome
       />
 

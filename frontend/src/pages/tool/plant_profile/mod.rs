@@ -18,7 +18,6 @@ pub use self::field_sets::field_sets;
 #[component]
 pub fn DataCollection(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
     current_section: RwSignal<PageSection>,
     outcome: Signal<Option<CalculationOutcome>>,
 ) -> impl IntoView {
@@ -26,7 +25,7 @@ pub fn DataCollection(
     //     Form      //
     // -----   ----- //
 
-    let field_sets = field_sets(form_data.write_only(), input_data);
+    let field_sets = field_sets(form_data);
     let (field_views, missing_fields, labels) = render_field_sets(field_sets);
     let labels = Rc::new(labels);
 

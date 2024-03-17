@@ -15,8 +15,9 @@ pub fn BarChartRadioInput(
     width: f64,
     height: f64,
     data: Vec<BarChartRadioInputArguments>,
-    selected_bar: RwSignal<Option<u64>>,
+    selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
+    #[prop(into)] on_change: Callback<u64, ()>,
 ) -> impl IntoView {
     let margin = 10.0;
 
@@ -41,6 +42,7 @@ pub fn BarChartRadioInput(
             data
             selected_bar
             emission_factor_label
+            on_change
           />
         </g>
       </svg>
@@ -67,8 +69,9 @@ fn Bars(
     width: f64,
     height: f64,
     data: Vec<BarChartRadioInputArguments>,
-    selected_bar: RwSignal<Option<u64>>,
+    selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
+    on_change: Callback<u64, ()>,
 ) -> impl IntoView {
     let count: usize = data.len();
     let co2_value_max = data
@@ -118,6 +121,7 @@ fn Bars(
               height={ height }
               selected_bar
               emission_factor_label
+              on_change
             />
           }
         }
@@ -138,8 +142,9 @@ fn Bar(
     width: f64,
     height: f64,
     i: usize,
-    selected_bar: RwSignal<Option<u64>>,
+    selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
+    on_change: Callback<u64, ()>,
 ) -> impl IntoView {
     let hovered = create_rw_signal(false);
     let fill = RwSignal::new("#0af");
@@ -172,7 +177,7 @@ fn Bar(
         on:mouseenter = on_mouse_enter
         on:mouseleave = on_mouse_leave
         on:mousedown = move |_| {
-            selected_bar.set(Some(i as u64));
+            on_change.call(i as u64);
         }
         cursor="pointer"
       >
