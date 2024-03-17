@@ -27,6 +27,16 @@ pub fn SensitivityParameters(
     show_side_stream_controls: Signal<bool>,
 ) -> impl IntoView {
     view! {
+      <div class="my-4 ml-4">
+      <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Sensitivität von Emissionsfaktoren"</h3>
+      <p class="my-2">
+        "Unter nachfolgenden „aufklappbaren“ Abschnitten haben Sie die Möglichkeit verschiedene Emissionsfaktoren (EF)
+        genauer zu definieren. Dabei können Sie berechnen, wie sich die jeweilige Anpassung der EF von
+        Anlagenkomponenten bzw. der Gesamtkläranlage auf die Klimabilanz auswirkt. Sie können die
+        Sensibilisierung/Verfeinerung auch überspringen und direkt zu den Handlungsempfehlungen übergehen
+        (in diesem Fall rechnet das KlicK-Tool auf Basis der genannten Standardfaktoren/-parameter)."
+      </p>
+      </div>
       <N2OEmissionsSensitivity
         form_data
         input_data
