@@ -580,7 +580,7 @@ pub fn field_sets(
                             0.0,
                         ),
                         max: Some(
-                            500.0,
+                            2000.0,
                         ),
                     },
                     unit: "km",
