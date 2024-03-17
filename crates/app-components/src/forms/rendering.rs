@@ -7,13 +7,12 @@ use leptos::*;
 
 use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 
+type MissingFields = HashSet<FieldId>;
+type Labels = HashMap<FieldId, &'static str>;
+
 pub fn render_field_sets(
     field_sets: Vec<FieldSet>,
-) -> (
-    Vec<View>,
-    ReadSignal<HashSet<FieldId>>,
-    HashMap<FieldId, &'static str>,
-) {
+) -> (Vec<View>, ReadSignal<MissingFields>, Labels) {
     let mut set_views = vec![];
     let mut labels = HashMap::new();
     let missing_fields = RwSignal::new(HashSet::new());
@@ -74,11 +73,10 @@ pub fn render_field(
                     x.insert(id);
                 });
             }
-            let input_signal = RwSignal::new(initial_value);
 
-            let on_txt_change = Callback::new(move |txt: Option<String>| {
-                if required {
-                    if txt.is_some() {
+            if required {
+                create_effect(move |_| {
+                    if input.with(|x| x.is_some()) {
                         missing_fields.update(|x| {
                             x.remove(&id);
                         });
@@ -87,13 +85,8 @@ pub fn render_field(
                             x.insert(id);
                         });
                     }
-                }
-                on_change.call(txt);
-            });
-            create_effect(move |_| {
-                let new_value = input.get();
-                input_signal.set(new_value);
-            });
+                });
+            }
             let view = view! {
               <TextInput
                 label
@@ -102,8 +95,8 @@ pub fn render_field(
                 max_len
                 description
                 required
-                input_value = input_signal
-                on_change = on_txt_change
+                input_value = input
+                on_change = on_change
               />
             }
             .into_view();
@@ -118,16 +111,16 @@ pub fn render_field(
             input,
             ..
         } => {
+            // TODO: write initial value
+
             if required && initial_value.is_none() {
                 missing_fields.update(|x| {
                     x.insert(id);
                 });
             }
-            let i_value = initial_value.map(format_f64_into_de_string);
-            let input_signal = RwSignal::new(i_value);
-            let on_float_change = move |v: Option<f64>| {
-                if required {
-                    if v.is_some() {
+            if required {
+                create_effect(move |_| {
+                    if input.with(|x| x.is_some()) {
                         missing_fields.update(|x| {
                             x.remove(&id);
                         });
@@ -136,14 +129,10 @@ pub fn render_field(
                             x.insert(id);
                         });
                     }
-                }
-                on_change.call(v);
-            };
-            create_effect(move |_| {
-                let new_value = input.get().map(format_f64_into_de_string);
-                input_signal.set(new_value);
-            });
-            let view = view! {
+                });
+            }
+
+            view! {
               <FloatInput
                 label
                 id
@@ -152,12 +141,11 @@ pub fn render_field(
                 description
                 limits
                 required
-                input_value = input_signal
-                on_change = on_float_change
+                input_value = input
+                on_change
               />
             }
-            .into_view();
-            view
+            .into_view()
         }
         FieldType::UnsignedInteger {
             placeholder,
@@ -173,11 +161,9 @@ pub fn render_field(
                     x.insert(id);
                 });
             }
-            let i_value = initial_value.map(|v| format!("{}", v));
-            let input_signal = RwSignal::new(i_value);
-            let on_uint_change = move |v: Option<u64>| {
-                if required {
-                    if v.is_some() {
+            if required {
+                create_effect(move |_| {
+                    if input.get().is_some() {
                         missing_fields.update(|x| {
                             x.remove(&id);
                         });
@@ -186,13 +172,9 @@ pub fn render_field(
                             x.insert(id);
                         });
                     }
-                }
-                on_change.call(v);
-            };
-            create_effect(move |_| {
-                let new_value = input.get().map(|v| format!("{}", v));
-                input_signal.set(new_value);
-            });
+                });
+            }
+
             let view = view! {
               <UnsignedIntegerInput
                 label
@@ -202,28 +184,23 @@ pub fn render_field(
                 description
                 limits
                 required
-                input_value = input_signal
-                on_change = on_uint_change
+                input_value = input
+                on_change
               />
             }
             .into_view();
             view
         }
         FieldType::Bool {
-            initial_value,
+            initial_value: _,
             on_change,
             input,
         } => {
-            let input_signal = RwSignal::new(initial_value.unwrap_or_default());
-            create_effect(move |_| {
-                let new_value = input.get();
-                input_signal.set(new_value);
-            });
             let view = view! {
               <BoolInput
                 label
                 id
-                input_value = input_signal
+                input_value = input.into()
                 description
                 on_change
               />
@@ -309,7 +286,7 @@ fn TextInput(
     max_len: Option<usize>,
     description: Option<&'static str>,
     required: bool,
-    input_value: RwSignal<Option<String>>,
+    input_value: Signal<Option<String>>,
     #[prop(into)] on_change: Callback<Option<String>, ()>,
 ) -> impl IntoView {
     let required_label = format!("{} {label}", if required { "*" } else { "" });
@@ -339,6 +316,7 @@ fn TextInput(
               let v = if target_value.is_empty() { None } else { Some(target_value) };
               on_change.call(v);
             }
+            // FIXME: trigger focusout on Enter or Escape
           />
         </div>
       </div>
@@ -395,11 +373,12 @@ fn FloatInput(
     description: Option<&'static str>,
     limits: MinMax<f64>,
     required: bool,
-    input_value: RwSignal<Option<String>>,
+    input_value: Signal<Option<f64>>,
     #[prop(into)] on_change: Callback<Option<f64>, ()>,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
+    let txt = RwSignal::new(String::new());
 
     view! {
       <div>
@@ -419,59 +398,49 @@ fn FloatInput(
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
             placeholder = { placeholder }
+            on:input = move |ev| {
+                let input = event_target_value(&ev);
+                txt.set(input);
+            }
             on:focusin = move |_| {
-                if let Some(v) = input_value.get() {
-                    let v = v.replace('.', "");
-                    input_value.set(Some(v));
-                }
+                // FIXME: Format input as string and remove delemiters
             }
             on:focusout = move |_| {
-                let Some(v) = input_value.get() else {
-                    input_value.set(None);
-                    if required {
-                        error.set(Some("Eingabe benötigt!".to_string()));
-                    }
+                error.set(None);
+
+                if txt.with(|x|x.is_empty()) {
+                  if required {
+                      error.set(Some("Eingabe benötigt!".to_string()));
+                      return;
+                  }
+                  on_change.call(None);
+                  return;
+                }
+
+                let Some(v) = txt.with(|x|parse_de_str_as_f64(x).ok()) else {
+                    error.set(Some("Fehlerhafte Eingabe!".to_string()));
                     return;
                 };
-                if let Ok(q) = parse_de_str_as_f64(&v) {
-                  let s = format_f64_into_de_string(q);
-                  input_value.set(Some(s));
-                }
-            }
-            prop:value = move || {
-                let Some(v) = input_value.get() else {
-                    on_change.call(None);
-                    error.set(None);
-                    return String::new();
-                };
-                let Ok(t) = parse_de_str_as_f64(&v) else {
-                    error.set(Some("Fehlerhafte Eingabe!".to_string()));
-                    on_change.call(None);
-                    return v;
-                };
+
                 if let Some(min) = limits.min {
-                    if t < min {
+                    if v < min {
                         error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
-                        on_change.call(None);
-                        return v;
+                      return;
                     }
                 }
                 if let Some(max) = limits.max {
-                    if t > max {
+                    if v > max {
                         error.set(Some("Eingabe überschreitet das Maximum".to_string()));
-                        on_change.call(None);
-                        return v;
+                      return;
                     }
                 }
+                on_change.call(Some(v));
+            }
+            prop:value = move || {
                 error.set(None);
-                on_change.call(Some(t));
-                v
+                input_value.get().map(format_f64_into_de_string).unwrap_or_else(String::new)
             }
-            on:input = move |ev| {
-                let input = event_target_value(&ev);
-                let v = if input.is_empty() { None } else { Some(input) };
-                input_value.set(v);
-            }
+            // FIXME: trigger focusout on Enter or Escape
           />
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <span class="text-gray-500 sm:text-sm">{ unit }</span>
@@ -493,11 +462,12 @@ fn UnsignedIntegerInput(
     description: Option<&'static str>,
     limits: MinMax<u64>,
     required: bool,
-    input_value: RwSignal<Option<String>>,
+    input_value: Signal<Option<u64>>,
     #[prop(into)] on_change: Callback<Option<u64>, ()>,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
+    let txt = RwSignal::new(String::new());
 
     view! {
       <div>
@@ -517,64 +487,49 @@ fn UnsignedIntegerInput(
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
             placeholder = { placeholder }
-            on:focusin = move |_ev| {
-              if let Some(v) = input_value.get() {
-                  let v = v.replace('.', "");
-                  input_value.set(Some(v));
-              }
+            on:input = move |ev| {
+                let input = event_target_value(&ev);
+                txt.set(input);
             }
-            on:focusout = move |_ev| {
-                let Some(v) = input_value.get() else {
-                    input_value.set(None);
-                    if required {
-                        error.set(Some("Eingabe benötigt!".to_string()));
-                    }
+            on:focusin = move |_| {
+                // FIXME: Format input as string and remove delemiters
+            }
+            on:focusout = move |_| {
+                error.set(None);
+
+                if txt.with(|x|x.is_empty()) {
+                  if required {
+                      error.set(Some("Eingabe benötigt!".to_string()));
+                      return;
+                  }
+                  on_change.call(None);
+                  return;
+                }
+
+                let Some(v) = txt.with(|x|x.parse::<u64>().ok()) else {
+                    error.set(Some("Fehlerhafte Eingabe!".to_string()));
                     return;
                 };
-                match v.parse::<u64>() {
-                    Ok(_parsed_number) => {
-                    // not needed for u64 vs. f64
-                    //   input_value.set(Some(parsed_number));
-                    }
-                    Err(_err) => {
-                      error.set(Some("Fehlerhafte Eingabe!".to_string()));
-                    }
-                };
-            }
-            prop:value = move || {
-                let Some(v) = input_value.get() else {
-                    on_change.call(None);
-                    error.set(None);
-                    return String::new();
-                };
-                let Ok(t) = v.parse::<u64>() else {
-                    error.set(Some("Fehlerhafte Eingabe!".to_string()));
-                    on_change.call(None);
-                    return v;
-                };
+
                 if let Some(min) = limits.min {
-                    if t < min {
+                    if v < min {
                         error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
-                        on_change.call(None);
-                        return v;
+                      return;
                     }
                 }
                 if let Some(max) = limits.max {
-                    if t > max {
+                    if v > max {
                         error.set(Some("Eingabe überschreitet das Maximum".to_string()));
-                        on_change.call(None);
-                        return v;
+                      return;
                     }
                 }
+                on_change.call(Some(v));
+            }
+            prop:value = move || {
                 error.set(None);
-                on_change.call(Some(t));
-                v
+                input_value.get().map(|v|format!("{v}")).unwrap_or_else(String::new)
             }
-            on:input = move |ev| {
-              let input = event_target_value(&ev);
-              let v = if input.is_empty() { None } else { Some(input) };
-              input_value.set(v);
-            }
+            // FIXME: trigger focusout on Enter or Escape
           />
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <span class="text-gray-500 sm:text-sm">{ unit }</span>
@@ -591,7 +546,7 @@ fn UnsignedIntegerInput(
 fn BoolInput(
     label: &'static str,
     id: FieldId,
-    input_value: RwSignal<bool>,
+    input_value: Signal<bool>,
     description: Option<&'static str>,
     #[prop(into)] on_change: Callback<bool, ()>,
 ) -> impl IntoView {
@@ -606,7 +561,6 @@ fn BoolInput(
             prop:checked = move || input_value.get()
             on:input = move |_| {
                 let v = !input_value.get();
-                input_value.set(v);
                 on_change.call(v);
             }
           />

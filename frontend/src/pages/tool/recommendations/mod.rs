@@ -18,7 +18,6 @@ mod n2o_emissions_side_stream_system;
 #[component]
 pub fn Recommendations(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
     outcome: Signal<Option<CalculationOutcome>>,
     show_side_stream_controls: Signal<bool>,
 ) -> impl IntoView {
@@ -30,7 +29,6 @@ pub fn Recommendations(
                 let old = out.sensitivity.co2_equivalents.clone();
                 let new = out.recommendation.co2_equivalents.clone();
                 let diff = new.clone() - old;
-                //log::debug!("{diff:#?}");
 
                 let mut comp = vec![];
 
@@ -103,7 +101,7 @@ pub fn Recommendations(
       {
         n2o_emissions_side_stream_system::options(
           form_data,
-          input_data,
+          form_data.read_only(),
           outcome,
           show_side_stream_controls
         )
@@ -111,15 +109,16 @@ pub fn Recommendations(
       { ch4_emissions_pre_treatment::options() }
       { ch4_emissions_open_digesters::options(
           form_data,
-          input_data,
+          form_data.read_only(),
           outcome,
       ) }
       { leak_test::options() }
       { excess_energy_co2_equivalent::options(
           form_data,
-          input_data,
+          form_data.read_only(),
           outcome,
-      ) }
+        )
+      }
 
       <h4 class="my-8 text-lg font-bold">
         { move || outcome.with(|out|out.as_ref().map(|out|{

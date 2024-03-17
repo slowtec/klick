@@ -21,8 +21,9 @@ pub fn bar_chart(
             width
             height
             data
-            selected_bar
+            selected_bar = selected_bar.into()
             emission_factor_label
+            on_change = |_|{}
           />
         }
     })

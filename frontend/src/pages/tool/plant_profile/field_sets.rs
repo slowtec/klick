@@ -8,10 +8,7 @@ use klick_presenter::{
 };
 
 #[allow(clippy::too_many_lines)]
-pub fn field_sets(
-    form_data: WriteSignal<FormData>,
-    input_data: ReadSignal<FormData>,
-) -> Vec<FieldSet> {
+pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     vec![
     FieldSet {
         title: None,
@@ -34,7 +31,7 @@ pub fn field_sets(
                     on_change: Callback::new(move |v|{
                         form_data.update(|d|d.project_title = v);
                     }),
-                    input: Signal::derive(move||input_data.with(|d|d.project_title.clone()))
+                    input: Signal::derive(move||form_data.with(|d|d.project_title.clone()))
                 },
             },
         ],
@@ -58,7 +55,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.plant_name = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d
+                        form_data.with(|d|d
                         .plant_profile.plant_name.clone())
                     })
                 },
@@ -87,7 +84,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.population_equivalent = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d
+                        form_data.with(|d|d
                         .plant_profile .population_equivalent)
                     })
                 },
@@ -116,7 +113,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.wastewater = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.wastewater) })
+                        form_data.with(|d|d.plant_profile.wastewater) })
                 },
             },
         ],
@@ -148,7 +145,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.influent_average.chemical_oxygen_demand = v);
                     })
                     , input: Signal::derive(move||
-                        input_data.with(|d|d.plant_profile.influent_average.chemical_oxygen_demand)
+                        form_data.with(|d|d.plant_profile.influent_average.chemical_oxygen_demand)
                     )
                 },
             },
@@ -176,7 +173,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.influent_average.total_nitrogen = v);
                     })
                     , input: Signal::derive(move||
-                      input_data.with(|d|d.plant_profile.influent_average.total_nitrogen)
+                      form_data.with(|d|d.plant_profile.influent_average.total_nitrogen)
                     )
                 },
             },
@@ -207,7 +204,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.influent_average.total_organic_carbohydrates = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.influent_average.total_organic_carbohydrates)
+                        form_data.with(|d|d.plant_profile.influent_average.total_organic_carbohydrates)
                     })
                 },
             },
@@ -239,7 +236,7 @@ pub fn field_sets(
                     on_change: Callback::new(move|v|{
                         form_data.update(|d|d.plant_profile.effluent_average.chemical_oxygen_demand = v);
                     })
-                    , input: Signal::derive(move|| input_data.with(|d|d .plant_profile.effluent_average.chemical_oxygen_demand))
+                    , input: Signal::derive(move|| form_data.with(|d|d .plant_profile.effluent_average.chemical_oxygen_demand))
                 },
             },
             Field {
@@ -266,7 +263,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.effluent_average.total_nitrogen = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile                   .effluent_average.total_nitrogen)
+                        form_data.with(|d|d.plant_profile                   .effluent_average.total_nitrogen)
                     })
                 },
             },
@@ -299,7 +296,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.total_power_consumption = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.              plant_profile     .energy_consumption.total_power_consumption)
+                        form_data.with(|d|d.              plant_profile     .energy_consumption.total_power_consumption)
                     })
                 },
             },
@@ -327,7 +324,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.on_site_power_generation = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.energy_consumption.on_site_power_generation)
+                        form_data.with(|d|d.plant_profile.energy_consumption.on_site_power_generation)
                     })
                 },
             },
@@ -355,7 +352,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.emission_factor_electricity_mix = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.energy_consumption.emission_factor_electricity_mix)
+                        form_data.with(|d|d.plant_profile.energy_consumption.emission_factor_electricity_mix)
                     })
                 },
             },
@@ -379,7 +376,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.gas_supply = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.energy_consumption.gas_supply)
+                        form_data.with(|d|d.plant_profile.energy_consumption.gas_supply)
                     })
                 },
             },
@@ -395,7 +392,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.purchase_of_biogas = Some(v));
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.energy_consumption.purchase_of_biogas.unwrap_or_default())
+                        form_data.with(|d|d.plant_profile.energy_consumption.purchase_of_biogas.unwrap_or_default())
                     })
                 },
             },
@@ -419,7 +416,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.heating_oil = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.energy_consumption.heating_oil)
+                        form_data.with(|d|d.plant_profile.energy_consumption.heating_oil)
                     })
                 },
             },
@@ -445,7 +442,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.sewage_gas_produced = v);
                     })
                     , input: Signal::derive(move||
-                        input_data.with(|d|d.plant_profile.energy_consumption.sewage_gas_produced)
+                        form_data.with(|d|d.plant_profile.energy_consumption.sewage_gas_produced)
                     )
                 },
             },
@@ -471,7 +468,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.energy_consumption.methane_fraction = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.energy_consumption.methane_fraction)
+                        form_data.with(|d|d.plant_profile.energy_consumption.methane_fraction)
                     })
                 },
             },
@@ -502,7 +499,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.digester_count = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.sewage_sludge_treatment.digester_count)
+                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.digester_count)
                     })
                 },
             },
@@ -518,7 +515,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.sludge_bags_are_closed = Some(v));
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_bags_are_closed.unwrap_or_default())
+                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_bags_are_closed.unwrap_or_default())
                     })
                 },
             },
@@ -534,7 +531,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.sludge_storage_containers_are_closed = Some(v));
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_storage_containers_are_closed.unwrap_or_default())
+                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_storage_containers_are_closed.unwrap_or_default())
                     })
                 },
             },
@@ -560,7 +557,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.sewage_sludge_for_disposal = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.sewage_sludge_treatment.sewage_sludge_for_disposal)
+                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.sewage_sludge_for_disposal)
                     })
                 },
             },
@@ -588,7 +585,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.transport_distance = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.sewage_sludge_treatment.transport_distance)
+                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.transport_distance)
                     })
                 },
             },
@@ -618,7 +615,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.side_stream_treatment.total_nitrogen = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.side_stream_treatment.total_nitrogen)
+                        form_data.with(|d|d.plant_profile.side_stream_treatment.total_nitrogen)
                     })
                 },
             },
@@ -649,7 +646,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.operating_materials.fecl3 = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.operating_materials.fecl3)
+                        form_data.with(|d|d.plant_profile.operating_materials.fecl3)
                     })
                 },
             },
@@ -675,7 +672,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.operating_materials.feclso4 = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.operating_materials.feclso4)
+                        form_data.with(|d|d.plant_profile.operating_materials.feclso4)
                     })
                 },
             },
@@ -701,7 +698,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.operating_materials.caoh2 = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.operating_materials.caoh2)
+                        form_data.with(|d|d.plant_profile.operating_materials.caoh2)
                     })
                 },
             },
@@ -727,7 +724,7 @@ pub fn field_sets(
                         form_data.update(|d|d.plant_profile.operating_materials.synthetic_polymers = v);
                     })
                     , input: Signal::derive(move||{
-                        input_data.with(|d|d.plant_profile.operating_materials.synthetic_polymers)
+                        form_data.with(|d|d.plant_profile.operating_materials.synthetic_polymers)
                     })
                 },
             },

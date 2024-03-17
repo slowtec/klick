@@ -64,7 +64,6 @@ pub fn Tool(
     //    Signals    //
     // -----   ----- //
 
-    let example_data = RwSignal::new(FormData::default());
     let form_data = RwSignal::new(FormData::default());
     let current_section = RwSignal::new(PageSection::DataCollection);
     let is_logged_in = Signal::derive(move || api.get().is_some());
@@ -108,7 +107,7 @@ pub fn Tool(
                     Project::Saved(d) => d.data,
                     Project::Unsaved(d) => d,
                 };
-                example_data.set(data);
+                form_data.set(data);
             }
         }
     });
@@ -188,13 +187,13 @@ pub fn Tool(
 
     let clear_form_data = {
         move |_| {
-            example_data.set(FormData::default());
+            form_data.set(FormData::default());
         }
     };
 
     let load_example_values = {
         move |_| {
-            example_data.set(example_data::example_form_data());
+            form_data.set(example_data::example_form_data());
         }
     };
 
@@ -265,7 +264,6 @@ pub fn Tool(
         PageSection::DataCollection => view! {
             <DataCollection
               form_data
-              input_data = example_data.read_only()
               current_section
               outcome = outcome.into()
             />
@@ -274,7 +272,6 @@ pub fn Tool(
         PageSection::Sensitivity => view! {
             <SensitivityParameters
               form_data
-              input_data = example_data.read_only()
               current_section
               outcome = outcome.into()
               show_side_stream_controls
@@ -284,7 +281,6 @@ pub fn Tool(
         PageSection::Recommendation => view! {
             <Recommendations
               form_data
-              input_data = example_data.read_only()
               outcome = outcome.into()
               show_side_stream_controls
             />

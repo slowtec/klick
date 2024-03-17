@@ -11,7 +11,6 @@ use crate::pages::tool::{default_values::N2O_DEFAULT_CUSTOM_FACTOR, CalculationO
 #[component]
 pub fn N2OEmissionsSensitivity(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
     outcome: Signal<Option<CalculationOutcome>>,
     show_side_stream_controls: Signal<bool>,
 ) -> impl IntoView {
@@ -19,40 +18,38 @@ pub fn N2OEmissionsSensitivity(
     //    Signals    //
     // -----   ----- //
 
-    let selected_scenario_n2o_number = RwSignal::new(Option::<u64>::None);
-    let selected_scenario_n2o = Signal::derive(move || {
-        selected_scenario_n2o_number
-            .with(|n| n.and_then(boundary::N2oEmissionFactorCalcMethod::from_u64))
+    let selected_scenario = Signal::derive(move || {
+        form_data.with(|d| d.sensitivity_parameters.n2o_emissions.calculation_method)
+    });
+    let selected_scenario_index = Signal::derive(move || {
+        selected_scenario
+            .get()
+            .as_ref()
+            .and_then(ToPrimitive::to_u64)
     });
 
     // -----   ----- //
     //    Fields     //
     // -----   ----- //
 
-    let n2o_custom_factor_field_set = n2o_custom_factor(form_data.write_only(), input_data);
+    let n2o_custom_factor_field_set = n2o_custom_factor(form_data);
     let (n2o_custom_factor_view, _, _) = render_field_sets(n2o_custom_factor_field_set);
 
-    let side_stream_factor_field_set = side_stream_factor(form_data.write_only(), input_data);
+    let side_stream_factor_field_set = side_stream_factor(form_data);
     let (side_stream_factor_view, _, _) = render_field_sets(side_stream_factor_field_set);
 
     // -----   ----- //
-    //    Effects    //
+    //   Callbacks   //
     // -----   ----- //
 
-    create_effect(move |_| {
-        let method = selected_scenario_n2o_number
-            .get()
-            .and_then(boundary::N2oEmissionFactorCalcMethod::from_u64);
-        form_data.update(|d| d.sensitivity_parameters.n2o_emissions.calculation_method = method);
-    });
-
-    create_effect(move |_| {
-        let m = input_data
-            .with(|d| d.sensitivity_parameters.n2o_emissions.calculation_method)
-            .as_ref()
-            .and_then(ToPrimitive::to_u64);
-        selected_scenario_n2o_number.set(m);
-    });
+    let on_bar_chart_input_changed = move |idx| {
+        let Some(method) = boundary::N2oEmissionFactorCalcMethod::from_u64(idx) else {
+            log::warn!("Invalid index {idx} for selection of calc method");
+            return;
+        };
+        form_data
+            .update(|d| d.sensitivity_parameters.n2o_emissions.calculation_method = Some(method));
+    };
 
     // -----   ----- //
     //     Views     //
@@ -77,8 +74,9 @@ pub fn N2OEmissionsSensitivity(
                     width = 900.0
                     height = 300.0
                     data
-                    selected_bar = selected_scenario_n2o_number
+                    selected_bar = selected_scenario_index
                     emission_factor_label = Some("N₂O EF")
+                    on_change = on_bar_chart_input_changed
                   />
                 }
             })
@@ -111,7 +109,7 @@ pub fn N2OEmissionsSensitivity(
           { bar_chart_view }
 
           <p>
-            "Es ist das Szenario \"" { move || selected_scenario_n2o.get().as_ref().map(ValueLabel::label) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
+            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(ValueLabel::label) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
              Durch Anklicken kann ein anderes Szenario ausgewählt werden."
           </p>
 
@@ -183,10 +181,7 @@ pub fn N2OEmissionsSensitivity(
     }
 }
 
-fn n2o_custom_factor(
-    form_data: WriteSignal<FormData>,
-    input_data: ReadSignal<FormData>,
-) -> Vec<FieldSet> {
+fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     let custom_factor_field = Field {
         label: "N₂O-EF Benutzerdefiniert",
         description: Some(
@@ -214,7 +209,7 @@ fn n2o_custom_factor(
                 form_data.update(|d| d.sensitivity_parameters.n2o_emissions.custom_emission_factor = v);
             }),
             input: Signal::derive(move||
-                input_data.with(|d|d.sensitivity_parameters.n2o_emissions.custom_emission_factor)
+                form_data.with(|d|d.sensitivity_parameters.n2o_emissions.custom_emission_factor)
             )
         },
     };
@@ -225,10 +220,7 @@ fn n2o_custom_factor(
     }]
 }
 
-fn side_stream_factor(
-    form_data: WriteSignal<FormData>,
-    input_data: ReadSignal<FormData>,
-) -> Vec<FieldSet> {
+fn side_stream_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     let custom_factor_field = Field {
         label: "N₂O-EF Prozesswasser",
         description: Some(
@@ -252,7 +244,7 @@ fn side_stream_factor(
                 });
             }),
             input: Signal::derive(move || {
-                input_data.with(|d| {
+                form_data.with(|d| {
                     d.sensitivity_parameters
                         .n2o_emissions
                         .side_stream_emission_factor

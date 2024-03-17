@@ -21,10 +21,18 @@ pub fn CH4EmissionsCHP(
     //    Signals    //
     // -----   ----- //
 
-    let selected_scenario_chp_number = RwSignal::new(Option::<u64>::None);
-    let selected_scenario_chp = Signal::derive(move || {
-        selected_scenario_chp_number
-            .with(|n| n.and_then(boundary::CH4ChpEmissionFactorCalcMethod::from_u64))
+    let selected_scenario = Signal::derive(move || {
+        form_data.with(|d| {
+            d.sensitivity_parameters
+                .ch4_chp_emissions
+                .calculation_method
+        })
+    });
+    let selected_scenario_index = Signal::derive(move || {
+        selected_scenario
+            .get()
+            .as_ref()
+            .and_then(ToPrimitive::to_u64)
     });
     let show_ch4_chp = Signal::derive(move || {
         outcome.with(|out| {
@@ -41,31 +49,20 @@ pub fn CH4EmissionsCHP(
     let (chp_view, _, _) = render_field_sets(vec![field_set]);
 
     // -----   ----- //
-    //    Effects    //
+    //   Callbacks   //
     // -----   ----- //
 
-    create_effect(move |_| {
-        let method = selected_scenario_chp_number
-            .get()
-            .and_then(boundary::CH4ChpEmissionFactorCalcMethod::from_u64);
+    let on_bar_chart_input_changed = move |idx| {
+        let Some(method) = boundary::CH4ChpEmissionFactorCalcMethod::from_u64(idx) else {
+            log::warn!("Invalid index {idx} for selection of calc method");
+            return;
+        };
         form_data.update(|d| {
             d.sensitivity_parameters
                 .ch4_chp_emissions
-                .calculation_method = method
+                .calculation_method = Some(method)
         });
-    });
-
-    create_effect(move |_| {
-        let m = input_data
-            .with(|d| {
-                d.sensitivity_parameters
-                    .ch4_chp_emissions
-                    .calculation_method
-            })
-            .as_ref()
-            .and_then(ToPrimitive::to_u64);
-        selected_scenario_chp_number.set(m);
-    });
+    };
 
     // -----   ----- //
     //     Views     //
@@ -90,8 +87,9 @@ pub fn CH4EmissionsCHP(
                     width = 900.0
                     height = 300.0
                     data
-                    selected_bar = selected_scenario_chp_number
+                    selected_bar = selected_scenario_index
                     emission_factor_label = Some("CH₄ EF")
+                    on_change = on_bar_chart_input_changed
                   />
                 }
             })
@@ -127,7 +125,7 @@ pub fn CH4EmissionsCHP(
             { chp_view }
 
             <p>
-            "Es ist das Szenario \"" { move || selected_scenario_chp.get().as_ref().map(ValueLabel::label) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
+            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(ValueLabel::label) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
             Durch Anklicken kann ein anderes Szenario ausgewählt werden."
             </p>
 
