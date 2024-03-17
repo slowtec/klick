@@ -28,7 +28,7 @@ pub fn find_project(
     let Some(record) = results.into_iter().next() else {
         return Ok(None);
     };
-    let project = Project::try_from(record).expect("Valid project record");
+    let project = Project::try_from(record)?;
     Ok(Some(project))
 }
 
@@ -50,8 +50,8 @@ pub fn all_projects_by_owner(
     };
     let projects = results
         .into_iter()
-        .map(|p| Project::try_from(p).expect("Valid project record"))
-        .collect();
+        .map(Project::try_from)
+        .collect::<Result<_, _>>()?;
     Ok(projects)
 }
 
