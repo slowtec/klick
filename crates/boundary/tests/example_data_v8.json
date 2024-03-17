@@ -1,18 +1,18 @@
 {
   "version": 8,
   "project": {
-    "title": null,
+    "project_title": null,
     "plant_profile": {
       "plant_name": "Muster Klärwerk",
       "population_equivalent": 50000.0,
       "wastewater": 2135250.0,
       "influent_average": {
-        "nitrogen": 94.0,
+        "total_nitrogen": 94.0,
         "chemical_oxygen_demand": 1020.0,
         "total_organic_carbohydrates": 101.99
       },
       "effluent_average": {
-        "nitrogen": 15.77,
+        "total_nitrogen": 15.77,
         "chemical_oxygen_demand": 47.18
       },
       "energy_consumption": {
@@ -25,12 +25,8 @@
         "heating_oil": 2132.12
       },
       "sewage_sludge_treatment": {
-        "sludge_bags_are_open": true,
-        "sludge_bags_are_open_recommendation": true,
-        "custom_sludge_bags_factor": 1.12,
-        "sludge_storage_containers_are_open": true,
-        "sludge_storage_containers_are_open_recommendation": true,
-        "custom_sludge_storage_containers_factor": 1.13,
+        "sludge_bags_are_closed": false,
+        "sludge_storage_containers_are_closed": false,
         "sewage_sludge_for_disposal": 3016.5,
         "transport_distance": 150.0,
         "digester_count": 3
@@ -51,12 +47,24 @@
         "co2_fossil": 4.3
       }
     },
-    "optimization_scenario": {
-      "n2o_emission_factor": {
-        "calculation_method": "ipcc2019",
-        "custom_factor": null
+    "sensitivity_parameters": {
+      "n2o_emissions": {
+        "calculation_method": "ipcc2019"
       },
-      "ch4_chp_emission_factor": null
+      "ch4_chp_emissions": {},
+      "ch4_sewage_sludge_emissions": {
+        "emission_factor_sludge_bags": 1.12,
+        "emission_factor_sludge_storage": 1.13
+      },
+      "co2_fossil_emissions": {}
+    },
+    "optimization_scenario": {
+      "sewage_sludge_treatment": {
+        "sludge_bags_are_closed": true,
+        "sludge_storage_containers_are_closed": true
+      },
+      "energy_emissions": {},
+      "side_stream_treatment": {}
     }
   }
 }
