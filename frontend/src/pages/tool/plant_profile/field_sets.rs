@@ -72,7 +72,7 @@ pub fn field_sets(
                 field_type: FieldType::Float {
                     initial_value: None,
                     placeholder: Some(
-                        "Ausbaugröße [EW]".to_string(),
+                        "Angeschlossene Einwohner".to_string(),
                     ),
                     limits: MinMax {
                         min: Some(
