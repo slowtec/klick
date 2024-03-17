@@ -143,7 +143,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             fields: vec![
                 Field {
                     label: ScenarioFieldId::ProcessEnergySaving.label(),
-                    description: Some(""),
+                    description: Some("Angabe der geschätzten Energieeinsparung bei Kläranlagen-Prozessen in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -171,7 +171,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 },
                 Field {
                     label: ScenarioFieldId::FossilEnergySaving.label(),
-                    description: Some(""),
+                    description: Some("Angabe der geschätzten Energieeinsparung bei fossilen Energieträgern (z.B. Heizöl/Erdgas) in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -204,7 +204,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             fields: vec![
                 Field {
                     label: ScenarioFieldId::PhotovoltaicEnergyExpansion.label(),
-                    description: Some(""),
+                    description: Some("Angabe des Zubaus an Photovoltaikleistung in Kilowattstunden (kWh) pro Jahr (a)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -232,7 +232,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 },
                 Field {
                     label: ScenarioFieldId::EstimatedSelfPhotovolaticUsage.label(),
-                    description: Some(""),
+                    description: Some("Geschätzte Eigennutzung der Photovoltaikleistung in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -265,7 +265,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             fields: vec![
                 Field {
                     label: ScenarioFieldId::WindEnergyExpansion.label(),
-                    description: Some(""),
+                    description: Some("Angabe des Zubaus an Windkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -293,7 +293,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 },
                 Field {
                     label: ScenarioFieldId::EstimatedSelfWindEnergyUsage.label(),
-                    description: Some(""),
+                    description: Some("Geschätzte Eigennutzung der Windkraftleistung in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -326,7 +326,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             fields: vec![
                 Field {
                     label: ScenarioFieldId::WaterEnergyExpansion.label(),
-                    description: Some(""),
+                    description: Some("Angabe des Zubaus an Wasserkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -354,7 +354,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 },
                 Field {
                     label: ScenarioFieldId::EstimatedSelfWaterEnergyUsage.label(),
-                    description: Some(""),
+                    description: Some("Geschätzte Eigennutzung der Wasserkraftleistung in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
@@ -386,7 +386,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             title: Some("Abwärmenutzung"),
             fields: vec![Field {
                 label: ScenarioFieldId::DistrictHeating.label(),
-                description: Some(""),
+                description: Some("Angabe der Abgabeleistung an Fern-/Nahwärme in Kilowattstunden (kWh) pro Jahr (a)."),
                 required: false,
                 field_type: FieldType::Float {
                     initial_value: None,
