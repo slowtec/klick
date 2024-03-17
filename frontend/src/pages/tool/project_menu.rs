@@ -36,7 +36,7 @@ pub fn ProjectMenu(
                   aria-expanded="true"
                   aria-haspopup="true"
                 >
-                  "Projekt"
+                  <div class="flex items-center ml-3">"Projekt"</div>
                   <icons::Bars3 />
                 </button>
               </div>
