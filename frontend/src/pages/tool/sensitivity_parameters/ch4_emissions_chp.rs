@@ -172,7 +172,7 @@ pub fn CH4EmissionsCHP(
 
 fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let custom_factor_field = Field {
-        label: "",
+        label: "BHKW CH₄-EF benutzerdefiniert",
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
         required: false,
         field_type: FieldType::Float {
