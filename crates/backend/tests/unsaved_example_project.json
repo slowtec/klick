@@ -1,19 +1,19 @@
 {
   "version": 8,
   "project": {
+    "project_title": null,
     "plant_profile": {
       "plant_name": "Muster Klärwerk",
       "population_equivalent": 50000.0,
       "wastewater": 2135250.0,
       "influent_average": {
-        "nitrogen": 94.0,
+        "total_nitrogen": 94.0,
         "chemical_oxygen_demand": 1020.0,
-        "phosphorus": 15.38
+        "total_organic_carbohydrates": 101.99
       },
       "effluent_average": {
-        "nitrogen": 15.77,
-        "chemical_oxygen_demand": 47.18,
-        "phosphorus": 1.02
+        "total_nitrogen": 15.77,
+        "chemical_oxygen_demand": 47.18
       },
       "energy_consumption": {
         "sewage_gas_produced": 420000.0,
@@ -21,16 +21,20 @@
         "purchase_of_biogas": false,
         "total_power_consumption": 1665000.0,
         "on_site_power_generation": 810000.0,
-        "emission_factor_electricity_mix": 420.0
+        "emission_factor_electricity_mix": 420.0,
+        "heating_oil": 2132.12
       },
       "sewage_sludge_treatment": {
-        "sludge_bags_are_open": true,
-        "custom_sludge_bags_factor": 1.12,
-        "sludge_storage_containers_are_open": true,
-        "custom_sludge_storage_containers_factor": 1.13,
+        "sludge_bags_are_closed": false,
+        "sludge_storage_containers_are_closed": false,
         "sewage_sludge_for_disposal": 3016.5,
         "transport_distance": 150.0,
         "digester_count": 3
+      },
+      "side_stream_treatment": {
+        "total_nitrogen": 101.4,
+        "n2o_emission_factor": 101.4,
+        "side_stream_cover_is_open": true
       },
       "operating_materials": {
         "fecl3": 310.5,
@@ -38,24 +42,29 @@
         "caoh2": 0.0,
         "synthetic_polymers": 12.0
       },
-      "energy_emission_factors": {
-        "process_energy_savings": 0.0,
-        "fossil_energy_savings": 0.0,
-        "district_heating": 0.0,
-        "photovoltaic_energy_expansion": 0.0,
-        "estimated_self_photovoltaic_usage": 0.0,
-        "wind_energy_expansion": 0.0,
-        "estimated_self_wind_energy_usage": 0.0,
-        "water_energy_expansion": 0.0,
-        "estimated_self_water_energy_usage": 0.0
+      "emission_factors": {
+        "n2o_side_stream": 5.1,
+        "co2_fossil": 4.3
       }
     },
-    "optimization_scenario": {
-      "n2o_emission_factor": {
-        "calculation_method": "ipcc2019",
-        "custom_factor": null
+    "sensitivity_parameters": {
+      "n2o_emissions": {
+        "calculation_method": "ipcc2019"
       },
-      "ch4_chp_emission_factor": null
+      "ch4_chp_emissions": {},
+      "ch4_sewage_sludge_emissions": {
+        "emission_factor_sludge_bags": 1.12,
+        "emission_factor_sludge_storage": 1.13
+      },
+      "co2_fossil_emissions": {}
+    },
+    "optimization_scenario": {
+      "sewage_sludge_treatment": {
+        "sludge_bags_are_closed": true,
+        "sludge_storage_containers_are_closed": true
+      },
+      "energy_emissions": {},
+      "side_stream_treatment": {}
     }
   }
 }
