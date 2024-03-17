@@ -4,6 +4,7 @@ use num_traits::{FromPrimitive, ToPrimitive};
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
 use klick_boundary::{self as boundary, FormData};
+use klick_domain::units::Tons;
 use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{
@@ -36,8 +37,13 @@ pub fn CH4EmissionsCHP(
     });
     let show_ch4_chp = Signal::derive(move || {
         outcome.with(|out| {
-            out.as_ref()
-                .map(|out| !out.sensitivity_ch4_chp_calculations.is_empty())
+            out.as_ref().map(|out| {
+                !out.sensitivity_ch4_chp_calculations.is_empty()
+                    && out
+                        .sensitivity_ch4_chp_calculations
+                        .iter()
+                        .any(|(_, tons, _)| *tons > Tons::zero())
+            })
         }) == Some(true)
     });
 
