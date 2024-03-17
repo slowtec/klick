@@ -94,13 +94,13 @@ pub fn N2OEmissionsSensitivity(
           <p class="my-2">
             "Lachgasemissionen tragen wesentlich zum gesamten Treibhausgaspotenzial von Kläranlagen bei.
             Die erste Abschätzung dieses Potenzials bei der Datenerhebung erfolgt mit einem Emissionsfaktor
-            für Lachgas (N2O-EF) nach Parravicini et al. (2016, TU Wien), Wert siehe erster Balken im untenstehenden Diagramm."
+            für Lachgas (N₂O-EF) nach Parravicini et al. (2016, TU Wien), Wert siehe erster Balken im untenstehenden Diagramm."
           </p>
 
           <p class="my-2">
             "Da das Auftreten von N₂O-Emissionen in der Regel anlagenspezifisch ist, bietet das KlicK-Tool weitere
             Auswertungsszenarien für Lachgasemissionen an. Diese sind im folgenden Balkendiagramm dargestellt,
-            einschließlich der daraus resultierenden Lachgasemissionen [als CO2-Äquivalente]."
+            einschließlich der daraus resultierenden Lachgasemissionen [als CO₂-Äquivalente]."
           </p>
 
           <p class="my-2">
@@ -117,7 +117,7 @@ pub fn N2OEmissionsSensitivity(
 
           <p class="my-2">
             "Zusätzlich können Sie (z.B. aufgrund einer eigenen Abschätzung oder einer Messkampagne) einen
-            benutzerdefinierten Wert für den N₂O- EF eingeben und bilanzieren. Der EF-Faktor erscheint im
+            benutzerdefinierten Wert für den N₂O-EF eingeben und bilanzieren. Der EF-Faktor erscheint im
             Balkendiagramm und kann anschließend ebenfalls ausgewählt werden."
           </p>
 
