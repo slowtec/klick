@@ -53,7 +53,7 @@ build = "build.rs"
 klick-backend = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.80"
+anyhow = "1.0.81"
 env_logger = "0.11.3"
 log = "0.4.21"
 
@@ -62,7 +62,7 @@ version = "1.36.0"
 features = ["macros", "rt-multi-thread"]
 
 [build-dependencies]
-toml = "0.8.10"
+toml = "0.8.11"
 
 [workspace.lints.clippy]
 pedantic = "warn"
