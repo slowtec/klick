@@ -19,7 +19,7 @@ use self::{
     footer::Footer,
     nav::Nav,
     pages::{
-        ConfirmEmailAddress, Faq, Login, Page, Projects, Register, ResetPassword,
+        ConfirmEmailAddress, Faq, Login, Page, PageSection, Projects, Register, ResetPassword,
         ResetPasswordRequest, Tool,
     },
 };
@@ -143,9 +143,13 @@ pub fn App() -> impl IntoView {
             path=Page::Tool.path()
             view= move ||{
               set_current_page.update(|p|*p = Page::Tool);
+              let current_section = RwSignal::new(PageSection::DataCollection);
               view! {
                 <Main>
-                  <header class="prose" id=SECTION_ID_TOOL_HOME>
+                  <header
+                    class="prose"
+                    id = move || current_section.get().section_id()
+                  >
                     <h1 class="mb-8">
                       "KlicK-Tool "
                       <span class="font-light text-xl text-gray-600">
@@ -161,6 +165,7 @@ pub fn App() -> impl IntoView {
                   <Tool
                     api = authorized_api.into()
                     current_project
+                    current_section
                   />
                 </Main>
               }
