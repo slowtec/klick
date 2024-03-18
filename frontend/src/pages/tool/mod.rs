@@ -286,6 +286,7 @@ pub fn Tool(
               form_data
               outcome = outcome.into()
               show_side_stream_controls
+              current_section
             />
         }
         .into_view(),
@@ -322,5 +323,22 @@ fn scroll_to_element_by_id(element_id: &str) {
     let document = window().document().expect("HTML document");
     if let Some(element) = document.get_element_by_id(element_id) {
         element.scroll_into_view();
+    }
+}
+
+#[component]
+pub fn DataCollectionEnforcementHelper(current_section: RwSignal<PageSection>) -> impl IntoView {
+    view! {
+        <div class="my-8 border-b border-gray-200 pb-5" >
+        <p>
+          "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
+        </p>
+      </div>
+      <button
+       class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
+       on:click = move |_| current_section.set(PageSection::DataCollection)
+      >
+        "zu der Datenerfassung"
+      </button>
     }
 }
