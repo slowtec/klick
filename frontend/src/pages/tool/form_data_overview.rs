@@ -1,13 +1,18 @@
 use leptos::*;
 
 use klick_boundary::FormData;
-use klick_presenter::{plant_profile_as_table, UnitFormatting};
+use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, UnitFormatting};
 
 #[component]
 pub fn FormDataOverview(form_data: ReadSignal<FormData>) -> impl IntoView {
     let profile_table = move || {
-        let table =
-            form_data.with(|d| plant_profile_as_table(&d.plant_profile, UnitFormatting::Text));
+        let table = form_data.with(|d| {
+            let mut profile = plant_profile_as_table(&d.plant_profile, UnitFormatting::Text);
+            let mut sensitivity =
+                sensitivity_parameters_as_table(&d.sensitivity_parameters, UnitFormatting::Text);
+            profile.sections.append(&mut sensitivity.sections);
+            profile
+        });
         table
             .sections
             .into_iter()
@@ -16,7 +21,7 @@ pub fn FormDataOverview(form_data: ReadSignal<FormData>) -> impl IntoView {
               view! {
                 <dt class="font-semibold text-right px-3 py-1 text-gray-500">{ label }</dt>
                 <dd class="py-1 px-3">
-                  { value }
+                  { value.unwrap_or_else(||"-".to_string()) }
                   <span class="ml-2 text-gray-400">{ unit }</span>
                 </dd>
               }

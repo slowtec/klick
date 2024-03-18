@@ -3,7 +3,8 @@ use klick_domain as domain;
 
 use crate::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, ScenarioFieldId, SewageSludgeTreatmentId, SideStreamTreatmentId,
+    ProfileValueId, ScenarioFieldId, SensitivityParameterId, SewageSludgeTreatmentId,
+    SideStreamTreatmentId,
 };
 
 pub trait ValueLabel {
@@ -162,6 +163,21 @@ impl ValueLabel for boundary::CH4ChpEmissionFactorCalcMethod {
             Self::GasolineEngine => "Ottomotor",
             Self::JetEngine => "Zündstrahlmotor",
             Self::CustomFactor => "Benutzerdefiniert",
+        }
+    }
+}
+
+impl ValueLabel for SensitivityParameterId {
+    fn label(&self) -> &'static str {
+        match self {
+            Self::N2OCalculationMethod => "N₂O Berechnungsmethode",
+            Self::N2OCustomFactor => "N₂O-EF Benutzerdefiniert",
+            Self::N2OSideStreamFactor => "N₂O-EF Prozesswasser",
+            Self::CH4ChpCalculationMethod => "BHKW Berechnungsmethode",
+            Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
+            Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",
+            Self::SludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
+            Self::SludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
         }
     }
 }

@@ -1,6 +1,7 @@
 use crate::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, SewageSludgeTreatmentId,
+    ProfileValueId, ScenarioFieldId, SensitivityParameterId, SewageSludgeTreatmentId,
+    SideStreamTreatmentId,
 };
 
 // TODO:
@@ -41,6 +42,7 @@ const TEXT_TONS: &str = "t";
 const TEXT_MILLIGRAMSPERLITER: &str = "mg/l";
 const TEXT_KILOWATTHOURS: &str = "kWh";
 const TEXT_GRAMSPERKILOWATTHOUR: &str = "g/kWh";
+const TEXT_QUBICMETERS_PER_HOUR: &str = "m³/h";
 
 impl ValueUnit for ProfileValueId {
     fn unit_as_latex(&self) -> Option<&'static str> {
@@ -163,6 +165,56 @@ impl ValueUnit for OperatingMaterialId {
     fn unit_as_text(&self) -> Option<&'static str> {
         match self {
             Self::FeCl3 | Self::FeClSO4 | Self::CaOH2 | Self::SyntheticPolymers => Some(TEXT_TONS),
+        }
+    }
+}
+
+impl ValueUnit for SideStreamTreatmentId {
+    fn unit_as_latex(&self) -> Option<&'static str> {
+        match self {
+            Self::TotalNitrogen => Some(LATEX_TONS),
+        }
+    }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::TotalNitrogen => Some(TEXT_TONS),
+        }
+    }
+}
+
+impl ValueUnit for ScenarioFieldId {
+    fn unit_as_latex(&self) -> Option<&'static str> {
+        match self {
+            // FIXME
+            _ => None,
+        }
+    }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            _ => None,
+        }
+    }
+}
+
+impl ValueUnit for SensitivityParameterId {
+    fn unit_as_latex(&self) -> Option<&'static str> {
+        match self {
+            // FIXME
+            _ => None,
+        }
+    }
+
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            Self::N2OCalculationMethod | Self::CH4ChpCalculationMethod => None,
+            Self::N2OCustomFactor
+            | Self::N2OSideStreamFactor
+            | Self::CH4ChpCustomFactor
+            | Self::CO2FossilCustomFactor
+            | Self::SludgeStorageCustomFactor => Some(TEXT_PERCENT),
+            Self::SludgeBagsCustomFactor => Some(TEXT_QUBICMETERS_PER_HOUR),
         }
     }
 }
