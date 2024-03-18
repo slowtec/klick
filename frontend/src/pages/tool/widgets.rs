@@ -27,7 +27,7 @@ pub fn InfoBox(text: &'static str, children: Children) -> impl IntoView {
 
 #[component]
 pub fn Card(title: &'static str, children: Children, bg_color: &'static str) -> impl IntoView {
-    let hide = RwSignal::<bool>::new(true);
+    let hide = RwSignal::<bool>::new(false);
     let children = children();
 
     view! {
