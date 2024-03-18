@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.1 (2024-03-18)
+
+- Changed:
+  - Updated example #72: Clicking 'Datenerfassung,Sensitivitaet,Handlungsempfehlungen' now scrolls to the same anchor.
+  - Show Cards always: Improved consistency in displaying cards.
+  - Always trigger value change (None) if the field is empty: Ensures consistent behavior for empty input fields.
+  - Fix input field handling: Addressed issues related to input field handling.
+  - Schlammtaschen/Schlammlagerung Datenerfassung vs. Handlungsempfehlungen: Resolved discrepancies between data collection and recommendations. #236
+  - Klaerschlamm -> Klärschlamm: Corrected spelling for clarity. #208
+  - Publish klick-domain v0.4.0: Updated dependencies to the latest version.
+
 ## v0.4.0 (2024-03-18)
 
 - Added
