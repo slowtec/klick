@@ -38,7 +38,7 @@ pub enum PageSection {
 }
 
 impl PageSection {
-    const fn section_id(self) -> &'static str {
+    pub const fn section_id(self) -> &'static str {
         match self {
             PageSection::DataCollection => SECTION_ID_TOOL_HOME,
             PageSection::Sensitivity => "data-sensitivity",
@@ -59,13 +59,13 @@ const DEFAULT_UNNAMED_PROJECT_TITLE: &str = "Unbenannt";
 pub fn Tool(
     api: Signal<Option<AuthorizedApi>>,
     current_project: RwSignal<Option<Project>>,
+    current_section: RwSignal<PageSection>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
     // -----   ----- //
 
     let form_data = RwSignal::new(FormData::default());
-    let current_section = RwSignal::new(PageSection::DataCollection);
     let is_logged_in = Signal::derive(move || api.get().is_some());
     let save_result_message = RwSignal::new(None);
 
@@ -293,7 +293,7 @@ pub fn Tool(
     };
 
     view! {
-      <div class="space-y-10" id = move || current_section.get().section_id() >
+      <div class="space-y-10" >
         <div class="flex center-items justify-between">
           <Breadcrumbs
             entries = { BREADCRUMPS_ENTRIES }
