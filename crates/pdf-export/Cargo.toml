@@ -13,7 +13,7 @@ klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"]
 klick-domain = { path = "../domain" }
 klick-presenter = "=0.0.0"
 
-anyhow = "1.0.80"
+anyhow = "1.0.81"
 lazy_static = "1.4.0"
 pandoc = "0.8.11"
 serde = { version = "1.0.197", features = ["derive"] }
