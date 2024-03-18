@@ -4,7 +4,10 @@ use klick_app_charts::BarChart;
 use klick_boundary::FormData;
 
 use crate::{
-    pages::tool::{form_data_overview::FormDataOverview, CalculationOutcome},
+    pages::tool::{
+        form_data_overview::FormDataOverview, CalculationOutcome, DataCollectionEnforcementHelper,
+        PageSection,
+    },
     sankey::Sankey,
 };
 
@@ -20,6 +23,7 @@ pub fn Recommendations(
     form_data: RwSignal<FormData>,
     outcome: Signal<Option<CalculationOutcome>>,
     show_side_stream_controls: Signal<bool>,
+    current_section: RwSignal<PageSection>,
 ) -> impl IntoView {
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
@@ -94,6 +98,10 @@ pub fn Recommendations(
     });
 
     view! {
+      <Show
+        when = move || outcome.with(|o|o.is_some())
+        fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
+      >
       <FormDataOverview
         form_data = form_data.read_only()
       />
@@ -177,5 +185,6 @@ pub fn Recommendations(
           }
         </div>
       </div>
+      </Show>
     }
 }
