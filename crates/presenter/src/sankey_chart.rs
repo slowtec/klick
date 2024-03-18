@@ -104,7 +104,7 @@ pub fn create_sankey_chart_data(
 
     nodes.push((
         sewage_sludge_transport.into(),
-        "Klaerschlamm Transport",
+        "Klärschlamm Transport",
         yellow,
     ));
     let sewage_sludge_transport = nodes.len() - 1;
