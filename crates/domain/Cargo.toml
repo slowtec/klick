@@ -1,11 +1,11 @@
 [package]
 name = "klick-domain"
+description.workspace = true
 authors.workspace = true
 license.workspace = true
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-publish = false
 
 [dependencies]
 bs58 = "0.5.0"
