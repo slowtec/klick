@@ -26,6 +26,15 @@ pub enum Project {
     Unsaved(FormData),
 }
 
+impl Project {
+    pub fn form_data(&self) -> &FormData {
+        match self {
+            Self::Saved(SavedProject { data, .. }) => data,
+            Self::Unsaved(data) => data,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct SavedProject {

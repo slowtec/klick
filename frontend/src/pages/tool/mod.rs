@@ -6,7 +6,7 @@ use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, FormData, Project, ProjectId, SavedProject,
 };
 
-use crate::{api::AuthorizedApi, Page, SECTION_ID_TOOL_HOME};
+use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
 
 mod breadcrumbs;
 mod calculation;
@@ -246,14 +246,17 @@ pub fn Tool(
     //    Effects    //
     // -----   ----- //
 
-    // TODO: Use router:
-    // e.g. /tool/plant-profile/ instead of /tool#plant-profile
     create_effect(move |_| {
         let s = current_section.get();
         let id = s.section_id();
-        let path = Page::Tool.path();
-        let href = format!("{path}#{id}");
-        window().location().set_href(&href).unwrap();
+        scroll_to_element_by_id(&id);
+    });
+
+    create_effect(move |_| {
+        let Some(p) = current_project.get() else {
+            return;
+        };
+        form_data.set(p.form_data().clone());
     });
 
     // -----   ----- //
@@ -312,5 +315,12 @@ pub fn Tool(
         </div>
         { section_view }
       </div>
+    }
+}
+
+fn scroll_to_element_by_id(element_id: &str) {
+    let document = window().document().expect("HTML document");
+    if let Some(element) = document.get_element_by_id(element_id) {
+        element.scroll_into_view();
     }
 }
