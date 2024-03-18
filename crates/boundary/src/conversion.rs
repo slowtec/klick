@@ -200,10 +200,14 @@ impl TryFrom<FormData>
         } = sewage_sludge_treatment;
 
         if let Some(sludge_bags_are_closed) = sludge_bags_are_closed {
-            sludge_bags_are_open = !sludge_bags_are_closed;
+            if sludge_bags_are_closed {
+                sludge_bags_are_open = false;
+            }
         }
         if let Some(sludge_storage_containers_are_closed) = sludge_storage_containers_are_closed {
-            sludge_storage_containers_are_open = !sludge_storage_containers_are_closed;
+            if sludge_storage_containers_are_closed {
+                sludge_storage_containers_are_open = false;
+            }
         }
 
         let EnergyEmissionScenario {
