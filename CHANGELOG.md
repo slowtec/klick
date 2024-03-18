@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.4.0 (2024-03-18)
+
+- Added
+  - Sensitivity information to overview table.
+  - Mention of CH4 plants in bar chart.
+  - Text formatting in "Nitrous Oxide Emissions" box updated.
+  - Extended text for "fossil CO2".
+  - Development support for Mac OS X added.
+
+- Changed
+  - Major refactoring conducted.
+  - Side stream treatment changed to Process Water Treatment.
+  - Clarified naming for "Energy-related Emissions".
+  - Various texts revised and clarified.
+  - "Operating materials" no longer marked as a mandatory field. (#212 Reverted)
+  - Removed house icon from breadcrumbs.
+  - Sludge transport distance limit updated from 500 to 2000.
+
+- Fixed
+  - Loading/saving of projects corrected.
+  - Handling of not always valid form data in the database.
+  - Fixed two-way bindings of form data.
+  - Scroll positions of page sections corrected.
+  - Various minor CSS fixes.
+
+- Removed
+  - PDF & CSV export menu entries temporarily removed
+
 ## v0.3.18 (2024-02-29)
 
 - Changed
@@ -9,7 +37,7 @@
 ## v0.3.17 (2024-02-22)
 
 - Changed
-  - barchart percentage value support #164 
+  - barchart percentage value support #164
   - Add PDF export to projects menu
   - export feature to CSV #84
   - fix for floating points in sankey diagrams #142
