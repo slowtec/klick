@@ -48,7 +48,7 @@ pub fn example_form_data() -> FormData {
             side_stream_emission_factor: None,
         },
         ch4_chp_emissions: CH4ChpEmissionsSensitivity {
-            calculation_method: None,
+            calculation_method: Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine),
             custom_emission_factor: None,
         },
         ch4_sewage_sludge_emissions: SewageSludgeTreatmentEmissionsSensitivity {
