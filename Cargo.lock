@@ -1428,6 +1428,7 @@ dependencies = [
  "klick-presenter",
  "leptos",
  "log",
+ "thiserror",
 ]
 
 [[package]]
