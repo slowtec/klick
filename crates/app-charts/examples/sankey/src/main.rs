@@ -42,7 +42,7 @@ fn MySankeyChart() -> impl IntoView {
     let synthetic_polymers =
         sankey.insert_node(synthetic_polymers, "Synthetische Polymere", yellow);
     let sewage_sludge_transport =
-        sankey.insert_node(sewage_sludge_transport, "Klaerschlamm Transport", yellow);
+        sankey.insert_node(sewage_sludge_transport, "Klärschlamm Transport", yellow);
 
     let red = Some(Color::new("red"));
     let emissions = sankey.insert_node(emissions, "Emission", red);
