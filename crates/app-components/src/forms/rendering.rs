@@ -410,7 +410,7 @@ fn FloatInput(
         match result {
             Err(err) => {
                 error.set(Some(err.to_string()));
-                if err == FloatEvalError::Empty && !required {
+                if err == FloatEvalError::Empty {
                     on_change.call(None);
                 }
             }
