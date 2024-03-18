@@ -13,6 +13,7 @@ klick-presenter = "=0.0.0"
 derive_more = "0.99.17"
 leptos = { version = "0.6.9", features = ["csr"] }
 log = "0.4.21"
+thiserror = "1.0.58"
 
 [lints]
 workspace = true

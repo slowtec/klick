@@ -4,6 +4,7 @@ use std::{
 };
 
 use leptos::*;
+use thiserror::Error;
 
 use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 
@@ -379,6 +380,56 @@ fn FloatInput(
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
     let txt = RwSignal::new(String::new());
+    let is_focussed = RwSignal::new(false);
+
+    create_effect(move |_| {
+        if !is_focussed.get() {
+            txt.set(
+                input_value
+                    .get()
+                    .map(format_f64_into_de_string)
+                    .unwrap_or_else(String::new),
+            );
+        }
+        match evaluate_float_input(&txt.get(), required, limits) {
+            Ok(_) => {
+                error.set(None);
+            }
+            Err(err) => {
+                if err == FloatEvalError::Empty && !required {
+                    error.set(None);
+                }
+            }
+        }
+    });
+
+    let on_input = move |ev| {
+        let input = event_target_value(&ev);
+        let result = evaluate_float_input(&input, required, limits);
+        txt.set(input);
+        match result {
+            Err(err) => {
+                error.set(Some(err.to_string()));
+                if err == FloatEvalError::Empty && !required {
+                    on_change.call(None);
+                }
+            }
+            Ok(value) => {
+                error.set(None);
+                on_change.call(value);
+            }
+        }
+    };
+
+    let on_focus_out = move |_| {
+        is_focussed.set(false);
+    };
+    let on_focus_in = move |_| {
+        is_focussed.set(true);
+    };
+
+    // FIXME: Format input as string and remove delemiters
+    // FIXME: trigger focusout on Enter or Escape
 
     view! {
       <div>
@@ -398,49 +449,10 @@ fn FloatInput(
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
             placeholder = { placeholder }
-            on:input = move |ev| {
-                let input = event_target_value(&ev);
-                txt.set(input);
-            }
-            on:focusin = move |_| {
-                // FIXME: Format input as string and remove delemiters
-            }
-            on:focusout = move |_| {
-                error.set(None);
-
-                if txt.with(|x|x.is_empty()) {
-                  if required {
-                      error.set(Some("Eingabe benötigt!".to_string()));
-                      return;
-                  }
-                  on_change.call(None);
-                  return;
-                }
-
-                let Some(v) = txt.with(|x|parse_de_str_as_f64(x).ok()) else {
-                    error.set(Some("Fehlerhafte Eingabe!".to_string()));
-                    return;
-                };
-
-                if let Some(min) = limits.min {
-                    if v < min {
-                        error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
-                      return;
-                    }
-                }
-                if let Some(max) = limits.max {
-                    if v > max {
-                        error.set(Some("Eingabe überschreitet das Maximum".to_string()));
-                      return;
-                    }
-                }
-                on_change.call(Some(v));
-            }
-            prop:value = move || {
-                error.set(None);
-                input_value.get().map(format_f64_into_de_string).unwrap_or_else(String::new)
-            }
-            // FIXME: trigger focusout on Enter or Escape
+            on:input = on_input
+            on:focusin = on_focus_in
+            on:focusout = on_focus_out
+            prop:value = txt
           />
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <span class="text-gray-500 sm:text-sm">{ unit }</span>
@@ -451,6 +463,74 @@ fn FloatInput(
         </Show>
       </div>
     }
+}
+
+type FloatEvalError = NumberEvalError<f64>;
+
+#[derive(Debug, PartialEq, Clone, Copy, Error)]
+enum NumberEvalError<T> {
+    #[error("Eingabe benötigt!")]
+    Empty,
+    #[error("Fehlerhafte Eingabe!")]
+    Invalid,
+    #[error("Eingabe unterschreitet das Minimum ({0})")]
+    TooSmall(T),
+    #[error("Eingabe überschreitet das Maximum ({0})")]
+    TooBig(T),
+}
+
+fn evaluate_float_input(
+    txt: &str,
+    required: bool,
+    limits: MinMax<f64>,
+) -> Result<Option<f64>, FloatEvalError> {
+    evaluate_number_input(txt, required, limits, |x| parse_de_str_as_f64(x).ok())
+}
+
+fn evaluate_u64_input(
+    txt: &str,
+    required: bool,
+    limits: MinMax<u64>,
+) -> Result<Option<u64>, NumberEvalError<u64>> {
+    evaluate_number_input(txt, required, limits, |x| x.parse().ok())
+}
+
+fn evaluate_number_input<T, F>(
+    txt: &str,
+    required: bool,
+    limits: MinMax<T>,
+    parse: F,
+) -> Result<Option<T>, NumberEvalError<T>>
+where
+    T: PartialOrd + Copy,
+    F: Fn(&str) -> Option<T>,
+{
+    if txt.is_empty() {
+        if required {
+            return Err(NumberEvalError::Empty);
+        } else {
+            return Ok(None);
+        }
+    }
+    let Some(v) = parse(txt) else {
+        return Err(NumberEvalError::Invalid);
+    };
+    check_min_max(v, limits)?;
+    Ok(Some(v))
+}
+
+fn check_min_max<T: PartialOrd>(v: T, limits: MinMax<T>) -> Result<(), NumberEvalError<T>> {
+    if let Some(min) = limits.min {
+        if v < min {
+            return Err(NumberEvalError::TooSmall(min));
+        }
+    }
+    if let Some(max) = limits.max {
+        if v > max {
+            return Err(NumberEvalError::TooBig(max));
+        }
+    }
+    Ok(())
 }
 
 #[component]
@@ -468,6 +548,56 @@ fn UnsignedIntegerInput(
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
     let txt = RwSignal::new(String::new());
+    let is_focussed = RwSignal::new(false);
+
+    create_effect(move |_| {
+        if !is_focussed.get() {
+            txt.set(
+                input_value
+                    .get()
+                    .map(|v| format!("{v}"))
+                    .unwrap_or_else(String::new),
+            );
+        }
+        match evaluate_u64_input(&txt.get(), required, limits) {
+            Ok(_) => {
+                error.set(None);
+            }
+            Err(err) => {
+                if err == NumberEvalError::Empty && !required {
+                    error.set(None);
+                }
+            }
+        }
+    });
+
+    let on_input = move |ev| {
+        let input = event_target_value(&ev);
+        let result = evaluate_u64_input(&input, required, limits);
+        txt.set(input);
+        match result {
+            Err(err) => {
+                error.set(Some(err.to_string()));
+                if err == NumberEvalError::Empty && !required {
+                    on_change.call(None);
+                }
+            }
+            Ok(value) => {
+                error.set(None);
+                on_change.call(value);
+            }
+        }
+    };
+
+    let on_focus_out = move |_| {
+        is_focussed.set(false);
+    };
+    let on_focus_in = move |_| {
+        is_focussed.set(true);
+    };
+
+    // FIXME: Format input as string and remove delemiters
+    // FIXME: trigger focusout on Enter or Escape
 
     view! {
       <div>
@@ -487,49 +617,10 @@ fn UnsignedIntegerInput(
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
             placeholder = { placeholder }
-            on:input = move |ev| {
-                let input = event_target_value(&ev);
-                txt.set(input);
-            }
-            on:focusin = move |_| {
-                // FIXME: Format input as string and remove delemiters
-            }
-            on:focusout = move |_| {
-                error.set(None);
-
-                if txt.with(|x|x.is_empty()) {
-                  if required {
-                      error.set(Some("Eingabe benötigt!".to_string()));
-                      return;
-                  }
-                  on_change.call(None);
-                  return;
-                }
-
-                let Some(v) = txt.with(|x|x.parse::<u64>().ok()) else {
-                    error.set(Some("Fehlerhafte Eingabe!".to_string()));
-                    return;
-                };
-
-                if let Some(min) = limits.min {
-                    if v < min {
-                        error.set(Some("Eingabe unterschreitet das Minimum".to_string()));
-                      return;
-                    }
-                }
-                if let Some(max) = limits.max {
-                    if v > max {
-                        error.set(Some("Eingabe überschreitet das Maximum".to_string()));
-                      return;
-                    }
-                }
-                on_change.call(Some(v));
-            }
-            prop:value = move || {
-                error.set(None);
-                input_value.get().map(|v|format!("{v}")).unwrap_or_else(String::new)
-            }
-            // FIXME: trigger focusout on Enter or Escape
+            on:input = on_input
+            on:focusin = on_focus_in
+            on:focusout = on_focus_out
+            prop:value = txt
           />
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <span class="text-gray-500 sm:text-sm">{ unit }</span>
