@@ -97,7 +97,7 @@ pub fn ProjectMenu(
                   </Section>
                   <Section>
                     <Entry
-                      label = "Als CSV-Datei exportieren"
+                      label = "CSV-Datei exportieren"
                       disabled = Signal::derive(move|| !show_csv_export.get())
                       disabled_text = "fehlende Eingabewerte"
                       on:click = move |ev| {
