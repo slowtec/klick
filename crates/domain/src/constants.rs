@@ -6,19 +6,19 @@ use crate::units::{
 /// `[g ch4 / (population values * year)]`
 pub const EMISSION_FACTOR_CH4_PLANT: f64 = 230.0;
 
-/// 0.9 `[%]` of chemical oxygen demand effluent
+/// `[%]` of chemical oxygen demand effluent
 pub const EMISSION_FACTOR_CH4_WATER: Percent = Percent::new(0.9);
 
-/// 1.0 `[%]` ch4 factor
+/// `[%]` ch4 factor
 pub const EMISSION_FACTOR_CH4_CHP: Percent = Percent::new(1.0);
 
-/// 0.5 `[%]` nitrogen effulent
+/// `[%]` nitrogen effulent
 pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);
 
-/// 1.25 `[m^3/h]`
+/// `[m^3/h]`
 pub const EMISSION_FACTOR_SLUDGE_BAGS: QubicmetersPerHour = QubicmetersPerHour::new(1.25);
 
-/// 1,6 `[%]` of the total digester gas production
+/// `[%]` of the total digester gas production
 pub const EMISSION_FACTOR_SLUDGE_STORAGE: Percent = Percent::new(2.0);
 
 /// `[kg co2 / kg]` solution
@@ -54,7 +54,7 @@ pub const CONVERSION_FACTOR_TOC_TO_COD: Factor = Factor::new(3.0 / 8.0);
 /// According to the German [Umwelt Bundesamt](https://www.umweltbundesamt.de/)
 /// the factor is `3,17` `[kg CO₂/kg]`.
 ///
-/// Converted with with factor `0,835` -> `2,65` `[kg CO₂/l]` diesel.
+/// Converted with factor `0,835` -> `2,65` `[kg CO₂/l]` diesel.
 ///
 /// # References
 ///
@@ -64,13 +64,13 @@ pub const EMISSION_FACTOR_DIESEL: KilogramsPerLiter = KilogramsPerLiter::new(2.6
 /// `[l/tkm]`
 pub const FUEL_CONSUMPTION: LitersPerTonKilometer = LitersPerTonKilometer::new(0.02);
 
-/// 0,3 `[%]` of the nitrogen inflow
+/// `[%]` of the nitrogen inflow
 pub const EMISSION_FACTOR_N2O_OPTIMISTIC: Percent = Percent::new(0.3);
 
-/// 0,8 `[%]` of the nitrogen inflow
+/// `[%]` of the nitrogen inflow
 pub const EMISSION_FACTOR_N2O_PESIMISTIC: Percent = Percent::new(0.8);
 
-/// 1,6 `[%]` of the nitrogen inflow
+/// `[%]` of the nitrogen inflow
 pub const EMISSION_FACTOR_N2O_IPCC2019: Percent = Percent::new(1.6);
 pub const EMISSION_FACTOR_OIL: KilogramsPerLiter = KilogramsPerLiter::new(2.6763);
 pub const EMISSION_FACTOR_GAS: KilogramsPerQubicmeter = KilogramsPerQubicmeter::new(2.04);
