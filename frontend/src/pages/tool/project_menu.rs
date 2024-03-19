@@ -73,7 +73,7 @@ pub fn ProjectMenu(
                   </div>
                   <Section>
                     <Entry
-                      label = "hochladen"
+                      label = "Datei laden"
                       on:click = move |ev| {
                           ev.prevent_default();
                           show_upload_input.set(true);
@@ -82,7 +82,7 @@ pub fn ProjectMenu(
                       icon = icons::DocumentArrowUp
                     />
                     <Entry
-                      label = "herunterladen"
+                      label = "Datei speichern"
                       on:click = move |ev| {
                         ev.prevent_default();
                         let object_url = download.call(());
@@ -99,7 +99,7 @@ pub fn ProjectMenu(
                   // FIXME:
                   // <Section>
                   // <Entry
-                  //     label = "CSV export"
+                  //     label = "Als CSV-Datei exportieren"
                   //     on:click = move |ev| {
                   //       ev.prevent_default();
                   //       let object_url = export_csv.call(());
@@ -121,13 +121,13 @@ pub fn ProjectMenu(
                   // </Section>
                   <Section>
                     <Entry
-                      label = "laden"
+                      label = "Hochladen"
                       href = Page::Projects.path()
                       disabled = Signal::derive(move|| !logged_in.get())
                       icon = icons::CloudArrowUp
                     />
                     <Entry
-                      label = "speichern"
+                      label = "Herunterladen"
                       on:click = move |_| {
                         save.call(());
                         is_open.set(false);
