@@ -123,14 +123,14 @@ pub fn ProjectMenu(
                   </Section>
                   <Section>
                     <Entry
-                      label = "Hochladen"
+                      label = "Werte speichern"
                       href = Page::Projects.path()
                       disabled = Signal::derive(move|| !logged_in.get())
                       disabled_text = "nur mit Login"
                       icon = icons::CloudArrowUp
                     />
                     <Entry
-                      label = "Herunterladen"
+                      label = "Werte laden"
                       on:click = move |_| {
                         save.call(());
                         is_open.set(false);
