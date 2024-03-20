@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use klick_boundary::{PlantProfile, SensitivityParameters};
+use klick_domain as domain;
 
 use crate::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, Lng,
@@ -8,6 +9,7 @@ use crate::{
     SideStreamTreatmentId, ValueLabel, ValueUnit,
 };
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum UnitFormatting {
     Text,
     LaTeX,
@@ -25,6 +27,17 @@ impl UnitFormatting {
     }
 }
 
+#[derive(Serialize)]
+pub struct Table {
+    pub sections: Vec<TableSection>,
+}
+
+#[derive(Serialize)]
+pub struct TableSection {
+    pub title: String,
+    pub rows: Vec<(&'static str, Option<String>, Option<&'static str>)>,
+}
+
 pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> Table {
     let PlantProfile {
         plant_name,
@@ -38,6 +51,7 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
         operating_materials,
     } = profile;
 
+    // TODO: use as parameter
     let lang = Lng::De;
 
     let sections = vec![
@@ -333,6 +347,179 @@ pub fn sensitivity_parameters_as_table(
     Table { sections }
 }
 
+pub fn co2_equivalents_as_table(eq: &domain::CO2Equivalents, _unit: UnitFormatting) -> Table {
+    // TODO: use as parameger
+    let lang = Lng::De;
+
+    // TODO:
+    // - value IDs and it's labels
+    // - use unit parameter
+    let rows = vec![
+        (
+            "N₂O Anlage",
+            Some(lang.format_number(f64::from(eq.n2o_plant))),
+            Some("t"),
+        ),
+        (
+            "N₂O Gewässer",
+            Some(lang.format_number(f64::from(eq.n2o_water))),
+            Some("t"),
+        ),
+        (
+            "N₂O Prozesswasserbehandlung",
+            Some(lang.format_number(f64::from(eq.n2o_side_stream))),
+            Some("t"),
+        ),
+        (
+            "Lachgasemissionen",
+            Some(lang.format_number(f64::from(eq.n2o_emissions))),
+            Some("t"),
+        ),
+        (
+            "CH₄ Anlage (unspez.)",
+            Some(lang.format_number(f64::from(eq.ch4_plant))),
+            Some("t"),
+        ),
+        (
+            "CH₄ Schlupf Schlammlagerung",
+            Some(lang.format_number(f64::from(eq.ch4_sludge_storage_containers))),
+            Some("t"),
+        ),
+        (
+            "CH₄ Schlupf Schlammtasche",
+            Some(lang.format_number(f64::from(eq.ch4_sludge_bags))),
+            Some("t"),
+        ),
+        (
+            "CH₄ Gewässer",
+            Some(lang.format_number(f64::from(eq.ch4_water))),
+            Some("t"),
+        ),
+        (
+            "CH₄ BHKW",
+            Some(lang.format_number(f64::from(eq.ch4_combined_heat_and_power_plant))),
+            Some("t"),
+        ),
+        (
+            "Methanemissionen",
+            Some(lang.format_number(f64::from(eq.ch4_emissions))),
+            Some("t"),
+        ),
+        (
+            "Fossile CO₂-Emissionen",
+            Some(lang.format_number(f64::from(eq.fossil_emissions))),
+            Some("t"),
+        ),
+        (
+            "Eisen(III)-chlorid-Lösung",
+            Some(lang.format_number(f64::from(eq.fecl3))),
+            Some("t"),
+        ),
+        (
+            "Eisenchloridsulfat-Lösung",
+            Some(lang.format_number(f64::from(eq.feclso4))),
+            Some("t"),
+        ),
+        (
+            "Kalkhydrat",
+            Some(lang.format_number(f64::from(eq.caoh2))),
+            Some("t"),
+        ),
+        (
+            "Synthetische Polymere",
+            Some(lang.format_number(f64::from(eq.synthetic_polymers))),
+            Some("t"),
+        ),
+        (
+            "Strommix",
+            Some(lang.format_number(f64::from(eq.electricity_mix))),
+            Some("t"),
+        ),
+        (
+            "Heizöl",
+            Some(lang.format_number(f64::from(eq.oil_emissions))),
+            Some("t"),
+        ),
+        (
+            "Gas",
+            Some(lang.format_number(f64::from(eq.gas_emissions))),
+            Some("t"),
+        ),
+        (
+            "Betriebsstoffe",
+            Some(lang.format_number(f64::from(eq.operating_materials))),
+            Some("t"),
+        ),
+        (
+            "Klärschlamm Transport",
+            Some(lang.format_number(f64::from(eq.sewage_sludge_transport))),
+            Some("t"),
+        ),
+        (
+            "Emission",
+            Some(lang.format_number(f64::from(eq.total_emissions))),
+            Some("t"),
+        ),
+        (
+            "Direkte Emissionen",
+            Some(lang.format_number(f64::from(eq.direct_emissions))),
+            Some("t"),
+        ),
+        (
+            "Energieeinsparung bei Prozessen",
+            Some(lang.format_number(f64::from(eq.process_energy_savings))),
+            Some("t"),
+        ),
+        (
+            "Einsparung durch Photovoltaik",
+            Some(lang.format_number(f64::from(eq.photovoltaic_expansion_savings))),
+            Some("t"),
+        ),
+        (
+            "Einsparung durch Windkraft",
+            Some(lang.format_number(f64::from(eq.wind_expansion_savings))),
+            Some("t"),
+        ),
+        (
+            "Einsparung durch Wasserkraft",
+            Some(lang.format_number(f64::from(eq.water_expansion_savings))),
+            Some("t"),
+        ),
+        (
+            "Einsparung durch Abwärmenutzung",
+            Some(lang.format_number(f64::from(eq.district_heating_savings))),
+            Some("t"),
+        ),
+        (
+            "Einsparung bei Fossilen Energiequellen",
+            Some(lang.format_number(f64::from(eq.fossil_energy_savings))),
+            Some("t"),
+        ),
+        (
+            "Indirekte Emissionen",
+            Some(lang.format_number(f64::from(eq.indirect_emissions))),
+            Some("t"),
+        ),
+        (
+            "Weitere Indirekte Emissionen",
+            Some(lang.format_number(f64::from(eq.other_indirect_emissions))),
+            Some("t"),
+        ),
+        (
+            "Energiebedingte Emissionen",
+            Some(lang.format_number(f64::from(eq.excess_energy_co2_equivalent))),
+            Some("t"),
+        ),
+    ];
+
+    let sections = vec![TableSection {
+        title: "CO₂-Emissionen".to_string(),
+        rows,
+    }];
+
+    Table { sections }
+}
+
 fn format_number(lang: Lng) -> impl Fn(f64) -> String {
     move |n| lang.format_number(n)
 }
@@ -343,15 +530,4 @@ fn format_number_with_thousands_seperator(lang: Lng) -> impl Fn(f64) -> String {
 
 fn format_bool(lang: Lng) -> impl Fn(bool) -> String {
     move |x| lang.format_bool(x).to_string()
-}
-
-#[derive(Serialize)]
-pub struct Table {
-    pub sections: Vec<TableSection>,
-}
-
-#[derive(Serialize)]
-pub struct TableSection {
-    pub title: String,
-    pub rows: Vec<(&'static str, Option<String>, Option<&'static str>)>,
 }

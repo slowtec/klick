@@ -5,6 +5,7 @@ use klick_app_components::message::*;
 use klick_boundary::{
     export_to_vec_pretty, import_from_slice, Data, FormData, Project, ProjectId, SavedProject,
 };
+use klick_presenter as presenter;
 
 use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
 
@@ -80,6 +81,8 @@ pub fn Tool(
                 .unwrap_or(false)
         })
     });
+
+    let show_csv_export = Signal::derive(move || outcome.with(|out| out.is_some()));
 
     // -----   ----- //
     //    Actions    //
@@ -236,9 +239,14 @@ pub fn Tool(
     };
 
     let export_csv = {
-        move |_| -> ObjectUrl {
-            // TODO
-            todo!()
+        move |_| -> Option<ObjectUrl> {
+            let Some(data) = outcome.get() else {
+                log::warn!("No calculated data found to export");
+                return None;
+            };
+            let csv = presenter::calculation_outcome_as_csv(&data);
+            let blob = Blob::new_with_options(csv.as_bytes(), Some("text/csv"));
+            Some(ObjectUrl::from(blob))
         }
     };
 
@@ -307,6 +315,7 @@ pub fn Tool(
             download
             export_csv
             upload_action
+            show_csv_export
           />
           { move || save_result_message.get().map(|res| match res {
             Ok(msg) => view!{ <SuccessMessage message = msg /> }.into_view(),

@@ -1,3 +1,5 @@
+use klick_domain::{self as domain, units::*};
+
 mod export;
 mod import;
 mod v1;
@@ -21,3 +23,31 @@ pub use self::{
 mod conversion;
 
 pub const CURRENT_VERSION: u32 = 8;
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct CalculationOutcome {
+    // a.k.a "Model One"
+    pub profile: EvaluationData,
+
+    // a.k.a "Model Two"
+    pub sensitivity: EvaluationData,
+
+    // Used to create bar chart input
+    pub sensitivity_n2o_calculations: Vec<(
+        domain::N2oEmissionFactorCalcMethod,
+        domain::EmissionsCalculationOutcome,
+    )>,
+
+    // Used to create bar chart input
+    pub sensitivity_ch4_chp_calculations:
+        Vec<(domain::CH4ChpEmissionFactorCalcMethod, Tons, Factor)>,
+
+    // a.k.a "Model Three"
+    pub recommendation: EvaluationData,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct EvaluationData {
+    pub input: FormData,
+    pub output: domain::EmissionsCalculationOutcome,
+}
