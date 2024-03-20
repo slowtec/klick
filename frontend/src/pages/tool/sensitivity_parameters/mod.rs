@@ -64,7 +64,7 @@ pub fn SensitivityParameters(
 
         <h4 class="my-8 text-lg font-bold">
           { move || outcome.with(|out|out.as_ref().map(|out|{
-                let out = &out.sensitivity;
+                let out = &out.sensitivity.output;
                 klick_presenter::create_sankey_chart_header(
                   &form_data.with(|d| d.plant_profile.clone()),
                   out.emission_factors,
@@ -75,7 +75,7 @@ pub fn SensitivityParameters(
         </h4>
 
         { move || outcome.with(|out| out.as_ref().map(|outcome|{
-            let outcome = outcome.sensitivity.clone();
+            let outcome = outcome.sensitivity.output.clone();
             let data = (outcome.co2_equivalents, outcome.emission_factors);
             view!{ <Sankey data /> }
           }))

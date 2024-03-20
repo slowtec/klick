@@ -58,7 +58,7 @@ pub fn FossilCO2Emissions(
          <div class="border-t pt-3 mt-4 border-gray-900/10">
          { move || {
              outcome.with(|out|out.as_ref().map(|out|{
-               let out = &out.sensitivity.co2_equivalents;
+               let out = &out.sensitivity.output.co2_equivalents;
                view! {
                  <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Fossile CO₂-Emissionen"</dt>

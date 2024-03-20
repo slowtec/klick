@@ -70,7 +70,7 @@ pub fn options(
                   true => "".to_string(),
               };
               outcome.with(|out|out.as_ref().map(|out|{
-                let out = &out.recommendation;
+                let out = &out.recommendation.output;
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_sludge_bags_controls_class) }>"CH₄ Schlupf Schlammtaschen"</dt>
