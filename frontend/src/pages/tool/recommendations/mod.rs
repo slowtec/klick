@@ -99,11 +99,11 @@ pub fn Recommendations(
 
     let form_data_overview = move || {
         outcome
-            .with(|out| out.as_ref().map(|out| out.sensitivity.input.clone()))
+            .with(|out| out.as_ref().map(|out| out.sensitivity.clone()))
             .map(|data| {
                 view! {
                   <FormDataOverview
-                    form_data = data
+                    calculation_input_output = data
                   />
                 }
             })

@@ -1,16 +1,30 @@
 use leptos::*;
 
-use klick_boundary::FormData;
+use crate::pages::tool::calculation::CalculationInputOutput;
+use klick_domain::units::Percent;
+use klick_domain::units::Ratio;
+use klick_presenter::Lng;
 use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, UnitFormatting};
 
 #[component]
-pub fn FormDataOverview(form_data: FormData) -> impl IntoView {
+pub fn FormDataOverview(calculation_input_output: CalculationInputOutput) -> impl IntoView {
     let profile_table = {
-        let d = form_data;
+        let i = calculation_input_output.input;
+        let o = calculation_input_output.output;
+        let n2o_emission_factor: String = Lng::De.format_number_with_precision(
+            f64::from(o.emission_factors.n2o.convert_to::<Percent>()),
+            3,
+        );
+        let ch4_chp_emission_factor: String =
+            Lng::De.format_number(f64::from(o.emission_factors.ch4.convert_to::<Percent>()));
         let table = {
-            let mut profile = plant_profile_as_table(&d.plant_profile, UnitFormatting::Text);
-            let mut sensitivity =
-                sensitivity_parameters_as_table(&d.sensitivity_parameters, UnitFormatting::Text);
+            let mut profile = plant_profile_as_table(&i.plant_profile, UnitFormatting::Text);
+            let mut sensitivity = sensitivity_parameters_as_table(
+                &i.sensitivity_parameters,
+                UnitFormatting::Text,
+                n2o_emission_factor,
+                ch4_chp_emission_factor,
+            );
             profile.sections.append(&mut sensitivity.sections);
             profile
         };

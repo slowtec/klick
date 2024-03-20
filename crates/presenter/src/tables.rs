@@ -255,6 +255,8 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
 pub fn sensitivity_parameters_as_table(
     parameters: &SensitivityParameters,
     unit: UnitFormatting,
+    n2o_emission_factor: String,
+    ch4_chp_emission_factor: String,
 ) -> Table {
     let SensitivityParameters {
         n2o_emissions,
@@ -278,10 +280,8 @@ pub fn sensitivity_parameters_as_table(
                     unit.fmt(SensitivityParameterId::N2OCalculationMethod),
                 ),
                 (
-                    SensitivityParameterId::N2OCustomFactor.label(),
-                    n2o_emissions
-                        .custom_emission_factor
-                        .map(format_number(lang)),
+                    "N₂O-EF",
+                    Some(n2o_emission_factor),
                     unit.fmt(SensitivityParameterId::N2OCustomFactor),
                 ),
                 (
@@ -305,10 +305,8 @@ pub fn sensitivity_parameters_as_table(
                     unit.fmt(SensitivityParameterId::CH4ChpCalculationMethod),
                 ),
                 (
-                    SensitivityParameterId::CH4ChpCustomFactor.label(),
-                    ch4_chp_emissions
-                        .custom_emission_factor
-                        .map(format_number(lang)),
+                    "BHKW CH₄-EF",
+                    Some(ch4_chp_emission_factor),
                     unit.fmt(SensitivityParameterId::CH4ChpCustomFactor),
                 ),
             ],
