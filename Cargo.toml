@@ -63,7 +63,7 @@ version = "1.36.0"
 features = ["macros", "rt-multi-thread"]
 
 [build-dependencies]
-toml = "0.8.11"
+toml = "0.8.12"
 
 [workspace.lints.clippy]
 pedantic = "warn"

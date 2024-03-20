@@ -24,7 +24,7 @@ parking_lot = "0.12.1"
 serde_json = "1.0.114"
 thiserror = "1.0.58"
 time = "0.3.34"
-uuid = "1.7.0"
+uuid = "1.8.0"
 
 [dev-dependencies.klick-boundary]
 version = "=0.0.0"
