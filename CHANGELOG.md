@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.3 (2024-03-21)
+
+- Added
+   - Headline for FormDataOverview (#207)
+- Changed:
+  - Restore CSV export functionality (#189)
+- Fixed:
+  - Remove thousands separator during editing (#240)
+
 ## v0.4.2 (2024-03-20)
 
 - Changed:
