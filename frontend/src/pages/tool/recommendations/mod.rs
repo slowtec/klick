@@ -30,8 +30,8 @@ pub fn Recommendations(
             out.as_ref().map(|out| {
                 // TODO: avoid clones
 
-                let old = out.sensitivity.co2_equivalents.clone();
-                let new = out.recommendation.co2_equivalents.clone();
+                let old = out.sensitivity.output.co2_equivalents.clone();
+                let new = out.recommendation.output.co2_equivalents.clone();
                 let diff = new.clone() - old;
 
                 let mut comp = vec![];
@@ -97,14 +97,23 @@ pub fn Recommendations(
         })
     });
 
+    let form_data_overview = move || {
+        outcome
+            .with(|out| out.as_ref().map(|out| out.sensitivity.input.clone()))
+            .map(|data| {
+                view! {
+                  <FormDataOverview
+                    form_data = data
+                  />
+                }
+            })
+    };
     view! {
       <Show
         when = move || outcome.with(|o|o.is_some())
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
-      <FormDataOverview
-        form_data = form_data.read_only()
-      />
+      { form_data_overview }
       { n2o_emissions_in_the_biological_treatment_stage::options() }
       {
         n2o_emissions_side_stream_system::options(
@@ -130,7 +139,7 @@ pub fn Recommendations(
 
       <h4 class="my-8 text-lg font-bold">
         { move || outcome.with(|out|out.as_ref().map(|out|{
-              let out = &out.recommendation;
+              let out = &out.recommendation.output;
               klick_presenter::create_sankey_chart_header(
                 &form_data.with(|d| d.plant_profile.clone()),
                 out.emission_factors,
@@ -141,7 +150,7 @@ pub fn Recommendations(
       </h4>
 
       { move || outcome.with(|out| out.as_ref().map(|outcome|{
-          let outcome = outcome.recommendation.clone();
+          let outcome = outcome.recommendation.output.clone();
           let data = (outcome.co2_equivalents, outcome.emission_factors);
           view!{ <Sankey data /> }
         }))

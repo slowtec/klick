@@ -148,7 +148,7 @@ pub fn N2OEmissionsSensitivity(
             { move ||
               outcome.with(|outcome|
                 outcome.as_ref().map(|out|{
-                  let out = &out.sensitivity;
+                  let out = &out.sensitivity.output;
                   let show_side_stream_controls_class = match show_side_stream_controls.get() {
                       false => "hidden".to_string(),
                       true => "".to_string(),
