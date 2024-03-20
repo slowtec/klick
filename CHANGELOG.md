@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.2 (2024-03-20)
+
+- Changed:
+  - Show default values in form data over (#241)
+  - Info feld "Gasbezug" kwh -> m3 (#248)
+  - Added default CHP emission factor calculation method to example data
+  - Improve menu entries (#243)
+- Fixed:
+  - Ignore but warn on loading corrupt project data
+  - Typo in code related to `EMISSION_FACTOR_SLUDGE_STORAGE` (#214)
+
 ## v0.4.1 (2024-03-18)
 
 - Changed:
