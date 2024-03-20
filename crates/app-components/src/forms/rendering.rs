@@ -6,6 +6,8 @@ use std::{
 use leptos::*;
 use thiserror::Error;
 
+use klick_presenter::Lng;
+
 use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 
 type MissingFields = HashSet<FieldId>;
@@ -324,6 +326,7 @@ fn TextInput(
     }
 }
 
+// TODO: move this out of this layer (e.g. to presenter::Lng)
 pub fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
     let float = input
         .replace('.', "")
@@ -336,7 +339,7 @@ pub fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
     }
 }
 
-// TODO: move this out of this layer (e.g. to the  presenter)
+// TODO: move this out of this layer (e.g. to presenter::Lng)
 pub fn format_f64_into_de_string(number: f64) -> String {
     let num_str = format!("{number:.}");
 
@@ -426,6 +429,10 @@ fn FloatInput(
     };
     let on_focus_in = move |_| {
         is_focussed.set(true);
+        if let Some(value) = input_value.get() {
+            let new_txt = Lng::De.format_number(value);
+            txt.set(new_txt)
+        }
     };
 
     // FIXME: Format input as string and remove delemiters
