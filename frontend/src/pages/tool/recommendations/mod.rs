@@ -113,6 +113,9 @@ pub fn Recommendations(
         when = move || outcome.with(|o|o.is_some())
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
+      <h4 class="my-8 text-lg font-bold">
+      "Übersicht über Eingabewerte (Datenerfassung und Sensitivität)"
+      </h4>
       { form_data_overview }
       { n2o_emissions_in_the_biological_treatment_stage::options() }
       {
