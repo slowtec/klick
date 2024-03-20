@@ -1,36 +1,9 @@
-use klick_boundary::{self as boundary, FormData};
-use klick_domain::{
-    self as domain, units::*, CH4ChpEmissionFactorCalcMethod, EmissionsCalculationOutcome,
-    N2oEmissionFactorCalcMethod,
-};
+use klick_boundary::{EvaluationData, FormData};
+use klick_domain::{self as domain, units::*};
+
+pub use klick_boundary::CalculationOutcome;
 
 use super::default_values;
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct CalculationOutcome {
-    // a.k.a "Model One"
-    pub profile: CalculationInputOutput,
-
-    // a.k.a "Model Two"
-    pub sensitivity: CalculationInputOutput,
-
-    // Used to create bar chart input
-    pub sensitivity_n2o_calculations:
-        Vec<(N2oEmissionFactorCalcMethod, EmissionsCalculationOutcome)>,
-
-    // Used to create bar chart input
-    pub sensitivity_ch4_chp_calculations: Vec<(CH4ChpEmissionFactorCalcMethod, Tons, Factor)>,
-
-    // a.k.a "Model Three"
-    pub recommendation: CalculationInputOutput,
-}
-
-// TODO: Is there a better name for this struct?
-#[derive(Debug, Clone, PartialEq)]
-pub struct CalculationInputOutput {
-    pub input: boundary::FormData,
-    pub output: domain::EmissionsCalculationOutcome,
-}
 
 pub fn calculate(form_data: FormData) -> Option<CalculationOutcome> {
     log::debug!("Calculate");
@@ -76,15 +49,15 @@ pub fn calculate(form_data: FormData) -> Option<CalculationOutcome> {
     let recommendation_output = domain::calculate_emissions(recommendation.0, recommendation.1);
 
     let outcome = CalculationOutcome {
-        profile: CalculationInputOutput {
+        profile: EvaluationData {
             input: profile_input,
             output: profile_output,
         },
-        sensitivity: CalculationInputOutput {
+        sensitivity: EvaluationData {
             input: sensitivity_input,
             output: sensitivity_output,
         },
-        recommendation: CalculationInputOutput {
+        recommendation: EvaluationData {
             input: recommendation_input,
             output: recommendation_output,
         },
