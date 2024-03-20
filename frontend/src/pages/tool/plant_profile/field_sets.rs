@@ -359,7 +359,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             Field {
                 label: ProfileValueId::from(EnergyConsumptionId::GasSupply).label(),
                 description: Some(
-                    "Menge an Gas (Erdgas/Biogas) in Kilowattstunden (kWh) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
+                    "Menge an Gas (Erdgas/Biogas) in Kubikmeter (m³) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
                 ),
                 required: false,
                 field_type: FieldType::Float {
