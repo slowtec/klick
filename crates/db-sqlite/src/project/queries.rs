@@ -48,10 +48,15 @@ pub fn all_projects_by_owner(
         Err(diesel::result::Error::NotFound) => return Ok(vec![]),
         Err(err) => return Err(err.into()),
     };
+
     let projects = results
         .into_iter()
-        .map(Project::try_from)
-        .collect::<Result<_, _>>()?;
+        .filter_map(|d| {
+            Project::try_from(d)
+                .map_err(|err| log::warn!("Unable to load project for account {owner}: {err}"))
+                .ok()
+        })
+        .collect();
     Ok(projects)
 }
 
