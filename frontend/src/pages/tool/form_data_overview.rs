@@ -1,7 +1,7 @@
 use leptos::*;
 
-use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, UnitFormatting};
 use klick_boundary::EvaluationData;
+use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, UnitFormatting};
 
 #[component]
 pub fn FormDataOverview(evaluation_data: EvaluationData) -> impl IntoView {

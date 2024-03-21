@@ -55,7 +55,9 @@ pub fn SensitivityParameters(
           input_data = form_data.read_only()
           outcome
         />
-        <CH4EmissionsOpenSludgeStorage />
+        <CH4EmissionsOpenSludgeStorage
+          form_data
+        />
         <FossilCO2Emissions
           form_data
           input_data = form_data.read_only()

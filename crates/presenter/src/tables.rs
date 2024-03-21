@@ -268,10 +268,8 @@ pub fn sensitivity_parameters_as_table(
 
     let lang = Lng::De;
 
-    let n2o_emission_factor: String = lang.format_number_with_precision(
-        f64::from(o.emission_factors.n2o.convert_to::<Percent>()),
-        3,
-    );
+    let n2o_emission_factor: String = lang
+        .format_number_with_precision(f64::from(o.emission_factors.n2o.convert_to::<Percent>()), 3);
     let ch4_chp_emission_factor: String =
         lang.format_number(f64::from(o.emission_factors.ch4.convert_to::<Percent>()));
 

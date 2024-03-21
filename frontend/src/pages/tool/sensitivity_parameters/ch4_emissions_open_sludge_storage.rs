@@ -1,10 +1,27 @@
 use leptos::*;
 
 use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
+use klick_boundary::FormData;
 
 #[component]
-pub fn CH4EmissionsOpenSludgeStorage() -> impl IntoView {
+pub fn CH4EmissionsOpenSludgeStorage(form_data: RwSignal<FormData>) -> impl IntoView {
+    let show_dialog = Signal::derive(move || {
+        let digester_count = form_data.with(|d| {
+            d.plant_profile
+                .sewage_sludge_treatment
+                .digester_count
+                .unwrap_or(0)
+        });
+        let sewage_gas_produced = form_data.with(|d| {
+            d.plant_profile
+                .energy_consumption
+                .sewage_gas_produced
+                .unwrap_or(0.0)
+        });
+        sewage_gas_produced < 0.001 || digester_count == 0
+    });
     view! {
+      <div class = move || { if show_dialog.get() { None } else { Some("hidden") } } >
       <Card title = "Methanemissionen aus der Schlammlagerung" bg_color="bg-blue">
         <InfoBox text = " Emissionen aus der Schlammlagerung aerob-stabilisierter Schlämme weisen ein deutliches Emissionspotenzial auf">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 24-25)" url = DWA_MERKBLATT_URL>
@@ -22,5 +39,6 @@ pub fn CH4EmissionsOpenSludgeStorage() -> impl IntoView {
           </Cite>
         </InfoBox>
       </Card>
+      </div>
     }
 }

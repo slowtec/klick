@@ -13,6 +13,7 @@ pub fn CH4EmissionsOpenDigesters(
     outcome: Signal<Option<CalculationOutcome>>,
 ) -> impl IntoView {
     let show_sludge_bags_controls = Signal::derive(move || {
+        // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
         form_data.with(|d| {
             !d.plant_profile
                 .sewage_sludge_treatment
@@ -21,12 +22,29 @@ pub fn CH4EmissionsOpenDigesters(
         })
     });
     let show_sludge_storage_containers_controls = Signal::derive(move || {
+        // a better way could be to check out.co2_equivalents.ch4_sludge_storage_containers > 0.0
         form_data.with(|d| {
             !d.plant_profile
                 .sewage_sludge_treatment
                 .sludge_storage_containers_are_closed
                 .unwrap_or(false)
         })
+    });
+    let show_dialog = Signal::derive(move || {
+        let digester_count = form_data.with(|d| {
+            d.plant_profile
+                .sewage_sludge_treatment
+                .digester_count
+                .unwrap_or(0)
+        });
+        let sewage_gas_produced = form_data.with(|d| {
+            d.plant_profile
+                .energy_consumption
+                .sewage_gas_produced
+                .unwrap_or(0.0)
+        });
+        (show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get())
+            && (sewage_gas_produced > 0.0 || digester_count > 0)
     });
 
     let custom_factor_field = Field {
@@ -119,7 +137,7 @@ pub fn CH4EmissionsOpenDigesters(
     // });
 
     view! {
-      <div class = move || { if show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get() { None } else { Some("hidden") } } >
+      <div class = move || { if show_dialog.get() { None } else { Some("hidden") } } >
         <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue">
           <div class = move || { if show_sludge_bags_controls.get() { None } else { Some("hidden") } } >
              <p class="my-2">
