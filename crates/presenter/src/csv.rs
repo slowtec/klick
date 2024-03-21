@@ -16,7 +16,7 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
     let mut plant_profile_table =
         plant_profile_as_table(&out.recommendation.input.plant_profile, unit);
     let sensitivity_parameters_table =
-        sensitivity_parameters_as_table(&out.recommendation.input.sensitivity_parameters, unit);
+        sensitivity_parameters_as_table(&out.recommendation.input.sensitivity_parameters, unit, &out.recommendation.output);
 
     let co2_equivalents_table =
         co2_equivalents_as_table(&out.recommendation.output.co2_equivalents, unit);
