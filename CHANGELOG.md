@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.4 (2024-03-21)
+
+- Changed:
+  - "N₂O-EF" instead "N₂O-EF Benutzerdefiniert" for sensitivity_parameters_as_table
+  - show/hide methane dialoges #205
+  - BarChart für Veränderungen bei der Sensitivität #225
+  - Beispielwerte für den Rechencheck auf die Werte von der 50.000 EW Beispielanlage setzten #224
+  - 🐔
+
 ## v0.4.3 (2024-03-21)
 
 - Added
