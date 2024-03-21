@@ -14,26 +14,25 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
     f64::from(co2_equivalents.ch4_combined_heat_and_power_plant)
 }
 
-#[test]
-fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
-    let profile = EmissionInfluencingValues {
-        population_equivalent: 120_000.0,
-        wastewater: Qubicmeters::new(5_000_000.0),
+fn example_values() -> EmissionInfluencingValues {
+    EmissionInfluencingValues {
+        population_equivalent: 50_000.0,
+        wastewater: Qubicmeters::new(2_135_250.0),
         influent_average: AnnualAverageInfluent {
-            nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
-            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
+            nitrogen: MilligramsPerLiter::new(94.0),
+            chemical_oxygen_demand: MilligramsPerLiter::new(1_020.0),
+            total_organic_carbohydrates: MilligramsPerLiter::new(382.5),
         },
         effluent_average: AnnualAverageEffluent {
-            nitrogen: MilligramsPerLiter::new(11.76),
-            chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
+            nitrogen: MilligramsPerLiter::new(15.77),
+            chemical_oxygen_demand: MilligramsPerLiter::new(47.18),
         },
         energy_consumption: EnergyConsumption {
-            sewage_gas_produced: Qubicmeters::new(1_260_000.0),
+            sewage_gas_produced: Qubicmeters::new(420_000.0),
             methane_fraction: Percent::new(62.0),
-            total_power_consumption: Kilowatthours::new(2_683_259.0),
-            on_site_power_generation: Kilowatthours::new(2_250_897.0),
-            emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
+            total_power_consumption: Kilowatthours::new(1_665_000.0),
+            on_site_power_generation: Kilowatthours::new(810_000.0),
+            emission_factor_electricity_mix: GramsPerKilowatthour::new(420.0),
             heating_oil: Liters::new(0.0),
             gas_supply: Qubicmeters::new(0.0),
             purchase_of_biogas: false,
@@ -43,15 +42,15 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             sludge_bags_factor: None,
             sludge_storage_containers_are_open: true,
             sludge_storage_containers_factor: None,
-            sewage_sludge_for_disposal: Tons::new(3687.6),
-            transport_distance: Kilometers::new(47.0),
-            digester_count: None,
+            sewage_sludge_for_disposal: Tons::new(3016.5),
+            transport_distance: Kilometers::new(150.0),
+            digester_count: Some(1),
         },
         operating_materials: OperatingMaterials {
-            fecl3: Tons::new(0.0),
-            feclso4: Tons::new(326.0),
-            caoh2: Tons::new(326.26),
-            synthetic_polymers: Tons::new(23.62),
+            fecl3: Tons::new(310.5),
+            feclso4: Tons::new(0.0),
+            caoh2: Tons::new(0.0),
+            synthetic_polymers: Tons::new(12.0),
         },
         emission_factors: EmissionFactors {
             co2_fossil: Factor::new(0.0),
@@ -72,7 +71,94 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             water_energy_expansion: Kilowatthours::new(0.0),
             estimated_self_water_energy_usage: Percent::new(0.0),
         },
-    };
+    }
+}
+
+// a helper to update the tests
+// cargo test  -- --nocapture
+#[warn(dead_code)]
+fn create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors: CalculatedEmissionFactors) {
+    let CalculatedEmissionFactors {
+        n2o,
+        ch4,
+    } = emission_factors;
+    println!("assert_eq!(f64::from(n2o), {:?});", f64::from(n2o));
+    println!("assert_eq!(f64::from(ch4), {:?});", f64::from(ch4));
+}
+
+// a helper to update the tests
+// cargo test  -- --nocapture
+#[warn(dead_code)]
+fn create_test_results_on_changes_co2_equivalents (co2_equivalents: CO2Equivalents) {
+    let CO2Equivalents {
+        n2o_plant,
+        n2o_water,
+        n2o_emissions,
+        ch4_plant,
+        ch4_sludge_storage_containers,
+        ch4_sludge_bags,
+        ch4_water,
+        ch4_combined_heat_and_power_plant,
+        ch4_emissions,
+        fecl3,
+        feclso4,
+        caoh2,
+        synthetic_polymers,
+        electricity_mix,
+        oil_emissions,
+        gas_emissions,
+        operating_materials,
+        sewage_sludge_transport,
+        total_emissions,
+        direct_emissions,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
+        indirect_emissions,
+        other_indirect_emissions,
+        excess_energy_co2_equivalent,
+        n2o_side_stream,
+        fossil_emissions,
+    } = co2_equivalents;
+
+    println!("assert_eq!(f64::from(n2o_plant), {:?});", f64::from(n2o_plant));
+    println!("assert_eq!(f64::from(n2o_water), {:?});", f64::from(n2o_water));
+    println!("assert_eq!(f64::from(n2o_emissions), {:?});", f64::from(n2o_emissions));
+    println!("assert_eq!(f64::from(ch4_plant), {:?});", f64::from(ch4_plant));
+    println!("assert_eq!(f64::from(ch4_sludge_storage_containers), {:?});", f64::from(ch4_sludge_storage_containers));
+    println!("assert_eq!(f64::from(ch4_sludge_bags), {:?});", f64::from(ch4_sludge_bags));
+    println!("assert_eq!(f64::from(ch4_water), {:?});", f64::from(ch4_water));
+    println!("assert_eq!(f64::from(ch4_combined_heat_and_power_plant), {:?});", f64::from(ch4_combined_heat_and_power_plant));
+    println!("assert_eq!(f64::from(ch4_emissions), {:?});", f64::from(ch4_emissions));
+    println!("assert_eq!(f64::from(fecl3), {:?});", f64::from(fecl3));
+    println!("assert_eq!(f64::from(feclso4), {:?});", f64::from(feclso4));
+    println!("assert_eq!(f64::from(caoh2), {:?});", f64::from(caoh2));
+    println!("assert_eq!(f64::from(synthetic_polymers), {:?});", f64::from(synthetic_polymers));
+    println!("assert_eq!(f64::from(electricity_mix), {:?});", f64::from(electricity_mix));
+    println!("assert_eq!(f64::from(oil_emissions), {:?});", f64::from(oil_emissions));
+    println!("assert_eq!(f64::from(gas_emissions), {:?});", f64::from(gas_emissions));
+    println!("assert_eq!(f64::from(operating_materials), {:?});", f64::from(operating_materials));
+    println!("assert_eq!(f64::from(sewage_sludge_transport), {:?});", f64::from(sewage_sludge_transport));
+    println!("assert_eq!(f64::from(total_emissions), {:?});", f64::from(total_emissions));
+    println!("assert_eq!(f64::from(direct_emissions), {:?});", f64::from(direct_emissions));
+    println!("assert_eq!(f64::from(process_energy_savings), {:?});", f64::from(process_energy_savings));
+    println!("assert_eq!(f64::from(photovoltaic_expansion_savings), {:?});", f64::from(photovoltaic_expansion_savings));
+    println!("assert_eq!(f64::from(wind_expansion_savings), {:?});", f64::from(wind_expansion_savings));
+    println!("assert_eq!(f64::from(water_expansion_savings), {:?});", f64::from(water_expansion_savings));
+    println!("assert_eq!(f64::from(district_heating_savings), {:?});", f64::from(district_heating_savings));
+    println!("assert_eq!(f64::from(fossil_energy_savings), {:?});", f64::from(fossil_energy_savings));
+    println!("assert_eq!(f64::from(indirect_emissions), {:?});", f64::from(indirect_emissions));
+    println!("assert_eq!(f64::from(other_indirect_emissions), {:?});", f64::from(other_indirect_emissions));
+    println!("assert_eq!(f64::from(excess_energy_co2_equivalent), {:?});", f64::from(excess_energy_co2_equivalent));
+    println!("assert_eq!(f64::from(n2o_side_stream), {:?});", f64::from(n2o_side_stream));
+    println!("assert_eq!(f64::from(fossil_emissions), {:?});", f64::from(fossil_emissions));
+}
+#[test]
+fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
+    let profile = example_values();
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::TuWien2016,
@@ -100,54 +186,74 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
-        oil_emissions: _,
-        gas_emissions: _,
+        oil_emissions,
+        gas_emissions,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
-        process_energy_savings: _,
-        photovoltaic_expansion_savings: _,
-        wind_expansion_savings: _,
-        water_expansion_savings: _,
-        district_heating_savings: _,
-        fossil_energy_savings: _,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
-        n2o_side_stream: _,
-        fossil_emissions: _,
+        n2o_side_stream,
+        fossil_emissions,
     } = co2_equivalents;
 
-    assert_eq!(f64::from(n2o_plant), 327.970_500_000_001_83);
-    assert_eq!(f64::from(n2o_water), 126.126);
-    assert_eq!(f64::from(n2o_emissions), 454.096_500_000_001_8);
-    assert_eq!(f64::from(ch4_plant), 301.9707599999999);
-    assert_eq!(f64::from(ch4_sludge_storage_containers), 313.88616);
-    assert_eq!(ch4_sludge_bags, Tons::zero());
-    assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_emissions), 935.3399999999999);
-    assert_eq!(f64::from(fecl3), 0.0);
-    assert_eq!(f64::from(feclso4), 24.776);
-    assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
-    assert_eq!(f64::from(electricity_mix), 202.345_416);
-    assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
-    assert_eq!(f64::from(direct_emissions), 1389.4365000000016);
-    assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(total_emissions), 2022.0099056000017);
-    assert_eq!(f64::from(emission_factors.n2o), 0.001_253_278_688_524_597_2);
+    let CalculatedEmissionFactors {
+        n2o,
+        ch4,
+    } = emission_factors;
+
+    //create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
+    assert_eq!(f64::from(n2o), 0.004750531914893612);
+    assert_eq!(f64::from(ch4), 0.01);
+
+    //create_test_results_on_changes_co2_equivalents(co2_equivalents);
+    assert_eq!(f64::from(n2o_plant), 409.04973573749953);
+    assert_eq!(f64::from(n2o_water), 72.2283544125);
+    assert_eq!(f64::from(n2o_emissions), 481.2780901499995);
+    assert_eq!(f64::from(ch4_plant), 28.665909999999997);
+    assert_eq!(f64::from(ch4_sludge_storage_containers), 104.62872000000002);
+    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
+    assert_eq!(f64::from(ch4_water), 25.38675594);
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 52.31436000000001);
+    assert_eq!(f64::from(ch4_emissions), 347.38675594000006);
+    assert_eq!(f64::from(fecl3), 122.64750000000001);
+    assert_eq!(f64::from(feclso4), 0.0);
+    assert_eq!(f64::from(caoh2), 0.0);
+    assert_eq!(f64::from(synthetic_polymers), 26.400000000000002);
+    assert_eq!(f64::from(electricity_mix), 359.1);
+    assert_eq!(f64::from(oil_emissions), 0.0);
+    assert_eq!(f64::from(gas_emissions), 0.0);
+    assert_eq!(f64::from(operating_materials), 149.0475);
+    assert_eq!(f64::from(sewage_sludge_transport), 23.981175);
+    assert_eq!(f64::from(total_emissions), 1360.7935210899996);
+    assert_eq!(f64::from(direct_emissions), 828.6648460899996);
+    assert_eq!(f64::from(process_energy_savings), 0.0);
+    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
+    assert_eq!(f64::from(wind_expansion_savings), 0.0);
+    assert_eq!(f64::from(water_expansion_savings), 0.0);
+    assert_eq!(f64::from(district_heating_savings), 0.0);
+    assert_eq!(f64::from(fossil_energy_savings), 0.0);
+    assert_eq!(f64::from(indirect_emissions), 359.1);
+    assert_eq!(f64::from(other_indirect_emissions), 173.02867500000002);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(f64::from(n2o_side_stream), 0.0);
+    assert_eq!(f64::from(fossil_emissions), 0.0);
+
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_619_999_999_99
+        78.47154
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -155,69 +261,13 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        392.35769999999997
+        130.78590000000003
     );
 }
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_optimistic() {
-    let profile = EmissionInfluencingValues {
-        population_equivalent: 120_000.0,
-        wastewater: Qubicmeters::new(5_000_000.0),
-        influent_average: AnnualAverageInfluent {
-            nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
-            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
-        },
-        effluent_average: AnnualAverageEffluent {
-            nitrogen: MilligramsPerLiter::new(11.76),
-            chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-        },
-        energy_consumption: EnergyConsumption {
-            sewage_gas_produced: Qubicmeters::new(1_260_000.0),
-            methane_fraction: Percent::new(62.0),
-            total_power_consumption: Kilowatthours::new(2_683_259.0),
-            on_site_power_generation: Kilowatthours::new(2_250_897.0),
-            emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Liters::new(0.0),
-            gas_supply: Qubicmeters::new(0.0),
-            purchase_of_biogas: false,
-        },
-        sewage_sludge_treatment: SewageSludgeTreatment {
-            sludge_bags_are_open: true,
-            sludge_bags_factor: None,
-            sludge_storage_containers_are_open: true,
-            sludge_storage_containers_factor: None,
-            sewage_sludge_for_disposal: Tons::new(3687.6),
-            transport_distance: Kilometers::new(47.0),
-            digester_count: None,
-        },
-        operating_materials: OperatingMaterials {
-            fecl3: Tons::new(0.0),
-            feclso4: Tons::new(326.0),
-            caoh2: Tons::new(326.26),
-            synthetic_polymers: Tons::new(23.62),
-        },
-        emission_factors: EmissionFactors {
-            co2_fossil: Factor::new(0.0),
-            n2o_side_stream: Factor::new(0.0),
-        },
-        side_stream_treatment: SideStreamTreatment {
-            total_nitrogen: Tons::new(0.0),
-            side_stream_cover_is_open: true,
-        },
-        energy_emission_factors: EnergyEmissionFactors {
-            process_energy_savings: Percent::new(0.0),
-            fossil_energy_savings: Percent::new(0.0),
-            district_heating: Kilowatthours::new(0.0),
-            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_photovoltaic_usage: Percent::new(0.0),
-            wind_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_wind_energy_usage: Percent::new(0.0),
-            water_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_water_energy_usage: Percent::new(0.0),
-        },
-    };
+    let profile = example_values();
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::Optimistic,
@@ -245,55 +295,74 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
-        oil_emissions: _,
-        gas_emissions: _,
+        oil_emissions,
+        gas_emissions,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
-        process_energy_savings: _,
-        photovoltaic_expansion_savings: _,
-        wind_expansion_savings: _,
-        water_expansion_savings: _,
-        district_heating_savings: _,
-        fossil_energy_savings: _,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
-        n2o_side_stream: _,
-        fossil_emissions: _,
+        n2o_side_stream,
+        fossil_emissions,
     } = co2_equivalents;
 
-    assert_eq!(f64::from(n2o_plant), 785.07);
-    assert_eq!(f64::from(n2o_water), 126.126);
-    assert_eq!(f64::from(n2o_emissions), 911.196);
-    assert_eq!(f64::from(ch4_plant), 301.9707599999999);
-    assert_eq!(f64::from(ch4_sludge_storage_containers), 313.88616);
-    assert_eq!(f64::from(ch4_sludge_bags), 0.0);
-    assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_emissions), 935.3399999999999);
-    assert_eq!(f64::from(fecl3), 0.0);
-    assert_eq!(f64::from(feclso4), 24.776);
-    assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
-    assert_eq!(f64::from(electricity_mix), 202.345_416);
-    assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
-    assert_eq!(f64::from(direct_emissions), 1846.536);
-    assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(total_emissions), 2479.1094056);
-    assert_eq!(f64::from(emission_factors.n2o), 0.003);
-    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+    let CalculatedEmissionFactors {
+        n2o,
+        ch4,
+    } = emission_factors;
 
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    //create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
+    assert_eq!(f64::from(n2o), 0.003);
+    assert_eq!(f64::from(ch4), 0.01);
+
+    //create_test_results_on_changes_co2_equivalents(co2_equivalents);
+    assert_eq!(f64::from(n2o_plant), 258.3182745);
+    assert_eq!(f64::from(n2o_water), 72.2283544125);
+    assert_eq!(f64::from(n2o_emissions), 330.54662891249995);
+    assert_eq!(f64::from(ch4_plant), 28.665909999999997);
+    assert_eq!(f64::from(ch4_sludge_storage_containers), 104.62872000000002);
+    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
+    assert_eq!(f64::from(ch4_water), 25.38675594);
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 52.31436000000001);
+    assert_eq!(f64::from(ch4_emissions), 347.38675594000006);
+    assert_eq!(f64::from(fecl3), 122.64750000000001);
+    assert_eq!(f64::from(feclso4), 0.0);
+    assert_eq!(f64::from(caoh2), 0.0);
+    assert_eq!(f64::from(synthetic_polymers), 26.400000000000002);
+    assert_eq!(f64::from(electricity_mix), 359.1);
+    assert_eq!(f64::from(oil_emissions), 0.0);
+    assert_eq!(f64::from(gas_emissions), 0.0);
+    assert_eq!(f64::from(operating_materials), 149.0475);
+    assert_eq!(f64::from(sewage_sludge_transport), 23.981175);
+    assert_eq!(f64::from(total_emissions), 1210.0620598525002);
+    assert_eq!(f64::from(direct_emissions), 677.9333848525);
+    assert_eq!(f64::from(process_energy_savings), 0.0);
+    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
+    assert_eq!(f64::from(wind_expansion_savings), 0.0);
+    assert_eq!(f64::from(water_expansion_savings), 0.0);
+    assert_eq!(f64::from(district_heating_savings), 0.0);
+    assert_eq!(f64::from(fossil_energy_savings), 0.0);
+    assert_eq!(f64::from(indirect_emissions), 359.1);
+    assert_eq!(f64::from(other_indirect_emissions), 173.02867500000002);
+    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+    assert_eq!(f64::from(n2o_side_stream), 0.0);
+    assert_eq!(f64::from(fossil_emissions), 0.0);
+
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_619_999_999_99
+        78.47154
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -301,69 +370,13 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        392.357_699_999_999_97
+        130.78590000000003
     );
 }
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_pesimistic() {
-    let profile = EmissionInfluencingValues {
-        population_equivalent: 120_000.0,
-        wastewater: Qubicmeters::new(5_000_000.0),
-        influent_average: AnnualAverageInfluent {
-            nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
-        },
-        effluent_average: AnnualAverageEffluent {
-            nitrogen: MilligramsPerLiter::new(11.76),
-            chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-        },
-        energy_consumption: EnergyConsumption {
-            sewage_gas_produced: Qubicmeters::new(1_260_000.0),
-            methane_fraction: Percent::new(62.0),
-            total_power_consumption: Kilowatthours::new(2_683_259.0),
-            on_site_power_generation: Kilowatthours::new(2_250_897.0),
-            emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Liters::new(0.0),
-            gas_supply: Qubicmeters::new(0.0),
-            purchase_of_biogas: false,
-        },
-        sewage_sludge_treatment: SewageSludgeTreatment {
-            sludge_bags_are_open: true,
-            sludge_bags_factor: None,
-            sludge_storage_containers_are_open: true,
-            sludge_storage_containers_factor: None,
-            sewage_sludge_for_disposal: Tons::new(3687.6),
-            transport_distance: Kilometers::new(47.0),
-            digester_count: None,
-        },
-        operating_materials: OperatingMaterials {
-            fecl3: Tons::new(0.0),
-            feclso4: Tons::new(326.0),
-            caoh2: Tons::new(326.26),
-            synthetic_polymers: Tons::new(23.62),
-        },
-        emission_factors: EmissionFactors {
-            co2_fossil: Factor::new(0.0),
-            n2o_side_stream: Factor::new(0.0),
-        },
-        side_stream_treatment: SideStreamTreatment {
-            total_nitrogen: Tons::new(0.0),
-            side_stream_cover_is_open: true,
-        },
-        energy_emission_factors: EnergyEmissionFactors {
-            process_energy_savings: Percent::new(0.0),
-            fossil_energy_savings: Percent::new(0.0),
-            district_heating: Kilowatthours::new(0.0),
-            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_photovoltaic_usage: Percent::new(0.0),
-            wind_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_wind_energy_usage: Percent::new(0.0),
-            water_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_water_energy_usage: Percent::new(0.0),
-        },
-    };
+    let profile = example_values();
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::Pesimistic,
@@ -391,55 +404,74 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
-        oil_emissions: _,
-        gas_emissions: _,
+        oil_emissions,
+        gas_emissions,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
-        process_energy_savings: _,
-        photovoltaic_expansion_savings: _,
-        wind_expansion_savings: _,
-        water_expansion_savings: _,
-        district_heating_savings: _,
-        fossil_energy_savings: _,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
-        n2o_side_stream: _,
-        fossil_emissions: _,
+        n2o_side_stream,
+        fossil_emissions,
     } = co2_equivalents;
 
-    assert_eq!(f64::from(n2o_plant), 2_093.52);
-    assert_eq!(f64::from(n2o_water), 126.126);
-    assert_eq!(f64::from(n2o_emissions), 2_219.646);
-    assert_eq!(f64::from(ch4_plant), 301.9707599999999);
-    assert_eq!(f64::from(ch4_sludge_storage_containers), 313.88616);
-    assert_eq!(f64::from(ch4_sludge_bags), 0.0);
-    assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_emissions), 935.3399999999999);
-    assert_eq!(f64::from(fecl3), 0.0);
-    assert_eq!(f64::from(feclso4), 24.776);
-    assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
-    assert_eq!(f64::from(electricity_mix), 202.345_416);
-    assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
-    assert_eq!(f64::from(direct_emissions), 3154.986);
-    assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(total_emissions), 3787.5594056);
-    assert_eq!(f64::from(emission_factors.n2o), 0.008);
-    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+    let CalculatedEmissionFactors {
+        n2o,
+        ch4,
+    } = emission_factors;
 
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
+    assert_eq!(f64::from(n2o), 0.008);
+    assert_eq!(f64::from(ch4), 0.01);
+
+    // create_test_results_on_changes_co2_equivalents(co2_equivalents);
+    assert_eq!(f64::from(n2o_plant), 688.848732);
+    assert_eq!(f64::from(n2o_water), 72.2283544125);
+    assert_eq!(f64::from(n2o_emissions), 761.0770864125001);
+    assert_eq!(f64::from(ch4_plant), 28.665909999999997);
+    assert_eq!(f64::from(ch4_sludge_storage_containers), 104.62872000000002);
+    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
+    assert_eq!(f64::from(ch4_water), 25.38675594);
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 52.31436000000001);
+    assert_eq!(f64::from(ch4_emissions), 347.38675594000006);
+    assert_eq!(f64::from(fecl3), 122.64750000000001);
+    assert_eq!(f64::from(feclso4), 0.0);
+    assert_eq!(f64::from(caoh2), 0.0);
+    assert_eq!(f64::from(synthetic_polymers), 26.400000000000002);
+    assert_eq!(f64::from(electricity_mix), 359.1);
+    assert_eq!(f64::from(oil_emissions), 0.0);
+    assert_eq!(f64::from(gas_emissions), 0.0);
+    assert_eq!(f64::from(operating_materials), 149.0475);
+    assert_eq!(f64::from(sewage_sludge_transport), 23.981175);
+    assert_eq!(f64::from(total_emissions), 1640.5925173525002);
+    assert_eq!(f64::from(direct_emissions), 1108.4638423525003);
+    assert_eq!(f64::from(process_energy_savings), 0.0);
+    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
+    assert_eq!(f64::from(wind_expansion_savings), 0.0);
+    assert_eq!(f64::from(water_expansion_savings), 0.0);
+    assert_eq!(f64::from(district_heating_savings), 0.0);
+    assert_eq!(f64::from(fossil_energy_savings), 0.0);
+    assert_eq!(f64::from(indirect_emissions), 359.1);
+    assert_eq!(f64::from(other_indirect_emissions), 173.02867500000002);
+    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+    assert_eq!(f64::from(n2o_side_stream), 0.0);
+    assert_eq!(f64::from(fossil_emissions), 0.0);
+
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_619_999_999_99
+        78.47154
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -447,69 +479,13 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        392.357_699_999_999_97
+        130.78590000000003
     );
 }
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_ipcc2019() {
-    let profile = EmissionInfluencingValues {
-        population_equivalent: 120_000.0,
-        wastewater: Qubicmeters::new(5_000_000.0),
-        influent_average: AnnualAverageInfluent {
-            nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
-            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
-        },
-        effluent_average: AnnualAverageEffluent {
-            nitrogen: MilligramsPerLiter::new(11.76),
-            chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-        },
-        energy_consumption: EnergyConsumption {
-            sewage_gas_produced: Qubicmeters::new(1_260_000.0),
-            methane_fraction: Percent::new(62.0),
-            total_power_consumption: Kilowatthours::new(2_683_259.0),
-            on_site_power_generation: Kilowatthours::new(2_250_897.0),
-            emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Liters::new(0.0),
-            gas_supply: Qubicmeters::new(0.0),
-            purchase_of_biogas: false,
-        },
-        sewage_sludge_treatment: SewageSludgeTreatment {
-            sludge_bags_are_open: true,
-            sludge_bags_factor: None,
-            sludge_storage_containers_are_open: true,
-            sludge_storage_containers_factor: None,
-            sewage_sludge_for_disposal: Tons::new(3687.6),
-            transport_distance: Kilometers::new(47.0),
-            digester_count: None,
-        },
-        operating_materials: OperatingMaterials {
-            fecl3: Tons::new(0.0),
-            feclso4: Tons::new(326.0),
-            caoh2: Tons::new(326.26),
-            synthetic_polymers: Tons::new(23.62),
-        },
-        emission_factors: EmissionFactors {
-            co2_fossil: Factor::new(0.0),
-            n2o_side_stream: Factor::new(0.0),
-        },
-        side_stream_treatment: SideStreamTreatment {
-            total_nitrogen: Tons::new(0.0),
-            side_stream_cover_is_open: true,
-        },
-        energy_emission_factors: EnergyEmissionFactors {
-            process_energy_savings: Percent::new(0.0),
-            fossil_energy_savings: Percent::new(0.0),
-            district_heating: Kilowatthours::new(0.0),
-            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_photovoltaic_usage: Percent::new(0.0),
-            wind_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_wind_energy_usage: Percent::new(0.0),
-            water_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_water_energy_usage: Percent::new(0.0),
-        },
-    };
+    let profile = example_values();
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::Ipcc2019,
@@ -521,6 +497,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         emission_factors,
         ..
     } = calculate_emissions(profile, scenario);
+
 
     let CO2Equivalents {
         n2o_plant,
@@ -537,54 +514,74 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
-        oil_emissions: _,
-        gas_emissions: _,
+        oil_emissions,
+        gas_emissions,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
-        process_energy_savings: _,
-        photovoltaic_expansion_savings: _,
-        wind_expansion_savings: _,
-        water_expansion_savings: _,
-        district_heating_savings: _,
-        fossil_energy_savings: _,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
-        n2o_side_stream: _,
-        fossil_emissions: _,
+        n2o_side_stream,
+        fossil_emissions,
     } = co2_equivalents;
 
-    assert_eq!(f64::from(n2o_plant), 4_187.04);
-    assert_eq!(f64::from(n2o_water), 126.126);
-    assert_eq!(f64::from(n2o_emissions), 4_313.166);
-    assert_eq!(f64::from(ch4_plant), 301.9707599999999);
-    assert_eq!(f64::from(ch4_sludge_storage_containers), 313.88616);
-    assert_eq!(f64::from(ch4_sludge_bags), 0.0);
-    assert_eq!(f64::from(ch4_water), 162.54);
-    assert_eq!(f64::from(ch4_emissions), 935.3399999999999);
-    assert_eq!(f64::from(fecl3), 0.0);
-    assert_eq!(f64::from(feclso4), 24.776);
-    assert_eq!(f64::from(caoh2), 344.302_177_999_999_97);
-    assert_eq!(f64::from(synthetic_polymers.round(3)), 51.964);
-    assert_eq!(f64::from(electricity_mix), 202.345_416);
-    assert_eq!(f64::from(operating_materials), 421.042_178);
-    assert_eq!(f64::from(sewage_sludge_transport), 9.1858116);
-    assert_eq!(f64::from(direct_emissions), 5248.506);
-    assert_eq!(f64::from(indirect_emissions), 202.345_416);
-    assert_eq!(f64::from(other_indirect_emissions), 430.2279896);
-    assert_eq!(f64::from(total_emissions), 5881.0794056);
-    assert_eq!(f64::from(emission_factors.n2o), 0.016);
+    let CalculatedEmissionFactors {
+        n2o,
+        ch4,
+    } = emission_factors;
+
+    // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
+    assert_eq!(f64::from(n2o), 0.016);
+    assert_eq!(f64::from(ch4), 0.01);
+
+    // create_test_results_on_changes_co2_equivalents(co2_equivalents);
+    assert_eq!(f64::from(n2o_plant), 1377.697464);
+    assert_eq!(f64::from(n2o_water), 72.2283544125);
+    assert_eq!(f64::from(n2o_emissions), 1449.9258184125001);
+    assert_eq!(f64::from(ch4_plant), 28.665909999999997);
+    assert_eq!(f64::from(ch4_sludge_storage_containers), 104.62872000000002);
+    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
+    assert_eq!(f64::from(ch4_water), 25.38675594);
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 52.31436000000001);
+    assert_eq!(f64::from(ch4_emissions), 347.38675594000006);
+    assert_eq!(f64::from(fecl3), 122.64750000000001);
+    assert_eq!(f64::from(feclso4), 0.0);
+    assert_eq!(f64::from(caoh2), 0.0);
+    assert_eq!(f64::from(synthetic_polymers), 26.400000000000002);
+    assert_eq!(f64::from(electricity_mix), 359.1);
+    assert_eq!(f64::from(oil_emissions), 0.0);
+    assert_eq!(f64::from(gas_emissions), 0.0);
+    assert_eq!(f64::from(operating_materials), 149.0475);
+    assert_eq!(f64::from(sewage_sludge_transport), 23.981175);
+    assert_eq!(f64::from(total_emissions), 2329.4412493525);
+    assert_eq!(f64::from(direct_emissions), 1797.3125743525002);
+    assert_eq!(f64::from(process_energy_savings), 0.0);
+    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
+    assert_eq!(f64::from(wind_expansion_savings), 0.0);
+    assert_eq!(f64::from(water_expansion_savings), 0.0);
+    assert_eq!(f64::from(district_heating_savings), 0.0);
+    assert_eq!(f64::from(fossil_energy_savings), 0.0);
+    assert_eq!(f64::from(indirect_emissions), 359.1);
+    assert_eq!(f64::from(other_indirect_emissions), 173.02867500000002);
     assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
-    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 156.943_08); // MicroGasTurbines
+    assert_eq!(f64::from(n2o_side_stream), 0.0);
+    assert_eq!(f64::from(fossil_emissions), 0.0);
+
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_619_999_999_99
+        78.47154
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -592,69 +589,13 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        392.357_699_999_999_97
+        130.78590000000003
     );
 }
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_custom_factor() {
-    let profile = EmissionInfluencingValues {
-        population_equivalent: 120_000.0,
-        wastewater: Qubicmeters::new(5_000_000.0),
-        influent_average: AnnualAverageInfluent {
-            nitrogen: MilligramsPerLiter::new(122.0),
-            chemical_oxygen_demand: MilligramsPerLiter::new(0.0),
-            total_organic_carbohydrates: MilligramsPerLiter::new(0.0),
-        },
-        effluent_average: AnnualAverageEffluent {
-            nitrogen: MilligramsPerLiter::new(11.76),
-            chemical_oxygen_demand: MilligramsPerLiter::new(129.0),
-        },
-        energy_consumption: EnergyConsumption {
-            sewage_gas_produced: Qubicmeters::new(1_260_000.0),
-            methane_fraction: Percent::new(62.0),
-            total_power_consumption: Kilowatthours::new(2_683_259.0),
-            on_site_power_generation: Kilowatthours::new(2_250_897.0),
-            emission_factor_electricity_mix: GramsPerKilowatthour::new(468.0),
-            heating_oil: Liters::new(0.0),
-            gas_supply: Qubicmeters::new(0.0),
-            purchase_of_biogas: false,
-        },
-        sewage_sludge_treatment: SewageSludgeTreatment {
-            sludge_bags_are_open: true,
-            sludge_bags_factor: None,
-            sludge_storage_containers_are_open: true,
-            sludge_storage_containers_factor: None,
-            sewage_sludge_for_disposal: Tons::new(3687.6),
-            transport_distance: Kilometers::new(47.0),
-            digester_count: None,
-        },
-        operating_materials: OperatingMaterials {
-            fecl3: Tons::new(0.0),
-            feclso4: Tons::new(326.0),
-            caoh2: Tons::new(326.26),
-            synthetic_polymers: Tons::new(23.62),
-        },
-        emission_factors: EmissionFactors {
-            co2_fossil: Factor::new(0.0),
-            n2o_side_stream: Factor::new(0.0),
-        },
-        side_stream_treatment: SideStreamTreatment {
-            total_nitrogen: Tons::new(0.0),
-            side_stream_cover_is_open: true,
-        },
-        energy_emission_factors: EnergyEmissionFactors {
-            process_energy_savings: Percent::new(0.0),
-            fossil_energy_savings: Percent::new(0.0),
-            district_heating: Kilowatthours::new(0.0),
-            photovoltaic_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_photovoltaic_usage: Percent::new(0.0),
-            wind_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_wind_energy_usage: Percent::new(0.0),
-            water_energy_expansion: Kilowatthours::new(0.0),
-            estimated_self_water_energy_usage: Percent::new(0.0),
-        },
-    };
+    let profile = example_values();
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::Custom(Factor::new(1.0 / 100.0)),
@@ -682,65 +623,74 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         caoh2,
         synthetic_polymers,
         electricity_mix,
-        oil_emissions: _,
-        gas_emissions: _,
+        oil_emissions,
+        gas_emissions,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
         direct_emissions,
-        process_energy_savings: _,
-        photovoltaic_expansion_savings: _,
-        wind_expansion_savings: _,
-        water_expansion_savings: _,
-        district_heating_savings: _,
-        fossil_energy_savings: _,
+        process_energy_savings,
+        photovoltaic_expansion_savings,
+        wind_expansion_savings,
+        water_expansion_savings,
+        district_heating_savings,
+        fossil_energy_savings,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,
-        n2o_side_stream: _,
-        fossil_emissions: _,
+        n2o_side_stream,
+        fossil_emissions,
     } = co2_equivalents;
 
-    const PRECISION: usize = 3;
+    let CalculatedEmissionFactors {
+        n2o,
+        ch4,
+    } = emission_factors;
 
-    assert_eq!(n2o_plant.round(PRECISION), Tons::new(2_616.9));
-    assert_eq!(n2o_water.round(PRECISION), Tons::new(126.126));
-    assert_eq!(n2o_emissions.round(PRECISION), Tons::new(2_743.026));
-    assert_eq!(ch4_plant.round(PRECISION), Tons::new(301.971));
-    assert_eq!(
-        ch4_sludge_storage_containers.round(PRECISION),
-        Tons::new(313.886)
-    );
-    assert_eq!(ch4_sludge_bags.round(PRECISION), Tons::zero());
-    assert_eq!(ch4_water.round(PRECISION), Tons::new(162.54));
-    assert_eq!(f64::from(ch4_emissions), 935.3399999999999);
-    assert_eq!(fecl3.round(PRECISION), Tons::zero());
-    assert_eq!(feclso4.round(PRECISION), Tons::new(24.776));
-    assert_eq!(caoh2.round(PRECISION), Tons::new(344.302));
-    assert_eq!(synthetic_polymers.round(PRECISION), Tons::new(51.964));
-    assert_eq!(electricity_mix.round(PRECISION), Tons::new(202.345));
-    assert_eq!(operating_materials.round(PRECISION), Tons::new(421.042));
-    assert_eq!(sewage_sludge_transport.round(PRECISION), Tons::new(9.186));
-    assert_eq!(direct_emissions.round(PRECISION), Tons::new(3678.366));
-    assert_eq!(indirect_emissions.round(PRECISION), Tons::new(202.345));
-    assert_eq!(
-        other_indirect_emissions.round(PRECISION),
-        Tons::new(430.228)
-    );
-    assert_eq!(total_emissions.round(PRECISION), Tons::new(4310.939));
-    assert_eq!(emission_factors.n2o.round(PRECISION), Factor::new(0.01));
-    assert_eq!(excess_energy_co2_equivalent.round(PRECISION), Tons::zero());
-    assert_eq!(
-        ch4_combined_heat_and_power_plant.round(PRECISION),
-        Tons::new(156.943)
-    ); // MicroGasTurbines
+    // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
+    assert_eq!(f64::from(n2o), 0.01);
+    assert_eq!(f64::from(ch4), 0.01);
+
+    // create_test_results_on_changes_co2_equivalents(co2_equivalents);
+    assert_eq!(f64::from(n2o_plant), 861.060915);
+    assert_eq!(f64::from(n2o_water), 72.2283544125);
+    assert_eq!(f64::from(n2o_emissions), 933.2892694125001);
+    assert_eq!(f64::from(ch4_plant), 28.665909999999997);
+    assert_eq!(f64::from(ch4_sludge_storage_containers), 104.62872000000002);
+    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
+    assert_eq!(f64::from(ch4_water), 25.38675594);
+    assert_eq!(f64::from(ch4_combined_heat_and_power_plant), 52.31436000000001);
+    assert_eq!(f64::from(ch4_emissions), 347.38675594000006);
+    assert_eq!(f64::from(fecl3), 122.64750000000001);
+    assert_eq!(f64::from(feclso4), 0.0);
+    assert_eq!(f64::from(caoh2), 0.0);
+    assert_eq!(f64::from(synthetic_polymers), 26.400000000000002);
+    assert_eq!(f64::from(electricity_mix), 359.1);
+    assert_eq!(f64::from(oil_emissions), 0.0);
+    assert_eq!(f64::from(gas_emissions), 0.0);
+    assert_eq!(f64::from(operating_materials), 149.0475);
+    assert_eq!(f64::from(sewage_sludge_transport), 23.981175);
+    assert_eq!(f64::from(total_emissions), 1812.8047003525003);
+    assert_eq!(f64::from(direct_emissions), 1280.6760253525001);
+    assert_eq!(f64::from(process_energy_savings), 0.0);
+    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
+    assert_eq!(f64::from(wind_expansion_savings), 0.0);
+    assert_eq!(f64::from(water_expansion_savings), 0.0);
+    assert_eq!(f64::from(district_heating_savings), 0.0);
+    assert_eq!(f64::from(fossil_energy_savings), 0.0);
+    assert_eq!(f64::from(indirect_emissions), 359.1);
+    assert_eq!(f64::from(other_indirect_emissions), 173.02867500000002);
+    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
+    assert_eq!(f64::from(n2o_side_stream), 0.0);
+    assert_eq!(f64::from(fossil_emissions), 0.0);
+
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        235.414_619_999_999_99
+        78.47154
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -748,7 +698,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
             profile.clone(),
             Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        392.357_699_999_999_97
+        130.78590000000003
     );
 }
 
