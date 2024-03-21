@@ -103,7 +103,7 @@ pub fn Recommendations(
             .map(|data| {
                 view! {
                   <FormDataOverview
-                    calculation_input_output = data
+                    evaluation_data = data
                   />
                 }
             })

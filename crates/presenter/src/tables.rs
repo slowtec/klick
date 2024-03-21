@@ -2,6 +2,8 @@ use serde::Serialize;
 
 use klick_boundary::{PlantProfile, SensitivityParameters};
 use klick_domain as domain;
+use klick_domain::units::Percent;
+use klick_domain::units::Ratio;
 
 use crate::{
     AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, Lng,
@@ -255,8 +257,7 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
 pub fn sensitivity_parameters_as_table(
     parameters: &SensitivityParameters,
     unit: UnitFormatting,
-    n2o_emission_factor: String,
-    ch4_chp_emission_factor: String,
+    o: &domain::EmissionsCalculationOutcome,
 ) -> Table {
     let SensitivityParameters {
         n2o_emissions,
@@ -266,6 +267,13 @@ pub fn sensitivity_parameters_as_table(
     } = parameters;
 
     let lang = Lng::De;
+
+    let n2o_emission_factor: String = lang.format_number_with_precision(
+        f64::from(o.emission_factors.n2o.convert_to::<Percent>()),
+        3,
+    );
+    let ch4_chp_emission_factor: String =
+        lang.format_number(f64::from(o.emission_factors.ch4.convert_to::<Percent>()));
 
     let sections = vec![
         TableSection {
