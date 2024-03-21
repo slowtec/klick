@@ -33,6 +33,23 @@ pub fn options(
         })
     });
 
+    let show_dialog = Signal::derive(move || {
+        let digester_count = form_data.with(|d| {
+            d.plant_profile
+                .sewage_sludge_treatment
+                .digester_count
+                .unwrap_or(0)
+        });
+        let sewage_gas_produced = form_data.with(|d| {
+            d.plant_profile
+                .energy_consumption
+                .sewage_gas_produced
+                .unwrap_or(0.0)
+        });
+        (show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get())
+            && (sewage_gas_produced > 0.0 || digester_count > 0)
+    });
+
     // -----   ----- //
     //    Fields     //
     // -----   ----- //
@@ -48,7 +65,7 @@ pub fn options(
     // -----   ----- //
 
     view! {
-      <div class = move || { if show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get() { None } else { Some("hidden") } }>
+      <div class = move || { if show_dialog.get() { None } else { Some("hidden") } }>
       <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-yellow">
         <p>
           "Das Schließen von Schlammtaschen an Faultürmen und der Schlammlager wirkt sich durch die Eindämmung von Methanschlupfen positiv auf die Klimabilanz von Kläranlagen aus. Dies können Sie über die nachfolgenden Checkboxen bilanzieren."
