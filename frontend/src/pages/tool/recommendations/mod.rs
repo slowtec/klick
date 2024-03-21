@@ -57,20 +57,6 @@ pub fn Recommendations(
                     percentage: Some(ch4_plant / f64::from(new.total_emissions) * 100.0),
                 });
 
-                let bhkwy = f64::from(diff.ch4_combined_heat_and_power_plant);
-                comp.push(klick_app_charts::BarChartArguments {
-                    label: "CH₄ BHKW",
-                    value: bhkwy,
-                    percentage: Some(bhkwy / f64::from(new.total_emissions) * 100.0),
-                });
-
-                // let excessy = -1.0 * f64::from(new.excess_energy_co2_equivalent);
-                // comp.push(klick_app_charts::BarChartArguments {
-                //     label: "Strombedarf",
-                //     value: excessy,
-                //     percentage: Some(excessy / f64::from(new.total_emissions) * 100.0),
-                // });
-
                 let neb_stromi = f64::from(diff.n2o_side_stream);
                 comp.push(klick_app_charts::BarChartArguments {
                     label: "N₂O Prozesswasserbehandlung",
@@ -84,13 +70,6 @@ pub fn Recommendations(
                     value: emissionsy,
                     percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
                 });
-
-                //if missing_fields.get().len() > 0 {
-                //    log::info!("NOT computing final output data, missing fields");
-                //    show_handlungsempfehlungen.set(false);
-                //} else {
-                //    show_handlungsempfehlungen.set(true);
-                //}
 
                 comp
             })

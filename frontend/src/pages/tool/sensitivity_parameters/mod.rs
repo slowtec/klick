@@ -6,6 +6,7 @@ use crate::{
     pages::tool::{CalculationOutcome, DataCollectionEnforcementHelper, PageSection},
     sankey::Sankey,
 };
+use klick_app_charts::BarChart;
 
 mod ch4_emissions_chp;
 mod ch4_emissions_open_digesters;
@@ -25,6 +26,82 @@ pub fn SensitivityParameters(
     outcome: Signal<Option<CalculationOutcome>>,
     show_side_stream_controls: Signal<bool>,
 ) -> impl IntoView {
+    let barchart_arguments = create_memo(move |_| {
+        outcome.with(|out| {
+            out.as_ref().map(|out| {
+                let old = out.profile.output.co2_equivalents.clone();
+                let new = out.sensitivity.output.co2_equivalents.clone();
+                let diff = new.clone() - old;
+
+                let mut comp = vec![];
+
+                let n2oy = f64::from(diff.n2o_emissions);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "N₂O Emissionen",
+                    value: n2oy,
+                    percentage: Some(n2oy / f64::from(new.total_emissions) * 100.0),
+                });
+
+                let sludgy = f64::from(diff.ch4_sludge_bags);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "CH₄ Schlammtasche",
+                    value: sludgy,
+                    percentage: Some(sludgy / f64::from(new.total_emissions) * 100.0),
+                });
+
+                let schlammy = f64::from(diff.ch4_sludge_storage_containers);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "CH₄ Schlammlagerung",
+                    value: schlammy,
+                    percentage: Some(schlammy / f64::from(new.total_emissions) * 100.0),
+                });
+
+                let ch4_plant = f64::from(diff.ch4_plant);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "CH₄ Anlage (unspez.)",
+                    value: ch4_plant,
+                    percentage: Some(ch4_plant / f64::from(new.total_emissions) * 100.0),
+                });
+
+                let bhkwy = f64::from(diff.ch4_combined_heat_and_power_plant);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "CH₄ BHKW",
+                    value: bhkwy,
+                    percentage: Some(bhkwy / f64::from(new.total_emissions) * 100.0),
+                });
+
+                let fossily = f64::from(diff.fossil_emissions);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "Fossile CO₂",
+                    value: fossily,
+                    percentage: Some(fossily / f64::from(new.total_emissions) * 100.0),
+                });
+
+                let neb_stromi = f64::from(diff.n2o_side_stream);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "N₂O Prozesswasser",
+                    value: neb_stromi,
+                    percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
+                });
+
+                let emissionsy = f64::from(diff.total_emissions);
+                comp.push(klick_app_charts::BarChartArguments {
+                    label: "Emissionen",
+                    value: emissionsy,
+                    percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
+                });
+
+                //if missing_fields.get().len() > 0 {
+                //    log::info!("NOT computing final output data, missing fields");
+                //    show_handlungsempfehlungen.set(false);
+                //} else {
+                //    show_handlungsempfehlungen.set(true);
+                //}
+
+                comp
+            })
+        })
+    });
     view! {
       <Show
         when = move || outcome.with(|o|o.is_some())
@@ -89,6 +166,45 @@ pub fn SensitivityParameters(
         >
           "zur den Handlungsempfehlungen"
         </button>
+        <div
+        class = move || {
+          if barchart_arguments.with(|args|args.as_ref().map(|args|args.iter().any(|x| f64::abs(x.value) > 0.1))).unwrap_or(false) {
+              None
+          } else {
+              Some("hidden")
+          }
+        }
+      >
+        <div class="mx-auto p-8" >
+          <h3 class="text-xl font-semibold leading-6 text-gray-900">
+            "Änderungen durch Angaben der Sensitivität"
+          </h3>
+          <p class="mt-2 max-w-4xl text-lg text-gray-500">
+            "Das folgende Diagramm zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. die [%]-Änderung der Gesamtemissionen durch die ausgewählten Emissionsfaktoren."
+          </p>
+          { move || {
+              barchart_arguments.with(|args|args.as_ref().map(|arguments|{
+                  let barchart_arguments_filtered = arguments
+                    .iter()
+                    .filter_map(|x| {
+                        if f64::abs(x.value) > 0.1 {
+                            Some(x.clone())
+                        } else {
+                            None
+                        }
+                    }).collect();
+                  view! {
+                  <BarChart
+                      width = 1100.0
+                      height = 400.0
+                      data=barchart_arguments_filtered
+                  />
+                  }
+              }))
+            }
+          }
+        </div>
+      </div>
       </Show>
     }
 }
