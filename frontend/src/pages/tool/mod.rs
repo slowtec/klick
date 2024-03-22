@@ -3,15 +3,14 @@ use leptos::*;
 
 use klick_app_components::message::*;
 use klick_boundary::{
-    export_to_vec_pretty, import_from_slice, Data, FormData, Project, ProjectId, SavedProject,
+    calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, Data, FormData,
+    Project, ProjectId, SavedProject,
 };
 use klick_presenter as presenter;
 
 use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
 
 mod breadcrumbs;
-mod calculation;
-mod default_values;
 mod example_data;
 mod form_data_overview;
 mod plant_profile;
@@ -21,13 +20,8 @@ mod sensitivity_parameters;
 mod widgets;
 
 use self::{
-    breadcrumbs::Breadcrumbs,
-    calculation::{calculate, CalculationOutcome},
-    plant_profile::DataCollection,
-    project_menu::ProjectMenu,
-    recommendations::Recommendations,
-    sensitivity_parameters::SensitivityParameters,
-    widgets::*,
+    breadcrumbs::Breadcrumbs, plant_profile::DataCollection, project_menu::ProjectMenu,
+    recommendations::Recommendations, sensitivity_parameters::SensitivityParameters, widgets::*,
 };
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -81,7 +75,8 @@ pub fn Tool(
         })
     });
 
-    let show_csv_export = Signal::derive(move || outcome.with(std::option::Option::is_some));
+    // TODO: allow to export at any time
+    let show_csv_export = Signal::derive(move || outcome.with(|out| out.profile.output.is_some()));
 
     // -----   ----- //
     //    Actions    //
@@ -239,11 +234,7 @@ pub fn Tool(
 
     let export_csv = {
         move |()| -> Option<ObjectUrl> {
-            let Some(data) = outcome.get() else {
-                log::warn!("No calculated data found to export");
-                return None;
-            };
-            let csv = presenter::calculation_outcome_as_csv(&data);
+            let csv = presenter::calculation_outcome_as_csv(&outcome.get());
             let blob = Blob::new_with_options(csv.as_bytes(), Some("text/csv"));
             Some(ObjectUrl::from(blob))
         }

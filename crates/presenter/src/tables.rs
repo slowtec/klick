@@ -12,13 +12,14 @@ use crate::{
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum UnitFormatting {
+pub enum Formatting {
     Text,
     LaTeX,
 }
 
-impl UnitFormatting {
-    fn fmt<V>(&self, v: V) -> Option<&'static str>
+impl Formatting {
+    // TODO: rename to fmt_unit
+    pub fn fmt<V>(&self, v: V) -> Option<&'static str>
     where
         V: ValueUnit,
     {
@@ -27,9 +28,18 @@ impl UnitFormatting {
             Self::LaTeX => v.unit_as_latex(),
         }
     }
+    pub fn fmt_label<L>(&self, id: L) -> &'static str
+    where
+        L: ValueLabel,
+    {
+        match self {
+            Self::Text => id.label(),
+            Self::LaTeX => id.label_latex(),
+        }
+    }
 }
 
-#[derive(Serialize)]
+#[derive(Default, Serialize)]
 pub struct Table {
     pub sections: Vec<TableSection>,
 }
@@ -41,7 +51,7 @@ pub struct TableSection {
 }
 
 #[must_use]
-pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> Table {
+pub fn plant_profile_as_table(profile: &PlantProfile, formatting: Formatting) -> Table {
     let PlantProfile {
         plant_name,
         population_equivalent,
@@ -64,17 +74,17 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
                 (
                     ProfileValueId::PlantName.label(),
                     plant_name.clone(),
-                    unit.fmt(ProfileValueId::PlantName),
+                    formatting.fmt(ProfileValueId::PlantName),
                 ),
                 (
                     ProfileValueId::PopulationEquivalent.label(),
                     population_equivalent.map(format_number_with_thousands_seperator(lang)),
-                    unit.fmt(ProfileValueId::PopulationEquivalent),
+                    formatting.fmt(ProfileValueId::PopulationEquivalent),
                 ),
                 (
                     ProfileValueId::Wastewater.label(),
                     wastewater.map(format_number_with_thousands_seperator(lang)),
-                    unit.fmt(ProfileValueId::Wastewater),
+                    formatting.fmt(ProfileValueId::Wastewater),
                 ),
             ],
         },
@@ -84,21 +94,21 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
                 (
                     AnnualAverageInfluentId::Nitrogen.label(),
                     influent_average.total_nitrogen.map(format_number(lang)),
-                    unit.fmt(AnnualAverageInfluentId::Nitrogen),
+                    formatting.fmt(AnnualAverageInfluentId::Nitrogen),
                 ),
                 (
                     AnnualAverageInfluentId::ChemicalOxygenDemand.label(),
                     influent_average
                         .chemical_oxygen_demand
                         .map(format_number(lang)),
-                    unit.fmt(AnnualAverageInfluentId::ChemicalOxygenDemand),
+                    formatting.fmt(AnnualAverageInfluentId::ChemicalOxygenDemand),
                 ),
                 (
                     AnnualAverageInfluentId::TotalOrganicCarbohydrates.label(),
                     influent_average
                         .total_organic_carbohydrates
                         .map(format_number(lang)),
-                    unit.fmt(AnnualAverageInfluentId::TotalOrganicCarbohydrates),
+                    formatting.fmt(AnnualAverageInfluentId::TotalOrganicCarbohydrates),
                 ),
             ],
         },
@@ -108,14 +118,14 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
                 (
                     AnnualAverageEffluentId::Nitrogen.label(),
                     effluent_average.total_nitrogen.map(format_number(lang)),
-                    unit.fmt(AnnualAverageEffluentId::Nitrogen),
+                    formatting.fmt(AnnualAverageEffluentId::Nitrogen),
                 ),
                 (
                     AnnualAverageEffluentId::ChemicalOxygenDemand.label(),
                     effluent_average
                         .chemical_oxygen_demand
                         .map(format_number(lang)),
-                    unit.fmt(AnnualAverageEffluentId::ChemicalOxygenDemand),
+                    formatting.fmt(AnnualAverageEffluentId::ChemicalOxygenDemand),
                 ),
             ],
         },
@@ -127,50 +137,50 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
                     energy_consumption
                         .total_power_consumption
                         .map(format_number_with_thousands_seperator(lang)),
-                    unit.fmt(EnergyConsumptionId::TotalPowerConsumption),
+                    formatting.fmt(EnergyConsumptionId::TotalPowerConsumption),
                 ),
                 (
                     EnergyConsumptionId::OnSitePowerGeneration.label(),
                     energy_consumption
                         .on_site_power_generation
                         .map(format_number_with_thousands_seperator(lang)),
-                    unit.fmt(EnergyConsumptionId::OnSitePowerGeneration),
+                    formatting.fmt(EnergyConsumptionId::OnSitePowerGeneration),
                 ),
                 (
                     EnergyConsumptionId::EmissionFactorElectricityMix.label(),
                     energy_consumption
                         .emission_factor_electricity_mix
                         .map(format_number(lang)),
-                    unit.fmt(EnergyConsumptionId::EmissionFactorElectricityMix),
+                    formatting.fmt(EnergyConsumptionId::EmissionFactorElectricityMix),
                 ),
                 (
                     EnergyConsumptionId::GasSupply.label(),
                     energy_consumption.gas_supply.map(format_number(lang)),
-                    unit.fmt(EnergyConsumptionId::GasSupply),
+                    formatting.fmt(EnergyConsumptionId::GasSupply),
                 ),
                 (
                     EnergyConsumptionId::PurchaseOfBiogas.label(),
                     energy_consumption.purchase_of_biogas.map(format_bool(lang)),
-                    unit.fmt(EnergyConsumptionId::PurchaseOfBiogas),
+                    formatting.fmt(EnergyConsumptionId::PurchaseOfBiogas),
                 ),
                 (
                     EnergyConsumptionId::HeatingOil.label(),
                     energy_consumption
                         .heating_oil
                         .map(format_number_with_thousands_seperator(lang)),
-                    unit.fmt(EnergyConsumptionId::HeatingOil),
+                    formatting.fmt(EnergyConsumptionId::HeatingOil),
                 ),
                 (
                     EnergyConsumptionId::SewageGasProduced.label(),
                     energy_consumption
                         .sewage_gas_produced
                         .map(format_number_with_thousands_seperator(lang)),
-                    unit.fmt(EnergyConsumptionId::SewageGasProduced),
+                    formatting.fmt(EnergyConsumptionId::SewageGasProduced),
                 ),
                 (
                     EnergyConsumptionId::MethaneFraction.label(),
                     energy_consumption.methane_fraction.map(format_number(lang)),
-                    unit.fmt(EnergyConsumptionId::MethaneFraction),
+                    formatting.fmt(EnergyConsumptionId::MethaneFraction),
                 ),
             ],
         },
@@ -182,35 +192,35 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
                     sewage_sludge_treatment
                         .digester_count
                         .map(|n| n.to_string()),
-                    unit.fmt(SewageSludgeTreatmentId::DigesterCount),
+                    formatting.fmt(SewageSludgeTreatmentId::DigesterCount),
                 ),
                 (
                     SewageSludgeTreatmentId::SewageSludgeForDisposal.label(),
                     sewage_sludge_treatment
                         .sewage_sludge_for_disposal
                         .map(format_number(lang)),
-                    unit.fmt(SewageSludgeTreatmentId::SewageSludgeForDisposal),
+                    formatting.fmt(SewageSludgeTreatmentId::SewageSludgeForDisposal),
                 ),
                 (
                     SewageSludgeTreatmentId::TransportDistance.label(),
                     sewage_sludge_treatment
                         .transport_distance
                         .map(format_number(lang)),
-                    unit.fmt(SewageSludgeTreatmentId::TransportDistance),
+                    formatting.fmt(SewageSludgeTreatmentId::TransportDistance),
                 ),
                 (
                     SewageSludgeTreatmentId::SludgeBags.label(),
                     sewage_sludge_treatment
                         .sludge_bags_are_closed
                         .map(format_bool(lang)),
-                    unit.fmt(SewageSludgeTreatmentId::SludgeBags),
+                    formatting.fmt(SewageSludgeTreatmentId::SludgeBags),
                 ),
                 (
                     SewageSludgeTreatmentId::SludgeStorageContainers.label(),
                     sewage_sludge_treatment
                         .sludge_storage_containers_are_closed
                         .map(format_bool(lang)),
-                    unit.fmt(SewageSludgeTreatmentId::SludgeStorageContainers),
+                    formatting.fmt(SewageSludgeTreatmentId::SludgeStorageContainers),
                 ),
             ],
         },
@@ -221,7 +231,7 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
                 side_stream_treatment
                     .total_nitrogen
                     .map(format_number(lang)),
-                unit.fmt(SideStreamTreatmentId::TotalNitrogen),
+                formatting.fmt(SideStreamTreatmentId::TotalNitrogen),
             )],
         },
         TableSection {
@@ -230,24 +240,24 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
                 (
                     OperatingMaterialId::FeCl3.label(),
                     operating_materials.fecl3.map(format_number(lang)),
-                    unit.fmt(OperatingMaterialId::FeCl3),
+                    formatting.fmt(OperatingMaterialId::FeCl3),
                 ),
                 (
                     OperatingMaterialId::FeClSO4.label(),
                     operating_materials.feclso4.map(format_number(lang)),
-                    unit.fmt(OperatingMaterialId::FeClSO4),
+                    formatting.fmt(OperatingMaterialId::FeClSO4),
                 ),
                 (
                     OperatingMaterialId::CaOH2.label(),
                     operating_materials.caoh2.map(format_number(lang)),
-                    unit.fmt(OperatingMaterialId::CaOH2),
+                    formatting.fmt(OperatingMaterialId::CaOH2),
                 ),
                 (
                     OperatingMaterialId::SyntheticPolymers.label(),
                     operating_materials
                         .synthetic_polymers
                         .map(format_number(lang)),
-                    unit.fmt(OperatingMaterialId::SyntheticPolymers),
+                    formatting.fmt(OperatingMaterialId::SyntheticPolymers),
                 ),
             ],
         },
@@ -258,8 +268,8 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
 #[must_use]
 pub fn sensitivity_parameters_as_table(
     parameters: &SensitivityParameters,
-    unit: UnitFormatting,
-    o: &domain::EmissionsCalculationOutcome,
+    formatting: Formatting,
+    output: Option<&domain::EmissionsCalculationOutcome>,
 ) -> Table {
     let SensitivityParameters {
         n2o_emissions,
@@ -270,34 +280,45 @@ pub fn sensitivity_parameters_as_table(
 
     let lang = Lng::De;
 
-    let n2o_emission_factor: String = lang
-        .format_number_with_precision(f64::from(o.emission_factors.n2o.convert_to::<Percent>()), 3);
-    let ch4_chp_emission_factor: String =
-        lang.format_number(f64::from(o.emission_factors.ch4.convert_to::<Percent>()));
+    let n2o_emission_factor = output.map(|output| {
+        lang.format_number_with_precision(
+            f64::from(output.emission_factors.n2o.convert_to::<Percent>()),
+            3,
+        )
+    });
+
+    let ch4_chp_emission_factor = output.map(|output| {
+        lang.format_number(f64::from(
+            output.emission_factors.ch4.convert_to::<Percent>(),
+        ))
+    });
 
     let sections = vec![
         TableSection {
             title: "Lachgasemissionen".to_string(),
             rows: vec![
                 (
-                    SensitivityParameterId::N2OCalculationMethod.label(),
+                    formatting.fmt_label(SensitivityParameterId::N2OCalculationMethod),
                     n2o_emissions
                         .calculation_method
                         .as_ref()
                         .map(|m| m.label().to_string()),
-                    unit.fmt(SensitivityParameterId::N2OCalculationMethod),
+                    formatting.fmt(SensitivityParameterId::N2OCalculationMethod),
                 ),
                 (
-                    "N₂O-EF",
-                    Some(n2o_emission_factor),
-                    unit.fmt(SensitivityParameterId::N2OCustomFactor),
+                    match formatting {
+                        Formatting::Text => "N₂O-EF",
+                        Formatting::LaTeX => "$N_2O$-EF",
+                    },
+                    n2o_emission_factor,
+                    formatting.fmt(SensitivityParameterId::N2OCustomFactor),
                 ),
                 (
-                    SensitivityParameterId::N2OSideStreamFactor.label(),
+                    formatting.fmt_label(SensitivityParameterId::N2OSideStreamFactor),
                     n2o_emissions
                         .side_stream_emission_factor
                         .map(format_number(lang)),
-                    unit.fmt(SensitivityParameterId::N2OSideStreamFactor),
+                    formatting.fmt(SensitivityParameterId::N2OSideStreamFactor),
                 ),
             ],
         },
@@ -305,17 +326,20 @@ pub fn sensitivity_parameters_as_table(
             title: "Methanemissionen aus Blockheizkraftwerken (BHKW)".to_string(),
             rows: vec![
                 (
-                    SensitivityParameterId::CH4ChpCalculationMethod.label(),
+                    formatting.fmt_label(SensitivityParameterId::CH4ChpCalculationMethod),
                     ch4_chp_emissions
                         .calculation_method
                         .as_ref()
                         .map(|m| m.label().to_string()),
-                    unit.fmt(SensitivityParameterId::CH4ChpCalculationMethod),
+                    formatting.fmt(SensitivityParameterId::CH4ChpCalculationMethod),
                 ),
                 (
-                    "BHKW CH₄-EF",
-                    Some(ch4_chp_emission_factor),
-                    unit.fmt(SensitivityParameterId::CH4ChpCustomFactor),
+                    match formatting {
+                        Formatting::Text => "BHKW CH₄-EF",
+                        Formatting::LaTeX => "BHKW $CH_4$-EF",
+                    },
+                    ch4_chp_emission_factor,
+                    formatting.fmt(SensitivityParameterId::CH4ChpCustomFactor),
                 ),
             ],
         },
@@ -324,29 +348,33 @@ pub fn sensitivity_parameters_as_table(
                 .to_string(),
             rows: vec![
                 (
-                    SensitivityParameterId::SludgeBagsCustomFactor.label(),
+                    formatting.fmt_label(SensitivityParameterId::SludgeBagsCustomFactor),
                     ch4_sewage_sludge_emissions
                         .emission_factor_sludge_bags
                         .map(format_number(lang)),
-                    unit.fmt(SensitivityParameterId::SludgeBagsCustomFactor),
+                    formatting.fmt(SensitivityParameterId::SludgeBagsCustomFactor),
                 ),
                 (
-                    SensitivityParameterId::SludgeStorageCustomFactor.label(),
+                    formatting.fmt_label(SensitivityParameterId::SludgeStorageCustomFactor),
                     ch4_sewage_sludge_emissions
                         .emission_factor_sludge_storage_containers
                         .map(format_number(lang)),
-                    unit.fmt(SensitivityParameterId::SludgeStorageCustomFactor),
+                    formatting.fmt(SensitivityParameterId::SludgeStorageCustomFactor),
                 ),
             ],
         },
         TableSection {
-            title: "Fossile CO₂-Emissionen aus Abwasser".to_string(),
+            title: match formatting {
+                Formatting::Text => "Fossile CO₂-Emissionen aus Abwasser",
+                Formatting::LaTeX => "Fossile $CO_2$-Emissionen aus Abwasser",
+            }
+            .to_string(),
             rows: vec![(
-                SensitivityParameterId::CO2FossilCustomFactor.label(),
+                formatting.fmt_label(SensitivityParameterId::CO2FossilCustomFactor),
                 co2_fossil_emissions
                     .emission_factor
                     .map(format_number(lang)),
-                unit.fmt(SensitivityParameterId::CO2FossilCustomFactor),
+                formatting.fmt(SensitivityParameterId::CO2FossilCustomFactor),
             )],
         },
     ];
@@ -354,7 +382,7 @@ pub fn sensitivity_parameters_as_table(
 }
 
 #[must_use]
-pub fn co2_equivalents_as_table(eq: &domain::CO2Equivalents, _unit: UnitFormatting) -> Table {
+pub fn co2_equivalents_as_table(eq: &domain::CO2Equivalents, _unit: Formatting) -> Table {
     // TODO: use as parameger
     let lang = Lng::De;
 

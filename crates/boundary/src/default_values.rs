@@ -1,4 +1,4 @@
-use klick_boundary::*;
+use crate::*;
 
 // FIXME:
 // Move this constants into the domain layer
