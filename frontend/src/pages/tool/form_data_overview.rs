@@ -1,7 +1,7 @@
 use leptos::*;
 
 use klick_boundary::EvaluationData;
-use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, UnitFormatting};
+use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, Formatting};
 
 #[component]
 pub fn FormDataOverview(evaluation_data: EvaluationData) -> impl IntoView {
@@ -9,11 +9,11 @@ pub fn FormDataOverview(evaluation_data: EvaluationData) -> impl IntoView {
         let i = evaluation_data.input;
         let o = evaluation_data.output;
         let table = {
-            let mut profile = plant_profile_as_table(&i.plant_profile, UnitFormatting::Text);
+            let mut profile = plant_profile_as_table(&i.plant_profile, Formatting::Text);
             let mut sensitivity = sensitivity_parameters_as_table(
                 &i.sensitivity_parameters,
-                UnitFormatting::Text,
-                &o,
+                Formatting::Text,
+                o.as_ref(),
             );
             profile.sections.append(&mut sensitivity.sections);
             profile

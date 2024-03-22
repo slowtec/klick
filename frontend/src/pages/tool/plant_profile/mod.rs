@@ -19,7 +19,7 @@ pub use self::field_sets::field_sets;
 pub fn DataCollection(
     form_data: RwSignal<FormData>,
     current_section: RwSignal<PageSection>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
 ) -> impl IntoView {
     // -----   ----- //
     //     Form      //
@@ -67,22 +67,22 @@ pub fn DataCollection(
           </p>
         </Show>
         <h4 class="my-8 text-lg font-bold">
-        { move || outcome.with(|out|out.as_ref().map(|out|{
-              let out = &out.profile.output;
+        { move || outcome.with(|out|out.profile.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
                 &form_data.with(|d| d.plant_profile.clone()),
                 out.emission_factors,
                 out.calculation_methods,
+                klick_presenter::Formatting::Text,
               )
             }))
         }
         </h4>
-        { move || outcome.get().map(|outcome|{
-          let outcome = outcome.profile.output;
-          let data = (outcome.co2_equivalents, outcome.emission_factors);
-          view!{ <Sankey data /> }
-        })}
-        <Show when = move || outcome.get().is_some()>
+        { move || outcome.with(|outcome|outcome.profile.output.clone()).map(|outcome|{
+            let data = (outcome.co2_equivalents, outcome.emission_factors);
+            view!{ <Sankey data /> }
+          })
+        }
+        <Show when = move || outcome.with(|outcome|outcome.profile.output.is_some())>
           <button
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
             on:click = move |_| { current_section.set(PageSection::Sensitivity); }

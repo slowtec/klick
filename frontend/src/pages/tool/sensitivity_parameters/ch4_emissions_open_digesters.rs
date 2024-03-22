@@ -10,7 +10,7 @@ use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_
 pub fn CH4EmissionsOpenDigesters(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
 ) -> impl IntoView {
     let show_sludge_bags_controls = Signal::derive(move || {
         // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
@@ -184,8 +184,7 @@ pub fn CH4EmissionsOpenDigesters(
                    false => "hidden".to_string(),
                    true => String::new(),
                };
-               outcome.with(|out|out.as_ref().map(|out|{
-                 let out = &out.sensitivity.output;
+               outcome.with(|out|out.sensitivity.output.as_ref().map(|out|{
                  view! {
                    <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_bags_controls_class}") }

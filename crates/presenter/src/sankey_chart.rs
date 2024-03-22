@@ -1,30 +1,46 @@
-use crate::value_labels::ValueLabel;
-use crate::Lng;
 use klick_boundary::PlantProfile;
-use klick_domain::units::{Percent, Ratio};
-use klick_domain::CO2Equivalents;
+use klick_domain::{
+    self as domain,
+    units::{Percent, Ratio},
+    CO2Equivalents,
+};
+
+use crate::{Formatting, Lng};
 
 #[must_use]
 pub fn create_sankey_chart_header(
     profile: &PlantProfile,
-    emission_factors: klick_domain::CalculatedEmissionFactors,
-    calculation_methods: klick_domain::EmissionFactorCalculationMethods,
+    emission_factors: domain::CalculatedEmissionFactors,
+    calculation_methods: domain::EmissionFactorCalculationMethods,
+    formatting: Formatting,
 ) -> String {
+    let population_equivalent = match &profile.population_equivalent {
+        Some(v) => format!("{v}"),
+        None => String::new(),
+    };
+
+    let plant_name = match &profile.plant_name {
+        Some(v) => v.to_string(),
+        None => String::new(),
+    };
+
+    let emission_factor = Lng::De
+        .format_number_with_precision(f64::from(emission_factors.n2o.convert_to::<Percent>()), 3);
+
+    let method = formatting.fmt_label(calculation_methods.n2o);
+
+    let n2o_label = match formatting {
+        Formatting::Text => "N₂O",
+        Formatting::LaTeX => r#"N\textsubscript{2}O"#,
+    };
+
+    let co2_label = match formatting {
+        Formatting::Text => "CO₂",
+        Formatting::LaTeX => r#"CO\textsubscript{2}"#,
+    };
+
     format!(
-        "{} ({} EW) / Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] - Szenario {} (N₂O-EF={})",
-        match &profile.plant_name {
-            Some(v) => v.to_string(),
-            None => String::new(),
-        },
-        match &profile.population_equivalent {
-            Some(v) => format!("{v}"),
-            None => String::new(),
-        },
-        calculation_methods.n2o.label(),
-        Lng::De.format_number_with_precision(
-            f64::from(emission_factors.n2o.convert_to::<Percent>()),
-            3
-        ),
+        "{plant_name} ({population_equivalent} EW) / Treibhausgasemissionen [t {co2_label} Äquivalente/Jahr] - Szenario {method} ({n2o_label}-EF={emission_factor})"
     )
 }
 

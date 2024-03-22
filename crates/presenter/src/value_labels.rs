@@ -9,6 +9,9 @@ use crate::{
 
 pub trait ValueLabel {
     fn label(&self) -> &'static str;
+    fn label_latex(&self) -> &'static str {
+        self.label()
+    }
 }
 
 impl ValueLabel for ProfileValueId {
@@ -119,6 +122,17 @@ impl ValueLabel for ScenarioFieldId {
             Self::EstimatedSelfWaterEnergyUsage => "Geschätzte Eigennutzung",
         }
     }
+    fn label_latex(&self) -> &'static str {
+        match self {
+            Self::N2OCustomFactor => "$N_2O$-EF Benutzerdefiniert",
+            Self::N2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
+            Self::CH4ChpCustomFactor => "BHKW $CH_4$-EF benutzerdefiniert",
+            Self::CO2FossilCustomFactor => "$CO_2$-EF (fossil)",
+            Self::SludgeBagsCustomFactor => "$CH_4$-EF Schlammtaschen",
+            Self::SludgeStorageCustomFactor => "$CH_4$-EF Schlammlagerung",
+            _ => self.label(),
+        }
+    }
 }
 
 impl ValueLabel for domain::N2oEmissionFactorCalcMethod {
@@ -178,6 +192,18 @@ impl ValueLabel for SensitivityParameterId {
             Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",
             Self::SludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
             Self::SludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
+        }
+    }
+    fn label_latex(&self) -> &'static str {
+        match self {
+            Self::N2OCalculationMethod => "$N_2O$ Berechnungsmethode",
+            Self::N2OCustomFactor => "$N_2O$-EF Benutzerdefiniert",
+            Self::N2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
+            Self::CH4ChpCalculationMethod => self.label(),
+            Self::CH4ChpCustomFactor => "BHKW $CH_4$-EF benutzerdefiniert",
+            Self::CO2FossilCustomFactor => "$CO_2$-EF (fossil)",
+            Self::SludgeBagsCustomFactor => "$CH_4$-EF Schlammtaschen",
+            Self::SludgeStorageCustomFactor => "$CH_4$-EF Schlammlagerung",
         }
     }
 }

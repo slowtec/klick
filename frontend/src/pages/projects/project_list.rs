@@ -172,12 +172,11 @@ fn Menu(
                 label = "löschen"
                 icon = icons::Trash()
               />
-              // FIXME:
-              // <Entry
-              //   on:click = move |_| download_pdf.call(())
-              //   label = "erzeuge Bericht (PDF)"
-              //   icon = icons::DocumentArrowDown()
-              // />
+              <Entry
+                on:click = move |_| download_pdf.call(())
+                label = "Bericht (PDF) erzeugen"
+                icon = icons::DocumentArrowDown()
+              />
             </div>
           </Show>
         </div>

@@ -21,75 +21,81 @@ mod n2o_emissions_side_stream_system;
 #[component]
 pub fn Recommendations(
     form_data: RwSignal<FormData>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     current_section: RwSignal<PageSection>,
 ) -> impl IntoView {
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
-            out.as_ref().map(|out| {
-                // TODO: avoid clones
+            // TODO: avoid clones
+            out.sensitivity
+                .output
+                .as_ref()
+                .map(|o| o.co2_equivalents.clone())
+                .and_then(|old| {
+                    out.recommendation
+                        .output
+                        .as_ref()
+                        .map(|o| (o.co2_equivalents.clone(), old))
+                })
+                .map(|(new, old)| {
+                    let diff = new.clone() - old;
 
-                let old = out.sensitivity.output.co2_equivalents.clone();
-                let new = out.recommendation.output.co2_equivalents.clone();
-                let diff = new.clone() - old;
+                    let mut comp = vec![];
 
-                let mut comp = vec![];
+                    let sludgy = f64::from(diff.ch4_sludge_bags);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "CH₄ Schlupf Schlammtasche",
+                        value: sludgy,
+                        percentage: Some(sludgy / f64::from(new.total_emissions) * 100.0),
+                    });
 
-                let sludgy = f64::from(diff.ch4_sludge_bags);
-                comp.push(klick_app_charts::BarChartArguments {
-                    label: "CH₄ Schlupf Schlammtasche",
-                    value: sludgy,
-                    percentage: Some(sludgy / f64::from(new.total_emissions) * 100.0),
-                });
+                    let schlammy = f64::from(diff.ch4_sludge_storage_containers);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "CH₄ Schlupf Schlammlagerung",
+                        value: schlammy,
+                        percentage: Some(schlammy / f64::from(new.total_emissions) * 100.0),
+                    });
 
-                let schlammy = f64::from(diff.ch4_sludge_storage_containers);
-                comp.push(klick_app_charts::BarChartArguments {
-                    label: "CH₄ Schlupf Schlammlagerung",
-                    value: schlammy,
-                    percentage: Some(schlammy / f64::from(new.total_emissions) * 100.0),
-                });
+                    let ch4_plant = f64::from(diff.ch4_plant);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "CH₄ Anlage (unspez.)",
+                        value: ch4_plant,
+                        percentage: Some(ch4_plant / f64::from(new.total_emissions) * 100.0),
+                    });
 
-                let ch4_plant = f64::from(diff.ch4_plant);
-                comp.push(klick_app_charts::BarChartArguments {
-                    label: "CH₄ Anlage (unspez.)",
-                    value: ch4_plant,
-                    percentage: Some(ch4_plant / f64::from(new.total_emissions) * 100.0),
-                });
+                    let neb_stromi = f64::from(diff.n2o_side_stream);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "N₂O Prozesswasserbehandlung",
+                        value: neb_stromi,
+                        percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
+                    });
 
-                let neb_stromi = f64::from(diff.n2o_side_stream);
-                comp.push(klick_app_charts::BarChartArguments {
-                    label: "N₂O Prozesswasserbehandlung",
-                    value: neb_stromi,
-                    percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
-                });
+                    let emissionsy = f64::from(diff.total_emissions);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "Emissionen",
+                        value: emissionsy,
+                        percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
+                    });
 
-                let emissionsy = f64::from(diff.total_emissions);
-                comp.push(klick_app_charts::BarChartArguments {
-                    label: "Emissionen",
-                    value: emissionsy,
-                    percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
-                });
-
-                comp
-            })
+                    comp
+                })
         })
     });
 
     let form_data_overview = move || {
-        outcome
-            .with(|out| out.as_ref().map(|out| out.sensitivity.clone()))
-            .map(|data| {
-                view! {
-                  <FormDataOverview
-                    evaluation_data = data
-                  />
-                }
-            })
+        outcome.with(|out| {
+            view! {
+              <FormDataOverview
+                evaluation_data = out.sensitivity.clone()
+              />
+            }
+        })
     };
+
     view! {
       <Show
-        when = move || outcome.with(std::option::Option::is_some)
+        when = move || outcome.with(|out|out.recommendation.output.is_some())
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
       <h4 class="my-8 text-lg font-bold">
@@ -120,20 +126,19 @@ pub fn Recommendations(
       }
 
       <h4 class="my-8 text-lg font-bold">
-        { move || outcome.with(|out|out.as_ref().map(|out|{
-              let out = &out.recommendation.output;
+        { move || outcome.with(|out|out.recommendation.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
                 &form_data.with(|d| d.plant_profile.clone()),
                 out.emission_factors,
                 out.calculation_methods,
+                klick_presenter::Formatting::Text
               )
             }))
         }
       </h4>
 
-      { move || outcome.with(|out| out.as_ref().map(|outcome|{
-          let outcome = outcome.recommendation.output.clone();
-          let data = (outcome.co2_equivalents, outcome.emission_factors);
+      { move || outcome.with(|out| out.recommendation.output.as_ref().map(|output|{
+          let data = (output.co2_equivalents.clone(), output.emission_factors);
           view!{ <Sankey data /> }
         }))
       }

@@ -3,15 +3,17 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
-use klick_boundary::{self as boundary, FormData};
+use klick_boundary::{
+    self as boundary, default_values::N2O_DEFAULT_CUSTOM_FACTOR, CalculationOutcome, FormData,
+};
 use klick_presenter::{Lng, ValueLabel};
 
-use crate::pages::tool::{default_values::N2O_DEFAULT_CUSTOM_FACTOR, CalculationOutcome, Card};
+use crate::pages::tool::Card;
 
 #[component]
 pub fn N2OEmissionsSensitivity(
     form_data: RwSignal<FormData>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
 ) -> impl IntoView {
     // -----   ----- //
@@ -56,10 +58,9 @@ pub fn N2OEmissionsSensitivity(
     // -----   ----- //
 
     let bar_chart_view = move || {
-        outcome.with(|out| {
-            out.as_ref().map(|out| {
+        outcome.with(|outcome| {
+            outcome.sensitivity_n2o_calculations.as_ref().map(|out| {
                 let data = out
-                    .sensitivity_n2o_calculations
                     .iter()
                     .map(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
@@ -147,8 +148,7 @@ pub fn N2OEmissionsSensitivity(
           <div class="border-t pt-3 mt-4 border-gray-900/10">
             { move ||
               outcome.with(|outcome|
-                outcome.as_ref().map(|out|{
-                  let out = &out.sensitivity.output;
+                outcome.sensitivity.output.as_ref().map(|out|{
                   let show_side_stream_controls_class = match show_side_stream_controls.get() {
                       false => "hidden".to_string(),
                       true => String::new(),

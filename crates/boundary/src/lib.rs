@@ -5,6 +5,7 @@ use klick_domain::{
 
 mod export;
 mod import;
+
 mod v1;
 mod v2;
 mod v3;
@@ -14,9 +15,12 @@ mod v6;
 mod v7;
 mod v8;
 
+mod calculation;
+pub mod default_values;
 pub mod json_api;
 
 pub use self::{
+    calculation::calculate,
     export::{export_to_string, export_to_string_pretty, export_to_vec_pretty},
     import::{import_from_slice, import_from_str, Error as ImportError},
     v8::*,
@@ -27,6 +31,22 @@ mod conversion;
 
 pub const CURRENT_VERSION: u32 = 8;
 
+// TODO:
+// Restructure this to something like
+// struct EvalualtionData {
+//    inputs: Inputs,
+//    outputs: Option<Outputs>
+// }
+// struct Inputs {
+//   profile: FormData,
+//   sensitivity: FormData,
+//   recommendation: FormData,
+// }
+// struct Outputs {
+//   profile: EmissionsCalculationOutcome,
+//   sensitivity: EmissionsCalculationOutcome
+//   .. etc
+// }
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct CalculationOutcome {
     // a.k.a "Model One"
@@ -36,14 +56,16 @@ pub struct CalculationOutcome {
     pub sensitivity: EvaluationData,
 
     // Used to create bar chart input
-    pub sensitivity_n2o_calculations: Vec<(
-        domain::N2oEmissionFactorCalcMethod,
-        domain::EmissionsCalculationOutcome,
-    )>,
+    pub sensitivity_n2o_calculations: Option<
+        Vec<(
+            domain::N2oEmissionFactorCalcMethod,
+            domain::EmissionsCalculationOutcome,
+        )>,
+    >,
 
     // Used to create bar chart input
     pub sensitivity_ch4_chp_calculations:
-        Vec<(domain::CH4ChpEmissionFactorCalcMethod, Tons, Factor)>,
+        Option<Vec<(domain::CH4ChpEmissionFactorCalcMethod, Tons, Factor)>>,
 
     // a.k.a "Model Three"
     pub recommendation: EvaluationData,
@@ -52,5 +74,5 @@ pub struct CalculationOutcome {
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct EvaluationData {
     pub input: FormData,
-    pub output: domain::EmissionsCalculationOutcome,
+    pub output: Option<domain::EmissionsCalculationOutcome>,
 }

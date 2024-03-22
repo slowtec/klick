@@ -3,20 +3,17 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
-use klick_boundary::{self as boundary, FormData};
+use klick_boundary::{self as boundary, default_values::CH4_DEFAULT_CUSTOM_FACTOR, FormData};
 use klick_domain::units::Tons;
 use klick_presenter::{Lng, ValueLabel};
 
-use crate::pages::tool::{
-    default_values::CH4_DEFAULT_CUSTOM_FACTOR, CalculationOutcome, Card, Cite, InfoBox,
-    DWA_MERKBLATT_URL,
-};
+use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 #[component]
 pub fn CH4EmissionsCHP(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -37,13 +34,9 @@ pub fn CH4EmissionsCHP(
     });
     let show_ch4_chp = Signal::derive(move || {
         outcome.with(|out| {
-            out.as_ref().map(|out| {
-                !out.sensitivity_ch4_chp_calculations.is_empty()
-                    && out
-                        .sensitivity_ch4_chp_calculations
-                        .iter()
-                        .any(|(_, tons, _)| *tons > Tons::zero())
-            })
+            out.sensitivity_ch4_chp_calculations
+                .as_ref()
+                .map(|out| !out.is_empty() && out.iter().any(|(_, tons, _)| *tons > Tons::zero()))
         }) == Some(true)
     });
 
@@ -76,9 +69,8 @@ pub fn CH4EmissionsCHP(
 
     let bar_chart_view = move || {
         outcome.with(|out| {
-            out.as_ref().map(|out| {
+            out.sensitivity_ch4_chp_calculations.as_ref().map(|out| {
                 let data = out
-                    .sensitivity_ch4_chp_calculations
                     .iter()
                     .map(|(szenario, value, factor)| {
                         klick_app_charts::BarChartRadioInputArguments {
@@ -151,17 +143,17 @@ pub fn CH4EmissionsCHP(
             <div class="border-t pt-3 mt-4 border-gray-900/10">
               { move ||
                 outcome.with(|outcome|
-                  outcome.as_ref().map(|out|{
+                  outcome.sensitivity.output.as_ref().map(|out|{
                     view! {
                       <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                         <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
                         <dd class="text-lg py-1 px-3">
-                          { format!("{:.1}", f64::from(out.sensitivity.output.co2_equivalents.ch4_combined_heat_and_power_plant)).replace('.',",") }
+                          { format!("{:.1}", f64::from(out.co2_equivalents.ch4_combined_heat_and_power_plant)).replace('.',",") }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                         </dd>
                         <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                         <dd class="text-lg py-1 px-3">
-                          { format!("{:.1}", f64::from(out.sensitivity.output.co2_equivalents.total_emissions)).replace('.',",") }
+                          { format!("{:.1}", f64::from(out.co2_equivalents.total_emissions)).replace('.',",") }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                         </dd>
                       </dl>

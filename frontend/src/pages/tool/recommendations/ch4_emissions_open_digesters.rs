@@ -9,7 +9,7 @@ use crate::pages::tool::{CalculationOutcome, Card};
 pub fn options(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -86,8 +86,7 @@ pub fn options(
                   false => "hidden".to_string(),
                   true => String::new(),
               };
-              outcome.with(|out|out.as_ref().map(|out|{
-                let out = &out.recommendation.output;
+              outcome.with(|out|out.recommendation.output.as_ref().map(|out|{
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_bags_controls_class}") }>"CH₄ Schlupf Schlammtaschen"</dt>

@@ -2,8 +2,16 @@
 lang: de-DE
 date: {{ date }}
 title: Klimabilanz
-subtitle: {{ profile.plant_name }}
+subtitle: {{ plant_name }}
+numbersections: true
 toc: true
+toc-depth: 2
+abstract: |
+  Diese Klimabilanz wurde mit dem OpenSource Webtool
+  *KlicK* auf [`klimabilanzklaeranlage.de`](https://klimabilanzklaeranlage.de/) erstellt.
+  Das Tool ist kostenlos und bietet eine einfache Bedienbarkeit.
+  Bei Fragen kommen Sie gerne auf uns zu:
+  [`KlickTool@umwelttechnik-bw.de`](mailto:klicktool@umwelttechnik-bw.de)
 
 # LaTeX
 documentclass: scrartcl
@@ -21,18 +29,69 @@ header-includes: # contents specified by -H/--include-in-header (may have multip
       per-mode=symbol-or-fraction
     }
     ```
+  - |
+    ```{=latex}
+    \usepackage{float}
+    \let\origfigure\figure
+    \let\endorigfigure\endfigure
+    \renewenvironment{figure}[1][2] {
+        \expandafter\origfigure\expandafter[H]
+    } {
+        \endorigfigure
+    }
+    ```
 ---
 
 # Kläranlagenprofil
 
-{{ table }}
+{{ plant_profile_table }}
 
-# Auswertung
+## CO\textsubscript{2} Emissionen ohne Anpassungen
 
-## Szenarien im Vergleich
+{% if plant_profile_sankey_svg_file_path %}
 
-![$N_2O$ Szenarien im Vergleich]({{ n2o_svg_barchart_file_path }})
+### {{ plant_profile_sankey_header }} {.unnumbered}
 
-## Treibhausgasemissionen
+![$CO_2$ Emissionen (ohne Anpassungen)]({{ plant_profile_sankey_svg_file_path }})
 
-![$CO_2$ Emissionen]({{ sankey_svg_file_path }})
+{% else %}
+  Eine Auswertung ist auf Grund fehlender Angaben nicht möglich.
+{% endif %}
+
+# Sensitivität von Emissionsfaktoren
+
+{{ sensitivity_parameters_table }}
+
+## Lachgasemissionen (N\textsubscript{2}O) bei der biologischen Reinigungsstufe
+
+{% if n2o_scenarios_svg_file_path %}
+  ![N\textsubscript{2}O Szenarien im Vergleich]({{ n2o_scenarios_svg_file_path }})
+{% else %}
+  Eine Auswertung ist auf Grund fehlender Angaben nicht möglich.
+{% endif %}
+
+## Methanemissionen (CH\textsubscript{4}O) aus Blockheizkraftwerken (BHKW)
+
+{% if ch4_chp_scenarios_svg_file_path %}
+  ![CH\textsubscript{4} Szenarien im Vergleich]({{ ch4_chp_scenarios_svg_file_path }})
+{% else %}
+  Eine Auswertung ist auf Grund fehlender Angaben nicht möglich.
+{% endif %}
+
+## CO\textsubscript{2} Emissionen mit angepassten Emissionsfaktoren
+
+{% if sensitivity_sankey_svg_file_path %}
+  ![CO\textsubscript{2} Emissionen (mit angepassten Emissionsfaktoren)]({{ sensitivity_sankey_svg_file_path }})
+{% else %}
+  Eine Auswertung ist auf Grund fehlender Angaben nicht möglich.
+{% endif %}
+
+# Handlungsempfehlungen
+
+## CO\textsubscript{2} Emissionen mit durchgeführten Handlungsempfehlungen
+
+{% if recommendation_sankey_svg_file_path %}
+  ![CO\textsubscript{2} Emissionen (mit durchgeführten Handlungsempfehlungen)]({{ recommendation_sankey_svg_file_path }})
+{% else %}
+  Eine Auswertung ist auf Grund fehlender Angaben nicht möglich.
+{% endif %}

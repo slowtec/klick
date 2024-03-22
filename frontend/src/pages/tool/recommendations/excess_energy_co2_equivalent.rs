@@ -10,7 +10,7 @@ use crate::pages::tool::{CalculationOutcome, Card};
 pub fn options(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -18,20 +18,18 @@ pub fn options(
 
     let excess_energy_co2_equivalent = Signal::derive(move || {
         outcome.with(|out| {
-            out.as_ref().map(|out| {
-                out.recommendation
-                    .output
-                    .co2_equivalents
-                    .excess_energy_co2_equivalent
-            })
+            out.recommendation
+                .output
+                .as_ref()
+                .map(|out| out.co2_equivalents.excess_energy_co2_equivalent)
         })
     });
 
     let electricity_mix_savings = Signal::derive(move || {
         outcome.with(|out| {
-            out.as_ref().map(|out| {
+            out.recommendation.output.as_ref().map(|out| {
                 // TOOD: move this to calculation module
-                let eq = &out.recommendation.output.co2_equivalents;
+                let eq = &out.co2_equivalents;
                 (eq.total_emissions - eq.excess_energy_co2_equivalent) * Factor::new(-1.0)
             })
         })
@@ -39,8 +37,10 @@ pub fn options(
 
     let electricity_mix = Signal::derive(move || {
         outcome.with(|out| {
-            out.as_ref()
-                .map(|out| out.recommendation.output.co2_equivalents.electricity_mix)
+            out.recommendation
+                .output
+                .as_ref()
+                .map(|out| out.co2_equivalents.electricity_mix)
         })
     });
 
@@ -82,8 +82,7 @@ pub fn options(
           </Show>
         </p>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-        { move || outcome.with(|out|out.as_ref().map(|out|{
-            let out = out.recommendation.output.clone(); // TODO: avoid clone
+        { move || outcome.with(|out|out.recommendation.output.clone().map(|out|{
             view! {
               <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                 <Show when= move || (f64::from(out.co2_equivalents.process_energy_savings) > 0.0) >

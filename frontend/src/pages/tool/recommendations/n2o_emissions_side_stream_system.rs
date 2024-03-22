@@ -9,7 +9,7 @@ use crate::pages::tool::{CalculationOutcome, Card};
 pub fn options(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
-    outcome: Signal<Option<CalculationOutcome>>,
+    outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
 ) -> impl IntoView {
     let field_set = field_set(form_data.write_only(), input_data);
@@ -28,8 +28,7 @@ pub fn options(
         </p>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
           { move || {
-              outcome.with(|out|out.as_ref().map(|out|{
-                let out = &out.recommendation.output;
+              outcome.with(|out|out.recommendation.output.as_ref().map(|out|{
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Prozesswasserbehandlung"</dt>

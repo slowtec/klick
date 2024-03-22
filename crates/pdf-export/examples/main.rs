@@ -76,7 +76,7 @@ fn project_example_data() -> FormData {
     };
 
     FormData {
-        project_title: None,
+        project_title: Some("A Project Name".to_string()),
         plant_profile,
         sensitivity_parameters,
         optimization_scenario,
