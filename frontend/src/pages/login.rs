@@ -66,7 +66,7 @@ pub fn Login(
         }
     });
 
-    let resend_confirmation_mail = create_action(move |_: &()| {
+    let resend_confirmation_mail = create_action(move |(): &()| {
         show_resent_confirmation_button.set(false);
         set_login_error.set(None);
 

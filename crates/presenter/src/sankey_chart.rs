@@ -4,6 +4,7 @@ use klick_boundary::PlantProfile;
 use klick_domain::units::{Percent, Ratio};
 use klick_domain::CO2Equivalents;
 
+#[must_use]
 pub fn create_sankey_chart_header(
     profile: &PlantProfile,
     emission_factors: klick_domain::CalculatedEmissionFactors,
@@ -12,12 +13,12 @@ pub fn create_sankey_chart_header(
     format!(
         "{} ({} EW) / Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] - Szenario {} (N₂O-EF={})",
         match &profile.plant_name {
-            Some(v) => format!("{v}"),
-            None => "".to_string(),
+            Some(v) => v.to_string(),
+            None => String::new(),
         },
         match &profile.population_equivalent {
             Some(v) => format!("{v}"),
-            None => "".to_string(),
+            None => String::new(),
         },
         calculation_methods.n2o.label(),
         Lng::De.format_number_with_precision(
@@ -27,6 +28,7 @@ pub fn create_sankey_chart_header(
     )
 }
 
+#[must_use]
 pub fn create_sankey_chart_data(
     co2_equivalents: CO2Equivalents,
 ) -> (Vec<(f64, &'static str, &'static str)>, Vec<(usize, usize)>) {

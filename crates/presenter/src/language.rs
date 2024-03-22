@@ -54,6 +54,7 @@ impl Lng {
             .join(self.thousands_separator())
     }
 
+    #[must_use]
     pub const fn format_bool(&self, x: bool) -> &str {
         match self {
             Lng::De => {

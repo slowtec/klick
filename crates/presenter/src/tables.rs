@@ -40,6 +40,7 @@ pub struct TableSection {
     pub rows: Vec<(&'static str, Option<String>, Option<&'static str>)>,
 }
 
+#[must_use]
 pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> Table {
     let PlantProfile {
         plant_name,
@@ -254,6 +255,7 @@ pub fn plant_profile_as_table(profile: &PlantProfile, unit: UnitFormatting) -> T
     Table { sections }
 }
 
+#[must_use]
 pub fn sensitivity_parameters_as_table(
     parameters: &SensitivityParameters,
     unit: UnitFormatting,
@@ -351,6 +353,7 @@ pub fn sensitivity_parameters_as_table(
     Table { sections }
 }
 
+#[must_use]
 pub fn co2_equivalents_as_table(eq: &domain::CO2Equivalents, _unit: UnitFormatting) -> Table {
     // TODO: use as parameger
     let lang = Lng::De;

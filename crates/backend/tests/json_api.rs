@@ -29,7 +29,7 @@ async fn run_server_with_config(mut config: Config) -> (SocketAddr, Connection) 
         .unwrap();
     let address = listener.local_addr().unwrap();
     config.address = address;
-    config.base_url = format!("http://{}", address).parse().unwrap();
+    config.base_url = format!("http://{address}").parse().unwrap();
     config.db_connection = ":memory:".to_string();
 
     let db = klick_backend::create_db_connection(&config).unwrap();
@@ -293,7 +293,7 @@ mod export {
         assert_eq!(res.status(), 200);
         assert_eq!(res.headers()[header::CONTENT_TYPE], "application/pdf");
         let binary = res.bytes().await.unwrap();
-        assert!(binary.len() > 0);
+        assert!(!binary.is_empty());
     }
 
     #[ignore]

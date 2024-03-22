@@ -171,7 +171,7 @@ fn create_email_confirmation_url() {
     let nonce = klick_domain::authentication::Nonce::new();
     let email_nonce = EmailNonce {
         email: "foo@bar.com".parse().unwrap(),
-        nonce: nonce,
+        nonce,
     };
     let base_url = "http://localhost:3000/".parse().unwrap();
     let url = email_confirmation_url(&email_nonce, &base_url).unwrap();

@@ -27,10 +27,10 @@ pub enum Project {
 }
 
 impl Project {
-    pub fn form_data(&self) -> &FormData {
+    #[must_use]
+    pub const fn form_data(&self) -> &FormData {
         match self {
-            Self::Saved(SavedProject { data, .. }) => data,
-            Self::Unsaved(data) => data,
+            Self::Saved(SavedProject { data, .. }) | Self::Unsaved(data) => data,
         }
     }
 }

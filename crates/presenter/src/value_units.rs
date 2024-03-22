@@ -28,12 +28,12 @@ pub trait ValueUnit {
 }
 
 const LATEX_PERCENT: &str = "\\%";
-const LATEX_QUBICMETERS: &str = r#"\si{\metre}^3"#;
-const LATEX_KILOMETERS: &str = r#"\si{\kilo\metre}"#;
-const LATEX_TONS: &str = r#"\si{\tonne}"#;
-const LATEX_MILLIGRAMSPERLITER: &str = r#"\si{\milli\gram\per\liter}"#;
-const LATEX_KILOWATTHOURS: &str = r#"\si{\kilo\watt\hour}"#;
-const LATEX_GRAMSPERKILOWATTHOUR: &str = r#"\si{\gram\per\kilo\watt\hour}"#;
+const LATEX_QUBICMETERS: &str = r"\si{\metre}^3";
+const LATEX_KILOMETERS: &str = r"\si{\kilo\metre}";
+const LATEX_TONS: &str = r"\si{\tonne}";
+const LATEX_MILLIGRAMSPERLITER: &str = r"\si{\milli\gram\per\liter}";
+const LATEX_KILOWATTHOURS: &str = r"\si{\kilo\watt\hour}";
+const LATEX_GRAMSPERKILOWATTHOUR: &str = r"\si{\gram\per\kilo\watt\hour}";
 
 const TEXT_PERCENT: &str = "%";
 const TEXT_QUBICMETERS: &str = "m³";

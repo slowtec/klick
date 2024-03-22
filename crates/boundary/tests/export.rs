@@ -75,7 +75,7 @@ fn roundtrip() {
         plant_name: Some("test export".to_string()),
         wastewater: Some(3456.889),
         influent_average: AnnualAverageInfluent {
-            total_nitrogen: Some(1.2345000000000000000000000001),
+            total_nitrogen: Some(1.234_5),
             ..Default::default()
         },
         ..Default::default()

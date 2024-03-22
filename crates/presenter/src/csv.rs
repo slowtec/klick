@@ -10,6 +10,7 @@ use crate::{
     UnitFormatting,
 };
 
+#[must_use]
 pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
     let unit = UnitFormatting::Text;
 
@@ -60,6 +61,7 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
         .join("\n\n")
 }
 
+#[must_use]
 pub fn emission_factor_calculation_methods_to_csv(
     methods: EmissionFactorCalculationMethods,
 ) -> String {
@@ -81,6 +83,7 @@ pub fn emission_factor_calculation_methods_to_csv(
     .join("\n")
 }
 
+#[must_use]
 pub fn emission_factors_to_csv(factors: &CalculatedEmissionFactors) -> String {
     [
         format!(

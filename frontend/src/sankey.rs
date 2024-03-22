@@ -63,7 +63,7 @@ pub fn Sankey(data: (domain::CO2Equivalents, domain::CalculatedEmissionFactors))
         sankey = { sankey }
         width = 1200.0
         height = 800.0
-        number_format = |n| format_large_number(n)
+        number_format = format_large_number
         font_size = 16.0
       />
     })

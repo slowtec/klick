@@ -12,8 +12,8 @@ pub const CH4_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
 pub fn profile(mut data: FormData) -> FormData {
     data.sensitivity_parameters = Default::default();
     data.optimization_scenario = Default::default();
-    let data = add_missing_values(data);
-    data
+
+    add_missing_values(data)
 }
 
 pub fn sensitivity(mut data: FormData) -> FormData {
@@ -37,13 +37,12 @@ pub fn sensitivity(mut data: FormData) -> FormData {
     //         klick_domain::constants::EMISSION_FACTOR_SLUDGE_STORAGE,
     //     ))),
     // }
-    let data = add_missing_values(data);
-    data
+
+    add_missing_values(data)
 }
 
 pub fn recommendations(data: FormData) -> FormData {
-    let data = add_missing_values(data);
-    data
+    add_missing_values(data)
 }
 
 fn add_missing_values(mut data: FormData) -> FormData {

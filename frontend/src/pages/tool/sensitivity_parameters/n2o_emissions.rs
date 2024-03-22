@@ -151,7 +151,7 @@ pub fn N2OEmissionsSensitivity(
                   let out = &out.sensitivity.output;
                   let show_side_stream_controls_class = match show_side_stream_controls.get() {
                       false => "hidden".to_string(),
-                      true => "".to_string(),
+                      true => String::new(),
                   };
                   view! {
                     <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
@@ -160,8 +160,8 @@ pub fn N2OEmissionsSensitivity(
                         { format!("{:.1}", f64::from(out.co2_equivalents.n2o_plant)).replace('.',",") }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                       </dd>
-                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_side_stream_controls_class) }>"N₂O Prozesswasserbehandlung"</dt>
-                      <dd class={ format!("text-lg py-1 px-3 {}", show_side_stream_controls_class) }>
+                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_side_stream_controls_class}") }>"N₂O Prozesswasserbehandlung"</dt>
+                      <dd class={ format!("text-lg py-1 px-3 {show_side_stream_controls_class}") }>
                         { format!("{:.1}", f64::from(out.co2_equivalents.n2o_side_stream)).replace('.',",") }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                       </dd>
@@ -230,7 +230,7 @@ fn side_stream_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
-            placeholder: Some(Lng::De.format_number(f64::from(N2O_DEFAULT_CUSTOM_FACTOR))),
+            placeholder: Some(Lng::De.format_number(N2O_DEFAULT_CUSTOM_FACTOR)),
             limits: MinMax {
                 min: Some(0.0),
                 max: Some(100.0),
@@ -240,7 +240,7 @@ fn side_stream_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 form_data.update(|d| {
                     d.sensitivity_parameters
                         .n2o_emissions
-                        .side_stream_emission_factor = v
+                        .side_stream_emission_factor = v;
                 });
             }),
             input: Signal::derive(move || {

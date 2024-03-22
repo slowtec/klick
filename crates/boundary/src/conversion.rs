@@ -302,12 +302,12 @@ impl TryFrom<FormData>
 
         let sewage_sludge_treatment = domain::SewageSludgeTreatment {
             sludge_bags_are_open,
+            sludge_bags_factor,
             sludge_storage_containers_are_open,
+            sludge_storage_containers_factor,
             sewage_sludge_for_disposal,
             transport_distance,
             digester_count,
-            sludge_bags_factor,
-            sludge_storage_containers_factor,
         };
 
         let emission_influencing_values = domain::EmissionInfluencingValues {

@@ -63,13 +63,13 @@ fn Project(
 ) -> impl IntoView {
     let error = RwSignal::<Option<String>>::new(None);
 
-    let delete_project = create_action(move |_: &()| {
-        let api = api.clone();
+    let delete_project = create_action(move |(): &()| {
+        let api = api;
         let id = project.id;
         async move {
             let result = api.get().delete_project(id).await;
             match result {
-                Ok(_) => {
+                Ok(()) => {
                     on_delete_success.call(());
                     error.set(None);
                 }
@@ -119,9 +119,9 @@ fn Project(
         </div>
       </div>
       <Menu
-        load = move |_| load.call(project.id)
-        delete = move |_| delete_project.dispatch(())
-        download_pdf = move |_| on_download_pdf.call(project.id)
+        load = move |()| load.call(project.id)
+        delete = move |()| delete_project.dispatch(())
+        download_pdf = move |()| on_download_pdf.call(project.id)
       />
     }
 }

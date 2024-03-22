@@ -18,7 +18,7 @@ pub fn NewProject(
     let title = RwSignal::<Option<String>>::new(None);
 
     let field = Field {
-        label: "Projektname".into(),
+        label: "Projektname",
         description: None,
         required: true,
         field_type: FieldType::Text {
@@ -39,8 +39,8 @@ pub fn NewProject(
 
     let field_view = render_field(field, field_id, missing_fields);
 
-    let create_project = create_action(move |_: &()| {
-        let api = api.clone();
+    let create_project = create_action(move |(): &()| {
+        let api = api;
         let mut project = FormData::default();
         project.project_title = title.get();
 

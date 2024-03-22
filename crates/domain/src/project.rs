@@ -17,6 +17,7 @@ pub struct Id(Uuid);
 
 impl Id {
     #[must_use]
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self(Uuid::new_v4())
     }

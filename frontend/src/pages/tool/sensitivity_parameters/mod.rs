@@ -104,7 +104,7 @@ pub fn SensitivityParameters(
     });
     view! {
       <Show
-        when = move || outcome.with(|o|o.is_some())
+        when = move || outcome.with(std::option::Option::is_some)
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
         <div class="my-4 ml-4">
