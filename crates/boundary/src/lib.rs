@@ -1,4 +1,7 @@
-use klick_domain::{self as domain, units::*};
+use klick_domain::{
+    self as domain,
+    units::{Factor, Tons},
+};
 
 mod export;
 mod import;
@@ -24,7 +27,7 @@ mod conversion;
 
 pub const CURRENT_VERSION: u32 = 8;
 
-#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct CalculationOutcome {
     // a.k.a "Model One"
     pub profile: EvaluationData,
@@ -46,7 +49,7 @@ pub struct CalculationOutcome {
     pub recommendation: EvaluationData,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct EvaluationData {
     pub input: FormData,
     pub output: domain::EmissionsCalculationOutcome,

@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests;
 
+#[allow(clippy::wildcard_imports)]
 use crate::{
     constants::*,
     units::{
@@ -380,6 +381,7 @@ pub fn calculate_fossil_emissions(
     emissions.convert_to()
 }
 
+#[must_use]
 pub fn calculate_n2o_side_stream(
     total_nitrogen: Tons,
     n2o_side_stream_emission_factor: Factor,
@@ -391,6 +393,7 @@ pub fn calculate_n2o_side_stream(
     total_nitrogen * n2o_side_stream_emission_factor * CONVERSION_FACTOR_N_TO_N2O * GWP_N2O
 }
 
+#[must_use]
 pub fn calculate_ch4_plant(
     population_equivalent: f64,
     ch4_sludge_storage_containers: Tons,
@@ -408,10 +411,12 @@ pub fn calculate_ch4_plant(
     }
 }
 
+#[must_use]
 pub fn calculate_oil_emissions(oil_supply: Liters) -> Tons {
     (oil_supply * EMISSION_FACTOR_OIL).convert_to::<Tons>()
 }
 
+#[must_use]
 pub fn calculate_gas_emissions(gas_supply: Qubicmeters, purchase_of_biogas: bool) -> Tons {
     let ef_gas = if purchase_of_biogas {
         EMISSION_FACTOR_BIOGAS
@@ -421,6 +426,7 @@ pub fn calculate_gas_emissions(gas_supply: Qubicmeters, purchase_of_biogas: bool
     (gas_supply * ef_gas).convert_to::<Tons>()
 }
 
+#[must_use]
 pub fn calculate_process_energy_savings(
     total_power_consumption: Kilowatthours,
     process_energy_savings: Percent,
@@ -429,6 +435,7 @@ pub fn calculate_process_energy_savings(
         .convert_to::<Tons>()
 }
 
+#[must_use]
 pub fn calculate_photovoltaic_expansion_savings(
     photovoltaic_energy_expansion: Kilowatthours,
     estimated_self_photovoltaic_usage: Percent,
@@ -437,6 +444,7 @@ pub fn calculate_photovoltaic_expansion_savings(
         .convert_to::<Tons>()
 }
 
+#[must_use]
 pub fn calculate_wind_expansion_savings(
     wind_energy_expansion: Kilowatthours,
     estimated_self_wind_energy_usage: Percent,
@@ -445,6 +453,7 @@ pub fn calculate_wind_expansion_savings(
         .convert_to::<Tons>()
 }
 
+#[must_use]
 pub fn calculate_water_expansion_savings(
     water_energy_expansion: Kilowatthours,
     estimated_self_water_energy_usage: Percent,
@@ -452,6 +461,7 @@ pub fn calculate_water_expansion_savings(
     (water_energy_expansion * estimated_self_water_energy_usage * EMISSION_FACTOR_STROM_MIX)
         .convert_to::<Tons>()
 }
+#[must_use]
 pub fn calculate_oil_gas_savings(
     oil_emissions: Tons,
     gas_emissions: Tons,
@@ -460,6 +470,7 @@ pub fn calculate_oil_gas_savings(
     (oil_emissions + gas_emissions) * fossil_energy_savings
 }
 
+#[must_use]
 pub fn calculate_all_n2o_emission_factor_scenarios(
     values: &EmissionInfluencingValues,
     custom_factor: Option<Factor>,
@@ -512,6 +523,7 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
     results
 }
 
+#[must_use]
 pub fn calculate_ch4_combined_heat_and_power_plant(
     calculation_method: Option<CH4ChpEmissionFactorCalcMethod>,
     sewage_gas_produced: Qubicmeters,
@@ -538,6 +550,7 @@ const CH4_CHP_CALC_METHODS: [CH4ChpEmissionFactorCalcMethod; 3] = [
     CH4ChpEmissionFactorCalcMethod::JetEngine,
 ];
 
+#[must_use]
 pub fn calculate_all_ch4_chp_emission_factor_scenarios(
     values: &EmissionInfluencingValues,
     custom_factor: Option<Factor>,

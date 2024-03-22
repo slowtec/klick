@@ -89,7 +89,7 @@ pub fn Recommendations(
     };
     view! {
       <Show
-        when = move || outcome.with(|o|o.is_some())
+        when = move || outcome.with(std::option::Option::is_some)
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
       <h4 class="my-8 text-lg font-bold">

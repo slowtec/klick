@@ -46,7 +46,7 @@ pub fn ResetPassword(api: UnauthorizedApi) -> impl IntoView {
             let result = api.reset_password(token.0.clone(), pwd).await;
 
             match result {
-                Ok(_) => {
+                Ok(()) => {
                     error.set(None);
                     state.set(State::Success);
                 }

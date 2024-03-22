@@ -89,7 +89,7 @@ fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>)
         field_type: FieldType::Float {
             initial_value: None,
             placeholder: Some(
-                Lng::De.format_number(f64::from(CO2_DEFAULT_FOSSIL_FACTOR))
+                Lng::De.format_number(CO2_DEFAULT_FOSSIL_FACTOR)
             ),
             limits: MinMax {
                 min: Some(0.0),
@@ -100,7 +100,7 @@ fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>)
                 form_data.update(|d| {
                     d.sensitivity_parameters
                         .co2_fossil_emissions
-                        .emission_factor = v
+                        .emission_factor = v;
                 });
             }),
             input: Signal::derive(move || {

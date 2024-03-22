@@ -14,7 +14,7 @@ fn main() {
 
     assert!(backend_uses_workspace_version);
 
-    let workspace_version = get_package_version(&workspace_cargo_toml.get("workspace").unwrap())
+    let workspace_version = get_package_version(workspace_cargo_toml.get("workspace").unwrap())
         .as_str()
         .unwrap();
 

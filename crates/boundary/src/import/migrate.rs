@@ -309,9 +309,9 @@ impl From<v6::ProjectData> for v7::ProjectData {
         } = sewage_sludge_treatment;
 
         let sewage_sludge_treatment = v7::SewageSludgeTreatment {
-            sludge_bags_are_open: sludge_bags_are_open,
+            sludge_bags_are_open,
             custom_sludge_bags_factor: None,
-            sludge_storage_containers_are_open: sludge_storage_containers_are_open,
+            sludge_storage_containers_are_open,
             custom_sludge_storage_containers_factor: None,
             sewage_sludge_for_disposal,
             transport_distance,
@@ -440,11 +440,11 @@ impl From<v7::ProjectData> for v8::FormData {
         let sludge_storage_containers_are_closed = sludge_storage_containers_are_open.map(|x| !x);
 
         let sewage_sludge_treatment = v8::SewageSludgeTreatment {
+            digester_count,
             sludge_bags_are_closed,
             sludge_storage_containers_are_closed,
             sewage_sludge_for_disposal,
             transport_distance,
-            digester_count,
         };
 
         let side_stream_treatment = v8::SideStreamTreatment {

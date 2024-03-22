@@ -21,7 +21,6 @@ uuid = { version = "1.8.0", features = ["serde"] }
 
 [dependencies.klick-domain]
 path = "../domain"
-optional = true
 
 [dependencies.axum]
 version = "0.7.4"
@@ -31,12 +30,11 @@ optional = true
 
 [dev-dependencies]
 klick-boundary = { version = "=0.0.0", features = ["extra-derive", "conversion"] }
-klick-domain = { path = "../domain" }
 
 uuid = { version = "1.8.0", features = ["v4"] }
 
 [features]
-conversion = ["dep:klick-domain"]
+conversion = []
 extra-derive = []
 axum = ["dep:axum"]
 

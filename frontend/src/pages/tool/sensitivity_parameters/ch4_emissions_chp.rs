@@ -66,7 +66,7 @@ pub fn CH4EmissionsCHP(
         form_data.update(|d| {
             d.sensitivity_parameters
                 .ch4_chp_emissions
-                .calculation_method = Some(method)
+                .calculation_method = Some(method);
         });
     };
 
@@ -183,7 +183,7 @@ fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>)
         required: false,
         field_type: FieldType::Float {
             initial_value: None,
-            placeholder: Some(Lng::De.format_number(f64::from(CH4_DEFAULT_CUSTOM_FACTOR))),
+            placeholder: Some(Lng::De.format_number(CH4_DEFAULT_CUSTOM_FACTOR)),
             limits: MinMax {
                 min: Some(0.0),
                 max: Some(100.0),
@@ -193,7 +193,7 @@ fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>)
                 form_data.update(|d| {
                     d.sensitivity_parameters
                         .ch4_chp_emissions
-                        .custom_emission_factor = v
+                        .custom_emission_factor = v;
                 });
             }),
             input: Signal::derive(move || {

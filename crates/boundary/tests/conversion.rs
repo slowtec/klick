@@ -30,8 +30,8 @@ fn roundtrip() {
     let data = FormData {
         project_title,
         plant_profile,
-        optimization_scenario,
         sensitivity_parameters,
+        optimization_scenario,
     };
     let saved = SavedProject {
         id,

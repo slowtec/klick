@@ -5,7 +5,7 @@ fn main() {
     let frontend_cargo_toml = read_cargo_toml("Cargo.toml");
 
     let frontend_version = get_package_version(&frontend_cargo_toml).as_str().unwrap();
-    let workspace_version = get_package_version(&workspace_cargo_toml.get("workspace").unwrap())
+    let workspace_version = get_package_version(workspace_cargo_toml.get("workspace").unwrap())
         .as_str()
         .unwrap();
 

@@ -40,7 +40,7 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
     let show_new_project = RwSignal::new(false);
     let api = RwSignal::new(api);
 
-    let on_cancel_new = move |_| {
+    let on_cancel_new = move |()| {
         show_new_project.set(false);
     };
 
@@ -48,8 +48,8 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
 
     let error = RwSignal::<Option<String>>::new(None);
 
-    let load_projects = create_action(move |_: &()| {
-        let api = api.clone();
+    let load_projects = create_action(move |(): &()| {
+        let api = api;
         async move {
             let result = api.get().all_projects().await;
             match result {
@@ -58,7 +58,7 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
                     error.set(None);
                 }
                 Err(err) => {
-                    projects.update(|p| p.clear());
+                    projects.update(std::vec::Vec::clear);
                     log::warn!("Unable to load projects: {err}");
                     error.set(Some(
                         "Es tut uns leid, es ist ein Kommunikationsproblem aufgetreten."
@@ -72,7 +72,7 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
     let download_link: NodeRef<leptos::html::A> = create_node_ref();
 
     let download_pdf = create_action(move |id: &ProjectId| {
-        let api = api.clone();
+        let api = api;
         let id = *id;
         async move {
             let result = api.get().download_pdf_report(&id).await;
@@ -97,7 +97,7 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
         load_projects.dispatch(());
     };
 
-    let on_delete_success = move |_| {
+    let on_delete_success = move |()| {
         load_projects.dispatch(());
     };
 

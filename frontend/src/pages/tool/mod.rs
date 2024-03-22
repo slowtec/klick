@@ -77,12 +77,11 @@ pub fn Tool(
             d.plant_profile
                 .side_stream_treatment
                 .total_nitrogen
-                .map(|v| v > 0.0)
-                .unwrap_or(false)
+                .is_some_and(|v| v > 0.0)
         })
     });
 
-    let show_csv_export = Signal::derive(move || outcome.with(|out| out.is_some()));
+    let show_csv_export = Signal::derive(move || outcome.with(std::option::Option::is_some));
 
     // -----   ----- //
     //    Actions    //
@@ -116,7 +115,7 @@ pub fn Tool(
     });
 
     let load_action = create_action({
-        let api = api.clone();
+        let api = api;
         move |id: &ProjectId| {
             let id = *id;
             async move {
@@ -137,7 +136,7 @@ pub fn Tool(
     });
 
     let save_action = create_action({
-        let api = api.clone();
+        let api = api;
         move |project: &Project| {
             let project = project.clone();
             async move {
@@ -154,7 +153,7 @@ pub fn Tool(
                         }
                         api.update_project(&p)
                             .await
-                            .map(|_| {
+                            .map(|()| {
                                 current_project.set(Some(Project::Saved(p)));
                                 "Das Projekt wurde gespeichert."
                             })
@@ -189,19 +188,19 @@ pub fn Tool(
     // -----   ----- //
 
     let clear_form_data = {
-        move |_| {
+        move |()| {
             form_data.set(FormData::default());
         }
     };
 
     let load_example_values = {
-        move |_| {
+        move |()| {
             form_data.set(example_data::example_form_data());
         }
     };
 
     let download = {
-        move |_| -> ObjectUrl {
+        move |()| -> ObjectUrl {
             let data = form_data.get();
             let project = Project::from(data);
             let data = Data { project };
@@ -214,7 +213,7 @@ pub fn Tool(
     };
 
     let save_project = {
-        move |_| {
+        move |()| {
             let project_data = form_data.get();
             let project = match current_project.get() {
                 Some(Project::Saved(p)) => {
@@ -239,7 +238,7 @@ pub fn Tool(
     };
 
     let export_csv = {
-        move |_| -> Option<ObjectUrl> {
+        move |()| -> Option<ObjectUrl> {
             let Some(data) = outcome.get() else {
                 log::warn!("No calculated data found to export");
                 return None;
@@ -257,7 +256,7 @@ pub fn Tool(
     create_effect(move |_| {
         let s = current_section.get();
         let id = s.section_id();
-        scroll_to_element_by_id(&id);
+        scroll_to_element_by_id(id);
     });
 
     create_effect(move |_| {

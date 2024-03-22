@@ -70,26 +70,26 @@ pub fn App() -> impl IntoView {
         }
     });
 
-    let logout = create_action(move |_: &()| async move {
+    let logout = create_action(move |(): &()| async move {
         match authorized_api.get() {
             Some(api) => match api.logout().await {
-                Ok(_) => {
+                Ok(()) => {
                     authorized_api.update(|a| *a = None);
                     user_info.update(|i| *i = None);
                 }
                 Err(err) => {
-                    log::error!("Unable to logout: {err}")
+                    log::error!("Unable to logout: {err}");
                 }
             },
             None => {
-                log::error!("Unable to logout user: not logged in")
+                log::error!("Unable to logout user: not logged in");
             }
         }
     });
 
     // -- callbacks -- //
 
-    let on_logout = move |_| {
+    let on_logout = move |()| {
         logout.dispatch(());
     };
 

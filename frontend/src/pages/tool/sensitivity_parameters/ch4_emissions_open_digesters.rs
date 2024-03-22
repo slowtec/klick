@@ -178,30 +178,30 @@ pub fn CH4EmissionsOpenDigesters(
            { move || {
                let show_sludge_bags_controls_class = match show_sludge_bags_controls.get() {
                      false => "hidden".to_string(),
-                     true => "".to_string(),
+                     true => String::new(),
                };
                let show_sludge_storage_containers_controls_class = match show_sludge_storage_containers_controls.get() {
                    false => "hidden".to_string(),
-                   true => "".to_string(),
+                   true => String::new(),
                };
                outcome.with(|out|out.as_ref().map(|out|{
                  let out = &out.sensitivity.output;
                  view! {
                    <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
-                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_sludge_bags_controls_class) }
+                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_bags_controls_class}") }
                      >
                         "CH₄ Schlupf Schlammtaschen"
                      </dt>
-                     <dd class={ format!("text-lg py-1 px-3 {}", show_sludge_bags_controls_class) }
+                     <dd class={ format!("text-lg py-1 px-3 {show_sludge_bags_controls_class}") }
                      >
                        { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_bags)).replace('.',",") }
                        <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                      </dd>
-                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {}", show_sludge_storage_containers_controls_class) }
+                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_storage_containers_controls_class}") }
                      >
                         "CH₄ Schlupf Schlammlagerung"
                      </dt>
-                     <dd class={ format!("text-lg py-1 px-3 {}", show_sludge_storage_containers_controls_class) } >
+                     <dd class={ format!("text-lg py-1 px-3 {show_sludge_storage_containers_controls_class}") } >
                        { format!("{:.1}", f64::from(out.co2_equivalents.ch4_sludge_storage_containers)).replace('.',",") }
                        <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                      </dd>

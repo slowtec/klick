@@ -53,7 +53,7 @@ pub fn ConfirmEmailAddress(api: UnauthorizedApi) -> impl IntoView {
                 None => view! {
                     <InfoMessage message = "Einen moment bitte..." />
                 }.into_view(),
-                Some(Ok(_)) => view! {
+                Some(Ok(())) => view! {
                    <SuccessMessage message = "Ihre E-Mail-Adresse ist nun bestätigt." />
                 }.into_view(),
                 Some(Err(err)) => {
