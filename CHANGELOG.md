@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.5 (2024-03-23)
+
+- Changed:
+  - Restore PDF export functionality (#189)
+  - Re-order and improve menu entries (#243)
+- Fixed:
+  - Typo and value in bar chart "Sensitivität" (#253)
+
 ## v0.4.4 (2024-03-21)
 
 - Changed:
