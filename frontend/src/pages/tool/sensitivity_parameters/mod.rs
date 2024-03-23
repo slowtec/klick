@@ -29,12 +29,12 @@ pub fn SensitivityParameters(
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
             // TODO: avoid clones
-            out.sensitivity
+            out.profile
                 .output
                 .as_ref()
                 .map(|o| o.co2_equivalents.clone())
                 .and_then(|old| {
-                    out.recommendation
+                    out.sensitivity
                         .output
                         .as_ref()
                         .map(|o| (o.co2_equivalents.clone(), old))
@@ -44,9 +44,9 @@ pub fn SensitivityParameters(
 
                     let mut comp = vec![];
 
-                    let n2oy = f64::from(diff.n2o_emissions);
+                    let n2oy = f64::from(diff.n2o_plant);
                     comp.push(klick_app_charts::BarChartArguments {
-                        label: "N₂O Emissionen",
+                        label: "N₂O Anlage",
                         value: n2oy,
                         percentage: Some(n2oy / f64::from(new.total_emissions) * 100.0),
                     });
@@ -81,7 +81,7 @@ pub fn SensitivityParameters(
 
                     let fossily = f64::from(diff.fossil_emissions);
                     comp.push(klick_app_charts::BarChartArguments {
-                        label: "Fossile CO₂",
+                        label: "Fossiles CO₂",
                         value: fossily,
                         percentage: Some(fossily / f64::from(new.total_emissions) * 100.0),
                     });
