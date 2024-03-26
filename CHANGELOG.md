@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.6 (2024-03-26)
+
+- Changed:
+  - Energy computations in Handlungsempfehlungen #259
+
 ## v0.4.5 (2024-03-23)
 
 - Changed:
