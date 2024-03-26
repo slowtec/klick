@@ -1347,7 +1347,7 @@ dependencies = [
 
 [[package]]
 name = "klick"
-version = "0.4.5"
+version = "0.4.6"
 dependencies = [
  "anyhow",
  "env_logger",
@@ -1473,7 +1473,7 @@ dependencies = [
 
 [[package]]
 name = "klick-domain"
-version = "0.4.5"
+version = "0.4.6"
 dependencies = [
  "bs58",
  "mailparse",
