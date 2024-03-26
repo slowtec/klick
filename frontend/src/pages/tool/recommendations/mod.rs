@@ -42,42 +42,63 @@ pub fn Recommendations(
                     let diff = new.clone() - old;
 
                     let mut comp = vec![];
-
                     let sludgy = f64::from(diff.ch4_sludge_bags);
                     comp.push(klick_app_charts::BarChartArguments {
                         label: "CH₄ Schlupf Schlammtasche",
                         value: sludgy,
                         percentage: Some(sludgy / f64::from(new.total_emissions) * 100.0),
                     });
-
                     let schlammy = f64::from(diff.ch4_sludge_storage_containers);
                     comp.push(klick_app_charts::BarChartArguments {
                         label: "CH₄ Schlupf Schlammlagerung",
                         value: schlammy,
                         percentage: Some(schlammy / f64::from(new.total_emissions) * 100.0),
                     });
-
                     let ch4_plant = f64::from(diff.ch4_plant);
                     comp.push(klick_app_charts::BarChartArguments {
                         label: "CH₄ Anlage (unspez.)",
                         value: ch4_plant,
                         percentage: Some(ch4_plant / f64::from(new.total_emissions) * 100.0),
                     });
-
                     let neb_stromi = f64::from(diff.n2o_side_stream);
                     comp.push(klick_app_charts::BarChartArguments {
                         label: "N₂O Prozesswasserbehandlung",
                         value: neb_stromi,
                         percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
                     });
-
+                    let fossili = -1.0 * f64::from(diff.fossil_energy_savings);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "Fossile Energiequellen",
+                        value: fossili,
+                        percentage: Some(fossili / f64::from(new.total_emissions) * 100.0),
+                    });
+                    let processi = -1.0 * f64::from(diff.process_energy_savings);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "Prozesse",
+                        value: processi,
+                        percentage: Some(processi / f64::from(new.total_emissions) * 100.0),
+                    });
+                    let renewably = -1.0
+                        * (f64::from(new.photovoltaic_expansion_savings)
+                            + f64::from(new.wind_expansion_savings)
+                            + f64::from(new.water_expansion_savings));
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "Erneurbare Energien",
+                        value: renewably,
+                        percentage: Some(renewably / f64::from(new.total_emissions) * 100.0),
+                    });
+                    let districty = -1.0 * f64::from(diff.district_heating_savings);
+                    comp.push(klick_app_charts::BarChartArguments {
+                        label: "Abwärme",
+                        value: districty,
+                        percentage: Some(districty / f64::from(new.total_emissions) * 100.0),
+                    });
                     let emissionsy = f64::from(diff.total_emissions);
                     comp.push(klick_app_charts::BarChartArguments {
                         label: "Emissionen",
                         value: emissionsy,
                         percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
                     });
-
                     comp
                 })
         })

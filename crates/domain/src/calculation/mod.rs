@@ -193,10 +193,7 @@ pub fn calculate_emissions(
         power_production_consumption_difference
     };
 
-    let electricity_mix = (external_energy * emission_factor_electricity_mix).convert_to::<Tons>();
-
     let oil_emissions = calculate_oil_emissions(heating_oil);
-
     let gas_emissions = calculate_gas_emissions(gas_supply, purchase_of_biogas);
 
     let synthetic_polymers = synthetic_polymers * EMISSION_FACTOR_POLYMERS;
@@ -214,10 +211,6 @@ pub fn calculate_emissions(
 
     let direct_emissions = ch4_emissions + n2o_emissions + fossil_emissions;
 
-    let indirect_emissions = electricity_mix + oil_emissions + gas_emissions;
-    let other_indirect_emissions = operating_materials + sewage_sludge_transport;
-    let total_emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
-
     let process_energy_savings =
         calculate_process_energy_savings(total_power_consumption, process_energy_savings);
     let photovoltaic_expansion_savings = calculate_photovoltaic_expansion_savings(
@@ -234,8 +227,34 @@ pub fn calculate_emissions(
     let district_heating_savings: Tons = (district_heating
         * (EMISSION_FACTOR_STROM_MIX - EMISSION_FACTOR_HEAT_NETWORK))
         .convert_to::<Tons>();
-    let fossil_energy_savings =
+
+    let fossil_energy_savings_emissions =
         calculate_oil_gas_savings(oil_emissions, gas_emissions, fossil_energy_savings);
+
+    let oil_emissions_with_savings_applied = oil_emissions - oil_emissions * fossil_energy_savings;
+    let gas_emissions_with_savings_applied = gas_emissions - gas_emissions * fossil_energy_savings;
+
+    let electricity_mix_helper =
+        (external_energy * emission_factor_electricity_mix).convert_to::<Tons>();
+
+    let electricity_mix = {
+        let mix = electricity_mix_helper
+            - process_energy_savings
+            - photovoltaic_expansion_savings
+            - wind_expansion_savings
+            - water_expansion_savings
+            - district_heating_savings;
+        if mix < Tons::zero() {
+            Tons::zero()
+        } else {
+            mix
+        }
+    };
+
+    let indirect_emissions =
+        electricity_mix + oil_emissions_with_savings_applied + gas_emissions_with_savings_applied;
+    let other_indirect_emissions = operating_materials + sewage_sludge_transport;
+    let total_emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
 
     // -------    ------ //
     //   Pack variables  //
@@ -258,8 +277,8 @@ pub fn calculate_emissions(
         caoh2,
         synthetic_polymers,
         electricity_mix,
-        oil_emissions,
-        gas_emissions,
+        oil_emissions: oil_emissions_with_savings_applied,
+        gas_emissions: gas_emissions_with_savings_applied,
         operating_materials,
         sewage_sludge_transport,
         total_emissions,
@@ -269,7 +288,7 @@ pub fn calculate_emissions(
         wind_expansion_savings,
         water_expansion_savings,
         district_heating_savings,
-        fossil_energy_savings,
+        fossil_energy_savings: fossil_energy_savings_emissions,
         indirect_emissions,
         other_indirect_emissions,
         excess_energy_co2_equivalent,

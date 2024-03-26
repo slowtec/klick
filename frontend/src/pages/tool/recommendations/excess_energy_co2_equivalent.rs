@@ -62,25 +62,27 @@ pub fn options(
              zur Energieautarkie beitragen. Um die positiven Auswirkungen eines Zubaus der erneuerbaren Energien:
              Photovoltaik (PV), Wind-, Wasserkraft und/oder Abwärmenutzung aufzuzeigen, können nachfolgend verschiedene
              Szenarien bilanziert werden. Wenn Sie die jeweilige Technologie nicht bilanzieren wollen können Sie
-             das jeweilige Feld freilassen setzen."
+             das jeweilige Feld freilassen."
         </p>
         { view }
-        <p>
           <Show
             when= move || excess_energy_co2_equivalent.with(|v| *v > Some(Tons::zero()))
           >
+            <p>
             " Ihre Kläranlage ist energieneutral. Die Kläranlage spart "
             { electricity_mix_savings.with(|d|d.map(|v|Lng::De.format_number_with_thousands_seperator(f64::from(v)))) }
             " t CO2-Äq./a ein."
+            </p>
           </Show>
           <Show
-            when= move || excess_energy_co2_equivalent.with(|v| *v <= Some(Tons::zero()))
+            when= move || excess_energy_co2_equivalent.with(|v| *v <= Some(Tons::zero())) && electricity_mix.with(|v| *v > Some(Tons::zero()))
           >
+            <p>
             "Ihre Kläranlage benötigt weiterhin externen Strom (Versorger), wodurch "
             { electricity_mix.with(|d|d.map(|v|Lng::De.format_number_with_thousands_seperator(f64::from(v)))) }
             " t CO₂-Äq./a energiebedingte Emissionen entstehen."
+            </p>
           </Show>
-        </p>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
         { move || outcome.with(|out|out.recommendation.output.clone().map(|out|{
             view! {

@@ -13,6 +13,7 @@ mailparse = "0.14.1"
 pwhash = "1.0.0"
 thiserror = "1.0.58"
 time = "0.3.34"
+log = "*"
 uuid = { version = "1.8.0", features = ["v4"] }
 
 [lints]
