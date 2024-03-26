@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.7 (2024-03-26)
+
+- Changed:
+  - Verrechnen der Methanemissionen #258
+
 ## v0.4.6 (2024-03-26)
 
 - Changed:
