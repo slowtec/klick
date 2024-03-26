@@ -867,7 +867,7 @@ dependencies = [
 
 [[package]]
 name = "klick-domain"
-version = "0.4.6"
+version = "0.4.7"
 dependencies = [
  "bs58",
  "mailparse",
@@ -879,7 +879,7 @@ dependencies = [
 
 [[package]]
 name = "klick-frontend"
-version = "0.4.6"
+version = "0.4.7"
 dependencies = [
  "anyhow",
  "chrono",
