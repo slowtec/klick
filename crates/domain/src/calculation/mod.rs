@@ -419,14 +419,10 @@ pub fn calculate_ch4_plant(
     ch4_sludge_bags: Tons,
     ch4_combined_heat_and_power_plant: Tons,
 ) -> Tons {
-    let ch4_plant = Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4)
-        .convert_to::<Tons>();
-    let ch4_processes =
-        ch4_sludge_storage_containers + ch4_sludge_bags + ch4_combined_heat_and_power_plant;
-    if ch4_processes >= ch4_plant {
-        Tons::zero()
+    if f64::from(ch4_sludge_storage_containers) < 0.001 && f64::from(ch4_sludge_bags) < 0.001 {
+        Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4).convert_to::<Tons>()
     } else {
-        ch4_plant - ch4_processes
+        ch4_sludge_storage_containers + ch4_sludge_bags + ch4_combined_heat_and_power_plant
     }
 }
 
