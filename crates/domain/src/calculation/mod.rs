@@ -10,6 +10,8 @@ use crate::{
     N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment, SideStreamTreatment,
 };
 
+use crate::units::GramsPerKilowatthour;
+
 #[must_use]
 #[allow(clippy::too_many_lines)]
 pub fn calculate_emissions(
@@ -223,8 +225,12 @@ pub fn calculate_emissions(
 
     let direct_emissions = ch4_emissions + n2o_emissions + fossil_emissions;
 
-    let process_energy_savings =
-        calculate_process_energy_savings(total_power_consumption, process_energy_savings);
+    let process_energy_savings = calculate_process_energy_savings(
+        external_energy,
+        process_energy_savings,
+        emission_factor_electricity_mix,
+    );
+
     let photovoltaic_expansion_savings = calculate_photovoltaic_expansion_savings(
         photovoltaic_energy_expansion,
         estimated_self_photovoltaic_usage,
@@ -444,9 +450,9 @@ pub fn calculate_gas_emissions(gas_supply: Qubicmeters, purchase_of_biogas: bool
 pub fn calculate_process_energy_savings(
     total_power_consumption: Kilowatthours,
     process_energy_savings: Percent,
+    external_energy: GramsPerKilowatthour,
 ) -> Tons {
-    (total_power_consumption * process_energy_savings * EMISSION_FACTOR_STROM_MIX)
-        .convert_to::<Tons>()
+    (total_power_consumption * process_energy_savings * external_energy).convert_to::<Tons>()
 }
 
 #[must_use]
