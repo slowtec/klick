@@ -190,11 +190,11 @@ fn add_missing_optimization_scenario(scenario: &mut OptimizationScenario) {
     process_energy_savings.get_or_insert(0.0);
     fossil_energy_savings.get_or_insert(0.0);
     photovoltaic_energy_expansion.get_or_insert(0.0);
-    estimated_self_photovoltaic_usage.get_or_insert(0.0);
+    estimated_self_photovoltaic_usage.get_or_insert(100.0);
     wind_energy_expansion.get_or_insert(0.0);
-    estimated_self_wind_energy_usage.get_or_insert(0.0);
+    estimated_self_wind_energy_usage.get_or_insert(100.0);
     water_energy_expansion.get_or_insert(0.0);
-    estimated_self_water_energy_usage.get_or_insert(0.0);
+    estimated_self_water_energy_usage.get_or_insert(100.0);
     district_heating.get_or_insert(0.0);
 
     // -- Side Stream Treatment Scenario -- //
