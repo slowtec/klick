@@ -13,8 +13,9 @@ pub struct EmissionFactorCalculationMethods {
     pub ch4: Option<CH4ChpEmissionFactorCalcMethod>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum N2oEmissionFactorCalcMethod {
+    #[default]
     TuWien2016,
     Optimistic,
     Pesimistic,
@@ -22,10 +23,11 @@ pub enum N2oEmissionFactorCalcMethod {
     Custom(Factor),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum CH4ChpEmissionFactorCalcMethod {
-    MicroGasTurbines,
+    #[default]
     GasolineEngine,
+    MicroGasTurbines,
     JetEngine,
     Custom(Factor),
 }

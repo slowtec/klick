@@ -127,7 +127,7 @@ fn add_missing_sensitivity_parameters(s: &mut SensitivityParameters) {
         side_stream_emission_factor,
     } = n2o_emissions;
 
-    calculation_method.get_or_insert(N2oEmissionFactorCalcMethod::TuWien2016);
+    calculation_method.get_or_insert(domain::N2oEmissionFactorCalcMethod::default().into());
     custom_emission_factor.get_or_insert(2.0);
     side_stream_emission_factor.get_or_insert(2.0);
 
@@ -138,7 +138,7 @@ fn add_missing_sensitivity_parameters(s: &mut SensitivityParameters) {
         custom_emission_factor,
     } = ch4_chp_emissions;
 
-    calculation_method.get_or_insert(CH4ChpEmissionFactorCalcMethod::GasolineEngine);
+    calculation_method.get_or_insert(domain::CH4ChpEmissionFactorCalcMethod::default().into());
     custom_emission_factor.get_or_insert(3.0);
 
     //-- Sewage Sludge Treatment Emissions Sensitivity -- //
