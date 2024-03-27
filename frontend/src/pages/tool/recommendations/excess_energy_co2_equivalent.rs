@@ -238,7 +238,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
-                        placeholder: Some(String::new()),
+                        placeholder: Some("100".to_string()),
                         limits: MinMax {
                             min: Some(0.0),
                             max: Some(100.0),
@@ -299,7 +299,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
-                        placeholder: Some(String::new().to_string()),
+                        placeholder: Some("100".to_string()),
                         limits: MinMax {
                             min: Some(0.0),
                             max: Some(100.0),
@@ -360,7 +360,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     required: false,
                     field_type: FieldType::Float {
                         initial_value: None,
-                        placeholder: Some(String::new()),
+                        placeholder: Some("100".to_string()),
                         limits: MinMax {
                             min: Some(0.0),
                             max: Some(100.0),
