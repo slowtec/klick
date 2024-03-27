@@ -29,10 +29,9 @@ pub struct N2oEmissionFactorScenario {
 #[serde(rename_all = "kebab-case")]
 #[cfg_attr(
     feature = "extra-derive",
-    derive(Debug, Default, Clone, Copy, PartialEq, Eq, FromPrimitive, ToPrimitive)
+    derive(Debug, Clone, Copy, PartialEq, Eq, FromPrimitive, ToPrimitive)
 )]
 pub enum N2oEmissionFactorCalcMethod {
-    #[cfg_attr(feature = "extra-derive", default)]
     TuWien2016,
     Optimistic,
     Pesimistic,

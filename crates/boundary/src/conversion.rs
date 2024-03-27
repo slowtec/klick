@@ -549,3 +549,28 @@ impl TryFrom<AnnualAverageEffluent> for domain::AnnualAverageEffluent {
         })
     }
 }
+
+impl From<domain::N2oEmissionFactorCalcMethod> for N2oEmissionFactorCalcMethod {
+    fn from(from: domain::N2oEmissionFactorCalcMethod) -> Self {
+        use domain::N2oEmissionFactorCalcMethod as FROM;
+        match from {
+            FROM::TuWien2016 => Self::TuWien2016,
+            FROM::Optimistic => Self::Optimistic,
+            FROM::Pesimistic => Self::Pesimistic,
+            FROM::Ipcc2019 => Self::Ipcc2019,
+            FROM::Custom(_) => Self::CustomFactor,
+        }
+    }
+}
+
+impl From<domain::CH4ChpEmissionFactorCalcMethod> for CH4ChpEmissionFactorCalcMethod {
+    fn from(from: domain::CH4ChpEmissionFactorCalcMethod) -> Self {
+        use domain::CH4ChpEmissionFactorCalcMethod as FROM;
+        match from {
+            FROM::MicroGasTurbines => Self::MicroGasTurbines,
+            FROM::GasolineEngine => Self::GasolineEngine,
+            FROM::JetEngine => Self::JetEngine,
+            FROM::Custom(_) => Self::CustomFactor,
+        }
+    }
+}
