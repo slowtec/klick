@@ -3,16 +3,11 @@ mod tests;
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
-    constants::*,
-    units::{
-        Factor, Grams, Hours, Kilowatthours, Liters, Mass, MilligramsPerLiter, Percent,
-        Qubicmeters, QubicmetersPerHour, Ratio, Time, Tons, Years,
-    },
-    AnnualAverageEffluent, AnnualAverageInfluent, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
-    CalculatedEmissionFactors, EmissionFactorCalculationMethods, EmissionFactors,
-    EmissionInfluencingValues, EmissionsCalculationOutcome, EnergyConsumption,
-    EnergyEmissionFactors, N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment,
-    SideStreamTreatment,
+    constants::*, units::*, AnnualAverageEffluent, AnnualAverageInfluent,
+    CH4ChpEmissionFactorCalcMethod, CO2Equivalents, CalculatedEmissionFactors,
+    EmissionFactorCalculationMethods, EmissionFactors, EmissionInfluencingValues,
+    EmissionsCalculationOutcome, EnergyConsumption, EnergyEmissionFactors,
+    N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment, SideStreamTreatment,
 };
 
 #[must_use]
@@ -100,6 +95,12 @@ pub fn calculate_emissions(
     } = energy_emission_factors;
 
     // -------    ------ //
+    //  Default values   //
+    // -------    ------ //
+
+    let digester_count = digester_count.unwrap_or(0);
+
+    // -------    ------ //
     //     Calculate     //
     // -------    ------ //
 
@@ -150,23 +151,23 @@ pub fn calculate_emissions(
 
     let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
-    let with_digestion: bool =
-        f64::from(sewage_gas_produced) > 0.001 && digester_count.unwrap_or(0) > 0;
+    let with_digestion = sewage_gas_produced > Qubicmeters::new(0.001) && digester_count > 0;
 
-    let ch4_sludge_storage_containers = if with_digestion == true {
+    let ch4_sludge_storage_containers = if with_digestion {
         ch4_slippage_sludge_storage * GWP_CH4
     } else {
         Tons::zero()
     };
 
-    let ch4_sludge_bags = if with_digestion == true {
+    let ch4_sludge_bags = if with_digestion {
         ch4_slippage_sludge_bags * GWP_CH4
     } else {
         Tons::zero()
     };
+
     let ch4_water = ch4_water.convert_to::<Tons>() * GWP_CH4;
 
-    let (ch4_chp, ch4_emission_factor) = if with_digestion == true {
+    let (ch4_chp, ch4_emission_factor) = if with_digestion {
         calculate_ch4_chp(
             calculation_methods.ch4,
             sewage_gas_produced,
@@ -176,7 +177,7 @@ pub fn calculate_emissions(
         (Tons::zero(), Factor::new(0.0))
     };
 
-    let ch4_plant = if with_digestion == true {
+    let ch4_plant = if with_digestion {
         Tons::zero()
     } else {
         calculate_ch4_plant(population_equivalent)
@@ -245,22 +246,18 @@ pub fn calculate_emissions(
     let oil_emissions_with_savings_applied = oil_emissions - oil_emissions * fossil_energy_savings;
     let gas_emissions_with_savings_applied = gas_emissions - gas_emissions * fossil_energy_savings;
 
-    let electricity_mix_helper =
-        (external_energy * emission_factor_electricity_mix).convert_to::<Tons>();
+    let energy_savings = process_energy_savings
+        + photovoltaic_expansion_savings
+        + wind_expansion_savings
+        + water_expansion_savings
+        + district_heating_savings;
 
-    let electricity_mix = {
-        let mix = electricity_mix_helper
-            - process_energy_savings
-            - photovoltaic_expansion_savings
-            - wind_expansion_savings
-            - water_expansion_savings
-            - district_heating_savings;
-        if mix < Tons::zero() {
-            Tons::zero()
-        } else {
-            mix
-        }
-    };
+    let mut electricity_mix =
+        (external_energy * emission_factor_electricity_mix).convert_to::<Tons>() - energy_savings;
+
+    if electricity_mix.is_sign_negative() {
+        electricity_mix = Tons::zero();
+    }
 
     let indirect_emissions =
         electricity_mix + oil_emissions_with_savings_applied + gas_emissions_with_savings_applied;
@@ -319,11 +316,11 @@ pub fn calculate_emissions(
 
 #[must_use]
 pub fn calculate_ch4_slippage_sludge_bags(
-    digester_count: Option<u64>,
+    digester_count: u64,
     methane_fraction: Percent,
     sludge_bags_factor: Option<QubicmetersPerHour>,
 ) -> Tons {
-    let count = Factor::new(digester_count.unwrap_or(0) as f64);
+    let count = Factor::new(digester_count as f64);
     let hours_per_year = Years::new(1.0).convert_to::<Hours>();
     let sludge_bags_factor = sludge_bags_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_BAGS);
     let kilograms = sludge_bags_factor

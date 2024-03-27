@@ -1,10 +1,4 @@
-use crate::{
-    units::{
-        GramsPerKilowatthour, Kilometers, Kilowatthours, Liters, MilligramsPerLiter, Percent,
-        Qubicmeters, QubicmetersPerHour, Tons,
-    },
-    EmissionFactors,
-};
+use crate::units::*;
 
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Copy))]
@@ -75,6 +69,12 @@ pub struct OperatingMaterials {
     pub feclso4: Tons,
     pub caoh2: Tons,
     pub synthetic_polymers: Tons,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct EmissionFactors {
+    pub n2o_side_stream: Factor,
+    pub co2_fossil: Factor,
 }
 
 #[derive(Debug, Clone)]
