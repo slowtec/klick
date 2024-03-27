@@ -150,29 +150,40 @@ pub fn calculate_emissions(
 
     let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
 
-    let ch4_sludge_storage_containers = ch4_slippage_sludge_storage * GWP_CH4;
-    let ch4_sludge_bags = ch4_slippage_sludge_bags * GWP_CH4;
+    let with_digestion: bool =
+        f64::from(sewage_gas_produced) > 0.001 && digester_count.unwrap_or(0) > 0;
+
+    let ch4_sludge_storage_containers = if with_digestion == true {
+        ch4_slippage_sludge_storage * GWP_CH4
+    } else {
+        Tons::zero()
+    };
+
+    let ch4_sludge_bags = if with_digestion == true {
+        ch4_slippage_sludge_bags * GWP_CH4
+    } else {
+        Tons::zero()
+    };
     let ch4_water = ch4_water.convert_to::<Tons>() * GWP_CH4;
 
-    let (ch4_combined_heat_and_power_plant, ch4_emission_factor) =
-        calculate_ch4_combined_heat_and_power_plant(
+    let (ch4_chp, ch4_emission_factor) = if with_digestion == true {
+        calculate_ch4_chp(
             calculation_methods.ch4,
             sewage_gas_produced,
             methane_fraction,
-        );
+        )
+    } else {
+        (Tons::zero(), Factor::new(0.0))
+    };
 
-    let ch4_plant = calculate_ch4_plant(
-        population_equivalent,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_combined_heat_and_power_plant,
-    );
+    let ch4_plant = if with_digestion == true {
+        Tons::zero()
+    } else {
+        calculate_ch4_plant(population_equivalent)
+    };
 
-    let ch4_emissions = ch4_plant
-        + ch4_sludge_storage_containers
-        + ch4_sludge_bags
-        + ch4_water
-        + ch4_combined_heat_and_power_plant;
+    let ch4_emissions =
+        ch4_plant + ch4_sludge_storage_containers + ch4_sludge_bags + ch4_water + ch4_chp;
 
     let power_production_consumption_difference =
         total_power_consumption - on_site_power_generation;
@@ -269,7 +280,7 @@ pub fn calculate_emissions(
         ch4_sludge_storage_containers,
         ch4_sludge_bags,
         ch4_water,
-        ch4_combined_heat_and_power_plant,
+        ch4_combined_heat_and_power_plant: ch4_chp, // FIXME rename to ch4_chp
         ch4_emissions,
         fossil_emissions,
         fecl3,
@@ -413,17 +424,8 @@ pub fn calculate_n2o_side_stream(
 }
 
 #[must_use]
-pub fn calculate_ch4_plant(
-    population_equivalent: f64,
-    ch4_sludge_storage_containers: Tons,
-    ch4_sludge_bags: Tons,
-    ch4_combined_heat_and_power_plant: Tons,
-) -> Tons {
-    if f64::from(ch4_sludge_storage_containers) < 0.001 && f64::from(ch4_sludge_bags) < 0.001 {
-        Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4).convert_to::<Tons>()
-    } else {
-        ch4_sludge_storage_containers + ch4_sludge_bags + ch4_combined_heat_and_power_plant
-    }
+pub fn calculate_ch4_plant(population_equivalent: f64) -> Tons {
+    Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4).convert_to::<Tons>()
 }
 
 #[must_use]
@@ -539,7 +541,7 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
 }
 
 #[must_use]
-pub fn calculate_ch4_combined_heat_and_power_plant(
+pub fn calculate_ch4_chp(
     calculation_method: Option<CH4ChpEmissionFactorCalcMethod>,
     sewage_gas_produced: Qubicmeters,
     methane_fraction: Percent,
@@ -583,11 +585,8 @@ pub fn calculate_all_ch4_chp_emission_factor_scenarios(
     let mut results = CH4_CHP_CALC_METHODS
         .into_iter()
         .map(|method| {
-            let (result, factor) = calculate_ch4_combined_heat_and_power_plant(
-                Some(method),
-                *sewage_gas_produced,
-                *methane_fraction,
-            );
+            let (result, factor) =
+                calculate_ch4_chp(Some(method), *sewage_gas_produced, *methane_fraction);
             (method, result, factor)
         })
         .collect();
@@ -598,11 +597,7 @@ pub fn calculate_all_ch4_chp_emission_factor_scenarios(
 
     // Custom
     let method = CH4ChpEmissionFactorCalcMethod::Custom(factor);
-    let (result, factor) = calculate_ch4_combined_heat_and_power_plant(
-        Some(method),
-        *sewage_gas_produced,
-        *methane_fraction,
-    );
+    let (result, factor) = calculate_ch4_chp(Some(method), *sewage_gas_produced, *methane_fraction);
     results.push((method, result, factor));
 
     results
