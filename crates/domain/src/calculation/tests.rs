@@ -881,7 +881,11 @@ fn calculate_gas_emissions_test() {
 #[test]
 fn calculate_process_energy_savings_test() {
     assert_eq!(
-        calculate_process_energy_savings(Kilowatthours::new(1_665_000.0), Percent::new(20.0)),
+        calculate_process_energy_savings(
+            Kilowatthours::new(1_665_000.0),
+            Percent::new(20.0),
+            GramsPerKilowatthour::new(468.0)
+        ),
         Tons::new(155.844)
     );
 }
