@@ -867,7 +867,7 @@ dependencies = [
 
 [[package]]
 name = "klick-domain"
-version = "0.4.10"
+version = "0.4.11"
 dependencies = [
  "bs58",
  "log",
@@ -880,7 +880,7 @@ dependencies = [
 
 [[package]]
 name = "klick-frontend"
-version = "0.4.10"
+version = "0.4.11"
 dependencies = [
  "anyhow",
  "chrono",

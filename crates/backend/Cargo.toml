@@ -19,14 +19,14 @@ anyhow = "1.0.81"
 axum = "0.7.5"
 axum-extra = { version = "0.9.3", features = ["typed-header"] }
 headers = "0.4.0"
-lettre = { version = "0.11.5", default-features = false, features = ["rustls-tls", "builder", "smtp-transport", "pool"] }
+lettre = { version = "0.11.6", default-features = false, features = ["rustls-tls", "builder", "smtp-transport", "pool"] }
 log = "0.4.21"
 mime_guess = "2.0.4"
 parking_lot = "0.12.1"
 rust-embed = { version = "8.3.0", features = ["axum"] }
 serde = { version = "1.0.197", features = ["derive"] }
 thiserror = "1.0.58"
-tokio = { version = "1.36.0", features = ["net"] }
+tokio = { version = "1.37.0", features = ["net"] }
 toml = "0.8.12"
 tower-http = { version = "0.5.2", features = ["cors"] }
 url = { version = "2.5.0", features = ["serde"] }
