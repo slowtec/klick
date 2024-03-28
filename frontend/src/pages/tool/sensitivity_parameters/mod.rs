@@ -1,12 +1,12 @@
 use leptos::*;
 
+use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
 
 use crate::{
     pages::tool::{CalculationOutcome, DataCollectionEnforcementHelper, PageSection},
     sankey::Sankey,
 };
-use klick_app_charts::BarChart;
 
 mod ch4_emissions_chp;
 mod ch4_emissions_open_digesters;
@@ -40,74 +40,14 @@ pub fn SensitivityParameters(
                         .map(|o| (o.co2_equivalents.clone(), old))
                 })
                 .map(|(new, old)| {
-                    let diff = new.clone() - old;
-
-                    let mut comp = vec![];
-
-                    let n2oy = f64::from(diff.n2o_plant);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "N₂O Anlage",
-                        value: n2oy,
-                        percentage: Some(n2oy / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    let sludgy = f64::from(diff.ch4_sludge_bags);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "CH₄ Schlammtasche",
-                        value: sludgy,
-                        percentage: Some(sludgy / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    let schlammy = f64::from(diff.ch4_sludge_storage_containers);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "CH₄ Schlammlagerung",
-                        value: schlammy,
-                        percentage: Some(schlammy / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    let ch4_plant = f64::from(diff.ch4_plant);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "CH₄ Anlage (unspez.)",
-                        value: ch4_plant,
-                        percentage: Some(ch4_plant / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    let bhkwy = f64::from(diff.ch4_combined_heat_and_power_plant);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "CH₄ BHKW",
-                        value: bhkwy,
-                        percentage: Some(bhkwy / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    let fossily = f64::from(diff.fossil_emissions);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "Fossiles CO₂",
-                        value: fossily,
-                        percentage: Some(fossily / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    let neb_stromi = f64::from(diff.n2o_side_stream);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "N₂O Prozesswasser",
-                        value: neb_stromi,
-                        percentage: Some(neb_stromi / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    let emissionsy = f64::from(diff.total_emissions);
-                    comp.push(klick_app_charts::BarChartArguments {
-                        label: "Emissionen",
-                        value: emissionsy,
-                        percentage: Some(emissionsy / f64::from(new.total_emissions) * 100.0),
-                    });
-
-                    //if missing_fields.get().len() > 0 {
-                    //    log::info!("NOT computing final output data, missing fields");
-                    //    show_handlungsempfehlungen.set(false);
-                    //} else {
-                    //    show_handlungsempfehlungen.set(true);
-                    //}
-
-                    comp
+                    klick_presenter::sensitivity_diff_bar_chart(old, new)
+                        .into_iter()
+                        .map(|(label, value, percentage)| BarChartArguments {
+                            label,
+                            value,
+                            percentage,
+                        })
+                        .collect::<Vec<_>>()
                 })
         })
     });

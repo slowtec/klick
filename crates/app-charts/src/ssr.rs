@@ -1,12 +1,15 @@
 #[allow(clippy::wildcard_imports)]
 use leptos::*;
 
-use crate::{BarChartRadioInput, BarChartRadioInputArguments, SankeyChart, SankeyData};
+use crate::{
+    BarChart, BarChartArguments, BarChartRadioInput, BarChartRadioInputArguments, SankeyChart,
+    SankeyData,
+};
 
 const SVG_HEADER: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?>"#;
 
 #[must_use]
-pub fn bar_chart(
+pub fn bar_chart_radio_input(
     data: Vec<BarChartRadioInputArguments>,
     width: f64,
     height: f64,
@@ -24,6 +27,20 @@ pub fn bar_chart(
             selected_bar = selected_bar.into()
             emission_factor_label
             on_change = |_|{}
+          />
+        }
+    })
+}
+
+#[must_use]
+pub fn bar_chart(data: Vec<BarChartArguments>, width: f64, height: f64) -> String {
+    render_view_as_svg(move || {
+        let data = data.into();
+        view! {
+          <BarChart
+            width
+            height
+            data
           />
         }
     })

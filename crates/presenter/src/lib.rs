@@ -1,3 +1,4 @@
+mod bar_chart;
 mod csv;
 mod language;
 mod sankey_chart;
@@ -10,5 +11,6 @@ mod value_units;
 mod tests;
 
 pub use self::{
-    csv::*, language::*, sankey_chart::*, tables::*, value_ids::*, value_labels::*, value_units::*,
+    bar_chart::*, csv::*, language::*, sankey_chart::*, tables::*, value_ids::*, value_labels::*,
+    value_units::*,
 };
