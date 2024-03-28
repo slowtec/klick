@@ -16,7 +16,7 @@ pub fn FossilCO2Emissions(
     let (form1, _, _) = render_field_sets(vec![field_set]);
 
     view! {
-       <Card title = "Fossile CO₂-Emissionen aus Abwasser" bg_color="bg-blue">
+       <Card id="sensitivity-fossil-co2" title = "Fossile CO₂-Emissionen aus Abwasser" bg_color="bg-blue">
          <p class="my-2">
            "Der überwiegende Teil des aus dem Abwasser freigesetzten CO₂ ist biogenen Ursprungs. Dieses CO₂ gilt daher als
                 klimaneutral und wird in der Treibhausgasbilanz nicht berücksichtigt. Ein kleinerer Teil des CO₂ führt auf

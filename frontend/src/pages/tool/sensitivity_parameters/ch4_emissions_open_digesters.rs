@@ -138,7 +138,7 @@ pub fn CH4EmissionsOpenDigesters(
 
     view! {
       <div class = move || { if show_dialog.get() { None } else { Some("hidden") } } >
-        <Card title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue">
+        <Card id = "sensitivity-open-digesters" title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue">
           <div class = move || { if show_sludge_bags_controls.get() { None } else { Some("hidden") } } >
              <p class="my-2">
              "Durch "<b>"offene Schlammtaschen an Faultürmen"</b>" kann Methan entweichen. Nachfolgend kann für den

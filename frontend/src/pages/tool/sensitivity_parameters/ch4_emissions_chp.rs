@@ -96,7 +96,7 @@ pub fn CH4EmissionsCHP(
 
     view! {
       <div class = move ||{ if show_ch4_chp.get() { None } else { Some("hidden") } } >
-        <Card title = "Methanemissionen aus Blockheizkraftwerken (BHKW)" bg_color="bg-blue">
+        <Card id = "sensitivity-ch4-chp" title = "Methanemissionen aus Blockheizkraftwerken (BHKW)" bg_color="bg-blue">
           <InfoBox text = "BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf">
             <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
               "Auch bei der Gasverwertung entstehen prozessbedingte Methan-Emissionen:

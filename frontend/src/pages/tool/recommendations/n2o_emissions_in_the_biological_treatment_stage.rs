@@ -4,7 +4,7 @@ use crate::pages::tool::{Card, Cite, DWA_MERKBLATT_URL};
 
 pub fn options() -> impl IntoView {
     view! {
-      <Card title = "Lachgasemissionen bei der biologischen Reinigungsstufe" bg_color="bg-yellow">
+      <Card id="recommendation-n2o-biological" title = "Lachgasemissionen bei der biologischen Reinigungsstufe" bg_color="bg-yellow">
         <p>
           "Lachgasemissionen tragen erheblich zum Gesamt-Treibhausgas-Potenzial von Kläranlagen bei.
           Das Auftreten von N₂O-Emissionen ist Anlagen-spezifisch,
