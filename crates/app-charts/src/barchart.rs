@@ -154,6 +154,7 @@ fn Bar(
             text-anchor = "middle"
             font-size = move || font_size.get()
             font-weight = move || font_weight.get()
+            font-family = "sans-serif"
           >
             { label }
           </text>
@@ -165,6 +166,7 @@ fn Bar(
           y = { value_dy  }
           text-anchor = "middle"
           font-size = move || font_size.get()
+          font-family = "sans-serif"
         >
         { format!("{value:.1}{percentage_label}") }
         </text>

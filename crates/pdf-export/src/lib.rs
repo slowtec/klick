@@ -45,6 +45,9 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     let mut profile_sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
     let mut sensitivity_sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
     let mut recommendation_sankey_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+    let mut sensitivity_barchart_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
+    let mut recommendation_barchart_svg_file =
+        tempfile::Builder::new().suffix(".svg").tempfile()?;
 
     let plant_profile_sankey_svg_file_path = if let Some(output) = &outcome.profile.output {
         let sankey_chart = render_svg_sankey_chart(output.co2_equivalents.clone());
@@ -108,14 +111,89 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         None
     };
 
+    let sensitivity_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
+        .profile
+        .output
+        .as_ref()
+        .map(|o| o.co2_equivalents.clone())
+        .and_then(|old| {
+            outcome
+                .sensitivity
+                .output
+                .as_ref()
+                .map(|o| (o.co2_equivalents.clone(), old))
+        })
+        .map(|(new, old)| {
+            presenter::sensitivity_diff_bar_chart(old, new)
+                .into_iter()
+                .filter(|(_, value, _)| f64::abs(*value) > 0.1)
+                .map(|(label, value, percentage)| charts::BarChartArguments {
+                    label,
+                    value,
+                    percentage,
+                })
+                .collect::<Vec<_>>()
+        }) {
+        if data.is_empty() {
+            None
+        } else {
+            let svg_chart = charts::ssr::bar_chart(data, BAR_CHART_WIDTH, 450.0);
+            sensitivity_barchart_svg_file.write_all(svg_chart.as_bytes())?;
+            Some(sensitivity_barchart_svg_file.path().display().to_string())
+        }
+    } else {
+        None
+    };
+
+    let recommendation_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
+        .sensitivity
+        .output
+        .as_ref()
+        .map(|o| o.co2_equivalents.clone())
+        .and_then(|old| {
+            outcome
+                .recommendation
+                .output
+                .as_ref()
+                .map(|o| (o.co2_equivalents.clone(), old))
+        })
+        .map(|(new, old)| {
+            presenter::recommendation_diff_bar_chart(old, new)
+                .into_iter()
+                .filter(|(_, value, _)| f64::abs(*value) > 0.1)
+                .map(|(label, value, percentage)| charts::BarChartArguments {
+                    label,
+                    value,
+                    percentage,
+                })
+                .collect::<Vec<_>>()
+        }) {
+        if data.is_empty() {
+            None
+        } else {
+            let svg_chart = charts::ssr::bar_chart(data, BAR_CHART_WIDTH, 450.0);
+            recommendation_barchart_svg_file.write_all(svg_chart.as_bytes())?;
+            Some(
+                recommendation_barchart_svg_file
+                    .path()
+                    .display()
+                    .to_string(),
+            )
+        }
+    } else {
+        None
+    };
+
     let markdown = render_markdown_template(
         date,
         outcome,
         plant_profile_sankey_svg_file_path,
         sensitivity_sankey_svg_file_path,
+        sensitivity_barchart_svg_file_path,
         recommendation_sankey_svg_file_path,
         n2o_scenarios_svg_file_path,
         ch4_chp_scenarios_svg_file_path,
+        recommendation_barchart_svg_file_path,
     )?;
 
     let bytes = render_pdf(markdown)?;
@@ -124,7 +202,9 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     ch4_chp_scenarios_svg_file.close()?;
     profile_sankey_svg_file.close()?;
     sensitivity_sankey_svg_file.close()?;
+    sensitivity_barchart_svg_file.close()?;
     recommendation_sankey_svg_file.close()?;
+    recommendation_barchart_svg_file.close()?;
 
     Ok(bytes)
 }
@@ -134,9 +214,11 @@ fn render_markdown_template(
     outcome: boundary::CalculationOutcome,
     plant_profile_sankey_svg_file_path: Option<String>,
     sensitivity_sankey_svg_file_path: Option<String>,
+    sensitivity_barchart_svg_file_path: Option<String>,
     recommendation_sankey_svg_file_path: Option<String>,
     n2o_scenarios_svg_file_path: Option<String>,
     ch4_chp_scenarios_svg_file_path: Option<String>,
+    recommendation_barchart_svg_file_path: Option<String>,
 ) -> anyhow::Result<String> {
     let plant_profile_table_data =
         presenter::plant_profile_as_table(&outcome.profile.input.plant_profile, Formatting::LaTeX);
@@ -180,13 +262,18 @@ fn render_markdown_template(
         ch4_chp_scenarios_svg_file_path,
         plant_profile_sankey_svg_file_path,
         sensitivity_sankey_svg_file_path,
+        sensitivity_barchart_svg_file_path,
         recommendation_sankey_svg_file_path,
+        recommendation_barchart_svg_file_path,
     };
 
     let rendered = TEMPLATES.render(MARKDOWN_TEMPLATE_NAME, &Context::from_serialize(&data)?)?;
     Ok(rendered)
 }
 
+// TODO:
+// - Restructure the fields
+// - Improve field names
 #[derive(Serialize, Debug)]
 struct TemplateData {
     date: String,
@@ -198,7 +285,9 @@ struct TemplateData {
     ch4_chp_scenarios_svg_file_path: Option<String>,
     plant_profile_sankey_svg_file_path: Option<String>,
     sensitivity_sankey_svg_file_path: Option<String>,
+    sensitivity_barchart_svg_file_path: Option<String>,
     recommendation_sankey_svg_file_path: Option<String>,
+    recommendation_barchart_svg_file_path: Option<String>,
 }
 
 const BAR_CHART_WIDTH: f64 = 1100.0;
@@ -224,7 +313,7 @@ fn render_n2o_scenarios_svg_bar_chart(
         })
         .collect();
     let emission_factor_label = Some("N₂O EF");
-    charts::ssr::bar_chart(
+    charts::ssr::bar_chart_radio_input(
         data,
         BAR_CHART_WIDTH,
         BAR_CHART_HEIGHT,
@@ -248,7 +337,7 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
         )
         .collect();
     let emission_factor_label = Some("CH₄ EF");
-    charts::ssr::bar_chart(
+    charts::ssr::bar_chart_radio_input(
         data,
         BAR_CHART_WIDTH,
         BAR_CHART_HEIGHT,
