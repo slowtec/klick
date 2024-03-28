@@ -1,5 +1,7 @@
 # Webtool - Klimabilanz für Kläranlagen mit einem Klick
 
+![Kläranlage](klaeranlage.jpg)
+
 Willkommen zum interaktiven Webtool der **Umwelttechnik BW**.
 Das Klick-Tool soll Sie als Kläranlagenbetreiber/-in,
 Kommune oder Interessierte/-r in folgenden Schlüsselaktivitäten unterstützt:
