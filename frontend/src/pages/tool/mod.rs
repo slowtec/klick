@@ -185,6 +185,7 @@ pub fn Tool(
     let clear_form_data = {
         move |()| {
             form_data.set(FormData::default());
+            current_project.set(None);
         }
     };
 
