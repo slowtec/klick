@@ -1481,6 +1481,7 @@ dependencies = [
  "klick-domain",
  "klick-presenter",
  "lazy_static",
+ "num-traits",
  "pandoc",
  "serde",
  "tempfile",
