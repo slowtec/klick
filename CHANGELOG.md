@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.11 (2024-03-29)
+
+- Added:
+  - Keep open/closed of boxes across pages #233
+  - Improved PDF export #255
+- Fixed:
+  - Don't override project if form data was resetted #235
+
 ## v0.4.10 (2024-03-28)
 
 - Added:
