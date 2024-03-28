@@ -153,11 +153,10 @@ pub fn App() -> impl IntoView {
                     <h1 class="mb-8">
                       "KlicK-Tool "
                       <span class="font-light text-xl text-gray-600">
-                        "(Betaversion "
                         <a
                           class="font-light text-xl no-underline hover:underline"
                           href= { CHANGELOG_URL } >
-                          "v" { VERSION } ")"
+                          "(v" { VERSION } ")"
                         </a>
                       </span>
                     </h1>
