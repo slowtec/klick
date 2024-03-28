@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.10 (2024-03-28)
+
+- Added:
+  - Photo to the landing page #161
+- Changed:
+  - Removed the term *Betaversion* #263
+  - Set default values for solar/wind/water to 100%
+- Fixed:
+    - Project menu
+    - Typo #256
+
 ## v0.4.9 (2024-03-27)
 
 - Changed
