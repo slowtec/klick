@@ -17,7 +17,7 @@ pub fn options(
 
     view! {
       <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >
-       <Card title = "Lachgasemissionen bei der Prozesswasserbehandlung" bg_color="bg-yellow">
+       <Card id = "recommendation-n2o-side-stream" title = "Lachgasemissionen bei der Prozesswasserbehandlung" bg_color="bg-yellow">
         <p class="my-2">
           "Da es sich bei Prozesswasserbehandlungsanlagen um relativ kleine Becken handelt, können die
           Lachgasemissionen hier durch Abdeckung und Abluftbehandlung (Oxidation) beseitigt werden."

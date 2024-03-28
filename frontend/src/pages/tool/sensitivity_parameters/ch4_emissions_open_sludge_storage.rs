@@ -22,7 +22,7 @@ pub fn CH4EmissionsOpenSludgeStorage(form_data: RwSignal<FormData>) -> impl Into
     });
     view! {
       <div class = move || { if show_dialog.get() { None } else { Some("hidden") } } >
-      <Card title = "Methanemissionen aus der Schlammlagerung" bg_color="bg-blue">
+      <Card id = "sensitivity-sludge-storage" title = "Methanemissionen aus der Schlammlagerung" bg_color="bg-blue">
         <InfoBox text = " Emissionen aus der Schlammlagerung aerob-stabilisierter Schlämme weisen ein deutliches Emissionspotenzial auf">
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 24-25)" url = DWA_MERKBLATT_URL>
             "Auch bei ordnungsgemäßem Betrieb enthalten gemeinsam aerob stabilisierte Schlämme mit ca.

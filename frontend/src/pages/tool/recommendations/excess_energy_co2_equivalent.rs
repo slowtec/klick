@@ -56,7 +56,7 @@ pub fn options(
     // -----   ----- //
 
     view! {
-      <Card title ="Energiebedingte Emissionen" bg_color="bg-yellow">
+      <Card id="recommenation-excess-energy" title ="Energiebedingte Emissionen" bg_color="bg-yellow">
         <p>
         <b>"Energiesparmaßnahmen"</b>" und "<b>"Erneuerbare Energien"</b>" können maßgeblich zur Minderung indirekter Emissionen und
              zur Energieautarkie beitragen. Um die positiven Auswirkungen eines Zubaus der erneuerbaren Energien:

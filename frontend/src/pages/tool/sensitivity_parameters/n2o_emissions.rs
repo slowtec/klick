@@ -85,7 +85,7 @@ pub fn N2OEmissionsSensitivity(
     };
 
     view! {
-      <Card title = "Lachgasemissionen" bg_color="bg-blue">
+      <Card id = "sensitivity-n2o" title = "Lachgasemissionen" bg_color="bg-blue">
         <div class="my-4 ml-4">
 
           <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Lachgasemissionen bei der biologischen Reinigungsstufe"</h3>

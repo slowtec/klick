@@ -4,7 +4,7 @@ use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 pub fn options() -> impl IntoView {
     view! {
-      <Card title ="Methanemissionen aus der Vorklärung" bg_color="bg-yellow">
+      <Card id="recommendation-ch4-pre-treatment" title ="Methanemissionen aus der Vorklärung" bg_color="bg-yellow">
         <p>
           "Eine gute Bewirtschaftung Ihrer Kläranlage ist ein zentraler Faktor für eine Verbesserung der Klimabilanz.
           Bezüglich der mechanischen Reinigungsstufe und Vorklärung kann sich dies für Methanemissionen wie folgt äußern:"
