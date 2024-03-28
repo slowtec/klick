@@ -64,6 +64,13 @@ header-includes: # contents specified by -H/--include-in-header (may have multip
 
 ## Lachgasemissionen (N\textsubscript{2}O) bei der biologischen Reinigungsstufe
 
+Lachgasemissionen tragen wesentlich zum gesamten Treibhausgaspotenzial von Kläranlagen bei.
+Die erste Abschätzung dieses Potenzials bei der Datenerhebung erfolgt mit einem Emissionsfaktor für Lachgas (N\textsubscript{2}O-EF) nach Parravicini et al. (2016, TU Wien),
+Wert siehe erster Balken im untenstehenden Diagramm.
+
+Da das Auftreten von N\textsubscript{2}O-Emissionen in der Regel anlagenspezifisch ist, bietet das KlicK-Tool weitere Auswertungsszenarien für Lachgasemissionen an.
+Diese sind im folgenden Balkendiagramm dargestellt, einschließlich der daraus resultierenden Lachgasemissionen [als CO\textsubscript{2}-Äquivalente].
+
 {% if n2o_scenarios_svg_file_path %}
   ![N\textsubscript{2}O Szenarien im Vergleich]({{ n2o_scenarios_svg_file_path }})
 {% else %}
@@ -71,6 +78,10 @@ header-includes: # contents specified by -H/--include-in-header (may have multip
 {% endif %}
 
 ## Methanemissionen (CH\textsubscript{4}O) aus Blockheizkraftwerken (BHKW)
+
+BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf.
+
+Mit der folgenden Auswahl eines eigenen Emissionsfaktors (EF) für das BHKW Ihrer Kläranlage kann Ihre Klimabilanz bezüglich der Methanemissionen verfeinert abgeschätzt werden:
 
 {% if ch4_chp_scenarios_svg_file_path %}
   ![CH\textsubscript{4} Szenarien im Vergleich]({{ ch4_chp_scenarios_svg_file_path }})
