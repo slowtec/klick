@@ -4,6 +4,7 @@ use std::{io::Write, path::Path};
 
 use anyhow::bail;
 use lazy_static::lazy_static;
+use num_traits::ToPrimitive;
 use pandoc::{InputFormat, InputKind, MarkdownExtension, OutputFormat, OutputKind, PandocOutput};
 use serde::Serialize;
 use tera::{Context, Tera};
@@ -69,23 +70,43 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         None
     };
 
+    let selected_n2o_scenario = &outcome
+        .sensitivity
+        .input
+        .sensitivity_parameters
+        .n2o_emissions
+        .calculation_method
+        .as_ref()
+        .and_then(ToPrimitive::to_u64);
+    let selected_ch4_chp_scenario = &outcome
+        .sensitivity
+        .input
+        .sensitivity_parameters
+        .ch4_chp_emissions
+        .calculation_method
+        .as_ref()
+        .and_then(ToPrimitive::to_u64);
+
     let n2o_scenarios_svg_file_path = if let Some(scenarios) = &outcome.sensitivity_n2o_calculations
     {
-        let svg_chart = render_n2o_scenarios_svg_bar_chart(scenarios.clone());
+        let svg_chart =
+            render_n2o_scenarios_svg_bar_chart(scenarios.clone(), *selected_n2o_scenario);
         n2o_scenarios_svg_file.write_all(svg_chart.as_bytes())?;
         Some(n2o_scenarios_svg_file.path().display().to_string())
     } else {
         None
     };
 
-    let ch4_chp_scenarios_svg_file_path: Option<String> =
-        if let Some(scenarios) = &outcome.sensitivity_ch4_chp_calculations {
-            let svg_chart = render_ch4_chp_scenarios_svg_bar_chart(scenarios.clone());
-            ch4_chp_scenarios_svg_file.write_all(svg_chart.as_bytes())?;
-            Some(ch4_chp_scenarios_svg_file.path().display().to_string())
-        } else {
-            None
-        };
+    let ch4_chp_scenarios_svg_file_path: Option<String> = if let Some(scenarios) =
+        &outcome.sensitivity_ch4_chp_calculations
+    {
+        let svg_chart =
+            render_ch4_chp_scenarios_svg_bar_chart(scenarios.clone(), *selected_ch4_chp_scenario);
+        ch4_chp_scenarios_svg_file.write_all(svg_chart.as_bytes())?;
+        Some(ch4_chp_scenarios_svg_file.path().display().to_string())
+    } else {
+        None
+    };
 
     let markdown = render_markdown_template(
         date,
@@ -180,11 +201,12 @@ struct TemplateData {
     recommendation_sankey_svg_file_path: Option<String>,
 }
 
-const BAR_CHART_WIDTH: f64 = 600.0;
+const BAR_CHART_WIDTH: f64 = 1100.0;
 const BAR_CHART_HEIGHT: f64 = 300.0;
 
 fn render_n2o_scenarios_svg_bar_chart(
     n2o_scenarios: Vec<(N2oEmissionFactorCalcMethod, EmissionsCalculationOutcome)>,
+    selected: Option<u64>,
 ) -> String {
     let data = n2o_scenarios
         .into_iter()
@@ -201,11 +223,19 @@ fn render_n2o_scenarios_svg_bar_chart(
             }
         })
         .collect();
-    charts::ssr::bar_chart(data, BAR_CHART_WIDTH, BAR_CHART_HEIGHT, None, None)
+    let emission_factor_label = Some("N₂O EF");
+    charts::ssr::bar_chart(
+        data,
+        BAR_CHART_WIDTH,
+        BAR_CHART_HEIGHT,
+        selected,
+        emission_factor_label,
+    )
 }
 
 fn render_ch4_chp_scenarios_svg_bar_chart(
     scenarios: Vec<(CH4ChpEmissionFactorCalcMethod, Tons, Factor)>,
+    selected: Option<u64>,
 ) -> String {
     let data = scenarios
         .into_iter()
@@ -217,7 +247,14 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
             },
         )
         .collect();
-    charts::ssr::bar_chart(data, BAR_CHART_WIDTH, BAR_CHART_HEIGHT, None, None)
+    let emission_factor_label = Some("CH₄ EF");
+    charts::ssr::bar_chart(
+        data,
+        BAR_CHART_WIDTH,
+        BAR_CHART_HEIGHT,
+        selected,
+        emission_factor_label,
+    )
 }
 
 fn render_svg_sankey_chart(co2_equivalents: CO2Equivalents) -> String {

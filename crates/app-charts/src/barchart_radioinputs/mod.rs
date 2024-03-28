@@ -209,8 +209,9 @@ fn Bar(
             x = { bar_width/2.0 }
             y = { -10.0 }
             text-anchor = "middle"
-            font-size = move || 20.0 + font_size.get()
+            font-size = move || 18.0 + font_size.get()
             font-weight = move || font_weight.get()
+            font-family = "sans-serif"
           >
             { co2_value_label }
           </text>
@@ -222,8 +223,9 @@ fn Bar(
                   x = { bar_width/2.0 }
                   y = { bar_height - 25.0 }
                   text-anchor = "middle"
-                  font-size = move || 20.0 + font_size.get()
+                  font-size = move || 18.0 + font_size.get()
                   font-weight = "bold"
+                  font-family = "sans-serif"
                 >
                   { label }
                 </text>
@@ -240,7 +242,8 @@ fn Bar(
                   x = { bar_width/2.0 }
                   y = { bar_height - 5.0 }
                   text-anchor = "middle"
-                  font-size = move || 16.0 + font_size.get()
+                  font-size = move || 14.0 + font_size.get()
+                  font-family = "sans-serif"
                 >
                   { ef_label }
                 </text>
