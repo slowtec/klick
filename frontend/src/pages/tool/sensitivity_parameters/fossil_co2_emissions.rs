@@ -22,7 +22,7 @@ pub fn FossilCO2Emissions(
                 klimaneutral und wird in der Treibhausgasbilanz nicht berücksichtigt. Ein kleinerer Teil des CO₂ führt auf
                 fossile und synthetische Verbindungen zurück. Schätzungen gehen davon aus, dass dies im kommunalen Abwasser
                 anteilig bis zu 5–10% der organischen Fracht ausmachen kann (Law et al. 2013). Für Abwässer mit hohen Anteilen
-                an gewerblichen/industriellen Einleitern (> 45 %) kann die fossile CO₂ -Fracht sogar höher liegen (UBA 2022)."
+                an gewerblichen/industriellen Einleitern (> 45 %) kann die fossile CO₂-Fracht sogar höher liegen (UBA 2022)."
          </p>
          <p class="my-2">
            "Im Folgenden können Sie auf Basis des gesamten organischer Kohlenstoffs (total organic carbon, TOC"<sub>"Zulauf"</sub>")
@@ -31,9 +31,9 @@ pub fn FossilCO2Emissions(
                 können sie berechnen wie sich dies auf die Klimabilanz Ihrer Kläranlage auswirkt."
          </p>
          <p class="my-2">
-           "Wenn Sie in der Datenerfassung keinen Wert im „TOC"<sub>"Zulauf"</sub>"“- Eingabefeld eingetragen haben schätzt das Tool die
+           "Wenn Sie in der Datenerfassung keinen Wert im „TOC"<sub>"Zulauf"</sub>"“-Eingabefeld eingetragen haben schätzt das Tool die
                 fossilen CO₂-Emissionen aus der biologischen Reinigung über den angegebenen CSB"<sub>"Zulauf"</sub>" mittels des theoretischen
-                Umrechnungsfaktors von CSB:TOC von 1:2, 6) abgeleitet aus der chemischen Gleichung C + O₂ → CO₂). Wenn Sie das
+                Umrechnungsfaktors von CSB:TOC von 1:2,6¯) abgeleitet aus der chemischen Gleichung C + O₂ → CO₂). Wenn Sie das
                 untenstehende „CO₂-EF (fossil)“-Eingabefeld freilassen wird ein gemittelter CO₂-EF (fossil) von
                 3,85 (nach Law et al. 2013) angenommen."
          </p>
