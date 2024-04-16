@@ -8,6 +8,7 @@ use crate::Page;
 const EXPORT_FILE_NAME_JSON: &str = "klimabilanzklaeranlage.json";
 const EXPORT_FILE_NAME_CSV: &str = "klimabilanzklaeranlage.csv";
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 pub fn ProjectMenu(
     logged_in: Signal<bool>,
@@ -30,7 +31,7 @@ pub fn ProjectMenu(
             <div class="relative inline-block text-left">
               <div>
                 <button
-                  on:click = move |_| is_open.update(|s| *s =! *s)
+                  on:click = move |_| is_open.update(|s| *s = !*s)
     type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                   aria-expanded="true"
                   aria-haspopup="true"

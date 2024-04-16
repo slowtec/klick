@@ -9,6 +9,7 @@ use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 pub fn CH4EmissionsCHP(
     form_data: RwSignal<FormData>,

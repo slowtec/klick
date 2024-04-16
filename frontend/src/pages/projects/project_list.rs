@@ -64,7 +64,6 @@ fn Project(
     let error = RwSignal::<Option<String>>::new(None);
 
     let delete_project = create_action(move |(): &()| {
-        let api = api;
         let id = project.id;
         async move {
             let result = api.get().delete_project(id).await;
@@ -84,7 +83,10 @@ fn Project(
     });
 
     let offset_minutes = js_sys::Date::new_0().get_timezone_offset();
+
+    #[allow(clippy::cast_possible_truncation)]
     let offset_seconds = -(offset_minutes as i32) * 60;
+
     let local_offset = time::UtcOffset::from_whole_seconds(offset_seconds)
         .map_err(|_| {
             log::warn!("Unable to determine local timezone");

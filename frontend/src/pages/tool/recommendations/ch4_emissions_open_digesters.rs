@@ -6,6 +6,7 @@ use klick_presenter::*;
 
 use crate::pages::tool::{CalculationOutcome, Card};
 
+#[allow(clippy::too_many_lines)] // TODO
 pub fn options(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
@@ -78,14 +79,8 @@ pub fn options(
           </div>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
           { move || {
-              let show_sludge_bags_controls_class = match show_sludge_bags_controls.get() {
-                    false => "hidden".to_string(),
-                    true => String::new(),
-              };
-              let show_sludge_storage_containers_controls_class = match show_sludge_storage_containers_controls.get() {
-                  false => "hidden".to_string(),
-                  true => String::new(),
-              };
+              let show_sludge_bags_controls_class = if show_sludge_bags_controls.get() { String::new() } else { "hidden".to_string() };
+              let show_sludge_storage_containers_controls_class = if show_sludge_storage_containers_controls.get() { String::new() } else { "hidden".to_string() };
               outcome.with(|out|out.recommendation.output.as_ref().map(|out|{
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">

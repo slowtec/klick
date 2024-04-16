@@ -40,10 +40,10 @@ pub fn NewProject(
     let field_view = render_field(field, field_id, missing_fields);
 
     let create_project = create_action(move |(): &()| {
-        let api = api;
-        let mut project = FormData::default();
-        project.project_title = title.get();
-
+        let project = FormData {
+            project_title: title.get(),
+            ..Default::default()
+        };
         async move {
             wait_for_response.set(true);
             let result = api.get().create_project(&project).await;

@@ -64,14 +64,11 @@ pub fn CredentialsForm(
                   placeholder="Passwort"
                   prop:disabled=move || disabled.get()
                   on:keyup=move |ev: ev::KeyboardEvent| {
-                      match &*ev.key() {
-                          "Enter" => {
-                              dispatch_action();
-                          }
-                          _ => {
-                              let val = event_target_value(&ev);
-                              set_password.update(|p| *p = val);
-                          }
+                      if &*ev.key() == "Enter" {
+                          dispatch_action();
+                      } else {
+                          let val = event_target_value(&ev);
+                          set_password.update(|p| *p = val);
                       }
                   }
                   on:change=move |ev| {

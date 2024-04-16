@@ -10,6 +10,7 @@ use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::Card;
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 pub fn N2OEmissionsSensitivity(
     form_data: RwSignal<FormData>,
@@ -149,10 +150,7 @@ pub fn N2OEmissionsSensitivity(
             { move ||
               outcome.with(|outcome|
                 outcome.sensitivity.output.as_ref().map(|out|{
-                  let show_side_stream_controls_class = match show_side_stream_controls.get() {
-                      false => "hidden".to_string(),
-                      true => String::new(),
-                  };
+                  let show_side_stream_controls_class = if show_side_stream_controls.get() { String::new() } else { "hidden".to_string() };
                   view! {
                     <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                       <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Anlage"</dt>

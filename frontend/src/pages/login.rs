@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 
-use klick_boundary::json_api;
+use klick_boundary::json_api::{self, Credentials};
 
 use crate::{
     api::{self, AuthorizedApi, UnauthorizedApi},
@@ -9,6 +9,7 @@ use crate::{
     Page,
 };
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 pub fn Login(
     api: UnauthorizedApi,
@@ -95,7 +96,7 @@ pub fn Login(
                           title = "Login"
                           description="Bitte loggen Sie sich in Ihr Konto ein"
                           action_label = "Log in"
-                          initial_credentials = Default::default()
+                          initial_credentials = Credentials::default()
                           action = login_action
                           error = login_error.into()
                           disabled

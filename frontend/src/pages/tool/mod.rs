@@ -50,6 +50,7 @@ const BREADCRUMPS_ENTRIES: &[(&str, PageSection)] = &[
 
 const DEFAULT_UNNAMED_PROJECT_TITLE: &str = "Unbenannt";
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 pub fn Tool(
     api: Signal<Option<AuthorizedApi>>,
@@ -110,7 +111,6 @@ pub fn Tool(
     });
 
     let load_action = create_action({
-        let api = api;
         move |id: &ProjectId| {
             let id = *id;
             async move {
@@ -131,7 +131,6 @@ pub fn Tool(
     });
 
     let save_action = create_action({
-        let api = api;
         move |project: &Project| {
             let project = project.clone();
             async move {
