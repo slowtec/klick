@@ -7,6 +7,7 @@ use klick_presenter::*;
 
 use crate::pages::tool::{CalculationOutcome, Card};
 
+#[allow(clippy::too_many_lines)] // TODO
 pub fn options(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
@@ -138,6 +139,7 @@ pub fn options(
     }
 }
 
+#[allow(clippy::too_many_lines)] // TODO
 fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> Vec<FieldSet> {
     vec![
         FieldSet {

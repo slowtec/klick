@@ -19,6 +19,7 @@ use self::{
     fossil_co2_emissions::*, n2o_emissions::*,
 };
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 pub fn SensitivityParameters(
     form_data: RwSignal<FormData>,

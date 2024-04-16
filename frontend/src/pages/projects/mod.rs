@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_router::NavigateOptions;
 
 use klick_boundary::{Project, ProjectId, SavedProject};
 
@@ -48,23 +49,19 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
 
     let error = RwSignal::<Option<String>>::new(None);
 
-    let load_projects = create_action(move |(): &()| {
-        let api = api;
-        async move {
-            let result = api.get().all_projects().await;
-            match result {
-                Ok(p) => {
-                    projects.set(p);
-                    error.set(None);
-                }
-                Err(err) => {
-                    projects.update(std::vec::Vec::clear);
-                    log::warn!("Unable to load projects: {err}");
-                    error.set(Some(
-                        "Es tut uns leid, es ist ein Kommunikationsproblem aufgetreten."
-                            .to_string(),
-                    ));
-                }
+    let load_projects = create_action(move |(): &()| async move {
+        let result = api.get().all_projects().await;
+        match result {
+            Ok(p) => {
+                projects.set(p);
+                error.set(None);
+            }
+            Err(err) => {
+                projects.update(std::vec::Vec::clear);
+                log::warn!("Unable to load projects: {err}");
+                error.set(Some(
+                    "Es tut uns leid, es ist ein Kommunikationsproblem aufgetreten.".to_string(),
+                ));
             }
         }
     });
@@ -72,7 +69,6 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
     let download_link: NodeRef<leptos::html::A> = create_node_ref();
 
     let download_pdf = create_action(move |id: &ProjectId| {
-        let api = api;
         let id = *id;
         async move {
             let result = api.get().download_pdf_report(&id).await;
@@ -109,7 +105,7 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
             return;
         };
         current_project.set(Some(project.into()));
-        let nav_options = Default::default();
+        let nav_options = NavigateOptions::default();
         navigate(Page::Tool.path(), nav_options);
     };
 

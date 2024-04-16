@@ -18,6 +18,7 @@ mod leak_test;
 mod n2o_emissions_in_the_biological_treatment_stage;
 mod n2o_emissions_side_stream_system;
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 pub fn Recommendations(
     form_data: RwSignal<FormData>,

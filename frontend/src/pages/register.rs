@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_router::*;
 
-use klick_boundary::json_api;
+use klick_boundary::json_api::{self, Credentials};
 
 use crate::{
     api::{self, UnauthorizedApi},
@@ -65,7 +65,7 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
                           title = "Registrierung"
                           description = "Bitte geben Sie die gewünschten Anmeldeinformationen ein"
                           action_label="Registrieren"
-                          initial_credentials = Default::default()
+                          initial_credentials = Credentials::default()
                           action=register_action
                           error = register_error.into()
                           disabled = { disabled }

@@ -3,7 +3,7 @@
 use gloo_storage::{LocalStorage, Storage};
 use leptos::*;
 use leptos_meta::provide_meta_context;
-use leptos_router::{use_navigate, Route, Router, Routes};
+use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
 
 use klick_app_api as api;
 use klick_boundary::{self as boundary, json_api::UserInfo};
@@ -39,6 +39,7 @@ const API_TOKEN_STORAGE_KEY: &str = "api-token";
 
 const SECTION_ID_TOOL_HOME: &str = "tool-home";
 
+#[allow(clippy::too_many_lines)] // TODO
 #[component]
 #[must_use]
 pub fn App() -> impl IntoView {
@@ -106,16 +107,12 @@ pub fn App() -> impl IntoView {
 
     // -- effects -- //
 
-    create_effect(move |_| match authorized_api.get() {
-        Some(api) => {
+    create_effect(move |_| {
+        if let Some(api) = authorized_api.get() {
             log::debug!("API is now authorized: save token in LocalStorage");
             LocalStorage::set(API_TOKEN_STORAGE_KEY, api.token()).expect("LocalStorage::set");
-        }
-        None => {
-            log::debug!(
-                "API is no longer authorized: delete token from \
-                     LocalStorage"
-            );
+        } else {
+            log::debug!("API is no longer authorized: delete token from LocalStorage");
             LocalStorage::delete(API_TOKEN_STORAGE_KEY);
         }
     });
@@ -216,7 +213,7 @@ pub fn App() -> impl IntoView {
                               log::info!("Successfully logged in");
                               authorized_api.update(|v| *v = Some(api.clone()));
                               let navigate = use_navigate();
-                              navigate(Page::Home.path(), Default::default());
+                              navigate(Page::Home.path(), NavigateOptions::default());
                               fetch_user_info.dispatch(api);
                           }
                       />

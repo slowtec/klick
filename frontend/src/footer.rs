@@ -65,6 +65,7 @@ fn FooterLink(link: LinkType, label: &'static str) -> impl IntoView {
     }
 }
 
+#[derive(Clone, Copy)]
 enum LinkType {
     Page(Page),
     External(&'static str),

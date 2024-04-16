@@ -13,7 +13,7 @@ use crate::{
 use crate::units::GramsPerKilowatthour;
 
 #[must_use]
-#[allow(clippy::too_many_lines)]
+#[allow(clippy::too_many_lines)] // TODO
 pub fn calculate_emissions(
     input: EmissionInfluencingValues,
     calculation_methods: EmissionFactorCalculationMethods,
@@ -326,7 +326,9 @@ pub fn calculate_ch4_slippage_sludge_bags(
     methane_fraction: Percent,
     sludge_bags_factor: Option<QubicmetersPerHour>,
 ) -> Tons {
+    #[allow(clippy::cast_precision_loss)]
     let count = Factor::new(digester_count as f64);
+
     let hours_per_year = Years::new(1.0).convert_to::<Hours>();
     let sludge_bags_factor = sludge_bags_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_BAGS);
     let kilograms = sludge_bags_factor
@@ -550,8 +552,7 @@ pub fn calculate_ch4_chp(
     methane_fraction: Percent,
 ) -> (Tons, Factor) {
     let ch4_emission_factor = match calculation_method {
-        None => Factor::new(0.01),
-        Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
+        Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines) | None => Factor::new(0.01),
         Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
         Some(CH4ChpEmissionFactorCalcMethod::JetEngine) => Factor::new(0.025),
         Some(CH4ChpEmissionFactorCalcMethod::Custom(f)) => f,
