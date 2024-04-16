@@ -9,10 +9,10 @@ publish = false
 [dependencies]
 klick-domain = { path = "../domain" }
 
-anyhow = "1.0.81"
+anyhow = "1.0.82"
 log = "0.4.21"
 thiserror = "1.0.58"
-time = "0.3.34"
+time = "0.3.36"
 
 [lints]
 workspace = true
