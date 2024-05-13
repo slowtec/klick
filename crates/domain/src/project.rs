@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 use thiserror::Error;
 use time::OffsetDateTime;
@@ -33,9 +33,9 @@ impl Id {
     }
 }
 
-impl ToString for Id {
-    fn to_string(&self) -> String {
-        self.0.simple().to_string()
+impl fmt::Display for Id {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0.simple())
     }
 }
 

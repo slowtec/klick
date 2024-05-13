@@ -12,17 +12,17 @@ klick-application = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = { path = "../domain" }
 
-anyhow = "1.0.82"
-diesel = { version = "2.1.5", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+anyhow = "1.0.83"
+diesel = { version = "2.1.6", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = { version = "2.1.0", features = ["sqlite"] }
 # Bundle SQLite code to prevent dynamic linking.
 # The pinned version must be compatible with diesel! Try to update it
 # manually or by `cargo upgrade --pinned` after updating diesel.
 libsqlite3-sys = { version = "=0.28.0", features = ["bundled"] }
 log = "0.4.21"
-parking_lot = "0.12.1"
-serde_json = "1.0.116"
-thiserror = "1.0.58"
+parking_lot = "0.12.2"
+serde_json = "1.0.117"
+thiserror = "1.0.60"
 time = "0.3.36"
 uuid = "1.8.0"
 
