@@ -133,10 +133,8 @@ impl ValueUnit for EnergyConsumptionId {
 impl ValueUnit for SewageSludgeTreatmentId {
     fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
-            Self::SludgeBags => None,            // FIXME implement latex representation
-            Self::SludgeBagsRecommended => None, // FIXME implement latex representation
+            Self::SludgeBags => None, // FIXME implement latex representation
             Self::SludgeStorageContainers => None, // FIXME implement latex representation
-            Self::SludgeStorageContainersRecommended => None, // FIXME implement latex representation
             Self::SewageSludgeForDisposal => Some(LATEX_TONS),
             Self::TransportDistance => Some(LATEX_KILOMETERS),
             Self::DigesterCount => None,
@@ -146,9 +144,7 @@ impl ValueUnit for SewageSludgeTreatmentId {
     fn unit_as_text(&self) -> Option<&'static str> {
         match self {
             Self::SludgeBags => None,
-            Self::SludgeBagsRecommended => None,
             Self::SludgeStorageContainers => None,
-            Self::SludgeStorageContainersRecommended => None,
             Self::SewageSludgeForDisposal => Some(TEXT_TONS),
             Self::TransportDistance => Some(TEXT_KILOMETERS),
             Self::DigesterCount => None,
