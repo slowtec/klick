@@ -2,9 +2,6 @@ use derive_more::From;
 use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
-// TODO:
-// Actually, we should derive the IDs directly from the domain layer.
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize, From)]
 pub enum ProfileValueId {
     PlantName,
