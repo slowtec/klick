@@ -9,8 +9,11 @@ rust-version.workspace = true
 
 [dependencies]
 bs58 = "0.5.1"
+derive_more = "0.99.17"
 mailparse = "0.15.0"
 pwhash = "1.0.0"
+serde = { version = "1.0.202", features = ["derive"] }
+strum = { version = "0.26.2", features = ["derive"] }
 thiserror = "1.0.60"
 time = "0.3.36"
 uuid = { version = "1.8.0", features = ["v4"] }
