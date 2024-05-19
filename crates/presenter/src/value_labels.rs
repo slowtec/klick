@@ -79,9 +79,7 @@ impl ValueLabel for SewageSludgeTreatmentId {
             Self::TransportDistance => "Transportdistanz",
             Self::DigesterCount => "Anzahl Faultürme",
             Self::SludgeBags => "Schlammtaschen sind geschlossen",
-            Self::SludgeBagsRecommended => "Schließen der Schlammtaschen",
             Self::SludgeStorageContainers => "Schlammlagerung ist geschlossen",
-            Self::SludgeStorageContainersRecommended => "Schließen der Schlammlagerung",
         }
     }
 }
@@ -100,17 +98,10 @@ impl ValueLabel for OperatingMaterialId {
 impl ValueLabel for ScenarioFieldId {
     fn label(&self) -> &'static str {
         match self {
-            Self::N2OCustomFactor => "N₂O-EF Benutzerdefiniert",
             Self::N2OSideStreamFactor => "N₂O-EF Prozesswasser",
             Self::N2OSideStreamCoverIsOpen => {
                 "Abdeckung mit Abluftbehandlung Prozesswasserbehandlungsanlage"
             }
-            Self::CH4ChpCalculationMethod => "BHKW Emmisionsfaktor",
-            Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
-            Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",
-            Self::SludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
-            Self::SludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
-
             Self::ProcessEnergySaving => "Energieeinsparung bei Prozessen",
             Self::FossilEnergySaving => "Energieeinsparung bei fossilen Energiequellen",
             Self::DistrictHeating => "Abgabe Fern-/Nahwärme (an Dritte)",
@@ -124,12 +115,7 @@ impl ValueLabel for ScenarioFieldId {
     }
     fn label_latex(&self) -> &'static str {
         match self {
-            Self::N2OCustomFactor => "$N_2O$-EF Benutzerdefiniert",
             Self::N2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
-            Self::CH4ChpCustomFactor => "BHKW $CH_4$-EF benutzerdefiniert",
-            Self::CO2FossilCustomFactor => "$CO_2$-EF (fossil)",
-            Self::SludgeBagsCustomFactor => "$CH_4$-EF Schlammtaschen",
-            Self::SludgeStorageCustomFactor => "$CH_4$-EF Schlammlagerung",
             _ => self.label(),
         }
     }

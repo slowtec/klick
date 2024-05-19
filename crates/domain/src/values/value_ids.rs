@@ -48,9 +48,7 @@ pub enum SideStreamTreatmentId {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum SewageSludgeTreatmentId {
     SludgeBags,
-    SludgeBagsRecommended, // TODO: remove
     SludgeStorageContainers,
-    SludgeStorageContainersRecommended, // TODO: remove
     SewageSludgeForDisposal,
     TransportDistance,
     DigesterCount,
@@ -66,13 +64,6 @@ pub enum OperatingMaterialId {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
 pub enum ScenarioFieldId {
-    N2OCustomFactor,           // TODO: remove
-    CH4ChpCalculationMethod,   // TODO: remove
-    CH4ChpCustomFactor,        // TODO: remove
-    CO2FossilCustomFactor,     // TODO: remove
-    SludgeBagsCustomFactor,    // TODO: remove
-    SludgeStorageCustomFactor, // TODO: remove
-
     N2OSideStreamFactor,
     N2OSideStreamCoverIsOpen,
     ProcessEnergySaving,
