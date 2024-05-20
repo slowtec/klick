@@ -3,33 +3,33 @@ use serde::{Deserialize, Serialize};
 use strum::AsRefStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize, From)]
-pub enum ProfileValueId {
+pub enum InputValueId {
     PlantName,
     PopulationEquivalent,
     Wastewater,
-    InfluentAverage(AnnualAverageInfluentId),
-    EffluentAverage(AnnualAverageEffluentId),
-    EnergyConsumption(EnergyConsumptionId),
-    SewageSludgeTreatment(SewageSludgeTreatmentId),
-    SideStreamTreatment(SideStreamTreatmentId),
-    OperatingMaterials(OperatingMaterialId),
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum AnnualAverageInfluentId {
-    Nitrogen,
-    ChemicalOxygenDemand,
-    TotalOrganicCarbohydrates,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum AnnualAverageEffluentId {
-    Nitrogen,
-    ChemicalOxygenDemand,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum EnergyConsumptionId {
+    InfluentNitrogen,
+    InfluentChemicalOxygenDemand,
+    InfluentTotalOrganicCarbohydrates,
+    EffluentNitrogen,
+    EffluentChemicalOxygenDemand,
+    SideStreamTreatmentTotalNitrogen,
+    OperatingMaterialFeCl3,
+    OperatingMaterialFeClSO4,
+    OperatingMaterialCaOH2,
+    OperatingMaterialSyntheticPolymers,
+    SensitivityN2OCalculationMethod,
+    SensitivityN2OCustomFactor,
+    SensitivityN2OSideStreamFactor,
+    SensitivityCH4ChpCalculationMethod,
+    SensitivityCH4ChpCustomFactor,
+    SensitivityCO2FossilCustomFactor,
+    SensitivitySludgeBagsCustomFactor,
+    SensitivitySludgeStorageCustomFactor,
+    SludgeTreatmentBags,
+    SludgeTreatmentStorageContainers,
+    SludgeTreatmentDisposal,
+    SludgeTreatmentTransportDistance,
+    SludgeTreatmentDigesterCount,
     SewageGasProduced,
     MethaneFraction,
     GasSupply,
@@ -38,53 +38,15 @@ pub enum EnergyConsumptionId {
     OnSitePowerGeneration,
     EmissionFactorElectricityMix,
     HeatingOil,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum SideStreamTreatmentId {
-    TotalNitrogen,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum SewageSludgeTreatmentId {
-    SludgeBags,
-    SludgeStorageContainers,
-    SewageSludgeForDisposal,
-    TransportDistance,
-    DigesterCount,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum OperatingMaterialId {
-    FeCl3,
-    FeClSO4,
-    CaOH2,
-    SyntheticPolymers,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum ScenarioFieldId {
-    N2OSideStreamFactor,
-    N2OSideStreamCoverIsOpen,
-    ProcessEnergySaving,
-    FossilEnergySaving,
-    DistrictHeating,
-    PhotovoltaicEnergyExpansion,
-    EstimatedSelfPhotovolaticUsage,
-    WindEnergyExpansion,
-    EstimatedSelfWindEnergyUsage,
-    WaterEnergyExpansion,
-    EstimatedSelfWaterEnergyUsage,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize)]
-pub enum SensitivityParameterId {
-    N2OCalculationMethod,
-    N2OCustomFactor,
-    N2OSideStreamFactor,
-    CH4ChpCalculationMethod,
-    CH4ChpCustomFactor,
-    CO2FossilCustomFactor,
-    SludgeBagsCustomFactor,
-    SludgeStorageCustomFactor,
+    ScenarioN2OSideStreamFactor,
+    ScenarioN2OSideStreamCoverIsOpen,
+    ScenarioProcessEnergySaving,
+    ScenarioFossilEnergySaving,
+    ScenarioDistrictHeating,
+    ScenarioPhotovoltaicEnergyExpansion,
+    ScenarioEstimatedSelfPhotovolaticUsage,
+    ScenarioWindEnergyExpansion,
+    ScenarioEstimatedSelfWindEnergyUsage,
+    ScenarioWaterEnergyExpansion,
+    ScenarioEstimatedSelfWaterEnergyUsage,
 }

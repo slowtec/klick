@@ -1,8 +1,4 @@
-use crate::{
-    AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, ScenarioFieldId, SensitivityParameterId, SewageSludgeTreatmentId,
-    SideStreamTreatmentId,
-};
+use crate::InputValueId;
 
 // TODO:
 // Actually, we should derive the units directly from the domain layer
@@ -44,67 +40,19 @@ const TEXT_KILOWATTHOURS: &str = "kWh";
 const TEXT_GRAMSPERKILOWATTHOUR: &str = "g/kWh";
 const TEXT_QUBICMETERS_PER_HOUR: &str = "m³/h";
 
-impl ValueUnit for ProfileValueId {
+impl ValueUnit for InputValueId {
     fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
             Self::PlantName => None,
             Self::PopulationEquivalent => None,
             Self::Wastewater => Some(LATEX_QUBICMETERS),
-            Self::InfluentAverage(id) => id.unit_as_latex(),
-            Self::EffluentAverage(id) => id.unit_as_latex(),
-            Self::EnergyConsumption(id) => id.unit_as_latex(),
-            Self::SewageSludgeTreatment(id) => id.unit_as_latex(),
-            Self::SideStreamTreatment(_id) => None, // FIXME id.unit_as_latex(),
-            Self::OperatingMaterials(id) => id.unit_as_latex(),
-        }
-    }
-
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            Self::PlantName => None,
-            Self::PopulationEquivalent => None,
-            Self::Wastewater => Some(TEXT_QUBICMETERS),
-            Self::InfluentAverage(id) => id.unit_as_text(),
-            Self::EffluentAverage(id) => id.unit_as_text(),
-            Self::EnergyConsumption(id) => id.unit_as_text(),
-            Self::SewageSludgeTreatment(id) => id.unit_as_text(),
-            Self::SideStreamTreatment(_id) => None, // FIXME id.unit_as_latex(),
-            Self::OperatingMaterials(id) => id.unit_as_text(),
-        }
-    }
-}
-
-impl ValueUnit for AnnualAverageInfluentId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
-            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(LATEX_MILLIGRAMSPERLITER),
-            Self::TotalOrganicCarbohydrates => Some(LATEX_MILLIGRAMSPERLITER),
-        }
-    }
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(TEXT_MILLIGRAMSPERLITER),
-            Self::TotalOrganicCarbohydrates => Some(TEXT_MILLIGRAMSPERLITER),
-        }
-    }
-}
-
-impl ValueUnit for AnnualAverageEffluentId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
-            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(LATEX_MILLIGRAMSPERLITER),
-        }
-    }
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            Self::Nitrogen | Self::ChemicalOxygenDemand => Some(TEXT_MILLIGRAMSPERLITER),
-        }
-    }
-}
-
-impl ValueUnit for EnergyConsumptionId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
+            Self::InfluentNitrogen | Self::InfluentChemicalOxygenDemand => {
+                Some(LATEX_MILLIGRAMSPERLITER)
+            }
+            Self::InfluentTotalOrganicCarbohydrates => Some(LATEX_MILLIGRAMSPERLITER),
+            Self::EffluentNitrogen | Self::EffluentChemicalOxygenDemand => {
+                Some(LATEX_MILLIGRAMSPERLITER)
+            }
             Self::SewageGasProduced => Some(LATEX_QUBICMETERS),
             Self::MethaneFraction => Some(LATEX_PERCENT),
             Self::GasSupply => Some(LATEX_KILOWATTHOURS),
@@ -113,11 +61,33 @@ impl ValueUnit for EnergyConsumptionId {
             Self::OnSitePowerGeneration => Some(LATEX_KILOWATTHOURS),
             Self::EmissionFactorElectricityMix => Some(LATEX_GRAMSPERKILOWATTHOUR),
             Self::HeatingOil => Some(LATEX_TONS),
+            Self::SideStreamTreatmentTotalNitrogen => Some(LATEX_TONS),
+            Self::SludgeTreatmentBags => None, // FIXME implement latex representation
+            Self::SludgeTreatmentStorageContainers => None, // FIXME implement latex representation
+            Self::SludgeTreatmentDisposal => Some(LATEX_TONS),
+            Self::SludgeTreatmentTransportDistance => Some(LATEX_KILOMETERS),
+            Self::SludgeTreatmentDigesterCount => None,
+            Self::OperatingMaterialFeCl3
+            | Self::OperatingMaterialFeClSO4
+            | Self::OperatingMaterialCaOH2
+            | Self::OperatingMaterialSyntheticPolymers => Some(LATEX_TONS),
+            // FIXME
+            _ => None,
         }
     }
 
     fn unit_as_text(&self) -> Option<&'static str> {
         match self {
+            Self::PlantName => None,
+            Self::PopulationEquivalent => None,
+            Self::Wastewater => Some(TEXT_QUBICMETERS),
+            Self::InfluentNitrogen | Self::InfluentChemicalOxygenDemand => {
+                Some(TEXT_MILLIGRAMSPERLITER)
+            }
+            Self::InfluentTotalOrganicCarbohydrates => Some(TEXT_MILLIGRAMSPERLITER),
+            Self::EffluentNitrogen | Self::EffluentChemicalOxygenDemand => {
+                Some(TEXT_MILLIGRAMSPERLITER)
+            }
             Self::SewageGasProduced => Some(TEXT_QUBICMETERS),
             Self::MethaneFraction => Some(TEXT_PERCENT),
             Self::GasSupply => Some(TEXT_KILOWATTHOURS),
@@ -126,91 +96,27 @@ impl ValueUnit for EnergyConsumptionId {
             Self::OnSitePowerGeneration => Some(TEXT_KILOWATTHOURS),
             Self::EmissionFactorElectricityMix => Some(TEXT_GRAMSPERKILOWATTHOUR),
             Self::HeatingOil => Some(TEXT_TONS),
-        }
-    }
-}
-
-impl ValueUnit for SewageSludgeTreatmentId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
-            Self::SludgeBags => None, // FIXME implement latex representation
-            Self::SludgeStorageContainers => None, // FIXME implement latex representation
-            Self::SewageSludgeForDisposal => Some(LATEX_TONS),
-            Self::TransportDistance => Some(LATEX_KILOMETERS),
-            Self::DigesterCount => None,
-        }
-    }
-
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            Self::SludgeBags => None,
-            Self::SludgeStorageContainers => None,
-            Self::SewageSludgeForDisposal => Some(TEXT_TONS),
-            Self::TransportDistance => Some(TEXT_KILOMETERS),
-            Self::DigesterCount => None,
-        }
-    }
-}
-impl ValueUnit for OperatingMaterialId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
-            Self::FeCl3 | Self::FeClSO4 | Self::CaOH2 | Self::SyntheticPolymers => Some(LATEX_TONS),
-        }
-    }
-
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            Self::FeCl3 | Self::FeClSO4 | Self::CaOH2 | Self::SyntheticPolymers => Some(TEXT_TONS),
-        }
-    }
-}
-
-impl ValueUnit for SideStreamTreatmentId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
-            Self::TotalNitrogen => Some(LATEX_TONS),
-        }
-    }
-
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            Self::TotalNitrogen => Some(TEXT_TONS),
-        }
-    }
-}
-
-impl ValueUnit for ScenarioFieldId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
+            Self::SideStreamTreatmentTotalNitrogen => Some(TEXT_TONS),
+            Self::SludgeTreatmentBags => None,
+            Self::SludgeTreatmentStorageContainers => None,
+            Self::SludgeTreatmentDisposal => Some(TEXT_TONS),
+            Self::SludgeTreatmentTransportDistance => Some(TEXT_KILOMETERS),
+            Self::SludgeTreatmentDigesterCount => None,
+            Self::OperatingMaterialFeCl3
+            | Self::OperatingMaterialFeClSO4
+            | Self::OperatingMaterialCaOH2
+            | Self::OperatingMaterialSyntheticPolymers => Some(TEXT_TONS),
+            Self::SensitivityN2OCalculationMethod | Self::SensitivityCH4ChpCalculationMethod => {
+                None
+            }
+            Self::SensitivityN2OCustomFactor
+            | Self::SensitivityN2OSideStreamFactor
+            | Self::SensitivityCH4ChpCustomFactor
+            | Self::SensitivityCO2FossilCustomFactor
+            | Self::SensitivitySludgeStorageCustomFactor => Some(TEXT_PERCENT),
+            Self::SensitivitySludgeBagsCustomFactor => Some(TEXT_QUBICMETERS_PER_HOUR),
             // FIXME
             _ => None,
-        }
-    }
-
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            _ => None,
-        }
-    }
-}
-
-impl ValueUnit for SensitivityParameterId {
-    fn unit_as_latex(&self) -> Option<&'static str> {
-        match self {
-            // FIXME
-            _ => None,
-        }
-    }
-
-    fn unit_as_text(&self) -> Option<&'static str> {
-        match self {
-            Self::N2OCalculationMethod | Self::CH4ChpCalculationMethod => None,
-            Self::N2OCustomFactor
-            | Self::N2OSideStreamFactor
-            | Self::CH4ChpCustomFactor
-            | Self::CO2FossilCustomFactor
-            | Self::SludgeStorageCustomFactor => Some(TEXT_PERCENT),
-            Self::SludgeBagsCustomFactor => Some(TEXT_QUBICMETERS_PER_HOUR),
         }
     }
 }
