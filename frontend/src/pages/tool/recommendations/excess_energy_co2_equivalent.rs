@@ -146,7 +146,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             title: Some("Prozesse und fossile Energieträger"),
             fields: vec![
                 Field {
-                    label: ScenarioFieldId::ProcessEnergySaving.label(),
+                    label: InputValueId::ScenarioProcessEnergySaving.label(),
                     description: Some("Angabe der geschätzten Energieeinsparung bei Kläranlagen-Prozessen in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -174,7 +174,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     },
                 },
                 Field {
-                    label: ScenarioFieldId::FossilEnergySaving.label(),
+                    label: InputValueId::ScenarioFossilEnergySaving.label(),
                     description: Some("Angabe der geschätzten Energieeinsparung bei fossilen Energieträgern (z.B. Heizöl/Erdgas) in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -207,7 +207,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             title: Some("Photovoltaik"),
             fields: vec![
                 Field {
-                    label: ScenarioFieldId::PhotovoltaicEnergyExpansion.label(),
+                    label: InputValueId::ScenarioPhotovoltaicEnergyExpansion.label(),
                     description: Some("Angabe des Zubaus an Photovoltaikleistung in Kilowattstunden (kWh) pro Jahr (a)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -235,7 +235,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     },
                 },
                 Field {
-                    label: ScenarioFieldId::EstimatedSelfPhotovolaticUsage.label(),
+                    label: InputValueId::ScenarioEstimatedSelfPhotovolaticUsage.label(),
                     description: Some("Geschätzte Eigennutzung der Photovoltaikleistung in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -268,7 +268,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             title: Some("Windkraft"),
             fields: vec![
                 Field {
-                    label: ScenarioFieldId::WindEnergyExpansion.label(),
+                    label: InputValueId::ScenarioWindEnergyExpansion.label(),
                     description: Some("Angabe des Zubaus an Windkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -296,7 +296,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     },
                 },
                 Field {
-                    label: ScenarioFieldId::EstimatedSelfWindEnergyUsage.label(),
+                    label: InputValueId::ScenarioEstimatedSelfWindEnergyUsage.label(),
                     description: Some("Geschätzte Eigennutzung der Windkraftleistung in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -329,7 +329,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
             title: Some("Wasserkraft"),
             fields: vec![
                 Field {
-                    label: ScenarioFieldId::WaterEnergyExpansion.label(),
+                    label: InputValueId::ScenarioWaterEnergyExpansion.label(),
                     description: Some("Angabe des Zubaus an Wasserkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -357,7 +357,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     },
                 },
                 Field {
-                    label: ScenarioFieldId::EstimatedSelfWaterEnergyUsage.label(),
+                    label: InputValueId::ScenarioEstimatedSelfWaterEnergyUsage.label(),
                     description: Some("Geschätzte Eigennutzung der Wasserkraftleistung in Prozent (%)."),
                     required: false,
                     field_type: FieldType::Float {
@@ -389,7 +389,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
         FieldSet {
             title: Some("Abwärmenutzung"),
             fields: vec![Field {
-                label: ScenarioFieldId::DistrictHeating.label(),
+                label: InputValueId::ScenarioDistrictHeating.label(),
                 description: Some("Angabe der Abgabeleistung an Fern-/Nahwärme in Kilowattstunden (kWh) pro Jahr (a)."),
                 required: false,
                 field_type: FieldType::Float {

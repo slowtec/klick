@@ -9,7 +9,7 @@ mod value_units;
 #[cfg(test)]
 mod tests;
 
-pub use klick_domain::value_ids::*;
+pub use klick_domain::*;
 
 pub use self::{
     bar_chart::*, csv::*, language::*, sankey_chart::*, tables::*, value_labels::*, value_units::*,

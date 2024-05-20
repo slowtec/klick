@@ -1,11 +1,7 @@
 use klick_boundary as boundary;
 use klick_domain as domain;
 
-use crate::{
-    AnnualAverageEffluentId, AnnualAverageInfluentId, EnergyConsumptionId, OperatingMaterialId,
-    ProfileValueId, ScenarioFieldId, SensitivityParameterId, SewageSludgeTreatmentId,
-    SideStreamTreatmentId,
-};
+use crate::InputValueId;
 
 pub trait ValueLabel {
     fn label(&self) -> &'static str;
@@ -14,44 +10,17 @@ pub trait ValueLabel {
     }
 }
 
-impl ValueLabel for ProfileValueId {
+impl ValueLabel for InputValueId {
     fn label(&self) -> &'static str {
         match self {
             Self::PlantName => "Name oder Ort",
             Self::PopulationEquivalent => "Angeschlossene Einwohner",
             Self::Wastewater => "Abwassermenge",
-            Self::InfluentAverage(id) => id.label(),
-            Self::EffluentAverage(id) => id.label(),
-            Self::EnergyConsumption(id) => id.label(),
-            Self::SewageSludgeTreatment(id) => id.label(),
-            Self::SideStreamTreatment(id) => id.label(),
-            Self::OperatingMaterials(id) => id.label(),
-        }
-    }
-}
-
-impl ValueLabel for AnnualAverageInfluentId {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::Nitrogen => "Gesamtstickstoff",
-            Self::ChemicalOxygenDemand => "Chemischer Sauerstoffbedarf",
-            Self::TotalOrganicCarbohydrates => "Gesamter organischer Kohlenstoff",
-        }
-    }
-}
-
-impl ValueLabel for AnnualAverageEffluentId {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::Nitrogen => "Gesamtstickstoff",
-            Self::ChemicalOxygenDemand => "Chemischer Sauerstoffbedarf",
-        }
-    }
-}
-
-impl ValueLabel for EnergyConsumptionId {
-    fn label(&self) -> &'static str {
-        match self {
+            Self::InfluentNitrogen => "Gesamtstickstoff",
+            Self::InfluentChemicalOxygenDemand => "Chemischer Sauerstoffbedarf",
+            Self::InfluentTotalOrganicCarbohydrates => "Gesamter organischer Kohlenstoff",
+            Self::EffluentNitrogen => "Gesamtstickstoff",
+            Self::EffluentChemicalOxygenDemand => "Chemischer Sauerstoffbedarf",
             Self::SewageGasProduced => "Erzeugtes Klärgas",
             Self::MethaneFraction => "Methangehalt",
             Self::GasSupply => "Gasbezug (Versorger)",
@@ -60,62 +29,51 @@ impl ValueLabel for EnergyConsumptionId {
             Self::OnSitePowerGeneration => "Eigenstromerzeugung",
             Self::EmissionFactorElectricityMix => "Strommix-EF (Versorger)",
             Self::HeatingOil => "Heizölbezug",
-        }
-    }
-}
-
-impl ValueLabel for SideStreamTreatmentId {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::TotalNitrogen => "Gesamtstickstoff",
-        }
-    }
-}
-
-impl ValueLabel for SewageSludgeTreatmentId {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::SewageSludgeForDisposal => "Klärschlamm zur Entsorgung",
-            Self::TransportDistance => "Transportdistanz",
-            Self::DigesterCount => "Anzahl Faultürme",
-            Self::SludgeBags => "Schlammtaschen sind geschlossen",
-            Self::SludgeStorageContainers => "Schlammlagerung ist geschlossen",
-        }
-    }
-}
-
-impl ValueLabel for OperatingMaterialId {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::FeCl3 => "Eisen(III)-chlorid-Lösung",
-            Self::FeClSO4 => "Eisenchloridsulfat-Lösung",
-            Self::CaOH2 => "Kalkhydrat",
-            Self::SyntheticPolymers => "Synthetische Polymere",
-        }
-    }
-}
-
-impl ValueLabel for ScenarioFieldId {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::N2OSideStreamFactor => "N₂O-EF Prozesswasser",
-            Self::N2OSideStreamCoverIsOpen => {
+            Self::SideStreamTreatmentTotalNitrogen => "Gesamtstickstoff",
+            // Self::OperatingMaterials(id) => id.label(),
+            Self::SludgeTreatmentDisposal => "Klärschlamm zur Entsorgung",
+            Self::SludgeTreatmentTransportDistance => "Transportdistanz",
+            Self::SludgeTreatmentDigesterCount => "Anzahl Faultürme",
+            Self::SludgeTreatmentBags => "Schlammtaschen sind geschlossen",
+            Self::SludgeTreatmentStorageContainers => "Schlammlagerung ist geschlossen",
+            Self::OperatingMaterialFeCl3 => "Eisen(III)-chlorid-Lösung",
+            Self::OperatingMaterialFeClSO4 => "Eisenchloridsulfat-Lösung",
+            Self::OperatingMaterialCaOH2 => "Kalkhydrat",
+            Self::OperatingMaterialSyntheticPolymers => "Synthetische Polymere",
+            Self::ScenarioN2OSideStreamFactor => "N₂O-EF Prozesswasser",
+            Self::ScenarioN2OSideStreamCoverIsOpen => {
                 "Abdeckung mit Abluftbehandlung Prozesswasserbehandlungsanlage"
             }
-            Self::ProcessEnergySaving => "Energieeinsparung bei Prozessen",
-            Self::FossilEnergySaving => "Energieeinsparung bei fossilen Energiequellen",
-            Self::DistrictHeating => "Abgabe Fern-/Nahwärme (an Dritte)",
-            Self::PhotovoltaicEnergyExpansion => "Zubau PV",
-            Self::EstimatedSelfPhotovolaticUsage => "Geschätzte Eigennutzung",
-            Self::WindEnergyExpansion => "Zubau Wind",
-            Self::EstimatedSelfWindEnergyUsage => "Geschätzte Eigennutzung",
-            Self::WaterEnergyExpansion => "Zubau Wasserkraft",
-            Self::EstimatedSelfWaterEnergyUsage => "Geschätzte Eigennutzung",
+            Self::ScenarioProcessEnergySaving => "Energieeinsparung bei Prozessen",
+            Self::ScenarioFossilEnergySaving => "Energieeinsparung bei fossilen Energiequellen",
+            Self::ScenarioDistrictHeating => "Abgabe Fern-/Nahwärme (an Dritte)",
+            Self::ScenarioPhotovoltaicEnergyExpansion => "Zubau PV",
+            Self::ScenarioEstimatedSelfPhotovolaticUsage => "Geschätzte Eigennutzung",
+            Self::ScenarioWindEnergyExpansion => "Zubau Wind",
+            Self::ScenarioEstimatedSelfWindEnergyUsage => "Geschätzte Eigennutzung",
+            Self::ScenarioWaterEnergyExpansion => "Zubau Wasserkraft",
+            Self::ScenarioEstimatedSelfWaterEnergyUsage => "Geschätzte Eigennutzung",
+            Self::SensitivityN2OCalculationMethod => "N₂O Berechnungsmethode",
+            Self::SensitivityN2OCustomFactor => "N₂O-EF Benutzerdefiniert",
+            Self::SensitivityN2OSideStreamFactor => "N₂O-EF Prozesswasser",
+            Self::SensitivityCH4ChpCalculationMethod => "BHKW Berechnungsmethode",
+            Self::SensitivityCH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
+            Self::SensitivityCO2FossilCustomFactor => "CO₂-EF (fossil)",
+            Self::SensitivitySludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
+            Self::SensitivitySludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
         }
     }
     fn label_latex(&self) -> &'static str {
         match self {
-            Self::N2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
+            Self::ScenarioN2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
+            Self::SensitivityN2OCalculationMethod => "$N_2O$ Berechnungsmethode",
+            Self::SensitivityN2OCustomFactor => "$N_2O$-EF Benutzerdefiniert",
+            Self::SensitivityN2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
+            Self::SensitivityCH4ChpCalculationMethod => self.label(),
+            Self::SensitivityCH4ChpCustomFactor => "BHKW $CH_4$-EF benutzerdefiniert",
+            Self::SensitivityCO2FossilCustomFactor => "$CO_2$-EF (fossil)",
+            Self::SensitivitySludgeBagsCustomFactor => "$CH_4$-EF Schlammtaschen",
+            Self::SensitivitySludgeStorageCustomFactor => "$CH_4$-EF Schlammlagerung",
             _ => self.label(),
         }
     }
@@ -163,33 +121,6 @@ impl ValueLabel for boundary::CH4ChpEmissionFactorCalcMethod {
             Self::GasolineEngine => "Ottomotor",
             Self::JetEngine => "Zündstrahlmotor",
             Self::CustomFactor => "Benutzerdefiniert",
-        }
-    }
-}
-
-impl ValueLabel for SensitivityParameterId {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::N2OCalculationMethod => "N₂O Berechnungsmethode",
-            Self::N2OCustomFactor => "N₂O-EF Benutzerdefiniert",
-            Self::N2OSideStreamFactor => "N₂O-EF Prozesswasser",
-            Self::CH4ChpCalculationMethod => "BHKW Berechnungsmethode",
-            Self::CH4ChpCustomFactor => "BHKW CH₄-EF benutzerdefiniert",
-            Self::CO2FossilCustomFactor => "CO₂-EF (fossil)",
-            Self::SludgeBagsCustomFactor => "CH₄-EF Schlammtaschen",
-            Self::SludgeStorageCustomFactor => "CH₄-EF Schlammlagerung",
-        }
-    }
-    fn label_latex(&self) -> &'static str {
-        match self {
-            Self::N2OCalculationMethod => "$N_2O$ Berechnungsmethode",
-            Self::N2OCustomFactor => "$N_2O$-EF Benutzerdefiniert",
-            Self::N2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
-            Self::CH4ChpCalculationMethod => self.label(),
-            Self::CH4ChpCustomFactor => "BHKW $CH_4$-EF benutzerdefiniert",
-            Self::CO2FossilCustomFactor => "$CO_2$-EF (fossil)",
-            Self::SludgeBagsCustomFactor => "$CH_4$-EF Schlammtaschen",
-            Self::SludgeStorageCustomFactor => "$CH_4$-EF Schlammlagerung",
         }
     }
 }

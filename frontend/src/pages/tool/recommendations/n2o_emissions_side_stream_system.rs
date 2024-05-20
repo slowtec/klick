@@ -54,7 +54,7 @@ pub fn options(
 
 fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let custom_factor_field = Field {
-        label: ScenarioFieldId::N2OSideStreamCoverIsOpen.label(), // TODO: Rename ID
+        label: InputValueId::ScenarioN2OSideStreamCoverIsOpen.label(), // TODO: Rename ID
         description: None,
         required: false,
         field_type: FieldType::Bool {

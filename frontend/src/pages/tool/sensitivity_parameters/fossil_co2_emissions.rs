@@ -80,7 +80,7 @@ pub fn FossilCO2Emissions(
 
 fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let custom_factor_field = Field {
-        label: ScenarioFieldId::CO2FossilCustomFactor.label(),
+        label: InputValueId::SensitivityCO2FossilCustomFactor.label(),
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₂ eintragen."),
         required: false,
         field_type: FieldType::Float {

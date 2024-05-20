@@ -2,7 +2,8 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_presenter::{Lng, ScenarioFieldId, ValueLabel};
+use klick_domain::InputValueId;
+use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
@@ -49,7 +50,7 @@ pub fn CH4EmissionsOpenDigesters(
     });
 
     let custom_factor_field = Field {
-             label: ScenarioFieldId::SludgeBagsCustomFactor.label(),
+             label: InputValueId::SensitivitySludgeBagsCustomFactor.label(),
              description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
              required: false,
              field_type: FieldType::Float {
@@ -85,7 +86,7 @@ pub fn CH4EmissionsOpenDigesters(
     let (fields_view1, _, _) = render_field_sets(vec![field_set]);
 
     let custom_factor_field2 = Field {
-             label: ScenarioFieldId::SludgeStorageCustomFactor.label(),
+             label: InputValueId::SensitivitySludgeStorageCustomFactor.label(),
              description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
              required: false,
              field_type: FieldType::Float {

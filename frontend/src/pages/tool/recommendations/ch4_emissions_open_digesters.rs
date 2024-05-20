@@ -2,7 +2,6 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_presenter::*;
 
 use crate::pages::tool::{CalculationOutcome, Card};
 
@@ -112,7 +111,7 @@ pub fn options(
 
 fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let custom_factor_field1 = Field {
-        label: SewageSludgeTreatmentId::SludgeBagsRecommended.label(),
+        label: "Sließen der Schlammtaschen",
         description: None,
         required: false,
         field_type: FieldType::Bool {
@@ -143,7 +142,7 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
 
 fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let custom_factor_field2 = Field {
-        label: SewageSludgeTreatmentId::SludgeStorageContainersRecommended.label(),
+        label: "Sließen der Schlammlagerung",
         description: None,
         required: false,
         field_type: FieldType::Bool {
