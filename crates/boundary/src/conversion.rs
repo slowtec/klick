@@ -110,9 +110,86 @@ impl TryFrom<FormData>
 
         let wastewater = Qubicmeters::new(wastewater);
 
-        let influent_average = influent_average.try_into()?;
-        let effluent_average = effluent_average.try_into()?;
-        let energy_consumption = energy_consumption.try_into()?;
+        let AnnualAverageInfluent {
+            total_nitrogen,
+            chemical_oxygen_demand,
+            total_organic_carbohydrates,
+        } = influent_average;
+
+        let Some(nitrogen) = total_nitrogen else {
+            bail!("missing inflow nitrogen");
+        };
+        let Some(chemical_oxygen_demand) = chemical_oxygen_demand else {
+            bail!("missing inflow chemical_oxygen_demand");
+        };
+        let Some(total_organic_carbohydrates) = total_organic_carbohydrates else {
+            bail!("missing inflow total_organic_carbohydrates");
+        };
+
+        let influent_nitrogen = MilligramsPerLiter::new(nitrogen);
+        let influent_chemical_oxygen_demand = MilligramsPerLiter::new(chemical_oxygen_demand);
+        let influent_total_organic_carbohydrates =
+            MilligramsPerLiter::new(total_organic_carbohydrates);
+
+        let AnnualAverageEffluent {
+            total_nitrogen,
+            chemical_oxygen_demand,
+        } = effluent_average;
+
+        let Some(nitrogen) = total_nitrogen else {
+            bail!("missing effluent nitrogen");
+        };
+        let Some(chemical_oxygen_demand) = chemical_oxygen_demand else {
+            bail!("missing effluent chemical_oxygen_demand");
+        };
+
+        let effluent_chemical_oxygen_demand = MilligramsPerLiter::new(chemical_oxygen_demand);
+        let effluent_nitrogen = MilligramsPerLiter::new(nitrogen);
+
+        let EnergyConsumption {
+            sewage_gas_produced,
+            methane_fraction,
+            gas_supply,
+            purchase_of_biogas,
+            total_power_consumption,
+            on_site_power_generation,
+            emission_factor_electricity_mix,
+            heating_oil,
+        } = energy_consumption;
+
+        let Some(sewage_gas_produced) = sewage_gas_produced else {
+            bail!("missing sewage_gas_produced");
+        };
+        let Some(methane_fraction) = methane_fraction else {
+            bail!("missing methane_fraction");
+        };
+        let Some(total_power_consumption) = total_power_consumption else {
+            bail!("missing total_power_consumption");
+        };
+        let Some(on_site_power_generation) = on_site_power_generation else {
+            bail!("missing on_site_power_generation");
+        };
+        let Some(emission_factor_electricity_mix) = emission_factor_electricity_mix else {
+            bail!("missing emission_factor_electricity_mix");
+        };
+        let Some(heating_oil) = heating_oil else {
+            bail!("missing heating_oil");
+        };
+        let Some(gas_supply) = gas_supply else {
+            bail!("missing gas_supply");
+        };
+        let Some(purchase_of_biogas) = purchase_of_biogas else {
+            bail!("missing purchase_of_biogas");
+        };
+
+        let methane_fraction = Percent::new(methane_fraction);
+        let sewage_gas_produced = Qubicmeters::new(sewage_gas_produced);
+        let on_site_power_generation = Kilowatthours::new(on_site_power_generation);
+        let total_power_consumption = Kilowatthours::new(total_power_consumption);
+        let emission_factor_electricity_mix =
+            GramsPerKilowatthour::new(emission_factor_electricity_mix);
+        let heating_oil = Liters::new(heating_oil);
+        let gas_supply = Qubicmeters::new(gas_supply);
 
         let SewageSludgeTreatment {
             sludge_bags_are_closed,
@@ -144,7 +221,30 @@ impl TryFrom<FormData>
 
         let SideStreamTreatment { total_nitrogen } = side_stream_treatment;
 
-        let operating_materials = operating_materials.try_into()?;
+        let OperatingMaterials {
+            fecl3,
+            feclso4,
+            caoh2,
+            synthetic_polymers,
+        } = operating_materials;
+
+        let Some(fecl3) = fecl3 else {
+            bail!("missing fecl3");
+        };
+        let Some(feclso4) = feclso4 else {
+            bail!("missing feclso4");
+        };
+        let Some(caoh2) = caoh2 else {
+            bail!("missing caoh2");
+        };
+        let Some(synthetic_polymers) = synthetic_polymers else {
+            bail!("missing synthetic_polymers");
+        };
+
+        let operating_material_fecl3 = Tons::new(fecl3);
+        let operating_material_feclso4 = Tons::new(feclso4);
+        let operating_material_caoh2 = Tons::new(caoh2);
+        let operating_material_synthetic_polymers = Tons::new(synthetic_polymers);
 
         // -----   ----- //
         //  Sensitivity  //
@@ -278,7 +378,45 @@ impl TryFrom<FormData>
         //    Assemble   //
         // -----   ----- //
 
-        let energy_emission_factors = domain::EnergyEmissionFactors {
+        let emission_influencing_values = domain::EmissionInfluencingValues {
+            population_equivalent,
+            wastewater,
+
+            influent_nitrogen,
+            influent_chemical_oxygen_demand,
+            influent_total_organic_carbohydrates,
+
+            effluent_chemical_oxygen_demand,
+            effluent_nitrogen,
+
+            sludge_bags_are_open,
+            sludge_bags_factor,
+            sludge_storage_containers_are_open,
+            sludge_storage_containers_factor,
+            sewage_sludge_for_disposal,
+            transport_distance,
+            digester_count,
+
+            side_stream_treatment_total_nitrogen: total_nitrogen,
+            side_stream_cover_is_open,
+
+            operating_material_fecl3,
+            operating_material_feclso4,
+            operating_material_caoh2,
+            operating_material_synthetic_polymers,
+
+            emission_factor_n2o_side_stream: n2o_side_stream,
+            emission_factor_co2_fossil: fossil_emission_factor,
+
+            sewage_gas_produced,
+            methane_fraction,
+            total_power_consumption,
+            on_site_power_generation,
+            emission_factor_electricity_mix,
+            heating_oil,
+            gas_supply,
+            purchase_of_biogas,
+
             process_energy_savings,
             fossil_energy_savings,
             district_heating,
@@ -288,39 +426,6 @@ impl TryFrom<FormData>
             estimated_self_wind_energy_usage,
             water_energy_expansion,
             estimated_self_water_energy_usage,
-        };
-
-        let side_stream_treatment = domain::SideStreamTreatment {
-            total_nitrogen,
-            side_stream_cover_is_open,
-        };
-
-        let emission_factors = domain::EmissionFactors {
-            n2o_side_stream,
-            co2_fossil: fossil_emission_factor,
-        };
-
-        let sewage_sludge_treatment = domain::SewageSludgeTreatment {
-            sludge_bags_are_open,
-            sludge_bags_factor,
-            sludge_storage_containers_are_open,
-            sludge_storage_containers_factor,
-            sewage_sludge_for_disposal,
-            transport_distance,
-            digester_count,
-        };
-
-        let emission_influencing_values = domain::EmissionInfluencingValues {
-            population_equivalent,
-            wastewater,
-            influent_average,
-            effluent_average,
-            energy_consumption,
-            sewage_sludge_treatment,
-            side_stream_treatment,
-            operating_materials,
-            emission_factors,
-            energy_emission_factors,
         };
 
         Ok((
@@ -391,162 +496,6 @@ impl TryFrom<CH4ChpEmissionsSensitivity> for domain::CH4ChpEmissionFactorCalcMet
             }
         };
         Ok(f)
-    }
-}
-
-impl TryFrom<EnergyConsumption> for domain::EnergyConsumption {
-    type Error = anyhow::Error;
-
-    fn try_from(from: EnergyConsumption) -> Result<Self, Self::Error> {
-        let EnergyConsumption {
-            sewage_gas_produced,
-            methane_fraction,
-            gas_supply,
-            purchase_of_biogas,
-            total_power_consumption,
-            on_site_power_generation,
-            emission_factor_electricity_mix,
-            heating_oil,
-        } = from;
-
-        let Some(sewage_gas_produced) = sewage_gas_produced else {
-            bail!("missing sewage_gas_produced");
-        };
-        let Some(methane_fraction) = methane_fraction else {
-            bail!("missing methane_fraction");
-        };
-        let Some(total_power_consumption) = total_power_consumption else {
-            bail!("missing total_power_consumption");
-        };
-        let Some(on_site_power_generation) = on_site_power_generation else {
-            bail!("missing on_site_power_generation");
-        };
-        let Some(emission_factor_electricity_mix) = emission_factor_electricity_mix else {
-            bail!("missing emission_factor_electricity_mix");
-        };
-        let Some(heating_oil) = heating_oil else {
-            bail!("missing heating_oil");
-        };
-        let Some(gas_supply) = gas_supply else {
-            bail!("missing gas_supply");
-        };
-        let Some(purchase_of_biogas) = purchase_of_biogas else {
-            bail!("missing purchase_of_biogas");
-        };
-
-        let methane_fraction = Percent::new(methane_fraction);
-        let sewage_gas_produced = Qubicmeters::new(sewage_gas_produced);
-        let on_site_power_generation = Kilowatthours::new(on_site_power_generation);
-        let total_power_consumption = Kilowatthours::new(total_power_consumption);
-        let emission_factor_electricity_mix =
-            GramsPerKilowatthour::new(emission_factor_electricity_mix);
-        let heating_oil = Liters::new(heating_oil);
-        let gas_supply = Qubicmeters::new(gas_supply);
-
-        Ok(Self {
-            sewage_gas_produced,
-            methane_fraction,
-            total_power_consumption,
-            on_site_power_generation,
-            emission_factor_electricity_mix,
-            heating_oil,
-            gas_supply,
-            purchase_of_biogas,
-        })
-    }
-}
-
-impl TryFrom<OperatingMaterials> for domain::OperatingMaterials {
-    type Error = anyhow::Error;
-
-    fn try_from(from: OperatingMaterials) -> Result<Self, Self::Error> {
-        let OperatingMaterials {
-            fecl3,
-            feclso4,
-            caoh2,
-            synthetic_polymers,
-        } = from;
-        let Some(fecl3) = fecl3 else {
-            bail!("missing fecl3");
-        };
-        let Some(feclso4) = feclso4 else {
-            bail!("missing feclso4");
-        };
-        let Some(caoh2) = caoh2 else {
-            bail!("missing caoh2");
-        };
-        let Some(synthetic_polymers) = synthetic_polymers else {
-            bail!("missing synthetic_polymers");
-        };
-
-        let fecl3 = Tons::new(fecl3);
-        let feclso4 = Tons::new(feclso4);
-        let caoh2 = Tons::new(caoh2);
-        let synthetic_polymers = Tons::new(synthetic_polymers);
-
-        Ok(Self {
-            fecl3,
-            feclso4,
-            caoh2,
-            synthetic_polymers,
-        })
-    }
-}
-
-impl TryFrom<AnnualAverageInfluent> for domain::AnnualAverageInfluent {
-    type Error = anyhow::Error;
-
-    fn try_from(from: AnnualAverageInfluent) -> Result<Self, Self::Error> {
-        let AnnualAverageInfluent {
-            total_nitrogen,
-            chemical_oxygen_demand,
-            total_organic_carbohydrates,
-        } = from;
-
-        let Some(nitrogen) = total_nitrogen else {
-            bail!("missing inflow nitrogen");
-        };
-        let Some(chemical_oxygen_demand) = chemical_oxygen_demand else {
-            bail!("missing inflow chemical_oxygen_demand");
-        };
-        let Some(total_organic_carbohydrates) = total_organic_carbohydrates else {
-            bail!("missing inflow total_organic_carbohydrates");
-        };
-
-        let nitrogen = MilligramsPerLiter::new(nitrogen);
-        let chemical_oxygen_demand = MilligramsPerLiter::new(chemical_oxygen_demand);
-        let total_organic_carbohydrates = MilligramsPerLiter::new(total_organic_carbohydrates);
-        Ok(Self {
-            nitrogen,
-            chemical_oxygen_demand,
-            total_organic_carbohydrates,
-        })
-    }
-}
-
-impl TryFrom<AnnualAverageEffluent> for domain::AnnualAverageEffluent {
-    type Error = anyhow::Error;
-
-    fn try_from(from: AnnualAverageEffluent) -> Result<Self, Self::Error> {
-        let AnnualAverageEffluent {
-            total_nitrogen,
-            chemical_oxygen_demand,
-        } = from;
-
-        let Some(nitrogen) = total_nitrogen else {
-            bail!("missing effluent nitrogen");
-        };
-        let Some(chemical_oxygen_demand) = chemical_oxygen_demand else {
-            bail!("missing effluent chemical_oxygen_demand");
-        };
-
-        let chemical_oxygen_demand = MilligramsPerLiter::new(chemical_oxygen_demand);
-        let nitrogen = MilligramsPerLiter::new(nitrogen);
-
-        Ok(Self {
-            nitrogen,
-            chemical_oxygen_demand,
-        })
     }
 }
 

@@ -3,11 +3,9 @@ mod tests;
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
-    constants::*, units::*, AnnualAverageEffluent, AnnualAverageInfluent,
-    CH4ChpEmissionFactorCalcMethod, CO2Equivalents, CalculatedEmissionFactors,
-    EmissionFactorCalculationMethods, EmissionFactors, EmissionInfluencingValues,
-    EmissionsCalculationOutcome, EnergyConsumption, EnergyEmissionFactors,
-    N2oEmissionFactorCalcMethod, OperatingMaterials, SewageSludgeTreatment, SideStreamTreatment,
+    constants::*, units::*, CH4ChpEmissionFactorCalcMethod, CO2Equivalents,
+    CalculatedEmissionFactors, EmissionFactorCalculationMethods, EmissionInfluencingValues,
+    EmissionsCalculationOutcome, N2oEmissionFactorCalcMethod,
 };
 
 use crate::units::GramsPerKilowatthour;
@@ -25,28 +23,14 @@ pub fn calculate_emissions(
     let EmissionInfluencingValues {
         population_equivalent,
         wastewater,
-        influent_average,
-        effluent_average,
-        energy_consumption,
-        sewage_sludge_treatment,
-        side_stream_treatment,
-        operating_materials,
-        emission_factors,
-        energy_emission_factors,
-    } = input;
 
-    let AnnualAverageInfluent {
-        chemical_oxygen_demand: chemical_oxygen_demand_influent,
-        nitrogen: nitrogen_influent,
-        total_organic_carbohydrates,
-    } = influent_average;
+        influent_chemical_oxygen_demand: chemical_oxygen_demand_influent,
+        influent_nitrogen: nitrogen_influent,
+        influent_total_organic_carbohydrates: total_organic_carbohydrates,
 
-    let AnnualAverageEffluent {
-        nitrogen: nitrogen_effluent,
-        chemical_oxygen_demand: chemical_oxygen_demand_effluent,
-    } = effluent_average;
+        effluent_nitrogen: nitrogen_effluent,
+        effluent_chemical_oxygen_demand: chemical_oxygen_demand_effluent,
 
-    let EnergyConsumption {
         sewage_gas_produced,
         methane_fraction,
         total_power_consumption,
@@ -55,9 +39,7 @@ pub fn calculate_emissions(
         heating_oil,
         gas_supply,
         purchase_of_biogas,
-    } = energy_consumption;
 
-    let SewageSludgeTreatment {
         sludge_bags_are_open,
         sludge_bags_factor,
         sludge_storage_containers_are_open,
@@ -65,26 +47,18 @@ pub fn calculate_emissions(
         sewage_sludge_for_disposal,
         transport_distance,
         digester_count,
-    } = sewage_sludge_treatment;
 
-    let OperatingMaterials {
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-    } = operating_materials;
-
-    let SideStreamTreatment {
-        total_nitrogen,
+        side_stream_treatment_total_nitrogen: total_nitrogen,
         side_stream_cover_is_open,
-    } = side_stream_treatment;
 
-    let EmissionFactors {
-        n2o_side_stream,
-        co2_fossil,
-    } = emission_factors;
+        operating_material_fecl3: fecl3,
+        operating_material_feclso4: feclso4,
+        operating_material_caoh2: caoh2,
+        operating_material_synthetic_polymers: synthetic_polymers,
 
-    let EnergyEmissionFactors {
+        emission_factor_n2o_side_stream: n2o_side_stream,
+        emission_factor_co2_fossil: co2_fossil,
+
         process_energy_savings,
         fossil_energy_savings,
         district_heating,
@@ -94,7 +68,7 @@ pub fn calculate_emissions(
         estimated_self_wind_energy_usage,
         water_energy_expansion,
         estimated_self_water_energy_usage,
-    } = energy_emission_factors;
+    } = input;
 
     // -------    ------ //
     //  Default values   //
@@ -577,12 +551,8 @@ pub fn calculate_all_ch4_chp_emission_factor_scenarios(
     custom_factor: Option<Factor>,
 ) -> Vec<(CH4ChpEmissionFactorCalcMethod, Tons, Factor)> {
     let EmissionInfluencingValues {
-        energy_consumption:
-            EnergyConsumption {
-                sewage_gas_produced,
-                methane_fraction,
-                ..
-            },
+        sewage_gas_produced,
+        methane_fraction,
         ..
     } = values;
 
