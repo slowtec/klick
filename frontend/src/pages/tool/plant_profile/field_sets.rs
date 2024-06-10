@@ -495,14 +495,14 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     unit: "Türme",
                     on_change: Callback::new(move|v|{
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.digester_count = v);
-                    })
-                    , input: Signal::derive(move||{
+                    }),
+                    input: Signal::derive(move||{
                         form_data.with(|d|d.plant_profile.sewage_sludge_treatment.digester_count)
                     })
                 },
             },
             Field {
-                label: InputValueId::SludgeTreatmentBags.label(),
+                label: "Schlammtaschen sind geschlossen", // TODO: Invert label of InputValueId::SludgeTreatmentBagsAreOpen.label(),
                 description: Some(
                     "Falls die Schlammtaschen des Faulturms / der Faultürme Ihrer Kläranlage geschlossen sind und nicht zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.",
                 ),
@@ -511,14 +511,14 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     initial_value: None,
                     on_change: Callback::new(move|v|{
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.sludge_bags_are_closed = Some(v));
-                    })
-                    , input: Signal::derive(move||{
+                    }),
+                    input: Signal::derive(move||{
                         form_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_bags_are_closed.unwrap_or_default())
                     })
                 },
             },
             Field {
-                label: InputValueId::SludgeTreatmentStorageContainers.label(),
+                label: "Schlammlagerung ist geschlossen", // TODO: Invert label of InputValueId::SludgeTreatmentStorageContainersAreOpen.label(),
                 description: Some(
                     "Falls die Schlammstapelbehälter Ihrer Kläranlage dicht abgedeckt sind, dann dieses Feld bitte anklicken.",
                 ),
@@ -527,8 +527,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     initial_value: None,
                     on_change: Callback::new(move|v|{
                         form_data.update(|d|d.plant_profile.sewage_sludge_treatment.sludge_storage_containers_are_closed = Some(v));
-                    })
-                    , input: Signal::derive(move||{
+                    }),
+                    input: Signal::derive(move||{
                         form_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_storage_containers_are_closed.unwrap_or_default())
                     })
                 },

@@ -62,8 +62,8 @@ impl ValueUnit for InputValueId {
             Self::EmissionFactorElectricityMix => Some(LATEX_GRAMSPERKILOWATTHOUR),
             Self::HeatingOil => Some(LATEX_TONS),
             Self::SideStreamTreatmentTotalNitrogen => Some(LATEX_TONS),
-            Self::SludgeTreatmentBags => None, // FIXME implement latex representation
-            Self::SludgeTreatmentStorageContainers => None, // FIXME implement latex representation
+            Self::SludgeTreatmentBagsAreOpen => None, // FIXME implement latex representation
+            Self::SludgeTreatmentStorageContainersAreOpen => None, // FIXME implement latex representation
             Self::SludgeTreatmentDisposal => Some(LATEX_TONS),
             Self::SludgeTreatmentTransportDistance => Some(LATEX_KILOMETERS),
             Self::SludgeTreatmentDigesterCount => None,
@@ -97,8 +97,8 @@ impl ValueUnit for InputValueId {
             Self::EmissionFactorElectricityMix => Some(TEXT_GRAMSPERKILOWATTHOUR),
             Self::HeatingOil => Some(TEXT_TONS),
             Self::SideStreamTreatmentTotalNitrogen => Some(TEXT_TONS),
-            Self::SludgeTreatmentBags => None,
-            Self::SludgeTreatmentStorageContainers => None,
+            Self::SludgeTreatmentBagsAreOpen => None,
+            Self::SludgeTreatmentStorageContainersAreOpen => None,
             Self::SludgeTreatmentDisposal => Some(TEXT_TONS),
             Self::SludgeTreatmentTransportDistance => Some(TEXT_KILOMETERS),
             Self::SludgeTreatmentDigesterCount => None,

@@ -205,18 +205,20 @@ pub fn plant_profile_as_table(profile: &PlantProfile, formatting: Formatting) ->
                     formatting.fmt(InputValueId::SludgeTreatmentTransportDistance),
                 ),
                 (
-                    InputValueId::SludgeTreatmentBags.label(),
+                    InputValueId::SludgeTreatmentBagsAreOpen.label(),
                     sewage_sludge_treatment
                         .sludge_bags_are_closed
+                        .map(|v| !v) // closed => open
                         .map(format_bool(lang)),
-                    formatting.fmt(InputValueId::SludgeTreatmentBags),
+                    formatting.fmt(InputValueId::SludgeTreatmentBagsAreOpen),
                 ),
                 (
-                    InputValueId::SludgeTreatmentStorageContainers.label(),
+                    InputValueId::SludgeTreatmentStorageContainersAreOpen.label(),
                     sewage_sludge_treatment
                         .sludge_storage_containers_are_closed
+                        .map(|v| !v) // closed => open
                         .map(format_bool(lang)),
-                    formatting.fmt(InputValueId::SludgeTreatmentStorageContainers),
+                    formatting.fmt(InputValueId::SludgeTreatmentStorageContainersAreOpen),
                 ),
             ],
         },

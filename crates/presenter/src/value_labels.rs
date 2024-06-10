@@ -34,8 +34,11 @@ impl ValueLabel for InputValueId {
             Self::SludgeTreatmentDisposal => "Klärschlamm zur Entsorgung",
             Self::SludgeTreatmentTransportDistance => "Transportdistanz",
             Self::SludgeTreatmentDigesterCount => "Anzahl Faultürme",
-            Self::SludgeTreatmentBags => "Schlammtaschen sind geschlossen",
-            Self::SludgeTreatmentStorageContainers => "Schlammlagerung ist geschlossen",
+            Self::SludgeTreatmentBagsAreOpen | Self::ScenarioSludgeBagsAreOpen => {
+                "Schlammtaschen sind offen"
+            }
+            Self::SludgeTreatmentStorageContainersAreOpen
+            | Self::ScenarioSludgeStorageContainersAreOpen => "Schlammlagerung ist offen",
             Self::OperatingMaterialFeCl3 => "Eisen(III)-chlorid-Lösung",
             Self::OperatingMaterialFeClSO4 => "Eisenchloridsulfat-Lösung",
             Self::OperatingMaterialCaOH2 => "Kalkhydrat",
@@ -91,6 +94,7 @@ impl ValueLabel for domain::N2oEmissionFactorCalcMethod {
     }
 }
 
+// TODO: remove
 impl ValueLabel for boundary::N2oEmissionFactorCalcMethod {
     fn label(&self) -> &'static str {
         match self {
@@ -114,6 +118,7 @@ impl ValueLabel for domain::CH4ChpEmissionFactorCalcMethod {
     }
 }
 
+// TODO: remove
 impl ValueLabel for boundary::CH4ChpEmissionFactorCalcMethod {
     fn label(&self) -> &'static str {
         match self {

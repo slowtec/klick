@@ -1526,8 +1526,6 @@ dependencies = [
  "derive_more",
  "mailparse",
  "pwhash",
- "serde",
- "strum",
  "thiserror",
  "time",
  "uuid",

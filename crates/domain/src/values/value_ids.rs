@@ -1,8 +1,4 @@
-use derive_more::From;
-use serde::{Deserialize, Serialize};
-use strum::AsRefStr;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, AsRefStr, Serialize, Deserialize, From)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum InputValueId {
     PlantName,
     PopulationEquivalent,
@@ -25,8 +21,8 @@ pub enum InputValueId {
     SensitivityCO2FossilCustomFactor,
     SensitivitySludgeBagsCustomFactor,
     SensitivitySludgeStorageCustomFactor,
-    SludgeTreatmentBags,
-    SludgeTreatmentStorageContainers,
+    SludgeTreatmentBagsAreOpen,
+    SludgeTreatmentStorageContainersAreOpen,
     SludgeTreatmentDisposal,
     SludgeTreatmentTransportDistance,
     SludgeTreatmentDigesterCount,
@@ -38,6 +34,8 @@ pub enum InputValueId {
     OnSitePowerGeneration,
     EmissionFactorElectricityMix,
     HeatingOil,
+    ScenarioSludgeBagsAreOpen,
+    ScenarioSludgeStorageContainersAreOpen,
     ScenarioN2OSideStreamFactor,
     ScenarioN2OSideStreamCoverIsOpen,
     ScenarioProcessEnergySaving,
