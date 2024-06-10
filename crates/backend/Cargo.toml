@@ -15,19 +15,19 @@ klick-domain = { path = "../domain" }
 klick-pdf-export = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.83"
+anyhow = "1.0.86"
 axum = "0.7.5"
 axum-extra = { version = "0.9.3", features = ["typed-header"] }
 headers = "0.4.0"
 lettre = { version = "0.11.7", default-features = false, features = ["rustls-tls", "builder", "smtp-transport", "pool"] }
 log = "0.4.21"
 mime_guess = "2.0.4"
-parking_lot = "0.12.2"
+parking_lot = "0.12.3"
 rust-embed = { version = "8.4.0", features = ["axum"] }
-serde = { version = "1.0.201", features = ["derive"] }
-thiserror = "1.0.60"
-tokio = { version = "1.37.0", features = ["net"] }
-toml = "0.8.12"
+serde = { version = "1.0.203", features = ["derive"] }
+thiserror = "1.0.61"
+tokio = { version = "1.38.0", features = ["net"] }
+toml = "0.8.14"
 tower-http = { version = "0.5.2", features = ["cors"] }
 url = { version = "2.5.0", features = ["serde"] }
 uuid = { version = "1.8.0", features = ["v4"] }

@@ -35,11 +35,11 @@ just
 
 ```shell
 just build-release
-scp target/x86_64-unknown-linux-musl/release/klick klick:/home/klick-app/klick-v0.3.x
+scp target/x86_64-unknown-linux-musl/release/klick klick:/home/klick-app/klick-v0.4.x
 ssh klick
 systemctl stop klick-app
 rm /home/klick-app/klick
-ln -s /home/klick-app/klick-v0.3.x /home/klick-app/klick
+ln -s /home/klick-app/klick-v0.4.x /home/klick-app/klick
 systemctl start klick-app
 ```
 

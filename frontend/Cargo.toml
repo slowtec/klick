@@ -16,23 +16,23 @@ klick-presenter = "=0.0.0"
 
 # External dependencies
 chrono = "0.4"
-anyhow = "1.0.83"
+anyhow = "1.0.86"
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
 derive_more = "0.99.17"
 gloo-file = { version = "0.3.0", features = ["futures"] }
 gloo-storage = "0.3.0"
 js-sys = "0.3.69"
-leptos = { version = "0.6.11", features = ["csr"] }
-leptos_meta = { version = "0.6.11", features = ["csr"] }
-leptos_router = { version = "0.6.11", features = ["csr"] }
+leptos = { version = "0.6.12", features = ["csr"] }
+leptos_meta = { version = "0.6.12", features = ["csr"] }
+leptos_router = { version = "0.6.12", features = ["csr"] }
 log = "0.4.21"
 num-traits = "0.2.19"
-pulldown-cmark = "0.10.3"
+pulldown-cmark = "0.11.0"
 serde_json = "1.0.117"
-serde = { version = "1.0.201", features = ["derive"] }
+serde = { version = "1.0.203", features = ["derive"] }
 strum = "0.26.2"
-thiserror = "1.0.60"
+thiserror = "1.0.61"
 time = { version = "0.3.36", features = ["macros", "formatting"] }
 
 [patch.crates-io]
@@ -68,4 +68,4 @@ mod_module_files = "allow"
 empty_docs = "allow"
 
 [build-dependencies]
-toml = "0.8.12"
+toml = "0.8.14"

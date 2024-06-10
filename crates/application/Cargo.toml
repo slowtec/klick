@@ -9,9 +9,9 @@ publish = false
 [dependencies]
 klick-domain = { path = "../domain" }
 
-anyhow = "1.0.83"
+anyhow = "1.0.86"
 log = "0.4.21"
-thiserror = "1.0.60"
+thiserror = "1.0.61"
 time = "0.3.36"
 
 [lints]

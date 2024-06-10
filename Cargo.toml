@@ -54,16 +54,16 @@ build = "build.rs"
 klick-backend = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.83"
+anyhow = "1.0.86"
 env_logger = "0.11.3"
 log = "0.4.21"
 
 [dependencies.tokio]
-version = "1.37.0"
+version = "1.38.0"
 features = ["macros", "rt-multi-thread"]
 
 [build-dependencies]
-toml = "0.8.12"
+toml = "0.8.14"
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -1 }
