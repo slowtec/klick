@@ -1,6 +1,6 @@
 use klick_boundary::CalculationOutcome;
 use klick_domain::{
-    units::{Percent, Ratio},
+    units::{Percent, RatioExt},
     CH4ChpEmissionFactorCalcMethod, CalculatedEmissionFactors, EmissionFactorCalculationMethods,
     N2oEmissionFactorCalcMethod,
 };

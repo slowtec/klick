@@ -836,6 +836,7 @@ dependencies = [
  "bs58",
  "derive_more",
  "mailparse",
+ "paste",
  "pwhash",
  "thiserror",
  "time",

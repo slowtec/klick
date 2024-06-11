@@ -3,7 +3,7 @@ use serde::Serialize;
 use klick_boundary::{PlantProfile, SensitivityParameters};
 use klick_domain as domain;
 use klick_domain::units::Percent;
-use klick_domain::units::Ratio;
+use klick_domain::units::RatioExt;
 
 use crate::{InputValueId, Lng, ValueLabel, ValueUnit};
 

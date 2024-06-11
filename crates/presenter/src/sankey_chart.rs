@@ -1,7 +1,7 @@
 use klick_boundary::PlantProfile;
 use klick_domain::{
     self as domain,
-    units::{Percent, Ratio},
+    units::{Percent, RatioExt},
     CO2Equivalents,
 };
 
