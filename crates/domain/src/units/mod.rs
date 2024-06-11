@@ -11,10 +11,10 @@ mod conversion;
 #[cfg(test)]
 mod tests;
 
-macro_rules! quantity {
+macro_rules! float {
     (
         $(#[$quantity_attr:meta])*
-        $quantity:ident {
+        $quantity:ident($base_type:ty) {
             $($unit:ident, $conv:expr, $abbreviation:expr;)+
         }
     ) =>
@@ -23,14 +23,14 @@ macro_rules! quantity {
             $(#[$quantity_attr])*
             pub trait [<$quantity Ext>]
             {
-                const CONVERSION_FACTOR: f64;
+                const CONVERSION_FACTOR: $base_type;
                 fn convert_to<T>(self) -> T where T: [<$quantity Ext>];
 
                 #[doc(hidden)]
-                fn new_from_base_value(v: f64) -> Self;
+                fn new_from_base_value(v: $base_type) -> Self;
             }
 
-            #[derive(Debug, Clone, Copy, PartialEq, From)]
+            #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, From)]
             pub enum $quantity {
                 $(
                   $unit($unit),
@@ -72,7 +72,7 @@ macro_rules! quantity {
                         Some(v)
                     }
 
-                    pub fn [<expect_ $unit:snake>](self) -> $unit {
+                    pub fn [<unchecked_ $unit:snake>](self) -> $unit {
                         self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit), " value"))
                     }
                 )+
@@ -80,13 +80,13 @@ macro_rules! quantity {
 
             // units
             $(
-                #[doc = concat!(stringify!($unit), " `[",$abbreviation, "].`")]
+                #[doc = concat!(stringify!($unit), " `[",$abbreviation, "]`.")]
                 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-                pub struct $unit(f64);
+                pub struct $unit($base_type);
 
                 impl $unit {
                     #[must_use]
-                    pub const fn new(value: f64) -> Self {
+                    pub const fn new(value: $base_type) -> Self {
                         Self(value)
                     }
 
@@ -108,19 +108,19 @@ macro_rules! quantity {
                 }
 
                 impl [<$quantity Ext>] for $unit {
-                    const CONVERSION_FACTOR: f64 = $conv;
+                    const CONVERSION_FACTOR: $base_type = $conv;
                     fn convert_to<T>(self) -> T where T: [<$quantity Ext>] {
                         let base = self.0 * Self::CONVERSION_FACTOR;
                         T::new_from_base_value(base)
                     }
 
                     #[doc(hidden)]
-                    fn new_from_base_value(base_value: f64) -> Self {
+                    fn new_from_base_value(base_value: $base_type) -> Self {
                         Self::new(base_value / Self::CONVERSION_FACTOR)
                     }
                 }
 
-                impl From<$unit> for f64 {
+                impl From<$unit> for $base_type {
                     fn from(from: $unit) -> Self {
                         from.0
                     }
@@ -225,71 +225,106 @@ macro_rules! quantity {
     };
 }
 
-macro_rules! quantities {
+macro_rules! floats {
     (
-        $(
-            $(#[$quantity_attr:meta])*
-            $quantity:ident {
-                $($unit:ident, $conv:expr, $abbreviation:expr;)+
-            }
-        )+
-    ) => {
+         $(
+             $(#[$float_attr:meta])*
+             $float:ident {
+                 $($unit:ident, $conv:expr, $abbreviation:expr;)+
+             }
+         )+
+    ) =>
+    {
         paste! {
 
-            #[derive(Debug, Clone, Copy, PartialEq, From)]
-            pub enum Quantity {
+            /// Typed floating-point number.
+            #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, From)]
+            pub enum Float {
                 $(
-                  $quantity($quantity),
+                  $float($float),
                 )+
             }
 
             #[derive(Debug, Clone, Copy, PartialEq, From)]
-            pub enum QuantityType {
+            pub enum FloatType {
                 $(
-                  $quantity([<$quantity Type>]),
+                  $float([<$float Type>]),
                 )+
             }
 
-            impl Quantity {
-                pub const fn quantity_type(&self) -> QuantityType {
+            impl Float {
+
+                pub const fn float_type(&self) -> FloatType {
                     match self {
                         $(
-                            Self::$quantity(q) => match q {
+                            Self::$float(q) => match q {
                                 $(
-                                   $quantity::$unit(_) => QuantityType::$quantity([<$quantity Type>]::$unit),
+                                   $float::$unit(_) => FloatType::$float([<$float Type>]::$unit),
                                 )+
                             }
                         )+
                     }
                 }
+
                 $(
-                    pub fn [<as_ $quantity:snake>](self) -> Option<$quantity> {
-                        let Self::$quantity(v) = self else {
+                    pub const fn [<new_ $float:snake>](v: $float) -> Self {
+                        Self::$float(v)
+                    }
+                )+
+
+                $(
+                    $(
+                        pub const fn [<new_ $unit:snake>](v: f64) -> Self {
+                            Self::$float($float::$unit($unit::new(v)))
+                        }
+                    )+
+                )+
+
+                $(
+                    #[allow(irrefutable_let_patterns)]
+                    pub fn [<as_ $float:snake>](self) -> Option<$float> {
+                        let Self::$float(v) = self else {
                             return None;
                         };
                         Some(v)
                     }
 
-                    pub fn [<expect_ $quantity:snake>](self) -> $quantity {
-                        self.[<as_ $quantity:snake>]().expect(concat!(stringify!($quantity), " value"))
+                    pub fn [<as_ $float:snake _unchecked>](self) -> $float {
+                        self.[<as_ $float:snake>]().expect(concat!(stringify!($float), " value"))
                     }
+                )+
+
+                $(
+                    $(
+                        #[allow(irrefutable_let_patterns)]
+                        pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                            let Self::$float(v) = self else {
+                                return None;
+                            };
+                            v.[<as_ $unit:snake>]()
+                        }
+
+                        pub fn [<as_ $unit:snake _unchecked>](self) -> $unit {
+                            self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit)," value"))
+                        }
+                    )+
                 )+
             }
 
             $(
                 $(
-                    impl From<$unit> for Quantity {
+                    impl From<$unit> for Float {
                         fn from(from: $unit) -> Self {
-                            Self::from($quantity::from(from))
+                            Self::from($float::from(from))
                         }
                     }
                 )+
             )+
 
             $(
-                quantity!{
-                    $(#[$quantity_attr])*
-                    $quantity {
+                float!{
+                    $(#[$float_attr])*
+                    $float(f64) {
                         $($unit, $conv, $abbreviation;)+
                     }
                 }
@@ -298,46 +333,405 @@ macro_rules! quantities {
     };
 }
 
-quantities! {
-    Ratio {
-        Factor, 1.0, "";
-        Percent, 0.01, "%";
-    }
-    Volume {
-        Liters, 1.0, "l";
-        Qubicmeters, 1_000.0, "m³";
-    }
-    Length {
-        Kilometers, 1.0, "km";
-    }
-    Mass {
-        Grams, 1.0, "g";
-        Kilograms, 1_000.0, "kg";
-        Tons, 1_000_000.0, "t";
-    }
-    Density {
-        MilligramsPerLiter, 1.0, "mg/l";
-        KilogramsPerQubicmeter, 1_000.0, "kg/m³";
-        KilogramsPerLiter, 1_000_000.0, "kg/l";
-    }
-    Energy {
-        Kilowatthours, 1.0, "kWh";
-    }
-    SpecificEnergyDensity {
-        GramsPerKilowatthour, 1.0, "g/kWh";
-    }
-    FuelConsumption {
-        LitersPerKilometer, 1.0, "l/km";
-    }
-    TransportFuelConsumption {
-        LitersPerTonKilometer, 1.0, "l/tkm";
-    }
-    FlowRate {
-        QubicmetersPerHour, 1.0, "m³/h";
-    }
-    Time {
-        Hours, 1.0, "h";
-        Days, 24.0, "d";
-        Years, 24.0 * 365.0, "y";
+macro_rules! integers {
+    (
+        $(
+            $(#[int_attr:meta])*
+            $int:ident, $int_base_type:ty;
+        )+
+    ) =>
+    {
+        paste! {
+            /// Typed integer value.
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+            pub enum Int {
+                $(
+                    $int($int),
+                )+
+            }
+
+            impl Int {
+                pub const fn int_type(&self) -> IntType {
+                    match self {
+                        $(
+                          Self::$int(_) => IntType::$int,
+                        )+
+                    }
+                }
+
+                $(
+                    pub const fn [<new_ $int:snake>](v: $int_base_type) -> Self {
+                        Self::$int($int::new(v))
+                    }
+                )+
+
+                $(
+                    #[allow(irrefutable_let_patterns)]
+                    pub fn [<as_ $int:snake>](self) -> Option<$int> {
+                        let Self::$int(v) = self else {
+                            return None;
+                        };
+                        Some(v)
+                    }
+                )+
+            }
+
+            #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+            pub enum IntType {
+                $(
+                    $int,
+                )+
+            }
+
+            $(
+                #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+                pub struct $int($int_base_type);
+
+                impl $int {
+                    pub const fn new(v: $int_base_type) -> Self {
+                        Self(v)
+                    }
+                }
+
+                impl From<$int> for $int_base_type {
+                    fn from(v: $int) -> Self {
+                        v.0
+                    }
+                }
+            )+
+        }
+    };
+}
+
+macro_rules! values {
+    (
+        scalars {
+            floats {
+                $(
+                    $(#[$float_attr:meta])*
+                    $float:ident {
+                        $($unit:ident, $conv:expr, $abbreviation:expr;)+
+                    }
+                )+
+            }
+            integers {
+                $(
+                    $(#[int_attr:meta])*
+                    $int:ident, $int_base_type:ty;
+                )+
+            }
+        }
+    ) => {
+        paste! {
+
+            floats! {
+                $(
+                    $(#[$float_attr])*
+                    $float {
+                        $($unit, $conv, $abbreviation;)+
+                    }
+                )+
+            }
+
+            integers! {
+                $(
+                    #[int_attr:meta]
+                    $int, $int_base_type;
+                )+
+            }
+
+            /// A typed value.
+            #[derive(Debug, Clone, PartialEq, From)]
+            pub enum Value {
+                Scalar(Scalar),
+                Text(String),
+            }
+
+            impl Value {
+                #[must_use]
+                pub const fn value_type(&self) -> ValueType {
+                    match self {
+                        Self::Scalar(s) => ValueType::Scalar(s.scalar_type()),
+                        Self::Text(_) => ValueType::Text,
+                    }
+                }
+
+                // --- constructors --- //
+
+                $(
+                    $(
+                        pub const fn [<new_ $unit:snake>](v: f64) -> Self {
+                            Self::Scalar(
+                              Scalar::Float(Float::[<new_ $unit:snake>](v))
+                            )
+                        }
+
+                    )+
+                )+
+
+                $(
+                    pub const fn [<new_ $int:snake>](v: $int_base_type) -> Self {
+                        Self::Scalar(Scalar::Int(Int::$int($int::new(v))))
+                    }
+                )+
+
+                pub const fn new_bool(v: bool) -> Self {
+                    Self::Scalar(Scalar::Bool(v))
+                }
+
+                pub fn new_text(s: impl Into<String>) -> Self {
+                    Self::Text(s.into())
+                }
+
+                // --- getters --- //
+
+                pub fn as_scalar(self) -> Option<Scalar> {
+                    let Self::Scalar(v) = self else {
+                        return None;
+                    };
+                    Some(v)
+                }
+
+                pub fn as_scalar_unchecked(self) -> Scalar {
+                    self.as_scalar().expect("scalar value")
+                }
+
+                pub fn as_text(self) -> Option<String> {
+                    let Self::Text(v) = self else {
+                        return None;
+                    };
+                    Some(v)
+                }
+
+                pub fn as_text_unchecked(self) -> String {
+                    self.as_text().expect("text value")
+                }
+
+                pub fn as_float(self) -> Option<Float> {
+                    let Self::Scalar(v) = self else {
+                        return None;
+                    };
+                    v.as_float()
+                }
+
+                pub fn as_float_unchecked(self) -> Float {
+                    self.as_float().expect("float value")
+                }
+
+                pub fn as_int(self) -> Option<Int> {
+                    let Self::Scalar(v) = self else {
+                        return None;
+                    };
+                    v.as_int()
+                }
+
+                pub fn as_int_unchecked(self) -> Int {
+                    self.as_int().expect("integer value")
+                }
+
+                pub fn as_bool(self) -> Option<bool> {
+                    let Self::Scalar(v) = self else {
+                        return None;
+                    };
+                    v.as_bool()
+                }
+
+                pub fn as_bool_unchecked(self) -> bool {
+                    self.as_bool().expect("bool value")
+                }
+
+
+                $(
+                    $(
+                        pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                            let Self::Scalar(v) = self else {
+                                return None;
+                            };
+                            v.[<as_ $unit:snake>]()
+                        }
+
+                        pub fn [<as_ $unit:snake _unchecked>](self) -> $unit {
+                            self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit)," value"))
+                        }
+                    )+
+                )+
+
+                $(
+                    pub fn [<as_ $int:snake>](self) -> Option<$int> {
+                        let Self::Scalar(v) = self else {
+                            return None;
+                        };
+                        v.[<as_ $int:snake>]()
+                    }
+
+                    pub fn [<as_ $int:snake _unchecked>](self) -> $int {
+                        self.[<as_ $int:snake>]().expect(concat!(stringify!($int)," value"))
+                    }
+                )+
+            }
+
+            impl<T> From<T> for Value
+            where
+                Float: From<T>,
+            {
+                fn from(from: T) -> Self {
+                    Self::Scalar(Scalar::Float(Float::from(from)))
+                }
+            }
+
+            #[derive(Debug, Clone, Copy, PartialEq)]
+            pub enum ValueType {
+                Scalar(ScalarType),
+                Text,
+            }
+
+            /// Elementary value that represents only a single data unit or value.
+            #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, From)]
+            pub enum Scalar {
+                Float(Float),
+                Int(Int),
+                Bool(bool),
+            }
+
+            impl Scalar {
+                pub const fn scalar_type(&self) -> ScalarType {
+                    match self {
+                      Self::Float(f) => ScalarType::Float(f.float_type()),
+                      Self::Int(i) => ScalarType::Int(i.int_type()),
+                      Self::Bool(_) => ScalarType::Bool,
+                    }
+                }
+
+                $(
+                    $(
+                        pub const fn [<new_ $unit:snake>](v: f64) -> Self {
+                            Self::Float(Float::[<new_ $unit:snake>](v))
+                        }
+                    )+
+                )+
+
+                $(
+                    pub const fn [<new_ $int:snake>](v: $int_base_type) -> Self {
+                        Self::Int(Int::[<new_ $int:snake>](v))
+                    }
+                )+
+
+                pub const fn new_bool(v: bool) -> Self {
+                    Self::Bool(v)
+                }
+
+                $(
+                    $(
+                        pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                            let Self::Float(v) = self else {
+                                return None;
+                            };
+                            v.[<as_ $unit:snake>]()
+                        }
+                    )+
+                )+
+
+                $(
+                    pub fn [<as_ $int:snake>](self) -> Option<$int> {
+                        let Self::Int(v) = self else {
+                            return None;
+                        };
+                        v.[<as_ $int:snake>]()
+                    }
+                )+
+
+                pub fn as_float(self) -> Option<Float> {
+                    let Self::Float(v) = self else {
+                        return None;
+                    };
+                    Some(v)
+                }
+
+                pub fn as_float_unchecked(self) -> Float {
+                    self.as_float().expect("float value")
+                }
+
+                pub fn as_int(self) -> Option<Int> {
+                    let Self::Int(v) = self else {
+                        return None;
+                    };
+                    Some(v)
+                }
+
+                pub fn as_int_unchecked(self) -> Int {
+                    self.as_int().expect("integer value")
+                }
+
+                pub fn as_bool(self) -> Option<bool> {
+                    let Self::Bool(v) = self else {
+                        return None;
+                    };
+                    Some(v)
+                }
+
+                pub fn as_bool_unchecked(self) -> bool {
+                    self.as_bool().expect("bool value")
+                }
+            }
+
+            #[derive(Debug, Clone, Copy, PartialEq)]
+            pub enum ScalarType {
+                Float(FloatType),
+                Int(IntType),
+                Bool,
+            }
+        }
+    };
+}
+
+values! {
+    scalars {
+        floats {
+            Ratio {
+                Factor, 1.0, "";
+                Percent, 0.01, "%";
+            }
+            Volume {
+                Liters, 1.0, "l";
+                Qubicmeters, 1_000.0, "m³";
+            }
+            Length {
+                Kilometers, 1.0, "km";
+            }
+            Mass {
+                Grams, 1.0, "g";
+                Kilograms, 1_000.0, "kg";
+                Tons, 1_000_000.0, "t";
+            }
+            Density {
+                MilligramsPerLiter, 1.0, "mg/l";
+                KilogramsPerQubicmeter, 1_000.0, "kg/m³";
+                KilogramsPerLiter, 1_000_000.0, "kg/l";
+            }
+            Energy {
+                Kilowatthours, 1.0, "kWh";
+            }
+            SpecificEnergyDensity {
+                GramsPerKilowatthour, 1.0, "g/kWh";
+            }
+            FuelConsumption {
+                LitersPerKilometer, 1.0, "l/km";
+            }
+            TransportFuelConsumption {
+                LitersPerTonKilometer, 1.0, "l/tkm";
+            }
+            FlowRate {
+                QubicmetersPerHour, 1.0, "m³/h";
+            }
+            Time { // TODO: use integer type?
+                Hours, 1.0, "h";
+                Days, 24.0, "d";
+                Years, 24.0 * 365.0, "y";
+            }
+        }
+
+        integers {
+            Count, u64;
+        }
     }
 }

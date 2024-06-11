@@ -235,7 +235,7 @@ fn render_markdown_template(
         .profile
         .input
         .get(&Id::PlantName)
-        .map(Value::expect_text)
+        .map(Value::as_text_unchecked)
         .unwrap_or_else(|| "Klärwerk".to_string());
 
     let plant_profile_sankey_header = outcome

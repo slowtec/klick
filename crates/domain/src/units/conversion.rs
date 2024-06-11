@@ -1,4 +1,4 @@
-use std::ops::Mul;
+use std::ops::{Div, Mul};
 
 #[allow(clippy::wildcard_imports)]
 use super::*;

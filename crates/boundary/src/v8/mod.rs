@@ -2,7 +2,7 @@ use derive_more::From;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-use klick_domain as domain;
+use klick_domain::{self as domain, units::Value};
 
 pub use crate::v7::{
     CH4ChpEmissionFactorCalcMethod, CH4ChpEmissionFactorScenario, N2oEmissionFactorScenario,
@@ -65,43 +65,37 @@ pub struct FormData {
 // In the future, we want to use a HashMap,
 // which is why we are first implementing manual access via variable IDs.
 impl FormData {
-    pub fn get(&self, id: &domain::InputValueId) -> Option<domain::Value> {
-        use domain::{units::*, InputValueId as Id, Value as V};
+    pub fn get(&self, id: &domain::InputValueId) -> Option<Value> {
+        use domain::InputValueId as Id;
 
         match id {
-            Id::PlantName => self.plant_profile.plant_name.clone().map(V::Text),
+            Id::PlantName => self.plant_profile.plant_name.clone().map(Value::Text),
             Id::PopulationEquivalent => self
                 .plant_profile
                 .population_equivalent
                 .map(|v| v as u64)
-                .map(Into::into),
-            Id::Wastewater => self
-                .plant_profile
-                .wastewater
-                .map(Qubicmeters::new)
-                .map(Into::into),
+                .map(Value::new_count),
+            Id::Wastewater => self.plant_profile.wastewater.map(Value::new_qubicmeters),
             _ => {
                 panic!("TODO: implement read access of {id:?} via FormData::get method");
             }
         }
     }
 
-    pub fn set(&mut self, id: domain::InputValueId, value: Option<domain::Value>) {
-        use domain::{units::*, InputValueId as Id, Value as V};
+    pub fn set(&mut self, id: domain::InputValueId, value: Option<Value>) {
+        use domain::InputValueId as Id;
         match id {
             Id::PlantName => {
-                self.plant_profile.plant_name = value.map(V::expect_text);
+                self.plant_profile.plant_name = value.map(Value::as_text_unchecked);
             }
             Id::PopulationEquivalent => {
-                self.plant_profile.population_equivalent =
-                    value.map(V::expect_int).map(|v| v as f64);
+                self.plant_profile.population_equivalent = value
+                    .map(Value::as_count_unchecked)
+                    .map(|v| u64::from(v) as f64);
             }
             Id::Wastewater => {
-                self.plant_profile.wastewater = value
-                    .map(V::expect_quantity)
-                    .map(Quantity::expect_volume)
-                    .map(Volume::expect_qubicmeters)
-                    .map(Into::into);
+                self.plant_profile.wastewater =
+                    value.map(Value::as_qubicmeters_unchecked).map(Into::into);
             }
             _ => {
                 panic!("TODO: implement write access of {id:?} via FormData::set method");

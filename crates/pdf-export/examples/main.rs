@@ -1,7 +1,7 @@
 use std::{fs::File, io::prelude::*};
 
 use klick_boundary::*;
-use klick_domain::InputValueId as Id;
+use klick_domain::{InputValueId as Id, Value};
 
 use klick_pdf_export::export_to_pdf;
 
@@ -81,7 +81,7 @@ fn project_example_data() -> FormData {
     };
 
     data.set(Id::PlantName, Some("Muster Klärwerk".to_string().into()));
-    data.set(Id::PopulationEquivalent, Some(50_000.into()));
+    data.set(Id::PopulationEquivalent, Some(Value::new_count(50_000)));
 
     data
 }

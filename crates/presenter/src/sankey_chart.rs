@@ -14,12 +14,16 @@ pub fn create_sankey_chart_header(
     calculation_methods: domain::EmissionFactorCalculationMethods,
     formatting: Formatting,
 ) -> String {
-    let population_equivalent = match &data.get(&Id::PopulationEquivalent).map(Value::expect_int) {
+    let population_equivalent = match &data
+        .get(&Id::PopulationEquivalent)
+        .map(Value::as_count_unchecked)
+        .map(u64::from)
+    {
         Some(v) => format!("{v}"),
         None => String::new(),
     };
 
-    let plant_name = match &data.get(&Id::PlantName).map(Value::expect_text) {
+    let plant_name = match &data.get(&Id::PlantName).map(Value::as_text_unchecked) {
         Some(v) => v.to_string(),
         None => String::new(),
     };

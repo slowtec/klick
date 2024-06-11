@@ -2,7 +2,7 @@ use klick_boundary::{
     import_from_str, EnergyConsumption, FormData, ImportError, N2oEmissionFactorCalcMethod,
     PlantProfile, Project, SewageSludgeTreatment, CURRENT_VERSION,
 };
-use klick_domain::{InputValueId as Id, Value};
+use klick_domain::{units::*, InputValueId as Id, Value};
 
 #[test]
 fn check_version() {
@@ -62,12 +62,15 @@ fn import_v1() {
     } = sewage_sludge_treatment;
 
     assert_eq!(
-        data.get(&Id::PlantName).map(Value::expect_text).as_deref(),
+        data.get(&Id::PlantName)
+            .map(Value::as_text_unchecked)
+            .as_deref(),
         Some("Example Plant")
     );
     assert_eq!(
-        data.get(&Id::PopulationEquivalent).map(Value::expect_int),
-        Some(120_000)
+        data.get(&Id::PopulationEquivalent)
+            .map(Value::as_count_unchecked),
+        Some(Count::new(120_000))
     );
     assert_eq!(wastewater, Some(5_000_000.0));
 
@@ -170,12 +173,15 @@ fn import_v2() {
     } = sewage_sludge_treatment;
 
     assert_eq!(
-        data.get(&Id::PlantName).map(Value::expect_text).as_deref(),
+        data.get(&Id::PlantName)
+            .map(Value::as_text_unchecked)
+            .as_deref(),
         Some("Example Plant")
     );
     assert_eq!(
-        data.get(&Id::PopulationEquivalent).map(Value::expect_int),
-        Some(120_000)
+        data.get(&Id::PopulationEquivalent)
+            .map(Value::as_count_unchecked),
+        Some(Count::new(120_000))
     );
     assert_eq!(wastewater, Some(5_000_000.0));
 

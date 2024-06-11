@@ -1,5 +1,5 @@
 use klick_boundary::*;
-use klick_domain::InputValueId as Id;
+use klick_domain::{InputValueId as Id, Value};
 
 pub fn example_form_data() -> FormData {
     let mut plant_profile = PlantProfile::default();
@@ -72,7 +72,7 @@ pub fn example_form_data() -> FormData {
         optimization_scenario,
     };
 
-    data.set(Id::PlantName, Some("Muster Klärwerk".to_string().into()));
-    data.set(Id::PopulationEquivalent, Some(50_000.into()));
+    data.set(Id::PlantName, Some(Value::new_text("Muster Klärwerk")));
+    data.set(Id::PopulationEquivalent, Some(Value::new_count(50_000)));
     data
 }

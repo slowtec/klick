@@ -53,7 +53,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                         form_data.update(|d|d.set(Id::PlantName, v.map(Value::Text)));
                     }),
                     input: Signal::derive(move||{
-                        form_data.with(|d|d.get(&Id::PlantName).map(Value::expect_text))
+                        form_data.with(|d|d.get(&Id::PlantName).map(Value::as_text_unchecked))
                     })
                 },
             },
@@ -77,12 +77,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                         ),
                     },
                     unit: "EW",
-                    on_change: Callback::new(move|v: Option<_>|{
-                        let v = v.map(|v|v as u64).map(Value::Int);
+                    on_change: Callback::new(move|v: Option<f64>|{
+                        let v = v.map(|v|v as u64).map(Value::new_count);
                         form_data.update(|d| d.set(Id::PopulationEquivalent, v));
                     }),
                     input: Signal::derive(move||{
-                        form_data.with(|d|d.get(&Id::PopulationEquivalent).map(Value::expect_int).map(|v|v as f64))
+                        form_data.with(|d|d.get(&Id::PopulationEquivalent).map(Value::as_count_unchecked).map(|v|u64::from(v) as f64))
                     })
                 },
             },

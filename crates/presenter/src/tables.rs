@@ -70,14 +70,16 @@ pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table 
             rows: vec![
                 (
                     InputValueId::PlantName.label(),
-                    data.get(&Id::PlantName).map(Value::expect_text).clone(),
+                    data.get(&Id::PlantName)
+                        .map(Value::as_text_unchecked)
+                        .clone(),
                     formatting.fmt(InputValueId::PlantName),
                 ),
                 (
                     InputValueId::PopulationEquivalent.label(),
                     data.get(&Id::PopulationEquivalent)
-                        .map(Value::expect_int)
-                        .map(|v| v as f64)
+                        .map(Value::as_count_unchecked)
+                        .map(|v| u64::from(v) as f64)
                         .map(format_number_with_thousands_seperator(lang)),
                     formatting.fmt(InputValueId::PopulationEquivalent),
                 ),
