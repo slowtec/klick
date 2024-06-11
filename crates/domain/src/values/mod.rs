@@ -17,6 +17,7 @@ pub use self::{
 pub enum Value {
     #[from(ignore)]
     Quantity(Quantity),
+    Int(u64),
     Bool(bool),
     Text(String),
 }
@@ -24,6 +25,7 @@ pub enum Value {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ValueType {
     Quantity(QuantityType),
+    Int,
     Bool,
     Text,
 }
@@ -33,6 +35,7 @@ impl Value {
     pub const fn value_type(&self) -> ValueType {
         match self {
             Self::Quantity(q) => ValueType::Quantity(q.quantity_type()),
+            Self::Int(_) => ValueType::Int,
             Self::Bool(_) => ValueType::Bool,
             Self::Text(_) => ValueType::Text,
         }
@@ -40,6 +43,13 @@ impl Value {
 
     pub fn as_quantity(self) -> Option<Quantity> {
         let Self::Quantity(v) = self else {
+            return None;
+        };
+        Some(v)
+    }
+
+    pub fn as_int(self) -> Option<u64> {
+        let Self::Int(v) = self else {
             return None;
         };
         Some(v)
@@ -57,6 +67,22 @@ impl Value {
             return None;
         };
         Some(v)
+    }
+
+    pub fn expect_quantity(self) -> Quantity {
+        self.as_quantity().expect("quantity value")
+    }
+
+    pub fn expect_int(self) -> u64 {
+        self.as_int().expect("int value")
+    }
+
+    pub fn expect_bool(self) -> bool {
+        self.as_bool().expect("bool value")
+    }
+
+    pub fn expect_text(self) -> String {
+        self.as_text().expect("text value")
     }
 }
 

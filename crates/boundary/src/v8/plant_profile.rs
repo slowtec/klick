@@ -6,10 +6,10 @@ pub use crate::v7::OperatingMaterials;
 #[cfg_attr(feature = "extra-derive", derive(Default, Debug, Clone, PartialEq))]
 pub struct PlantProfile {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub plant_name: Option<String>,
+    pub(crate) plant_name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub population_equivalent: Option<f64>,
+    pub(crate) population_equivalent: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wastewater: Option<f64>,

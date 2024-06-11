@@ -2,14 +2,12 @@ use time::OffsetDateTime;
 use uuid::Uuid;
 
 use klick_boundary::*;
+use klick_domain::InputValueId as Id;
 
 #[test]
 fn export() {
-    let plant_profile = PlantProfile {
-        plant_name: Some("test export".to_string()),
-        wastewater: Some(3456.889),
-        ..Default::default()
-    };
+    let mut plant_profile = PlantProfile::default();
+    plant_profile.wastewater = Some(3456.889);
 
     let sensitivity_parameters = SensitivityParameters {
         n2o_emissions: N2OEmissionsSensitivity {
@@ -26,12 +24,16 @@ fn export() {
     };
 
     let id = ProjectId(Uuid::new_v4());
-    let data = FormData {
+
+    let mut data = FormData {
         project_title: Some("Project".into()),
         plant_profile,
         sensitivity_parameters,
         optimization_scenario: Default::default(),
     };
+
+    data.set(Id::PlantName, Some("test export".to_string().into()));
+
     let project = SavedProject {
         id,
         created_at: OffsetDateTime::now_utc(),
@@ -71,15 +73,13 @@ fn export() {
 
 #[test]
 fn roundtrip() {
-    let plant_profile = PlantProfile {
-        plant_name: Some("test export".to_string()),
-        wastewater: Some(3456.889),
-        influent_average: AnnualAverageInfluent {
-            total_nitrogen: Some(1.234_5),
-            ..Default::default()
-        },
+    let mut plant_profile = PlantProfile::default();
+    plant_profile.wastewater = Some(3456.889);
+    plant_profile.influent_average = AnnualAverageInfluent {
+        total_nitrogen: Some(1.234_5),
         ..Default::default()
     };
+
     let sensitivity_parameters = SensitivityParameters {
         n2o_emissions: N2OEmissionsSensitivity {
             custom_emission_factor: Some(0.013),
@@ -95,16 +95,18 @@ fn roundtrip() {
     };
 
     let id = ProjectId(Uuid::new_v4());
+    let mut data = FormData {
+        project_title: Some("Project".into()),
+        plant_profile,
+        sensitivity_parameters,
+        optimization_scenario: Default::default(),
+    };
+    data.set(Id::PlantName, Some("test export".to_string().into()));
     let project = Project::Saved(SavedProject {
         id,
         created_at: OffsetDateTime::now_utc(),
         modified_at: None,
-        data: FormData {
-            project_title: Some("Project".into()),
-            plant_profile,
-            sensitivity_parameters,
-            optimization_scenario: Default::default(),
-        },
+        data,
     });
     let data = Data {
         project: project.clone(),

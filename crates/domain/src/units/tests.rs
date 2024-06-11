@@ -41,3 +41,15 @@ fn kwh_with_g_per_kwh() {
     let kwh = Kilowatthours(1.0);
     assert_eq!(g_per_kwh * kwh, Grams::new(5.0));
 }
+
+#[test]
+fn volume_as_unit() {
+    let liters = Volume::Liters(Liters::new(2.0));
+    let qubics = Volume::Qubicmeters(Qubicmeters::new(5.0));
+
+    assert!(liters.as_qubicmeters().is_none());
+    assert!(liters.as_liters().is_some());
+
+    assert!(qubics.as_qubicmeters().is_some());
+    assert!(qubics.as_liters().is_none());
+}

@@ -2,6 +2,7 @@ use klick_boundary::{
     import_from_str, EnergyConsumption, FormData, ImportError, N2oEmissionFactorCalcMethod,
     PlantProfile, Project, SewageSludgeTreatment, CURRENT_VERSION,
 };
+use klick_domain::{InputValueId as Id, Value};
 
 #[test]
 fn check_version() {
@@ -19,19 +20,19 @@ fn check_version() {
 #[test]
 fn import_v1() {
     let json = include_str!("example_data_v1.json");
-    let Project::Unsaved(FormData {
+
+    let Project::Unsaved(data) = import_from_str(json).unwrap() else {
+        panic!("expected unsaved project");
+    };
+
+    let FormData {
         project_title: _,
         plant_profile,
         sensitivity_parameters,
         optimization_scenario: _,
-    }) = import_from_str(json).unwrap()
-    else {
-        panic!("expected unsaved project");
-    };
+    } = data.clone();
 
     let PlantProfile {
-        plant_name,
-        population_equivalent,
         wastewater,
         influent_average,
         effluent_average,
@@ -60,8 +61,14 @@ fn import_v1() {
         digester_count,
     } = sewage_sludge_treatment;
 
-    assert_eq!(plant_name.as_deref(), Some("Example Plant"));
-    assert_eq!(population_equivalent, Some(120_000.0));
+    assert_eq!(
+        data.get(&Id::PlantName).map(Value::expect_text).as_deref(),
+        Some("Example Plant")
+    );
+    assert_eq!(
+        data.get(&Id::PopulationEquivalent).map(Value::expect_int),
+        Some(120_000)
+    );
     assert_eq!(wastewater, Some(5_000_000.0));
 
     assert_eq!(influent_average.total_nitrogen, Some(122.0));
@@ -121,19 +128,18 @@ fn import_v1() {
 fn import_v2() {
     let json = include_str!("example_data_v2.json");
 
-    let Project::Unsaved(FormData {
+    let Project::Unsaved(data) = import_from_str(json).unwrap() else {
+        panic!("expected unsaved project");
+    };
+
+    let FormData {
         project_title: _,
         plant_profile,
         sensitivity_parameters,
         optimization_scenario: _,
-    }) = import_from_str(json).unwrap()
-    else {
-        panic!("expected unsaved project");
-    };
+    } = data.clone();
 
     let PlantProfile {
-        plant_name,
-        population_equivalent,
         wastewater,
         influent_average,
         effluent_average,
@@ -163,8 +169,14 @@ fn import_v2() {
         ..
     } = sewage_sludge_treatment;
 
-    assert_eq!(plant_name.as_deref(), Some("Example Plant"));
-    assert_eq!(population_equivalent, Some(120_000.0));
+    assert_eq!(
+        data.get(&Id::PlantName).map(Value::expect_text).as_deref(),
+        Some("Example Plant")
+    );
+    assert_eq!(
+        data.get(&Id::PopulationEquivalent).map(Value::expect_int),
+        Some(120_000)
+    );
     assert_eq!(wastewater, Some(5_000_000.0));
 
     assert_eq!(influent_average.total_nitrogen, Some(122.0));

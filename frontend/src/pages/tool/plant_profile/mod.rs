@@ -69,7 +69,7 @@ pub fn DataCollection(
         <h4 class="my-8 text-lg font-bold">
         { move || outcome.with(|out|out.profile.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
-                &form_data.with(|d| d.plant_profile.clone()),
+                &form_data.with(|d| d.clone()), // TODO: avoid clone
                 out.emission_factors,
                 out.calculation_methods,
                 klick_presenter::Formatting::Text,

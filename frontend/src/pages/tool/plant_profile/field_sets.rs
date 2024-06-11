@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::InputValueId;
+use klick_domain::{InputValueId as Id, Value};
 use klick_presenter::ValueLabel;
 
 #[allow(clippy::too_many_lines)]
@@ -38,7 +38,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         title: Some("Angaben zur Kläranlage"),
         fields: vec![
             Field {
-                label: InputValueId::PlantName.label(),
+                label: Id::PlantName.label(),
                 description: Some(
                     "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
                 ),
@@ -49,17 +49,16 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                         "Name der Kläranlage".to_string(),
                     ),
                     max_len: None,
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.plant_name = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d
-                        .plant_profile.plant_name.clone())
+                    on_change: Callback::new(move|v: Option<_>|{
+                        form_data.update(|d|d.set(Id::PlantName, v.map(Value::Text)));
+                    }),
+                    input: Signal::derive(move||{
+                        form_data.with(|d|d.get(&Id::PlantName).map(Value::expect_text))
                     })
                 },
             },
             Field {
-                label: InputValueId::PopulationEquivalent.label(),
+                label: Id::PopulationEquivalent.label(),
                 description: Some(
                     "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
                 ),
@@ -78,17 +77,17 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                         ),
                     },
                     unit: "EW",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.population_equivalent = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d
-                        .plant_profile .population_equivalent)
+                    on_change: Callback::new(move|v: Option<_>|{
+                        let v = v.map(|v|v as u64).map(Value::Int);
+                        form_data.update(|d| d.set(Id::PopulationEquivalent, v));
+                    }),
+                    input: Signal::derive(move||{
+                        form_data.with(|d|d.get(&Id::PopulationEquivalent).map(Value::expect_int).map(|v|v as f64))
                     })
                 },
             },
             Field {
-                label: InputValueId::Wastewater.label(),
+                label: Id::Wastewater.label(),
                 description: Some(
                     "Die jährliche (a) Abwassermenge in Kubikmeter (m³) im Zulauf Ihrer Kläranlage.",
                 ),
@@ -120,7 +119,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         title: Some("Zulauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
             Field {
-                label: InputValueId::InfluentChemicalOxygenDemand.label(),
+                label: Id::InfluentChemicalOxygenDemand.label(),
                 description: Some(
                     "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
                 ),
@@ -148,7 +147,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::InfluentNitrogen.label(),
+                label: Id::InfluentNitrogen.label(),
                 description: Some(
                     "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
@@ -176,7 +175,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::InfluentTotalOrganicCarbohydrates.label(),
+                label: Id::InfluentTotalOrganicCarbohydrates.label(),
                 description: Some(
                     "Der Jahresmittelwert des Gesamten organischen Kohlenstoffs (Total Organic Carbon, TOC)
                     des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).<br>
@@ -212,7 +211,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         title: Some("Ablauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
             Field {
-                label: InputValueId::EffluentChemicalOxygenDemand.label(),
+                label: Id::EffluentChemicalOxygenDemand.label(),
                 description: Some(
                     "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
                 ),
@@ -238,7 +237,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::EffluentNitrogen.label(),
+                label: Id::EffluentNitrogen.label(),
                 description: Some(
                     "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
                 ),
@@ -271,7 +270,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         title: Some("Energiebedarf"),
         fields: vec![
             Field {
-                label: InputValueId::TotalPowerConsumption.label(),
+                label: Id::TotalPowerConsumption.label(),
                 description: Some(
                     "Der Gesamt-Strombedarf Ihrer Kläranlage in Kilowattstunden (kWh) pro Jahr (a).",
                 ),
@@ -299,7 +298,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::OnSitePowerGeneration.label(),
+                label: Id::OnSitePowerGeneration.label(),
                 description: Some(
                     "Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen.",
                 ),
@@ -327,7 +326,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::EmissionFactorElectricityMix.label(),
+                label: Id::EmissionFactorElectricityMix.label(),
                 description: Some(
                     "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
                 ),
@@ -355,7 +354,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::GasSupply.label(),
+                label: Id::GasSupply.label(),
                 description: Some(
                     "Menge an Gas (Erdgas/Biogas) in Kubikmeter (m³) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
                 ),
@@ -379,7 +378,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::PurchaseOfBiogas.label(),
+                label: Id::PurchaseOfBiogas.label(),
                 description: Some(
                     "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
                 ),
@@ -395,7 +394,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::HeatingOil.label(),
+                label: Id::HeatingOil.label(),
                 description: Some(
                     "Menge an Heizöl (z.B. für die Beheizung von Gebäuden) in Litern (L) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Heizöl von extern bezogen wird, dieses Feld bitte freilassen."
                 ),
@@ -419,7 +418,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::SewageGasProduced.label(),
+                label: Id::SewageGasProduced.label(),
                 description: Some(
                     "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m³) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
                 ),
@@ -445,7 +444,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::MethaneFraction.label(),
+                label: Id::MethaneFraction.label(),
                 description: Some(
                     "Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
                 ),
@@ -476,7 +475,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         title: Some("Klärschlammbehandlung"),
         fields: vec![
             Field {
-                label: InputValueId::SludgeTreatmentDigesterCount.label(),
+                label: Id::SludgeTreatmentDigesterCount.label(),
                 description: Some(
                     "Falls auf Ihrer Kläranlage eine Faulung vorhanden ist, dann geben Sie bitte die Anzahl der Faultürme ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein.",
                 ),
@@ -502,7 +501,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: "Schlammtaschen sind geschlossen", // TODO: Invert label of InputValueId::SludgeTreatmentBagsAreOpen.label(),
+                label: "Schlammtaschen sind geschlossen", // TODO: Invert label of Id::SludgeTreatmentBagsAreOpen.label(),
                 description: Some(
                     "Falls die Schlammtaschen des Faulturms / der Faultürme Ihrer Kläranlage geschlossen sind und nicht zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.",
                 ),
@@ -518,7 +517,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: "Schlammlagerung ist geschlossen", // TODO: Invert label of InputValueId::SludgeTreatmentStorageContainersAreOpen.label(),
+                label: "Schlammlagerung ist geschlossen", // TODO: Invert label of Id::SludgeTreatmentStorageContainersAreOpen.label(),
                 description: Some(
                     "Falls die Schlammstapelbehälter Ihrer Kläranlage dicht abgedeckt sind, dann dieses Feld bitte anklicken.",
                 ),
@@ -534,7 +533,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::SludgeTreatmentDisposal.label(),
+                label: Id::SludgeTreatmentDisposal.label(),
                 description: Some(
                     "Angabe der Menge an Klärschlamm in Tonnen (t) die zur Entsorgung anfallen.",
                 ),
@@ -560,7 +559,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::SludgeTreatmentTransportDistance.label(),
+                label: Id::SludgeTreatmentTransportDistance.label(),
                 description: Some(
                     "Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen.",
                 ),
@@ -593,7 +592,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         title: Some("Prozesswasserbehandlung"),
         fields: vec![
             Field {
-                label: InputValueId::SideStreamTreatmentTotalNitrogen.label(),
+                label: Id::SideStreamTreatmentTotalNitrogen.label(),
                 description: Some(
                     "Falls auf Ihrer Kläranlage eine Prozesswasserbehandlung vorhanden ist, dann geben Sie bitte deren jährliche
                     Gesamtsticksoffmenge in Tonnen [t/a] ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein. ",
@@ -623,7 +622,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         title: Some("Eingesetzte Betriebsstoffe"),
         fields: vec![
             Field {
-                label: InputValueId::OperatingMaterialFeCl3.label(),
+                label: Id::OperatingMaterialFeCl3.label(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Eisen(III)-chlorid (FeCl3) in Tonnen (t).",
                 ),
@@ -649,7 +648,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::OperatingMaterialFeClSO4.label(),
+                label: Id::OperatingMaterialFeClSO4.label(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Eisenchloridsulfat (FeClSO4) in Tonnen (t).",
                 ),
@@ -675,7 +674,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::OperatingMaterialCaOH2.label(),
+                label: Id::OperatingMaterialCaOH2.label(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Kalkhydrat (Ca(OH)2) in Tonnen (t).",
                 ),
@@ -701,7 +700,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: InputValueId::OperatingMaterialSyntheticPolymers.label(),
+                label: Id::OperatingMaterialSyntheticPolymers.label(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an synthetischen Polymeren in Tonnen (t).",
                 ),

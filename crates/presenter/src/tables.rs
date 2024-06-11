@@ -1,9 +1,11 @@
 use serde::Serialize;
 
-use klick_boundary::{PlantProfile, SensitivityParameters};
-use klick_domain as domain;
-use klick_domain::units::Percent;
-use klick_domain::units::RatioExt;
+use klick_boundary::{FormData, PlantProfile, SensitivityParameters};
+use klick_domain::{
+    self as domain,
+    units::{Percent, RatioExt},
+    InputValueId as Id, Value,
+};
 
 use crate::{InputValueId, Lng, ValueLabel, ValueUnit};
 
@@ -47,10 +49,8 @@ pub struct TableSection {
 }
 
 #[must_use]
-pub fn plant_profile_as_table(profile: &PlantProfile, formatting: Formatting) -> Table {
+pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table {
     let PlantProfile {
-        plant_name,
-        population_equivalent,
         wastewater,
         influent_average,
         effluent_average,
@@ -58,7 +58,8 @@ pub fn plant_profile_as_table(profile: &PlantProfile, formatting: Formatting) ->
         sewage_sludge_treatment,
         side_stream_treatment,
         operating_materials,
-    } = profile;
+        ..
+    } = &data.plant_profile;
 
     // TODO: use as parameter
     let lang = Lng::De;
@@ -69,12 +70,15 @@ pub fn plant_profile_as_table(profile: &PlantProfile, formatting: Formatting) ->
             rows: vec![
                 (
                     InputValueId::PlantName.label(),
-                    plant_name.clone(),
+                    data.get(&Id::PlantName).map(Value::expect_text).clone(),
                     formatting.fmt(InputValueId::PlantName),
                 ),
                 (
                     InputValueId::PopulationEquivalent.label(),
-                    population_equivalent.map(format_number_with_thousands_seperator(lang)),
+                    data.get(&Id::PopulationEquivalent)
+                        .map(Value::expect_int)
+                        .map(|v| v as f64)
+                        .map(format_number_with_thousands_seperator(lang)),
                     formatting.fmt(InputValueId::PopulationEquivalent),
                 ),
                 (

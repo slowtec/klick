@@ -16,7 +16,7 @@ use klick_domain::{
     self as domain,
     units::{Factor, Tons},
     CH4ChpEmissionFactorCalcMethod, CO2Equivalents, EmissionInfluencingValues,
-    EmissionsCalculationOutcome, N2oEmissionFactorCalcMethod,
+    EmissionsCalculationOutcome, InputValueId as Id, N2oEmissionFactorCalcMethod, Value,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
 
@@ -221,7 +221,7 @@ fn render_markdown_template(
     recommendation_barchart_svg_file_path: Option<String>,
 ) -> anyhow::Result<String> {
     let plant_profile_table_data =
-        presenter::plant_profile_as_table(&outcome.profile.input.plant_profile, Formatting::LaTeX);
+        presenter::plant_profile_as_table(&outcome.profile.input, Formatting::LaTeX);
     let plant_profile_table = create_latex_table(&plant_profile_table_data)?;
 
     let sensitivity_table_data = presenter::sensitivity_parameters_as_table(
@@ -234,9 +234,8 @@ fn render_markdown_template(
     let plant_name = outcome
         .profile
         .input
-        .plant_profile
-        .plant_name
-        .clone()
+        .get(&Id::PlantName)
+        .map(Value::expect_text)
         .unwrap_or_else(|| "Klärwerk".to_string());
 
     let plant_profile_sankey_header = outcome
@@ -244,7 +243,7 @@ fn render_markdown_template(
         .output
         .map(|output| {
             presenter::create_sankey_chart_header(
-                &outcome.profile.input.plant_profile,
+                &outcome.profile.input,
                 output.emission_factors,
                 output.calculation_methods,
                 Formatting::LaTeX,

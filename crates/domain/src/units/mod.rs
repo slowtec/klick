@@ -62,6 +62,20 @@ macro_rules! quantity {
                         )+
                     }
                 }
+
+                $(
+                    #[allow(irrefutable_let_patterns)]
+                    pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                        let Self::$unit(v) = self else {
+                            return None;
+                        };
+                        Some(v)
+                    }
+
+                    pub fn [<expect_ $unit:snake>](self) -> $unit {
+                        self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit), " value"))
+                    }
+                )+
             }
 
             // units
@@ -248,6 +262,18 @@ macro_rules! quantities {
                         )+
                     }
                 }
+                $(
+                    pub fn [<as_ $quantity:snake>](self) -> Option<$quantity> {
+                        let Self::$quantity(v) = self else {
+                            return None;
+                        };
+                        Some(v)
+                    }
+
+                    pub fn [<expect_ $quantity:snake>](self) -> $quantity {
+                        self.[<as_ $quantity:snake>]().expect(concat!(stringify!($quantity), " value"))
+                    }
+                )+
             }
 
             $(

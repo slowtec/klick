@@ -13,8 +13,7 @@ use crate::{
 pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
     let unit = Formatting::Text;
 
-    let mut plant_profile_table =
-        plant_profile_as_table(&out.recommendation.input.plant_profile, unit);
+    let mut plant_profile_table = plant_profile_as_table(&out.recommendation.input, unit);
 
     let sensitivity_parameters_table = sensitivity_parameters_as_table(
         &out.recommendation.input.sensitivity_parameters,

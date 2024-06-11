@@ -9,7 +9,7 @@ pub fn FormDataOverview(evaluation_data: EvaluationData) -> impl IntoView {
         let i = evaluation_data.input;
         let o = evaluation_data.output;
         let table = {
-            let mut profile = plant_profile_as_table(&i.plant_profile, Formatting::Text);
+            let mut profile = plant_profile_as_table(&i, Formatting::Text);
             let mut sensitivity = sensitivity_parameters_as_table(
                 &i.sensitivity_parameters,
                 Formatting::Text,

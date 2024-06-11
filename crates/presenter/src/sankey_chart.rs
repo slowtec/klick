@@ -1,25 +1,25 @@
-use klick_boundary::PlantProfile;
+use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
     units::{Percent, RatioExt},
-    CO2Equivalents,
+    CO2Equivalents, InputValueId as Id, Value,
 };
 
 use crate::{Formatting, Lng};
 
 #[must_use]
 pub fn create_sankey_chart_header(
-    profile: &PlantProfile,
+    data: &FormData,
     emission_factors: domain::CalculatedEmissionFactors,
     calculation_methods: domain::EmissionFactorCalculationMethods,
     formatting: Formatting,
 ) -> String {
-    let population_equivalent = match &profile.population_equivalent {
+    let population_equivalent = match &data.get(&Id::PopulationEquivalent).map(Value::expect_int) {
         Some(v) => format!("{v}"),
         None => String::new(),
     };
 
-    let plant_name = match &profile.plant_name {
+    let plant_name = match &data.get(&Id::PlantName).map(Value::expect_text) {
         Some(v) => v.to_string(),
         None => String::new(),
     };
