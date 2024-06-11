@@ -1,357 +1,330 @@
 use leptos::*;
 
-use klick_app_components::forms::*;
+use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
-use klick_domain::{InputValueId as Id, Value};
+use klick_domain::{InputValueId as Id, Value, ValueType};
 use klick_presenter::ValueLabel;
+
+use crate::pages::tool::fields::{create_field_type, Limits};
 
 #[allow(clippy::too_many_lines)]
 pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
-    vec![
-    FieldSet {
-        title: None,
-        fields: vec![
-            Field {
-                label: "Projekt Name",
-                description: Some(
-                    "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. In der <b>angemeldeten</b> Version,
-                    dient der Projektname der Speicherung Ihrer Eingaben/Ergebnisse unter dem Reiter „Projekte“.
+    let field_set_project_name = {
+        let id = Id::ProjectName;
+        let placeholder = Some("Projektname".to_string());
+        let field_type = create_field_type(form_data, id, ValueType::text(), placeholder, None);
+        let description = Some(
+            "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. In der <b>angemeldeten</b> Version,
+            dient der Projektname der Speicherung Ihrer Eingaben/Ergebnisse unter dem Reiter „Projekte“.
 
-                    Wenn Sie sich <b>nicht angemeldet</b> haben, wird der Projektname ausschließlich nur auf Ihrer Festplatte
-                    gespeichert und in Ihrem lokalen Browser verarbeitet. Weitere Informationen zur Datenverarbeitung
-                    finden Sie in den <b>FAQ</b>."
-                ),
+            Wenn Sie sich <b>nicht angemeldet</b> haben, wird der Projektname ausschließlich nur auf Ihrer Festplatte
+            gespeichert und in Ihrem lokalen Browser verarbeitet. Weitere Informationen zur Datenverarbeitung
+            finden Sie in den <b>FAQ</b>."
+        );
+        let field = Field {
+            label: id.label(),
+            description,
+            required: false,
+            field_type,
+        };
+        FieldSet {
+            title: None,
+            fields: vec![field],
+        }
+    };
+
+    let field_set_basics = {
+        let title = Some("Angaben zur Kläranlage");
+        let name = {
+            let id = Id::PlantName;
+            let placeholder = Some("Name der Kläranlage".to_string());
+            let field_type = create_field_type(form_data, id, ValueType::text(), placeholder, None);
+            let description = Some(
+                "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
+            );
+            Field {
+                label: id.label(),
+                description,
                 required: false,
-                field_type: FieldType::Text {
-                    initial_value: None,
-                    placeholder: Some("Projektname".to_string()),
-                    max_len: None,
-                    on_change: Callback::new(move |v|{
-                        form_data.update(|d|d.project_title = v);
-                    }),
-                    input: Signal::derive(move||form_data.with(|d|d.project_title.clone()))
-                },
-            },
-        ],
-    },
-    FieldSet {
-        title: Some("Angaben zur Kläranlage"),
-        fields: vec![
+                field_type,
+            }
+        };
+        let population = {
+            let id = Id::PopulationEquivalent;
+            let placeholder = Some("Angeschlossene Einwohner".to_string());
+            let limits = Some(Limits::Uint(forms::MinMax {
+                min: Some(0),
+                max: Some(5_000_000),
+            }));
+            let field_type =
+                create_field_type(form_data, id, ValueType::count(), placeholder, limits);
+            let description = Some(
+                "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
+            );
+
             Field {
-                label: Id::PlantName.label(),
-                description: Some(
-                    "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
-                ),
-                required: false,
-                field_type: FieldType::Text {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Name der Kläranlage".to_string(),
-                    ),
-                    max_len: None,
-                    on_change: Callback::new(move|v: Option<_>|{
-                        form_data.update(|d|d.set(Id::PlantName, v.map(Value::Text)));
-                    }),
-                    input: Signal::derive(move||{
-                        form_data.with(|d|d.get(&Id::PlantName).map(Value::as_text_unchecked))
-                    })
-                },
-            },
-            Field {
-                label: Id::PopulationEquivalent.label(),
-                description: Some(
-                    "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
-                ),
+                label: id.label(),
+                description,
                 required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Angeschlossene Einwohner".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            5_000_000.0,
-                        ),
-                    },
-                    unit: "EW",
-                    on_change: Callback::new(move|v: Option<f64>|{
-                        let v = v.map(|v|v as u64).map(Value::new_count);
-                        form_data.update(|d| d.set(Id::PopulationEquivalent, v));
-                    }),
-                    input: Signal::derive(move||{
-                        form_data.with(|d|d.get(&Id::PopulationEquivalent).map(Value::as_count_unchecked).map(|v|u64::from(v) as f64))
-                    })
-                },
-            },
+                field_type,
+            }
+        };
+        let wastewater = {
+            let id = Id::Wastewater;
+            let placeholder = Some("Abwassermenge".to_string());
+            let limits = Some(Limits::Float(forms::MinMax {
+                min: Some(0.0),
+                max: Some(1_000_000_000.0),
+            }));
+            let field_type =
+                create_field_type(form_data, id, ValueType::qubicmeters(), placeholder, limits);
             Field {
-                label: Id::Wastewater.label(),
-                description: Some(
-                    "Die jährliche (a) Abwassermenge in Kubikmeter (m³) im Zulauf Ihrer Kläranlage.",
-                ),
-                required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Abwassermenge".to_string(),
+                    label: id.label(),
+                    description: Some(
+                        "Die jährliche (a) Abwassermenge in Kubikmeter (m³) im Zulauf Ihrer Kläranlage.",
                     ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            1_000_000_000.0,
-                        ),
-                    },
-                    unit: "m³/a",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.wastewater = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.wastewater) })
-                },
-            },
-        ],
-    },
-    FieldSet {
+                    required: true,
+                    field_type,
+                }
+        };
+
+        FieldSet {
+            title,
+            fields: vec![name, population, wastewater],
+        }
+    };
+
+    [
+      field_set_project_name,
+      field_set_basics,
+      FieldSet {
         title: Some("Zulauf-Parameter (Jahresmittelwerte)"),
-        fields: vec![
-            Field {
-                label: Id::InfluentChemicalOxygenDemand.label(),
-                description: Some(
-                    "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
-                ),
-                required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "CSB".to_string(),
+        fields: [
+            {
+                let id = Id::InfluentChemicalOxygenDemand;
+                let value_type = ValueType::milligrams_per_liter();
+                let placeholder = Some("CSB".to_string());
+                let limits = Some(Limits::Float(forms::MinMax {
+                    min: Some(
+                        0.0,
                     ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            5000.0,
-                        ),
-                    },
-                    unit: "mg/L",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.influent_average.chemical_oxygen_demand = v);
-                    })
-                    , input: Signal::derive(move||
-                        form_data.with(|d|d.plant_profile.influent_average.chemical_oxygen_demand)
-                    )
-                },
-            },
-            Field {
-                label: Id::InfluentNitrogen.label(),
-                description: Some(
-                    "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-                ),
-                required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Gesamtstickstoff".to_string(),
+                    max: Some(
+                        5000.0,
                     ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            5000.0,
-                        ),
-                    },
-                    unit: "mg/L",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.influent_average.total_nitrogen = v);
-                    })
-                    , input: Signal::derive(move||
-                      form_data.with(|d|d.plant_profile.influent_average.total_nitrogen)
-                    )
-                },
-            },
-            Field {
-                label: Id::InfluentTotalOrganicCarbohydrates.label(),
-                description: Some(
-                    "Der Jahresmittelwert des Gesamten organischen Kohlenstoffs (Total Organic Carbon, TOC)
-                    des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).<br>
-                    Wenn Sie keinen Wert für den TOC haben dann dieses Feld bitte freilassen
-                    (Anm.: für die Berechnung der fossilen CO₂-Emissionen wird in diesem Fall der CSB verwendet). ",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "TOC".to_string(),
+                }));
+                let field_type = create_field_type(
+                      form_data,
+                      id,
+                      value_type,
+                      placeholder,
+                      limits,
+                );
+                Field {
+                    label: id.label(),
+                    description: Some(
+                        "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
                     ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            2000.0,
-                        ),
-                    },
-                    unit: "mg/L",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.influent_average.total_organic_carbohydrates = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.influent_average.total_organic_carbohydrates)
-                    })
-                },
+                    required: true,
+                    field_type,
+                }
             },
-        ],
+            {
+              let id = Id::InfluentNitrogen;
+              let placeholder = Some("Gesamtstickstoff".to_string());
+              let limits = Some(Limits::Float(forms::MinMax {
+                  min: Some(
+                      0.0,
+                  ),
+                  max: Some(
+                      5000.0,
+                  ),
+              }));
+              let field_type = create_field_type(
+                    form_data,
+                    id,
+                    ValueType::milligrams_per_liter(),
+                    placeholder,
+                    limits,
+              );
+              Field {
+                  label: id.label(),
+                  description: Some(
+                      "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+                  ),
+                  required: true,
+                  field_type,
+              }
+            },
+            {
+              let id = Id::InfluentTotalOrganicCarbohydrates;
+              let placeholder = Some(
+                  "TOC".to_string(),
+              );
+                  let limits = Some(Limits::Float(forms::MinMax {
+                      min: Some(
+                          0.0,
+                      ),
+                      max: Some(
+                          2000.0,
+                      ),
+                  }));
+                  let field_type = create_field_type(
+                        form_data,
+                        id,
+                        ValueType::milligrams_per_liter(),
+                        placeholder,
+                        limits,
+                  );
+              Field {
+                  label: id.label(),
+                  description: Some(
+                      "Der Jahresmittelwert des Gesamten organischen Kohlenstoffs (Total Organic Carbon, TOC)
+                      des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).<br>
+                      Wenn Sie keinen Wert für den TOC haben dann dieses Feld bitte freilassen
+                      (Anm.: für die Berechnung der fossilen CO₂-Emissionen wird in diesem Fall der CSB verwendet). ",
+                  ),
+                  required: false,
+                  field_type,
+              }
+            },
+        ].to_vec(),
     },
     FieldSet {
         title: Some("Ablauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
+            {
+                let id = Id::EffluentChemicalOxygenDemand;
+                    let placeholder = Some(
+                        "CSB".to_string(),
+                    );
+                    let limits = Some(Limits::Float(forms::MinMax {
+                        min: Some(
+                            0.0,
+                        ),
+                        max: Some(
+                            1000.0,
+                        ),
+                    }));
+                  let field_type = create_field_type(
+                        form_data,
+                        id,
+                        ValueType::milligrams_per_liter(),
+                        placeholder,
+                        limits,
+                  );
             Field {
-                label: Id::EffluentChemicalOxygenDemand.label(),
+                label: id.label(),
                 description: Some(
                     "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
                 ),
                 required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "CSB".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            1000.0,
-                        ),
-                    },
-                    unit: "mg/L",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.effluent_average.chemical_oxygen_demand = v);
-                    })
-                    , input: Signal::derive(move|| form_data.with(|d|d .plant_profile.effluent_average.chemical_oxygen_demand))
-                },
-            },
-            Field {
-                label: Id::EffluentNitrogen.label(),
-                description: Some(
-                    "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-                ),
-                required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Gesamtstickstoff".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            1000.0,
-                        ),
-                    },
-                    unit: "mg/L",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.effluent_average.total_nitrogen = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile                   .effluent_average.total_nitrogen)
-                    })
-                },
+                field_type,
+            }},
+            {
+                  let id = Id::EffluentNitrogen;
+                      let placeholder= Some(
+                          "Gesamtstickstoff".to_string(),
+                      );
+                      let limits = Some(Limits::Float(forms::MinMax {
+                          min: Some(
+                              0.0,
+                          ),
+                          max: Some(
+                              1000.0,
+                          ),
+                      }));
+                  let field_type = create_field_type(
+                        form_data,
+                        id,
+                        ValueType::milligrams_per_liter(),
+                        placeholder,
+                        limits,
+                  );
+              Field {
+                  label: id.label(),
+                  description: Some(
+                      "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
+                  ),
+                  required: true,
+                  field_type,
+              }
             },
         ],
     },
     FieldSet {
         title: Some("Energiebedarf"),
         fields: vec![
-            Field {
-                label: Id::TotalPowerConsumption.label(),
-                description: Some(
+            {
+                let id = Id::TotalPowerConsumption;
+                let placeholder = Some(
+                    "Gesamtstrombedarf".to_string(),
+                );
+                let limits = Some(Limits::Float(forms::MinMax {
+                    min: Some(
+                        0.0,
+                    ),
+                    max: Some(
+                        1_000_000_000.0,
+                    ),
+                }));
+                let field_type= create_field_type(form_data, id, ValueType::kilowatthours(), placeholder, limits);
+                let description = Some(
                     "Der Gesamt-Strombedarf Ihrer Kläranlage in Kilowattstunden (kWh) pro Jahr (a).",
-                ),
-                required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Gesamtstrombedarf".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            1_000_000_000.0,
-                        ),
-                    },
-                    unit: "kWh/a",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.energy_consumption.total_power_consumption = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.              plant_profile     .energy_consumption.total_power_consumption)
-                    })
-                },
+                );
+                Field {
+                    label: id.label(),
+                    description,
+                    required: true,
+                    field_type,
+                }
             },
-            Field {
-                label: Id::OnSitePowerGeneration.label(),
-                description: Some(
+            {
+                let id = Id::OnSitePowerGeneration;
+                let placeholder = Some(
+                    "Eigenstrom".to_string(),
+                );
+                let limits= Some(Limits::Float(forms::MinMax {
+                    min: Some(
+                        0.0,
+                    ),
+                    max: Some(
+                        50_000_000.0,
+                    ),
+                }));
+                let field_type= create_field_type(form_data, id, ValueType::kilowatthours(), placeholder, limits);
+                let description = Some(
                     "Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen.",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Eigenstrom".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            50_000_000.0,
-                        ),
-                    },
-                    unit: "kWh/a",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.energy_consumption.on_site_power_generation = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.energy_consumption.on_site_power_generation)
-                    })
-                },
+                );
+                Field {
+                    label: id.label(),
+                    description,
+                    required: false,
+                    field_type,
+                }
             },
-            Field {
-                label: Id::EmissionFactorElectricityMix.label(),
-                description: Some(
-                    "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
-                ),
-                required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "485".to_string(),
+            {
+                let id = Id::EmissionFactorElectricityMix;
+                let placeholder = Some(
+                    "485".to_string(),
+                );
+                let limits = Some(Limits::Float(forms::MinMax {
+                    min: Some(
+                        0.0,
                     ),
-                    limits: MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            2500.0,
-                        ),
-                    },
-                    unit: "g CO₂/kWh",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.energy_consumption.emission_factor_electricity_mix = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.energy_consumption.emission_factor_electricity_mix)
-                    })
-                },
+                    max: Some(
+                        2500.0,
+                    ),
+                }));
+                let description = Some(
+                    "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
+                );
+                let field_type= create_field_type(form_data, id, ValueType::grams_per_kilowatthour(), placeholder, limits);
+                Field {
+                    label: id.label(),
+                    description,
+                    required: true,
+                    field_type,
+                }
             },
             Field {
                 label: Id::GasSupply.label(),
@@ -364,7 +337,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Gasbezug".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: None,
                         max: None,
                     },
@@ -377,21 +350,16 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     })
                 },
             },
-            Field {
-                label: Id::PurchaseOfBiogas.label(),
-                description: Some(
-                    "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
-                ),
-                required: false,
-                field_type: FieldType::Bool {
-                    initial_value: None,
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.energy_consumption.purchase_of_biogas = Some(v));
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.energy_consumption.purchase_of_biogas.unwrap_or_default())
-                    })
-                },
+            {
+              let id = Id::PurchaseOfBiogas;
+              Field {
+                  label: id.label(),
+                  description: Some(
+                      "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
+                  ),
+                  required: false,
+                  field_type: create_field_type(form_data, id, ValueType::bool(), None, None),
+              }
             },
             Field {
                 label: Id::HeatingOil.label(),
@@ -404,7 +372,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Heizölbezug".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: None,
                         max: None,
                     },
@@ -428,7 +396,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Klärgas".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: Some(0.0),
                         max: Some(
                             100_000_000.0,
@@ -454,7 +422,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "62".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: Some(0.0),
                         max: Some(
                             90.0,
@@ -474,31 +442,26 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     FieldSet {
         title: Some("Klärschlammbehandlung"),
         fields: vec![
+            {
+              let id = Id::SludgeTreatmentDigesterCount;
+             let placeholder = Some(
+                 "Anzahl Faultürme".to_string(),
+             );
+             let limits = Some(Limits::Uint(forms::MinMax {
+                 min: None,
+                 max: Some(
+                     9,
+                 ),
+             }));
+                let field_type = create_field_type(form_data, id, ValueType::count(), placeholder, limits);
             Field {
-                label: Id::SludgeTreatmentDigesterCount.label(),
+                label: id.label(),
                 description: Some(
                     "Falls auf Ihrer Kläranlage eine Faulung vorhanden ist, dann geben Sie bitte die Anzahl der Faultürme ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein.",
                 ),
                 required: false,
-                field_type: FieldType::UnsignedInteger {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Anzahl Faultürme".to_string(),
-                    ),
-                    limits: MinMax {
-                        min: None,
-                        max: Some(
-                            9,
-                        ),
-                    },
-                    unit: "Türme",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.sewage_sludge_treatment.digester_count = v);
-                    }),
-                    input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.digester_count)
-                    })
-                },
+                field_type,
+              }
             },
             Field {
                 label: "Schlammtaschen sind geschlossen", // TODO: Invert label of Id::SludgeTreatmentBagsAreOpen.label(),
@@ -543,7 +506,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Masse entwässert".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: None,
                         max: Some(
                             500_000.0,
@@ -569,7 +532,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Entfernung".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: Some(
                             0.0,
                         ),
@@ -591,38 +554,50 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     FieldSet {
         title: Some("Prozesswasserbehandlung"),
         fields: vec![
-            Field {
-                label: Id::SideStreamTreatmentTotalNitrogen.label(),
-                description: Some(
-                    "Falls auf Ihrer Kläranlage eine Prozesswasserbehandlung vorhanden ist, dann geben Sie bitte deren jährliche
-                    Gesamtsticksoffmenge in Tonnen [t/a] ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein. ",
-                ),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
-                        "Gesamtstickstoff".to_string(),
+            {
+                let id = Id::SideStreamTreatmentTotalNitrogen;
+                let on_change = Callback::new(move|v: Option<_>|{
+                    form_data.update(|d|d.set(id,v.map(Value::tons)));
+                });
+                let input = Signal::derive(move||{
+                    form_data.with(|d|d.get(&id).map(Value::as_tons_unchecked).map(f64::from))
+                });
+                Field {
+                    label: id.label(),
+                    description: Some(
+                        "Falls auf Ihrer Kläranlage eine Prozesswasserbehandlung vorhanden ist, dann geben Sie bitte deren jährliche
+                        Gesamtsticksoffmenge in Tonnen [t/a] ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein. ",
                     ),
-                    limits: MinMax {
-                        min: None,
-                        max: None,
-                    },
-                    unit: "t/a",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.side_stream_treatment.total_nitrogen = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.side_stream_treatment.total_nitrogen)
-                    })
-                },
-            },
+                    required: false,
+                    field_type: FieldType::Float {
+                        initial_value: None,
+                        placeholder: Some(
+                            "Gesamtstickstoff".to_string(),
+                        ),
+                        limits: forms::MinMax {
+                            min: None,
+                            max: None,
+                        },
+                        unit: "t/a",
+                        on_change,
+                        input,
+                    }
+                }
+            }
         ],
     },
     FieldSet {
         title: Some("Eingesetzte Betriebsstoffe"),
-        fields: vec![
+        fields: vec![{
+            let id = Id::OperatingMaterialFeCl3;
+            let on_change = Callback::new(move|v: Option<_>|{
+                form_data.update(|d|d.set(id,v.map(Value::tons)));
+            });
+            let input = Signal::derive(move||{
+                form_data.with(|d|d.get(&id).map(Value::as_tons_unchecked).map(f64::from))
+            });
             Field {
-                label: Id::OperatingMaterialFeCl3.label(),
+                label: id.label(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Eisen(III)-chlorid (FeCl3) in Tonnen (t).",
                 ),
@@ -632,23 +607,27 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Lösung".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: None,
                         max: Some(
                             500_000.0,
                         ),
                     },
                     unit: "t",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.operating_materials.fecl3 = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.operating_materials.fecl3)
-                    })
+                    on_change,
+                    input,
                 },
-            },
-            Field {
-                label: Id::OperatingMaterialFeClSO4.label(),
+            }},
+            {
+              let id = Id::OperatingMaterialFeClSO4;
+              let on_change = Callback::new(move|v: Option<_>|{
+                  form_data.update(|d|d.set(id,v.map(Value::tons)));
+              });
+              let input = Signal::derive(move||{
+                  form_data.with(|d|d.get(&id).map(Value::as_tons_unchecked).map(f64::from))
+              });
+              Field {
+                label: id.label(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Eisenchloridsulfat (FeClSO4) in Tonnen (t).",
                 ),
@@ -658,23 +637,27 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Lösung".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: None,
                         max: Some(
                             100_000.0,
                         ),
                     },
                     unit: "t",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.operating_materials.feclso4 = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.operating_materials.feclso4)
-                    })
+                    on_change,
+                    input
                 },
-            },
-            Field {
-                label: Id::OperatingMaterialCaOH2.label(),
+            }},
+            {
+              let id = Id::OperatingMaterialCaOH2;
+              let on_change = Callback::new(move|v: Option<_>|{
+                  form_data.update(|d|d.set(id,v.map(Value::tons)));
+              });
+              let input = Signal::derive(move||{
+                  form_data.with(|d|d.get(&id).map(Value::as_tons_unchecked).map(f64::from))
+              });
+              Field {
+                label: id.label(),
                 description: Some(
                     "Angabe der pro Jahr (a) eingesetzten Menge an Kalkhydrat (Ca(OH)2) in Tonnen (t).",
                 ),
@@ -684,48 +667,46 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     placeholder: Some(
                         "Branntkalk".to_string(),
                     ),
-                    limits: MinMax {
+                    limits: forms::MinMax {
                         min: None,
                         max: Some(
                             500_000.0,
                         ),
                     },
                     unit: "t",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.operating_materials.caoh2 = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.operating_materials.caoh2)
-                    })
+                    on_change,
+                    input,
                 },
-            },
-            Field {
-                label: Id::OperatingMaterialSyntheticPolymers.label(),
-                description: Some(
-                    "Angabe der pro Jahr (a) eingesetzten Menge an synthetischen Polymeren in Tonnen (t).",
-                ),
-                required: true,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some(
+            }},
+            {
+              let id = Id::OperatingMaterialSyntheticPolymers;
+                    let placeholder = Some(
                         "Polymere".to_string(),
-                    ),
-                    limits: MinMax {
+                    );
+                    let limits = Some(Limits::Float(forms::MinMax {
                         min: None,
                         max: Some(
                             50000.0,
                         ),
-                    },
-                    unit: "t",
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.operating_materials.synthetic_polymers = v);
-                    })
-                    , input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.operating_materials.synthetic_polymers)
-                    })
-                },
-            },
+                    }));
+
+              let field_type = create_field_type(
+                  form_data,
+                  id,
+                  ValueType::tons(),
+                  placeholder,
+                  limits,
+              );
+
+              Field {
+                label: id.label(),
+                description: Some(
+                    "Angabe der pro Jahr (a) eingesetzten Menge an synthetischen Polymeren in Tonnen (t).",
+                ),
+                required: true,
+                field_type,
+            }},
         ],
     },
-]
+  ].to_vec()
 }

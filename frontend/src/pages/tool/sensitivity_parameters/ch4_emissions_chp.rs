@@ -3,8 +3,11 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
-use klick_boundary::{self as boundary, default_values::CH4_DEFAULT_CUSTOM_FACTOR, FormData};
-use klick_domain::units::Tons;
+use klick_boundary::{default_values::CH4_DEFAULT_CUSTOM_FACTOR, FormData};
+use klick_domain::{
+    units::{Ch4ChpEmissionFactorCalcMethod, Tons},
+    InputValueId as Id, Value,
+};
 use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
@@ -22,9 +25,8 @@ pub fn CH4EmissionsCHP(
 
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
-            d.sensitivity_parameters
-                .ch4_chp_emissions
-                .calculation_method
+            d.get(&Id::SensitivityCH4ChpCalculationMethod)
+                .map(Value::as_ch4_chp_emission_factor_calc_method_unchecked)
         })
     });
     let selected_scenario_index = Signal::derive(move || {
@@ -53,14 +55,15 @@ pub fn CH4EmissionsCHP(
     // -----   ----- //
 
     let on_bar_chart_input_changed = move |idx| {
-        let Some(method) = boundary::CH4ChpEmissionFactorCalcMethod::from_u64(idx) else {
+        let Some(method) = Ch4ChpEmissionFactorCalcMethod::from_u64(idx) else {
             log::warn!("Invalid index {idx} for selection of calc method");
             return;
         };
         form_data.update(|d| {
-            d.sensitivity_parameters
-                .ch4_chp_emissions
-                .calculation_method = Some(method);
+            d.set(
+                Id::SensitivityCH4ChpCalculationMethod,
+                Some(Value::ch4_chp_emission_factor_calc_method(method)),
+            )
         });
     };
 
@@ -124,7 +127,10 @@ pub fn CH4EmissionsCHP(
             { chp_view }
 
             <p>
-            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(ValueLabel::label) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
+            "Es ist das Szenario \"" { move ||
+                selected_scenario.get().as_ref().map(ValueLabel::label)
+            }
+            "\" ausgewählt in t CO₂ Äquivalente/Jahr.
             Durch Anklicken kann ein anderes Szenario ausgewählt werden."
             </p>
 

@@ -1,8 +1,5 @@
-use klick_boundary::{
-    import_from_str, EnergyConsumption, FormData, ImportError, N2oEmissionFactorCalcMethod,
-    PlantProfile, Project, SewageSludgeTreatment, CURRENT_VERSION,
-};
-use klick_domain::{units::*, InputValueId as Id, Value};
+use klick_boundary::{import_from_str, ImportError, Project, CURRENT_VERSION};
+use klick_domain::{units::*, InputValueId as Id, Value as V};
 
 #[test]
 fn check_version() {
@@ -25,106 +22,97 @@ fn import_v1() {
         panic!("expected unsaved project");
     };
 
-    let FormData {
-        project_title: _,
-        plant_profile,
-        sensitivity_parameters,
-        optimization_scenario: _,
-    } = data.clone();
-
-    let PlantProfile {
-        wastewater,
-        influent_average,
-        effluent_average,
-        energy_consumption,
-        sewage_sludge_treatment,
-        operating_materials,
-        ..
-    } = plant_profile;
-
-    let EnergyConsumption {
-        sewage_gas_produced,
-        methane_fraction,
-        gas_supply,
-        purchase_of_biogas,
-        total_power_consumption,
-        on_site_power_generation,
-        emission_factor_electricity_mix,
-        ..
-    } = energy_consumption;
-
-    let SewageSludgeTreatment {
-        sludge_bags_are_closed,
-        sludge_storage_containers_are_closed,
-        sewage_sludge_for_disposal,
-        transport_distance,
-        digester_count,
-    } = sewage_sludge_treatment;
-
     assert_eq!(
         data.get(&Id::PlantName)
-            .map(Value::as_text_unchecked)
+            .map(V::as_text_unchecked)
             .as_deref(),
         Some("Example Plant")
     );
     assert_eq!(
         data.get(&Id::PopulationEquivalent)
-            .map(Value::as_count_unchecked),
+            .map(V::as_count_unchecked),
         Some(Count::new(120_000))
     );
-    assert_eq!(wastewater, Some(5_000_000.0));
-
-    assert_eq!(influent_average.total_nitrogen, Some(122.0));
-    assert_eq!(influent_average.chemical_oxygen_demand, Some(333.0));
-
-    assert_eq!(effluent_average.total_nitrogen, Some(11.76));
-    assert_eq!(effluent_average.chemical_oxygen_demand, Some(129.0));
-
-    assert_eq!(sewage_gas_produced, Some(1_260_000.0));
-    assert_eq!(methane_fraction, Some(62.0));
-    assert_eq!(on_site_power_generation, Some(2_250_897.0));
-    assert_eq!(emission_factor_electricity_mix, Some(468.0));
-    assert_eq!(gas_supply, Some(500.0));
-    assert_eq!(purchase_of_biogas, Some(true));
-    assert_eq!(total_power_consumption, Some(2_683_259.0));
-
-    assert_eq!(sludge_bags_are_closed, Some(false));
-    assert_eq!(
-        sensitivity_parameters
-            .ch4_sewage_sludge_emissions
-            .emission_factor_sludge_bags,
-        None
-    );
-    assert_eq!(sludge_storage_containers_are_closed, Some(false));
-    assert_eq!(
-        sensitivity_parameters
-            .ch4_sewage_sludge_emissions
-            .emission_factor_sludge_storage_containers,
-        None
-    );
-    assert_eq!(sewage_sludge_for_disposal, Some(3687.6));
-    assert_eq!(transport_distance, Some(47.0));
-    assert_eq!(digester_count, None);
-
-    assert_eq!(operating_materials.fecl3, Some(12.345));
-    assert_eq!(operating_materials.feclso4, Some(326.0));
-    assert_eq!(operating_materials.caoh2, Some(326.26));
-    assert_eq!(operating_materials.synthetic_polymers, Some(23.62));
+    assert_eq!(data.get(&Id::Wastewater), Some(V::qubicmeters(5_000_000.0)));
 
     assert_eq!(
-        sensitivity_parameters.n2o_emissions.custom_emission_factor,
-        Some(1.5)
+        data.get(&Id::InfluentNitrogen),
+        Some(V::milligrams_per_liter(122.0))
     );
     assert_eq!(
-        sensitivity_parameters.n2o_emissions.calculation_method,
-        Some(N2oEmissionFactorCalcMethod::CustomFactor)
+        data.get(&Id::InfluentChemicalOxygenDemand),
+        Some(V::milligrams_per_liter(333.0))
+    );
+
+    assert_eq!(
+        data.get(&Id::EffluentNitrogen),
+        Some(V::milligrams_per_liter(11.76))
     );
     assert_eq!(
-        sensitivity_parameters
-            .ch4_chp_emissions
-            .custom_emission_factor,
-        None
+        data.get(&Id::EffluentChemicalOxygenDemand),
+        Some(V::milligrams_per_liter(129.0))
     );
+
+    assert_eq!(
+        data.get(&Id::SewageGasProduced),
+        Some(Value::qubicmeters(1_260_000.0))
+    );
+    assert_eq!(data.get(&Id::MethaneFraction), Some(Value::percent(62.0)));
+    assert_eq!(
+        data.get(&Id::OnSitePowerGeneration),
+        Some(Value::kilowatthours(2_250_897.0))
+    );
+    assert_eq!(
+        data.get(&Id::EmissionFactorElectricityMix),
+        Some(Value::grams_per_kilowatthour(468.0))
+    );
+    assert_eq!(data.get(&Id::GasSupply), Some(Value::qubicmeters(500.0)));
+    assert_eq!(data.get(&Id::PurchaseOfBiogas), Some(Value::bool(true)));
+    assert_eq!(
+        data.get(&Id::TotalPowerConsumption),
+        Some(Value::kilowatthours(2_683_259.0))
+    );
+
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentBagsAreOpen),
+        Some(Value::bool(true))
+    );
+    assert_eq!(data.get(&Id::SensitivitySludgeBagsCustomFactor), None);
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentStorageContainersAreOpen),
+        Some(Value::bool(true))
+    );
+    assert_eq!(data.get(&Id::SensitivitySludgeStorageCustomFactor), None);
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentDisposal),
+        Some(Value::tons(3687.6))
+    );
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentTransportDistance),
+        Some(Value::kilometers(47.0))
+    );
+    assert_eq!(data.get(&Id::SludgeTreatmentDigesterCount), None);
+
+    assert_eq!(data.get(&Id::OperatingMaterialFeCl3), Some(V::tons(12.345)));
+    assert_eq!(
+        data.get(&Id::OperatingMaterialFeClSO4),
+        Some(V::tons(326.0))
+    );
+    assert_eq!(data.get(&Id::OperatingMaterialCaOH2), Some(V::tons(326.26)));
+    assert_eq!(
+        data.get(&Id::OperatingMaterialSyntheticPolymers),
+        Some(V::tons(23.62))
+    );
+    assert_eq!(
+        data.get(&Id::SensitivityN2OCustomFactor),
+        Some(Value::factor(0.015))
+    );
+    assert_eq!(
+        data.get(&Id::SensitivityN2OCalculationMethod)
+            .map(V::as_n2o_emission_factor_calc_method_unchecked),
+        Some(N2oEmissionFactorCalcMethod::Custom)
+    );
+    assert_eq!(data.get(&Id::SensitivityCH4ChpCustomFactor), None);
 }
 
 #[test]
@@ -135,108 +123,98 @@ fn import_v2() {
         panic!("expected unsaved project");
     };
 
-    let FormData {
-        project_title: _,
-        plant_profile,
-        sensitivity_parameters,
-        optimization_scenario: _,
-    } = data.clone();
-
-    let PlantProfile {
-        wastewater,
-        influent_average,
-        effluent_average,
-        energy_consumption,
-        sewage_sludge_treatment,
-        operating_materials,
-        ..
-    } = plant_profile;
-
-    let EnergyConsumption {
-        sewage_gas_produced,
-        methane_fraction,
-        gas_supply,
-        purchase_of_biogas,
-        total_power_consumption,
-        on_site_power_generation,
-        emission_factor_electricity_mix,
-        ..
-    } = energy_consumption;
-
-    let SewageSludgeTreatment {
-        sludge_bags_are_closed,
-        sludge_storage_containers_are_closed,
-        sewage_sludge_for_disposal,
-        transport_distance,
-        digester_count,
-        ..
-    } = sewage_sludge_treatment;
-
     assert_eq!(
         data.get(&Id::PlantName)
-            .map(Value::as_text_unchecked)
+            .map(V::as_text_unchecked)
             .as_deref(),
         Some("Example Plant")
     );
     assert_eq!(
         data.get(&Id::PopulationEquivalent)
-            .map(Value::as_count_unchecked),
+            .map(V::as_count_unchecked),
         Some(Count::new(120_000))
     );
-    assert_eq!(wastewater, Some(5_000_000.0));
-
-    assert_eq!(influent_average.total_nitrogen, Some(122.0));
-    assert_eq!(influent_average.chemical_oxygen_demand, Some(333.0));
-
-    assert_eq!(effluent_average.total_nitrogen, Some(11.76));
-    assert_eq!(effluent_average.chemical_oxygen_demand, Some(129.0));
-
-    assert_eq!(sewage_gas_produced, Some(1_260_000.0));
-    assert_eq!(methane_fraction, Some(62.0));
-    assert_eq!(on_site_power_generation, Some(2_250_897.0));
-    assert_eq!(emission_factor_electricity_mix, Some(468.0));
-    assert_eq!(gas_supply, Some(500.0));
-    assert_eq!(purchase_of_biogas, Some(true));
-    assert_eq!(total_power_consumption, Some(2_683_259.0));
-
-    assert_eq!(sludge_bags_are_closed, Some(false));
-    assert_eq!(
-        sensitivity_parameters
-            .ch4_sewage_sludge_emissions
-            .emission_factor_sludge_bags,
-        None
-    );
-    assert_eq!(sludge_storage_containers_are_closed, Some(false));
-    assert_eq!(
-        sensitivity_parameters
-            .ch4_sewage_sludge_emissions
-            .emission_factor_sludge_storage_containers,
-        None
-    );
-    assert_eq!(sewage_sludge_for_disposal, Some(3687.6));
-    assert_eq!(transport_distance, Some(47.0));
-    assert_eq!(digester_count, None);
-
-    assert_eq!(operating_materials.fecl3, Some(12.345));
-    assert_eq!(operating_materials.feclso4, Some(326.0));
-    assert_eq!(operating_materials.caoh2, Some(326.26));
-    assert_eq!(operating_materials.synthetic_polymers, Some(23.62));
+    assert_eq!(data.get(&Id::Wastewater), Some(V::qubicmeters(5_000_000.0)));
 
     assert_eq!(
-        sensitivity_parameters.n2o_emissions.custom_emission_factor,
-        Some(1.5)
+        data.get(&Id::InfluentNitrogen),
+        Some(V::milligrams_per_liter(122.0))
     );
     assert_eq!(
-        sensitivity_parameters.n2o_emissions.calculation_method,
-        Some(N2oEmissionFactorCalcMethod::CustomFactor)
+        data.get(&Id::InfluentChemicalOxygenDemand),
+        Some(V::milligrams_per_liter(333.0))
     );
 
     assert_eq!(
-        sensitivity_parameters
-            .ch4_chp_emissions
-            .custom_emission_factor,
-        None
+        data.get(&Id::EffluentNitrogen),
+        Some(V::milligrams_per_liter(11.76))
     );
+    assert_eq!(
+        data.get(&Id::EffluentChemicalOxygenDemand),
+        Some(V::milligrams_per_liter(129.0))
+    );
+
+    assert_eq!(
+        data.get(&Id::SewageGasProduced),
+        Some(Value::qubicmeters(1_260_000.0))
+    );
+    assert_eq!(data.get(&Id::MethaneFraction), Some(Value::percent(62.0)));
+    assert_eq!(
+        data.get(&Id::OnSitePowerGeneration),
+        Some(Value::kilowatthours(2_250_897.0))
+    );
+    assert_eq!(
+        data.get(&Id::EmissionFactorElectricityMix),
+        Some(Value::grams_per_kilowatthour(468.0))
+    );
+    assert_eq!(data.get(&Id::GasSupply), Some(Value::qubicmeters(500.0)));
+    assert_eq!(data.get(&Id::PurchaseOfBiogas), Some(Value::bool(true)));
+    assert_eq!(
+        data.get(&Id::TotalPowerConsumption),
+        Some(Value::kilowatthours(2_683_259.0))
+    );
+
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentBagsAreOpen),
+        Some(Value::bool(true))
+    );
+    assert_eq!(data.get(&Id::SensitivitySludgeBagsCustomFactor), None);
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentStorageContainersAreOpen),
+        Some(Value::bool(true))
+    );
+    assert_eq!(data.get(&Id::SensitivitySludgeStorageCustomFactor), None);
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentDisposal),
+        Some(Value::tons(3687.6))
+    );
+    assert_eq!(
+        data.get(&Id::SludgeTreatmentTransportDistance),
+        Some(Value::kilometers(47.0))
+    );
+    assert_eq!(data.get(&Id::SludgeTreatmentDigesterCount), None);
+
+    assert_eq!(data.get(&Id::OperatingMaterialFeCl3), Some(V::tons(12.345)));
+    assert_eq!(
+        data.get(&Id::OperatingMaterialFeClSO4),
+        Some(V::tons(326.0))
+    );
+    assert_eq!(data.get(&Id::OperatingMaterialCaOH2), Some(V::tons(326.26)));
+    assert_eq!(
+        data.get(&Id::OperatingMaterialSyntheticPolymers),
+        Some(V::tons(23.62))
+    );
+
+    assert_eq!(
+        data.get(&Id::SensitivityN2OCustomFactor),
+        Some(Value::factor(0.015))
+    );
+    assert_eq!(
+        data.get(&Id::SensitivityN2OCalculationMethod)
+            .map(V::as_n2o_emission_factor_calc_method_unchecked),
+        Some(N2oEmissionFactorCalcMethod::Custom)
+    );
+    assert_eq!(data.get(&Id::SensitivityCH4ChpCustomFactor), None);
 }
 
 #[test]
@@ -249,19 +227,11 @@ fn import_v3() {
 
     assert_eq!(
         project
-            .sensitivity_parameters
-            .n2o_emissions
-            .calculation_method,
+            .get(&Id::SensitivityN2OCalculationMethod)
+            .map(V::as_n2o_emission_factor_calc_method_unchecked),
         Some(N2oEmissionFactorCalcMethod::TuWien2016)
     );
-
-    assert_eq!(
-        project
-            .sensitivity_parameters
-            .ch4_chp_emissions
-            .custom_emission_factor,
-        None
-    );
+    assert_eq!(project.get(&Id::SensitivityCH4ChpCustomFactor), None);
 }
 
 #[test]
@@ -273,32 +243,22 @@ fn import_v5() {
 
     assert_eq!(
         project
-            .sensitivity_parameters
-            .n2o_emissions
-            .calculation_method,
+            .get(&Id::SensitivityN2OCalculationMethod)
+            .map(V::as_n2o_emission_factor_calc_method_unchecked),
         Some(N2oEmissionFactorCalcMethod::Ipcc2019)
     );
-
+    assert_eq!(project.get(&Id::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
         project
-            .sensitivity_parameters
-            .ch4_chp_emissions
-            .custom_emission_factor,
-        None
+            .get(&Id::SludgeTreatmentBagsAreOpen)
+            .map(Value::as_bool_unchecked),
+        Some(true)
     );
     assert_eq!(
         project
-            .plant_profile
-            .sewage_sludge_treatment
-            .sludge_bags_are_closed,
-        Some(false)
-    );
-    assert_eq!(
-        project
-            .plant_profile
-            .sewage_sludge_treatment
-            .sludge_storage_containers_are_closed,
-        Some(false)
+            .get(&Id::SludgeTreatmentStorageContainersAreOpen)
+            .map(Value::as_bool_unchecked),
+        Some(true)
     );
 }
 
@@ -311,32 +271,22 @@ fn import_v6() {
 
     assert_eq!(
         project
-            .sensitivity_parameters
-            .n2o_emissions
-            .calculation_method,
+            .get(&Id::SensitivityN2OCalculationMethod)
+            .map(V::as_n2o_emission_factor_calc_method_unchecked),
         Some(N2oEmissionFactorCalcMethod::Ipcc2019)
     );
-
+    assert_eq!(project.get(&Id::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
         project
-            .sensitivity_parameters
-            .ch4_chp_emissions
-            .custom_emission_factor,
-        None
+            .get(&Id::SludgeTreatmentBagsAreOpen)
+            .map(Value::as_bool_unchecked),
+        Some(true)
     );
     assert_eq!(
         project
-            .plant_profile
-            .sewage_sludge_treatment
-            .sludge_bags_are_closed,
-        Some(false)
-    );
-    assert_eq!(
-        project
-            .plant_profile
-            .sewage_sludge_treatment
-            .sludge_storage_containers_are_closed,
-        Some(false)
+            .get(&Id::SludgeTreatmentStorageContainersAreOpen)
+            .map(Value::as_bool_unchecked),
+        Some(true)
     );
 }
 
@@ -349,33 +299,18 @@ fn import_v7() {
 
     assert_eq!(
         project
-            .sensitivity_parameters
-            .n2o_emissions
-            .calculation_method,
+            .get(&Id::SensitivityN2OCalculationMethod)
+            .map(V::as_n2o_emission_factor_calc_method_unchecked),
         Some(N2oEmissionFactorCalcMethod::Ipcc2019)
     );
-
+    assert_eq!(project.get(&Id::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
-        project
-            .sensitivity_parameters
-            .ch4_chp_emissions
-            .custom_emission_factor,
-        None
+        project.get(&Id::SensitivitySludgeBagsCustomFactor),
+        Some(Percent::new(1.12).convert_to::<Factor>().into())
     );
     assert_eq!(
-        project
-            .sensitivity_parameters
-            .ch4_sewage_sludge_emissions
-            .emission_factor_sludge_bags,
-        Some(1.12)
-    );
-
-    assert_eq!(
-        project
-            .sensitivity_parameters
-            .ch4_sewage_sludge_emissions
-            .emission_factor_sludge_storage_containers,
-        Some(1.13)
+        project.get(&Id::SensitivitySludgeStorageCustomFactor),
+        Some(Percent::new(1.13).convert_to::<Factor>().into())
     );
 }
 
@@ -388,54 +323,43 @@ fn import_v8() {
 
     assert_eq!(
         project
-            .sensitivity_parameters
-            .n2o_emissions
-            .calculation_method,
+            .get(&Id::SensitivityN2OCalculationMethod)
+            .map(V::as_n2o_emission_factor_calc_method_unchecked),
         Some(N2oEmissionFactorCalcMethod::Ipcc2019)
     );
 
     assert_eq!(
         project
-            .plant_profile
-            .influent_average
-            .total_organic_carbohydrates,
+            .get(&Id::InfluentTotalOrganicCarbohydrates)
+            .map(V::as_milligrams_per_liter_unchecked)
+            .map(f64::from),
         Some(101.99)
     );
 
     assert_eq!(
-        project.plant_profile.side_stream_treatment.total_nitrogen,
-        Some(101.4)
+        project.get(&Id::SideStreamTreatmentTotalNitrogen),
+        Some(Value::tons(101.4))
     );
 
     assert_eq!(
         project
-            .plant_profile
-            .sewage_sludge_treatment
-            .sludge_bags_are_closed,
-        Some(false)
-    );
-
-    assert_eq!(
-        project
-            .plant_profile
-            .sewage_sludge_treatment
-            .sludge_storage_containers_are_closed,
-        Some(false)
-    );
-
-    assert_eq!(
-        project
-            .optimization_scenario
-            .sewage_sludge_treatment
-            .sludge_bags_are_closed,
+            .get(&Id::SludgeTreatmentBagsAreOpen)
+            .map(Value::as_bool_unchecked),
         Some(true)
     );
 
     assert_eq!(
         project
-            .optimization_scenario
-            .sewage_sludge_treatment
-            .sludge_storage_containers_are_closed,
+            .get(&Id::SludgeTreatmentStorageContainersAreOpen)
+            .map(Value::as_bool_unchecked),
         Some(true)
+    );
+    assert_eq!(
+        project.get(&Id::SludgeTreatmentBagsAreOpen),
+        Some(Value::bool(true))
+    );
+    assert_eq!(
+        project.get(&Id::SludgeTreatmentStorageContainersAreOpen),
+        Some(Value::bool(true))
     );
 }

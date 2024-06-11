@@ -12,14 +12,14 @@ pub struct PlantProfile {
     pub(crate) population_equivalent: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub wastewater: Option<f64>,
+    pub(crate) wastewater: Option<f64>,
 
-    pub influent_average: AnnualAverageInfluent,
-    pub effluent_average: AnnualAverageEffluent,
+    pub(crate) influent_average: AnnualAverageInfluent,
+    pub(crate) effluent_average: AnnualAverageEffluent,
     pub energy_consumption: EnergyConsumption,
     pub sewage_sludge_treatment: SewageSludgeTreatment,
-    pub side_stream_treatment: SideStreamTreatment,
-    pub operating_materials: OperatingMaterials,
+    pub(crate) side_stream_treatment: SideStreamTreatment,
+    pub(crate) operating_materials: OperatingMaterials,
 }
 
 #[derive(Serialize, Deserialize)]

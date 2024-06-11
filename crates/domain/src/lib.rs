@@ -9,6 +9,6 @@ pub mod units;
 pub use self::{
     calculation::*,
     project::{Id as ProjectId, IdParseError as ProjectIdParseError, Project},
-    units::Value,
+    units::{Value, ValueType},
     values::*,
 };

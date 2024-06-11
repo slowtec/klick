@@ -14,9 +14,9 @@ use klick_app_charts as charts;
 use klick_boundary as boundary;
 use klick_domain::{
     self as domain,
-    units::{Factor, Tons},
-    CH4ChpEmissionFactorCalcMethod, CO2Equivalents, EmissionInfluencingValues,
-    EmissionsCalculationOutcome, InputValueId as Id, N2oEmissionFactorCalcMethod, Value,
+    units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
+    CO2Equivalents, EmissionInfluencingValues, EmissionsCalculationOutcome, InputValueId as Id,
+    Value,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
 
@@ -76,17 +76,15 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     let selected_n2o_scenario = &outcome
         .sensitivity
         .input
-        .sensitivity_parameters
-        .n2o_emissions
-        .calculation_method
+        .get(&Id::SensitivityN2OCalculationMethod)
+        .map(Value::as_n2o_emission_factor_calc_method_unchecked)
         .as_ref()
         .and_then(ToPrimitive::to_u64);
     let selected_ch4_chp_scenario = &outcome
         .sensitivity
         .input
-        .sensitivity_parameters
-        .ch4_chp_emissions
-        .calculation_method
+        .get(&Id::SensitivityCH4ChpCalculationMethod)
+        .map(Value::as_ch4_chp_emission_factor_calc_method_unchecked)
         .as_ref()
         .and_then(ToPrimitive::to_u64);
 
@@ -225,7 +223,7 @@ fn render_markdown_template(
     let plant_profile_table = create_latex_table(&plant_profile_table_data)?;
 
     let sensitivity_table_data = presenter::sensitivity_parameters_as_table(
-        &outcome.sensitivity.input.sensitivity_parameters,
+        &outcome.sensitivity.input,
         Formatting::LaTeX,
         outcome.sensitivity.output.as_ref(),
     );
@@ -322,7 +320,7 @@ fn render_n2o_scenarios_svg_bar_chart(
 }
 
 fn render_ch4_chp_scenarios_svg_bar_chart(
-    scenarios: Vec<(CH4ChpEmissionFactorCalcMethod, Tons, Factor)>,
+    scenarios: Vec<(Ch4ChpEmissionFactorCalcMethod, Tons, Factor)>,
     selected: Option<u64>,
 ) -> String {
     let data = scenarios

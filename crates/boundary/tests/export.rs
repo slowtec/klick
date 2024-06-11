@@ -2,37 +2,33 @@ use time::OffsetDateTime;
 use uuid::Uuid;
 
 use klick_boundary::*;
-use klick_domain::InputValueId as Id;
+use klick_domain::{units, InputValueId as Id, Value};
 
 #[test]
 fn export() {
-    let mut plant_profile = PlantProfile::default();
-    plant_profile.wastewater = Some(3456.889);
-
-    let sensitivity_parameters = SensitivityParameters {
-        n2o_emissions: N2OEmissionsSensitivity {
-            custom_emission_factor: Some(0.013),
-            calculation_method: Some(N2oEmissionFactorCalcMethod::CustomFactor),
-            side_stream_emission_factor: None,
-        },
-        ch4_chp_emissions: CH4ChpEmissionsSensitivity {
-            custom_emission_factor: Some(0.0345),
-            calculation_method: Some(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines),
-        },
-        ch4_sewage_sludge_emissions: SewageSludgeTreatmentEmissionsSensitivity::default(),
-        co2_fossil_emissions: FossilEmissonsSensitivity::default(),
-    };
-
     let id = ProjectId(Uuid::new_v4());
+    let mut data = FormData::default();
 
-    let mut data = FormData {
-        project_title: Some("Project".into()),
-        plant_profile,
-        sensitivity_parameters,
-        optimization_scenario: Default::default(),
-    };
-
+    data.set(Id::ProjectName, Some(Value::text("Project")));
     data.set(Id::PlantName, Some("test export".to_string().into()));
+    data.set(Id::Wastewater, Some(Value::qubicmeters(3456.889)));
+    data.set(
+        Id::SensitivityN2OCalculationMethod,
+        Some(Value::n2o_emission_factor_calc_method(
+            units::N2oEmissionFactorCalcMethod::Custom,
+        )),
+    );
+    data.set(Id::SensitivityN2OCustomFactor, Some(Value::factor(0.015)));
+    data.set(
+        Id::SensitivityCH4ChpCalculationMethod,
+        Some(Value::ch4_chp_emission_factor_calc_method(
+            units::Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines,
+        )),
+    );
+    data.set(
+        Id::SensitivityCH4ChpCustomFactor,
+        Some(Value::factor(0.0345)),
+    );
 
     let project = SavedProject {
         id,
@@ -54,7 +50,7 @@ fn export() {
 
     assert_eq!(
         project["sensitivity_parameters"]["n2o_emissions"]["custom_emission_factor"],
-        0.013
+        1.5
     );
     assert_eq!(
         project["sensitivity_parameters"]["n2o_emissions"]["calculation_method"],
@@ -63,7 +59,7 @@ fn export() {
 
     assert_eq!(
         project["sensitivity_parameters"]["ch4_chp_emissions"]["custom_emission_factor"],
-        0.0345
+        3.45
     );
     assert_eq!(
         project["sensitivity_parameters"]["ch4_chp_emissions"]["calculation_method"],
@@ -73,35 +69,35 @@ fn export() {
 
 #[test]
 fn roundtrip() {
-    let mut plant_profile = PlantProfile::default();
-    plant_profile.wastewater = Some(3456.889);
-    plant_profile.influent_average = AnnualAverageInfluent {
-        total_nitrogen: Some(1.234_5),
-        ..Default::default()
-    };
-
-    let sensitivity_parameters = SensitivityParameters {
-        n2o_emissions: N2OEmissionsSensitivity {
-            custom_emission_factor: Some(0.013),
-            calculation_method: Some(N2oEmissionFactorCalcMethod::Pesimistic),
-            side_stream_emission_factor: None,
-        },
-        ch4_chp_emissions: CH4ChpEmissionsSensitivity {
-            custom_emission_factor: Some(0.013),
-            calculation_method: Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine),
-        },
-        ch4_sewage_sludge_emissions: SewageSludgeTreatmentEmissionsSensitivity::default(),
-        co2_fossil_emissions: FossilEmissonsSensitivity::default(),
-    };
-
     let id = ProjectId(Uuid::new_v4());
-    let mut data = FormData {
-        project_title: Some("Project".into()),
-        plant_profile,
-        sensitivity_parameters,
-        optimization_scenario: Default::default(),
-    };
+    let mut data = FormData::default();
+
+    data.set(Id::ProjectName, Some(Value::text("Project")));
     data.set(Id::PlantName, Some("test export".to_string().into()));
+    data.set(Id::Wastewater, Some(Value::qubicmeters(3456.889)));
+    data.set(
+        Id::InfluentNitrogen,
+        Some(Value::milligrams_per_liter(1.234_5)),
+    );
+    data.set(
+        Id::SensitivityN2OCalculationMethod,
+        Some(Value::n2o_emission_factor_calc_method(
+            units::N2oEmissionFactorCalcMethod::Pesimistic,
+        )),
+    );
+    data.set(Id::SensitivityN2OCustomFactor, Some(Value::factor(0.013)));
+
+    data.set(
+        Id::SensitivityCH4ChpCalculationMethod,
+        Some(Value::ch4_chp_emission_factor_calc_method(
+            units::Ch4ChpEmissionFactorCalcMethod::GasolineEngine,
+        )),
+    );
+    data.set(
+        Id::SensitivityCH4ChpCustomFactor,
+        Some(Value::factor(0.0345)),
+    );
+
     let project = Project::Saved(SavedProject {
         id,
         created_at: OffsetDateTime::now_utc(),

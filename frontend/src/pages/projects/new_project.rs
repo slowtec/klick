@@ -4,6 +4,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::{FormData, ProjectId};
+use klick_domain::{InputValueId as Id, Value};
 
 use crate::api::AuthorizedApi;
 
@@ -16,6 +17,9 @@ pub fn NewProject(
     on_success: Callback<ProjectId, ()>,
 ) -> impl IntoView {
     let title = RwSignal::<Option<String>>::new(None);
+    let on_change = Callback::new(move |txt: Option<String>| {
+        title.update(|t| *t = txt);
+    });
 
     let field = Field {
         label: "Projektname",
@@ -25,9 +29,7 @@ pub fn NewProject(
             initial_value: None,
             placeholder: Some("Projektname".to_string()),
             max_len: None,
-            on_change: Callback::new(move |txt: Option<String>| {
-                title.update(|t| *t = txt);
-            }),
+            on_change,
             input: Signal::derive(move || None),
         },
     };
@@ -40,10 +42,9 @@ pub fn NewProject(
     let field_view = render_field(field, field_id, missing_fields);
 
     let create_project = create_action(move |(): &()| {
-        let project = FormData {
-            project_title: title.get(),
-            ..Default::default()
-        };
+        let mut project = FormData::default();
+        let title = title.get().map(Value::text);
+        project.set(Id::ProjectName, title);
         async move {
             wait_for_response.set(true);
             let result = api.get().create_project(&project).await;

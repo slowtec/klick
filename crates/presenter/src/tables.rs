@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use klick_boundary::{FormData, PlantProfile, SensitivityParameters};
+use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
     units::{Percent, RatioExt},
@@ -50,17 +50,6 @@ pub struct TableSection {
 
 #[must_use]
 pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table {
-    let PlantProfile {
-        wastewater,
-        influent_average,
-        effluent_average,
-        energy_consumption,
-        sewage_sludge_treatment,
-        side_stream_treatment,
-        operating_materials,
-        ..
-    } = &data.plant_profile;
-
     // TODO: use as parameter
     let lang = Lng::De;
 
@@ -68,120 +57,138 @@ pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table 
         TableSection {
             title: "Angaben zur Kläranlage".to_string(),
             rows: vec![
-                (
-                    InputValueId::PlantName.label(),
-                    data.get(&Id::PlantName)
-                        .map(Value::as_text_unchecked)
-                        .clone(),
-                    formatting.fmt(InputValueId::PlantName),
-                ),
-                (
-                    InputValueId::PopulationEquivalent.label(),
-                    data.get(&Id::PopulationEquivalent)
-                        .map(Value::as_count_unchecked)
-                        .map(|v| u64::from(v) as f64)
-                        .map(format_number_with_thousands_seperator(lang)),
-                    formatting.fmt(InputValueId::PopulationEquivalent),
-                ),
-                (
-                    InputValueId::Wastewater.label(),
-                    wastewater.map(format_number_with_thousands_seperator(lang)),
-                    formatting.fmt(InputValueId::Wastewater),
-                ),
+                {
+                    let id = Id::PlantName;
+                    (
+                        id.label(),
+                        data.get(&id).map(Value::as_text_unchecked).clone(),
+                        formatting.fmt(id),
+                    )
+                },
+                {
+                    let id = Id::PopulationEquivalent;
+                    (
+                        id.label(),
+                        data.get(&id)
+                            .map(Value::as_count_unchecked)
+                            .map(|v| u64::from(v) as f64)
+                            .map(format_number_with_thousands_seperator(lang)),
+                        formatting.fmt(id),
+                    )
+                },
+                {
+                    let id = Id::Wastewater;
+                    (
+                        id.label(),
+                        data.get(&id)
+                            .map(Value::as_qubicmeters_unchecked)
+                            .map(f64::from)
+                            .map(format_number_with_thousands_seperator(lang)),
+                        formatting.fmt(id),
+                    )
+                },
             ],
         },
         TableSection {
             title: "Zulauf-Parameter (Jahresmittelwerte)".to_string(),
-            rows: vec![
+            rows: [
+                Id::InfluentNitrogen,
+                Id::InfluentChemicalOxygenDemand,
+                Id::InfluentTotalOrganicCarbohydrates,
+            ]
+            .into_iter()
+            .map(|id| {
                 (
-                    InputValueId::InfluentNitrogen.label(),
-                    influent_average.total_nitrogen.map(format_number(lang)),
-                    formatting.fmt(InputValueId::InfluentNitrogen),
-                ),
-                (
-                    InputValueId::InfluentChemicalOxygenDemand.label(),
-                    influent_average
-                        .chemical_oxygen_demand
+                    id.label(),
+                    data.get(&id)
+                        .map(Value::as_milligrams_per_liter_unchecked)
+                        .map(f64::from)
                         .map(format_number(lang)),
-                    formatting.fmt(InputValueId::InfluentChemicalOxygenDemand),
-                ),
-                (
-                    InputValueId::InfluentTotalOrganicCarbohydrates.label(),
-                    influent_average
-                        .total_organic_carbohydrates
-                        .map(format_number(lang)),
-                    formatting.fmt(InputValueId::InfluentTotalOrganicCarbohydrates),
-                ),
-            ],
+                    formatting.fmt(id),
+                )
+            })
+            .collect(),
         },
         TableSection {
             title: "Ablauf-Parameter (Jahresmittelwerte)".to_string(),
-            rows: vec![
-                (
-                    InputValueId::EffluentNitrogen.label(),
-                    effluent_average.total_nitrogen.map(format_number(lang)),
-                    formatting.fmt(InputValueId::EffluentNitrogen),
-                ),
-                (
-                    InputValueId::EffluentChemicalOxygenDemand.label(),
-                    effluent_average
-                        .chemical_oxygen_demand
-                        .map(format_number(lang)),
-                    formatting.fmt(InputValueId::EffluentChemicalOxygenDemand),
-                ),
-            ],
+            rows: [Id::EffluentNitrogen, Id::EffluentChemicalOxygenDemand]
+                .into_iter()
+                .map(|id| {
+                    (
+                        id.label(),
+                        data.get(&id)
+                            .map(Value::as_milligrams_per_liter_unchecked)
+                            .map(f64::from)
+                            .map(format_number(lang)),
+                        formatting.fmt(id),
+                    )
+                })
+                .collect(),
         },
         TableSection {
             title: "Energiebedarf".to_string(),
             rows: vec![
                 (
                     InputValueId::TotalPowerConsumption.label(),
-                    energy_consumption
-                        .total_power_consumption
+                    data.get(&InputValueId::TotalPowerConsumption)
+                        .map(Value::as_kilowatthours_unchecked)
+                        .map(f64::from)
                         .map(format_number_with_thousands_seperator(lang)),
                     formatting.fmt(InputValueId::TotalPowerConsumption),
                 ),
                 (
                     InputValueId::OnSitePowerGeneration.label(),
-                    energy_consumption
-                        .on_site_power_generation
+                    data.get(&InputValueId::OnSitePowerGeneration)
+                        .map(Value::as_kilowatthours_unchecked)
+                        .map(f64::from)
                         .map(format_number_with_thousands_seperator(lang)),
                     formatting.fmt(InputValueId::OnSitePowerGeneration),
                 ),
                 (
                     InputValueId::EmissionFactorElectricityMix.label(),
-                    energy_consumption
-                        .emission_factor_electricity_mix
+                    data.get(&InputValueId::EmissionFactorElectricityMix)
+                        .map(Value::as_grams_per_kilowatthour_unchecked)
+                        .map(f64::from)
                         .map(format_number(lang)),
                     formatting.fmt(InputValueId::EmissionFactorElectricityMix),
                 ),
                 (
                     InputValueId::GasSupply.label(),
-                    energy_consumption.gas_supply.map(format_number(lang)),
+                    data.get(&InputValueId::GasSupply)
+                        .map(Value::as_qubicmeters_unchecked)
+                        .map(f64::from)
+                        .map(format_number(lang)),
                     formatting.fmt(InputValueId::GasSupply),
                 ),
                 (
                     InputValueId::PurchaseOfBiogas.label(),
-                    energy_consumption.purchase_of_biogas.map(format_bool(lang)),
+                    data.get(&InputValueId::PurchaseOfBiogas)
+                        .map(Value::as_bool_unchecked)
+                        .map(format_bool(lang)),
                     formatting.fmt(InputValueId::PurchaseOfBiogas),
                 ),
                 (
                     InputValueId::HeatingOil.label(),
-                    energy_consumption
-                        .heating_oil
+                    data.get(&InputValueId::HeatingOil)
+                        .map(Value::as_liters_unchecked)
+                        .map(f64::from)
                         .map(format_number_with_thousands_seperator(lang)),
                     formatting.fmt(InputValueId::HeatingOil),
                 ),
                 (
                     InputValueId::SewageGasProduced.label(),
-                    energy_consumption
-                        .sewage_gas_produced
+                    data.get(&InputValueId::SewageGasProduced)
+                        .map(Value::as_qubicmeters_unchecked)
+                        .map(f64::from)
                         .map(format_number_with_thousands_seperator(lang)),
                     formatting.fmt(InputValueId::SewageGasProduced),
                 ),
                 (
                     InputValueId::MethaneFraction.label(),
-                    energy_consumption.methane_fraction.map(format_number(lang)),
+                    data.get(&InputValueId::MethaneFraction)
+                        .map(Value::as_percent_unchecked)
+                        .map(f64::from)
+                        .map(format_number(lang)),
                     formatting.fmt(InputValueId::MethaneFraction),
                 ),
             ],
@@ -191,38 +198,39 @@ pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table 
             rows: vec![
                 (
                     InputValueId::SludgeTreatmentDigesterCount.label(),
-                    sewage_sludge_treatment
-                        .digester_count
+                    data.get(&InputValueId::SludgeTreatmentDigesterCount)
+                        .map(Value::as_count_unchecked)
+                        .map(u64::from)
                         .map(|n| n.to_string()),
                     formatting.fmt(InputValueId::SludgeTreatmentDigesterCount),
                 ),
                 (
                     InputValueId::SludgeTreatmentDisposal.label(),
-                    sewage_sludge_treatment
-                        .sewage_sludge_for_disposal
+                    data.get(&InputValueId::SludgeTreatmentDisposal)
+                        .map(Value::as_tons_unchecked)
+                        .map(f64::from)
                         .map(format_number(lang)),
                     formatting.fmt(InputValueId::SludgeTreatmentDisposal),
                 ),
                 (
                     InputValueId::SludgeTreatmentTransportDistance.label(),
-                    sewage_sludge_treatment
-                        .transport_distance
+                    data.get(&InputValueId::SludgeTreatmentTransportDistance)
+                        .map(Value::as_kilometers_unchecked)
+                        .map(f64::from)
                         .map(format_number(lang)),
                     formatting.fmt(InputValueId::SludgeTreatmentTransportDistance),
                 ),
                 (
                     InputValueId::SludgeTreatmentBagsAreOpen.label(),
-                    sewage_sludge_treatment
-                        .sludge_bags_are_closed
-                        .map(|v| !v) // closed => open
+                    data.get(&InputValueId::SludgeTreatmentBagsAreOpen)
+                        .map(Value::as_bool_unchecked)
                         .map(format_bool(lang)),
                     formatting.fmt(InputValueId::SludgeTreatmentBagsAreOpen),
                 ),
                 (
                     InputValueId::SludgeTreatmentStorageContainersAreOpen.label(),
-                    sewage_sludge_treatment
-                        .sludge_storage_containers_are_closed
-                        .map(|v| !v) // closed => open
+                    data.get(&InputValueId::SludgeTreatmentStorageContainersAreOpen)
+                        .map(Value::as_bool_unchecked)
                         .map(format_bool(lang)),
                     formatting.fmt(InputValueId::SludgeTreatmentStorageContainersAreOpen),
                 ),
@@ -232,38 +240,33 @@ pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table 
             title: "Prozesswasserbehandlung".to_string(),
             rows: vec![(
                 InputValueId::SideStreamTreatmentTotalNitrogen.label(),
-                side_stream_treatment
-                    .total_nitrogen
+                data.get(&InputValueId::SideStreamTreatmentTotalNitrogen)
+                    .map(Value::as_tons_unchecked)
+                    .map(f64::from)
                     .map(format_number(lang)),
                 formatting.fmt(InputValueId::SideStreamTreatmentTotalNitrogen),
             )],
         },
         TableSection {
             title: "Eingesetzte Betriebsstoffe".to_string(),
-            rows: vec![
+            rows: [
+                Id::OperatingMaterialFeCl3,
+                Id::OperatingMaterialFeClSO4,
+                Id::OperatingMaterialCaOH2,
+                Id::OperatingMaterialSyntheticPolymers,
+            ]
+            .into_iter()
+            .map(|id| {
                 (
-                    InputValueId::OperatingMaterialFeCl3.label(),
-                    operating_materials.fecl3.map(format_number(lang)),
-                    formatting.fmt(InputValueId::OperatingMaterialFeCl3),
-                ),
-                (
-                    InputValueId::OperatingMaterialFeClSO4.label(),
-                    operating_materials.feclso4.map(format_number(lang)),
-                    formatting.fmt(InputValueId::OperatingMaterialFeClSO4),
-                ),
-                (
-                    InputValueId::OperatingMaterialCaOH2.label(),
-                    operating_materials.caoh2.map(format_number(lang)),
-                    formatting.fmt(InputValueId::OperatingMaterialCaOH2),
-                ),
-                (
-                    InputValueId::OperatingMaterialSyntheticPolymers.label(),
-                    operating_materials
-                        .synthetic_polymers
+                    id.label(),
+                    data.get(&id)
+                        .map(Value::as_tons_unchecked)
+                        .map(f64::from)
                         .map(format_number(lang)),
-                    formatting.fmt(InputValueId::OperatingMaterialSyntheticPolymers),
-                ),
-            ],
+                    formatting.fmt(id),
+                )
+            })
+            .collect(),
         },
     ];
     Table { sections }
@@ -271,17 +274,10 @@ pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table 
 
 #[must_use]
 pub fn sensitivity_parameters_as_table(
-    parameters: &SensitivityParameters,
+    data: &FormData,
     formatting: Formatting,
     output: Option<&domain::EmissionsCalculationOutcome>,
 ) -> Table {
-    let SensitivityParameters {
-        n2o_emissions,
-        ch4_chp_emissions,
-        ch4_sewage_sludge_emissions,
-        co2_fossil_emissions,
-    } = parameters;
-
     let lang = Lng::De;
 
     let n2o_emission_factor = output.map(|output| {
@@ -303,9 +299,8 @@ pub fn sensitivity_parameters_as_table(
             rows: vec![
                 (
                     formatting.fmt_label(InputValueId::SensitivityN2OCalculationMethod),
-                    n2o_emissions
-                        .calculation_method
-                        .as_ref()
+                    data.get(&InputValueId::SensitivityN2OCalculationMethod)
+                        .map(Value::as_n2o_emission_factor_calc_method_unchecked)
                         .map(|m| m.label().to_string()),
                     formatting.fmt(InputValueId::SensitivityN2OCalculationMethod),
                 ),
@@ -319,8 +314,9 @@ pub fn sensitivity_parameters_as_table(
                 ),
                 (
                     formatting.fmt_label(InputValueId::SensitivityN2OSideStreamFactor),
-                    n2o_emissions
-                        .side_stream_emission_factor
+                    data.get(&Id::ScenarioN2OSideStreamFactor)
+                        .map(Value::as_factor_unchecked)
+                        .map(f64::from)
                         .map(format_number(lang)),
                     formatting.fmt(InputValueId::SensitivityN2OSideStreamFactor),
                 ),
@@ -331,9 +327,8 @@ pub fn sensitivity_parameters_as_table(
             rows: vec![
                 (
                     formatting.fmt_label(InputValueId::SensitivityCH4ChpCalculationMethod),
-                    ch4_chp_emissions
-                        .calculation_method
-                        .as_ref()
+                    data.get(&Id::SensitivityCH4ChpCalculationMethod)
+                        .map(Value::as_ch4_chp_emission_factor_calc_method_unchecked)
                         .map(|m| m.label().to_string()),
                     formatting.fmt(InputValueId::SensitivityCH4ChpCalculationMethod),
                 ),
@@ -353,15 +348,19 @@ pub fn sensitivity_parameters_as_table(
             rows: vec![
                 (
                     formatting.fmt_label(InputValueId::SensitivitySludgeBagsCustomFactor),
-                    ch4_sewage_sludge_emissions
-                        .emission_factor_sludge_bags
+                    data.get(&InputValueId::SensitivitySludgeBagsCustomFactor)
+                        .map(Value::as_factor_unchecked)
+                        .map(|f| f.convert_to::<Percent>())
+                        .map(f64::from)
                         .map(format_number(lang)),
                     formatting.fmt(InputValueId::SensitivitySludgeBagsCustomFactor),
                 ),
                 (
                     formatting.fmt_label(InputValueId::SensitivitySludgeStorageCustomFactor),
-                    ch4_sewage_sludge_emissions
-                        .emission_factor_sludge_storage_containers
+                    data.get(&InputValueId::SensitivitySludgeStorageCustomFactor)
+                        .map(Value::as_factor_unchecked)
+                        .map(|f| f.convert_to::<Percent>())
+                        .map(f64::from)
                         .map(format_number(lang)),
                     formatting.fmt(InputValueId::SensitivitySludgeStorageCustomFactor),
                 ),
@@ -375,8 +374,10 @@ pub fn sensitivity_parameters_as_table(
             .to_string(),
             rows: vec![(
                 formatting.fmt_label(InputValueId::SensitivityCO2FossilCustomFactor),
-                co2_fossil_emissions
-                    .emission_factor
+                data.get(&InputValueId::SensitivityCO2FossilCustomFactor)
+                    .map(Value::as_factor_unchecked)
+                    .map(|f| f.convert_to::<Percent>())
+                    .map(f64::from)
                     .map(format_number(lang)),
                 formatting.fmt(InputValueId::SensitivityCO2FossilCustomFactor),
             )],

@@ -58,14 +58,14 @@ pub struct CalculationOutcome {
     // Used to create bar chart input
     pub sensitivity_n2o_calculations: Option<
         Vec<(
-            domain::N2oEmissionFactorCalcMethod,
+            domain::units::N2oEmissionFactorCalcMethod,
             domain::EmissionsCalculationOutcome,
         )>,
     >,
 
     // Used to create bar chart input
     pub sensitivity_ch4_chp_calculations:
-        Option<Vec<(domain::CH4ChpEmissionFactorCalcMethod, Tons, Factor)>>,
+        Option<Vec<(domain::units::Ch4ChpEmissionFactorCalcMethod, Tons, Factor)>>,
 
     // a.k.a "Model Three"
     pub recommendation: EvaluationData,

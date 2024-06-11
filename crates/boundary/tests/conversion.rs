@@ -1,9 +1,7 @@
 use time::OffsetDateTime;
 
-use klick_boundary::{
-    export_to_string_pretty, import_from_str, Data, FormData, Project, SavedProject,
-};
-use klick_domain as domain;
+use klick_boundary::{export_to_string_pretty, import_from_str, Data, Project, SavedProject};
+use klick_domain::{self as domain, InputValueId as Id, Value};
 
 #[test]
 fn roundtrip() {
@@ -14,25 +12,15 @@ fn roundtrip() {
     // there will be a loss of data during the conversion.
     // This is to be expected and is not an error.
     let json = include_str!("example_data_v2.json");
-    let Project::Unsaved(unsaved) = import_from_str(json).unwrap() else {
+    let Project::Unsaved(mut data) = import_from_str(json).unwrap() else {
         panic!("Unexpected project data");
     };
-    let FormData {
-        project_title: _,
-        plant_profile,
-        optimization_scenario,
-        sensitivity_parameters,
-    } = unsaved;
 
     let id = domain::ProjectId::new().into();
-    let project_title = Some("Test".to_string());
     let created_at = OffsetDateTime::now_utc();
-    let data = FormData {
-        project_title,
-        plant_profile,
-        sensitivity_parameters,
-        optimization_scenario,
-    };
+
+    data.set(Id::ProjectName, Some(Value::text("Test")));
+
     let saved = SavedProject {
         id,
         created_at,

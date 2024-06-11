@@ -6,12 +6,14 @@ use klick_boundary::{
     calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, Data, FormData,
     Project, ProjectId, SavedProject,
 };
+use klick_domain::{InputValueId as Id, Value};
 use klick_presenter as presenter;
 
 use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
 
 mod breadcrumbs;
 mod example_data;
+mod fields;
 mod form_data_overview;
 mod plant_profile;
 mod project_menu;
@@ -69,10 +71,9 @@ pub fn Tool(
 
     let show_side_stream_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.plant_profile
-                .side_stream_treatment
-                .total_nitrogen
-                .is_some_and(|v| v > 0.0)
+            d.get(&Id::SideStreamTreatmentTotalNitrogen)
+                .map(Value::as_tons_unchecked)
+                .is_some_and(|v| f64::from(v) > 0.0)
         })
     });
 
@@ -140,10 +141,12 @@ pub fn Tool(
                 };
                 let result_msg = match project {
                     Project::Saved(mut p) => {
-                        if p.data.project_title.is_none()
-                            || p.data.project_title.as_deref() == Some("")
-                        {
-                            p.data.project_title = Some(DEFAULT_UNNAMED_PROJECT_TITLE.to_string());
+                        let name = p.data.get(&Id::ProjectName).map(Value::as_text_unchecked);
+                        if name.is_none() || name.as_deref() == Some("") {
+                            p.data.set(
+                                Id::ProjectName,
+                                Some(Value::text(DEFAULT_UNNAMED_PROJECT_TITLE)),
+                            );
                         }
                         api.update_project(&p)
                             .await
@@ -157,8 +160,12 @@ pub fn Tool(
                             })
                     }
                     Project::Unsaved(mut p) => {
-                        if p.project_title.is_none() || p.project_title.as_deref() == Some("") {
-                            p.project_title = Some(DEFAULT_UNNAMED_PROJECT_TITLE.to_string());
+                        let name = p.get(&Id::ProjectName).map(Value::as_text_unchecked);
+                        if name.is_none() || name.as_deref() == Some("") {
+                            p.set(
+                                Id::ProjectName,
+                                Some(Value::text(DEFAULT_UNNAMED_PROJECT_TITLE)),
+                            );
                         }
                         api.create_project(&p)
                             .await

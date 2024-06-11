@@ -3,9 +3,8 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
-use klick_boundary::{
-    self as boundary, default_values::N2O_DEFAULT_CUSTOM_FACTOR, CalculationOutcome, FormData,
-};
+use klick_boundary::{default_values::N2O_DEFAULT_CUSTOM_FACTOR, CalculationOutcome, FormData};
+use klick_domain::{units::N2oEmissionFactorCalcMethod, InputValueId as Id, Value};
 use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::Card;
@@ -22,7 +21,10 @@ pub fn N2OEmissionsSensitivity(
     // -----   ----- //
 
     let selected_scenario = Signal::derive(move || {
-        form_data.with(|d| d.sensitivity_parameters.n2o_emissions.calculation_method)
+        form_data.with(|d| {
+            d.get(&Id::SensitivityN2OCalculationMethod)
+                .map(Value::as_n2o_emission_factor_calc_method_unchecked)
+        })
     });
     let selected_scenario_index = Signal::derive(move || {
         selected_scenario
@@ -46,12 +48,16 @@ pub fn N2OEmissionsSensitivity(
     // -----   ----- //
 
     let on_bar_chart_input_changed = move |idx| {
-        let Some(method) = boundary::N2oEmissionFactorCalcMethod::from_u64(idx) else {
+        let Some(method) = N2oEmissionFactorCalcMethod::from_u64(idx) else {
             log::warn!("Invalid index {idx} for selection of calc method");
             return;
         };
-        form_data
-            .update(|d| d.sensitivity_parameters.n2o_emissions.calculation_method = Some(method));
+        form_data.update(|d| {
+            d.set(
+                Id::SensitivityN2OCalculationMethod,
+                Some(Value::n2o_emission_factor_calc_method(method)),
+            )
+        });
     };
 
     // -----   ----- //

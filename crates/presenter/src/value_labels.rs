@@ -1,4 +1,3 @@
-use klick_boundary as boundary;
 use klick_domain as domain;
 
 use crate::InputValueId;
@@ -13,6 +12,7 @@ pub trait ValueLabel {
 impl ValueLabel for InputValueId {
     fn label(&self) -> &'static str {
         match self {
+            Self::ProjectName => "Projektname",
             Self::PlantName => "Name oder Ort",
             Self::PopulationEquivalent => "Angeschlossene Einwohner",
             Self::Wastewater => "Abwassermenge",
@@ -30,7 +30,6 @@ impl ValueLabel for InputValueId {
             Self::EmissionFactorElectricityMix => "Strommix-EF (Versorger)",
             Self::HeatingOil => "Heizölbezug",
             Self::SideStreamTreatmentTotalNitrogen => "Gesamtstickstoff",
-            // Self::OperatingMaterials(id) => id.label(),
             Self::SludgeTreatmentDisposal => "Klärschlamm zur Entsorgung",
             Self::SludgeTreatmentTransportDistance => "Transportdistanz",
             Self::SludgeTreatmentDigesterCount => "Anzahl Faultürme",
@@ -82,50 +81,25 @@ impl ValueLabel for InputValueId {
     }
 }
 
-impl ValueLabel for domain::N2oEmissionFactorCalcMethod {
+impl ValueLabel for domain::units::N2oEmissionFactorCalcMethod {
     fn label(&self) -> &'static str {
         match self {
             Self::TuWien2016 => "TU Wien 2016",
             Self::Optimistic => "Optimistisch",
             Self::Pesimistic => "Pessimistisch",
             Self::Ipcc2019 => "IPCC 2019",
-            Self::Custom(_) => "Benutzerdefiniert",
+            Self::Custom => "Benutzerdefiniert",
         }
     }
 }
 
-// TODO: remove
-impl ValueLabel for boundary::N2oEmissionFactorCalcMethod {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::TuWien2016 => "TU Wien 2016",
-            Self::Optimistic => "Optimistisch",
-            Self::Pesimistic => "Pessimistisch",
-            Self::Ipcc2019 => "IPCC 2019",
-            Self::CustomFactor => "Benutzerdefiniert",
-        }
-    }
-}
-
-impl ValueLabel for domain::CH4ChpEmissionFactorCalcMethod {
+impl ValueLabel for domain::units::Ch4ChpEmissionFactorCalcMethod {
     fn label(&self) -> &'static str {
         match self {
             Self::MicroGasTurbines => "Mikrograsturbinen",
             Self::GasolineEngine => "Ottomotor",
             Self::JetEngine => "Zündstrahlmotor",
-            Self::Custom(_) => "Benutzerdefiniert",
-        }
-    }
-}
-
-// TODO: remove
-impl ValueLabel for boundary::CH4ChpEmissionFactorCalcMethod {
-    fn label(&self) -> &'static str {
-        match self {
-            Self::MicroGasTurbines => "Mikrograsturbinen",
-            Self::GasolineEngine => "Ottomotor",
-            Self::JetEngine => "Zündstrahlmotor",
-            Self::CustomFactor => "Benutzerdefiniert",
+            Self::Custom => "Benutzerdefiniert",
         }
     }
 }

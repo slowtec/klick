@@ -22,25 +22,28 @@ pub fn calculate(form_data: FormData) -> CalculationOutcome {
         .custom_emission_factor
         .map(|v| Percent::new(v).convert_to::<Factor>());
 
-    let selected_ch4_chp_emission_factor_calc_method = sensitivity_input
+    let (selected_ch4_chp_emission_factor_calc_method, _) = sensitivity_input
         .sensitivity_parameters
         .ch4_chp_emissions
         .try_into()
-        .ok();
+        .unwrap_or_else(|_| (None, None));
 
     let profile: Option<(_, _)> = profile_input.clone().try_into().ok(); // TODO: avoid clone
     let sensitivity: Option<(_, _)> = sensitivity_input.clone().try_into().ok(); // TODO: avoid clone
     let recommendation: Option<(_, _)> = recommendation_input.clone().try_into().ok(); // TODO: avoid clone
 
     let sensitivity_n2o_calculations = sensitivity.as_ref().map(|(values, _)| {
+        log::debug!("Calculate all N2O emission factor scenarios");
         domain::calculate_all_n2o_emission_factor_scenarios(
             values,
             custom_n2o_emission_factor,
             selected_ch4_chp_emission_factor_calc_method,
+            custom_ch4_chp_emission_factor,
         )
     });
 
     let sensitivity_ch4_chp_calculations = sensitivity.as_ref().map(|(values, _)| {
+        log::debug!("Calculate all CH4 CHP emission factor scenarios");
         domain::calculate_all_ch4_chp_emission_factor_scenarios(
             values,
             custom_ch4_chp_emission_factor,

@@ -7,6 +7,7 @@ use time::{
 
 use klick_app_components::icons;
 use klick_boundary::{ProjectId, SavedProject};
+use klick_domain::{InputValueId as Id, Value};
 
 use crate::api::AuthorizedApi;
 
@@ -96,7 +97,14 @@ fn Project(
     view! {
       <div class="min-w-0">
         <div class="flex items-start gap-x-3">
-          <p class="text-sm font-semibold leading-6 text-gray-900">{ project.data.project_title }</p>
+          <p class="text-sm font-semibold leading-6 text-gray-900">
+          {
+              project
+                .data
+                .get(&Id::ProjectName)
+                .map(Value::as_text_unchecked)
+          }
+          </p>
         </div>
         <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
           <p class="whitespace-nowrap">

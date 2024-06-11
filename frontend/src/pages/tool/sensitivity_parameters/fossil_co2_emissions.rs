@@ -2,7 +2,8 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::{default_values::CO2_DEFAULT_FOSSIL_FACTOR, FormData};
-use klick_presenter::{Lng, ValueLabel, *};
+use klick_domain::InputValueId as Id;
+use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
@@ -79,8 +80,10 @@ pub fn FossilCO2Emissions(
 }
 
 fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+    let id = Id::SensitivityCO2FossilCustomFactor;
+
     let custom_factor_field = Field {
-        label: InputValueId::SensitivityCO2FossilCustomFactor.label(),
+        label: id.label(),
         description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₂ eintragen."),
         required: false,
         field_type: FieldType::Float {
@@ -93,7 +96,7 @@ fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>)
                 max: Some(100.0),
             },
             unit: "%",
-            on_change: Callback::new(move |v| {
+            on_change: Callback::new(move |v: Option<_>| {
                 form_data.update(|d| {
                     d.sensitivity_parameters
                         .co2_fossil_emissions

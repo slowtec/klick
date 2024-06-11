@@ -1,6 +1,5 @@
 use crate::{
-    CH4ChpEmissionFactorCalcMethod, CO2Equivalents, CalculatedEmissionFactors,
-    EmissionFactorCalculationMethods, N2oEmissionFactorCalcMethod,
+    units::*, CO2Equivalents, CalculatedEmissionFactors, EmissionFactorCalculationMethods,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -25,7 +24,7 @@ pub struct N2oEmissionFactorScenario {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Ch4EmissionFactorScenario {
-    pub calculation_method: CH4ChpEmissionFactorCalcMethod,
+    pub calculation_method: Ch4ChpEmissionFactorCalcMethod,
     pub outcome: EmissionsCalculationOutcome,
 }
 

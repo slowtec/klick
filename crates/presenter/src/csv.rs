@@ -1,8 +1,7 @@
 use klick_boundary::CalculationOutcome;
 use klick_domain::{
-    units::{Percent, RatioExt},
-    CH4ChpEmissionFactorCalcMethod, CalculatedEmissionFactors, EmissionFactorCalculationMethods,
-    N2oEmissionFactorCalcMethod,
+    units::{Ch4ChpEmissionFactorCalcMethod, N2oEmissionFactorCalcMethod, Percent, RatioExt},
+    CalculatedEmissionFactors, EmissionFactorCalculationMethods,
 };
 
 use crate::{
@@ -16,7 +15,7 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
     let mut plant_profile_table = plant_profile_as_table(&out.recommendation.input, unit);
 
     let sensitivity_parameters_table = sensitivity_parameters_as_table(
-        &out.recommendation.input.sensitivity_parameters,
+        &out.recommendation.input,
         unit,
         out.recommendation.output.as_ref(),
     );
@@ -112,18 +111,18 @@ fn n2o_emission_factor_calc_method_to_csv_name(
         N2oEmissionFactorCalcMethod::Optimistic => "Optimistisch",
         N2oEmissionFactorCalcMethod::Pesimistic => "Pessimistisch",
         N2oEmissionFactorCalcMethod::Ipcc2019 => "PCC 2019",
-        N2oEmissionFactorCalcMethod::Custom(_) => "Benutzerdefiniert",
+        N2oEmissionFactorCalcMethod::Custom => "Benutzerdefiniert",
     }
 }
 
 // TODO: use ValueLabel & ValueId
 fn ch4_chp_emission_factor_calc_method_to_csv_name(
-    method: &CH4ChpEmissionFactorCalcMethod,
+    method: &Ch4ChpEmissionFactorCalcMethod,
 ) -> &'static str {
     match method {
-        CH4ChpEmissionFactorCalcMethod::MicroGasTurbines => "Mikrogasturbinen",
-        CH4ChpEmissionFactorCalcMethod::GasolineEngine => "Ottomotor",
-        CH4ChpEmissionFactorCalcMethod::JetEngine => "Zündstrahlmotor",
-        CH4ChpEmissionFactorCalcMethod::Custom(_) => "Benutzerdefiniert",
+        Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines => "Mikrogasturbinen",
+        Ch4ChpEmissionFactorCalcMethod::GasolineEngine => "Ottomotor",
+        Ch4ChpEmissionFactorCalcMethod::JetEngine => "Zündstrahlmotor",
+        Ch4ChpEmissionFactorCalcMethod::Custom => "Benutzerdefiniert",
     }
 }

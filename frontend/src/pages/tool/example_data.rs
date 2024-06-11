@@ -1,78 +1,63 @@
-use klick_boundary::*;
-use klick_domain::{InputValueId as Id, Value};
+use klick_boundary::FormData;
+use klick_domain::{units::*, InputValueId as Id, Value};
 
 pub fn example_form_data() -> FormData {
-    let mut plant_profile = PlantProfile::default();
-    plant_profile.wastewater = Some(2_135_250.0);
-    plant_profile.influent_average = AnnualAverageInfluent {
-        total_nitrogen: Some(94.0),
-        chemical_oxygen_demand: Some(1_020.0),
-        total_organic_carbohydrates: Some(382.5),
-    };
-    plant_profile.effluent_average = AnnualAverageEffluent {
-        total_nitrogen: Some(15.77),
-        chemical_oxygen_demand: Some(47.18),
-    };
-    plant_profile.energy_consumption = EnergyConsumption {
-        sewage_gas_produced: Some(420_000.0),
-        methane_fraction: Some(62.0),
-        purchase_of_biogas: Some(false),
-        total_power_consumption: Some(1_665_000.0),
-        on_site_power_generation: Some(810_000.0),
-        emission_factor_electricity_mix: Some(420.0),
-        heating_oil: None,
-        gas_supply: None,
-    };
-    plant_profile.sewage_sludge_treatment = SewageSludgeTreatment {
-        sludge_bags_are_closed: Some(false),
-        sludge_storage_containers_are_closed: Some(false),
-        sewage_sludge_for_disposal: Some(3016.5),
-        transport_distance: Some(150.0),
-        digester_count: Some(1),
-    };
-    plant_profile.operating_materials = OperatingMaterials {
-        fecl3: Some(310.5),
-        feclso4: None,
-        caoh2: None,
-        synthetic_polymers: Some(12.0),
-    };
-    plant_profile.side_stream_treatment = SideStreamTreatment {
-        total_nitrogen: None,
-    };
-    let sensitivity_parameters = SensitivityParameters {
-        n2o_emissions: N2OEmissionsSensitivity {
-            calculation_method: Some(N2oEmissionFactorCalcMethod::Ipcc2019),
-            custom_emission_factor: None,
-            side_stream_emission_factor: None,
-        },
-        ch4_chp_emissions: CH4ChpEmissionsSensitivity {
-            calculation_method: Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine),
-            custom_emission_factor: None,
-        },
-        ch4_sewage_sludge_emissions: SewageSludgeTreatmentEmissionsSensitivity {
-            emission_factor_sludge_bags: None,
-            emission_factor_sludge_storage_containers: None,
-        },
-        co2_fossil_emissions: FossilEmissonsSensitivity {
-            emission_factor: None,
-        },
-    };
+    let mut data = FormData::default();
 
-    let optimization_scenario = OptimizationScenario {
-        sewage_sludge_treatment: SewageSludgeTreatmentScenario::default(),
-        energy_emissions: EnergyEmissionScenario::default(),
-        side_stream_treatment: SideStreamTreatmentScenario::default(),
-    };
-    let project_title = None;
+    let values = [
+        (Id::PlantName, Value::text("Muster Klärwerk")),
+        (Id::PopulationEquivalent, Value::count(50_000)),
+        (Id::Wastewater, Value::qubicmeters(2_135_250.0)),
+        (Id::InfluentNitrogen, Value::milligrams_per_liter(94.0)),
+        (
+            Id::InfluentChemicalOxygenDemand,
+            Value::milligrams_per_liter(1_020.0),
+        ),
+        (
+            Id::InfluentTotalOrganicCarbohydrates,
+            Value::milligrams_per_liter(382.5),
+        ),
+        (Id::EffluentNitrogen, Value::milligrams_per_liter(15.77)),
+        (
+            Id::EffluentChemicalOxygenDemand,
+            Value::milligrams_per_liter(47.18),
+        ),
+        (Id::SewageGasProduced, Value::qubicmeters(420_000.0)),
+        (Id::MethaneFraction, Value::percent(62.0)),
+        (Id::PurchaseOfBiogas, Value::bool(false)),
+        (Id::TotalPowerConsumption, Value::kilowatthours(1_665_000.0)),
+        (Id::OnSitePowerGeneration, Value::kilowatthours(810_000.0)),
+        (
+            Id::EmissionFactorElectricityMix,
+            Value::grams_per_kilowatthour(420.0),
+        ),
+        (Id::SludgeTreatmentBagsAreOpen, Value::bool(true)),
+        (
+            Id::SludgeTreatmentStorageContainersAreOpen,
+            Value::bool(true),
+        ),
+        (Id::SludgeTreatmentDisposal, Value::tons(3016.5)),
+        (
+            Id::SludgeTreatmentTransportDistance,
+            Value::kilometers(150.0),
+        ),
+        (Id::SludgeTreatmentDigesterCount, Value::count(1)),
+        (Id::OperatingMaterialFeCl3, Value::tons(310.5)),
+        (Id::OperatingMaterialSyntheticPolymers, Value::tons(12.0)),
+        (
+            Id::SensitivityN2OCalculationMethod,
+            Value::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::Ipcc2019),
+        ),
+        (
+            Id::SensitivityCH4ChpCalculationMethod,
+            Value::ch4_chp_emission_factor_calc_method(
+                Ch4ChpEmissionFactorCalcMethod::GasolineEngine,
+            ),
+        ),
+    ];
 
-    let mut data = FormData {
-        project_title,
-        plant_profile,
-        sensitivity_parameters,
-        optimization_scenario,
-    };
-
-    data.set(Id::PlantName, Some(Value::new_text("Muster Klärwerk")));
-    data.set(Id::PopulationEquivalent, Some(Value::new_count(50_000)));
+    for (id, v) in values {
+        data.set(id, Some(v));
+    }
     data
 }

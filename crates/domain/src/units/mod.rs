@@ -4,6 +4,7 @@ use std::{
 };
 
 use derive_more::From;
+use num_derive::{FromPrimitive, ToPrimitive};
 use paste::paste;
 
 mod conversion;
@@ -252,6 +253,16 @@ macro_rules! floats {
                 )+
             }
 
+            impl FloatType {
+                $(
+                    $(
+                        pub const fn [<$unit:snake>]() -> Self {
+                            Self::$float([<$float Type>]::$unit)
+                        }
+                    )+
+                )+
+            }
+
             impl Float {
 
                 pub const fn float_type(&self) -> FloatType {
@@ -267,14 +278,14 @@ macro_rules! floats {
                 }
 
                 $(
-                    pub const fn [<new_ $float:snake>](v: $float) -> Self {
+                    pub const fn [<$float:snake>](v: $float) -> Self {
                         Self::$float(v)
                     }
                 )+
 
                 $(
                     $(
-                        pub const fn [<new_ $unit:snake>](v: f64) -> Self {
+                        pub const fn [<$unit:snake>](v: f64) -> Self {
                             Self::$float($float::$unit($unit::new(v)))
                         }
                     )+
@@ -360,7 +371,7 @@ macro_rules! integers {
                 }
 
                 $(
-                    pub const fn [<new_ $int:snake>](v: $int_base_type) -> Self {
+                    pub const fn [<$int:snake>](v: $int_base_type) -> Self {
                         Self::$int($int::new(v))
                     }
                 )+
@@ -420,6 +431,14 @@ macro_rules! values {
                     $int:ident, $int_base_type:ty;
                 )+
             }
+            enums {
+                $(
+                    $(#[$enum_attr:meta])*
+                    $enum_name:ident {
+                        $($enum_body:tt)*
+                    }
+                )+
+            }
         }
     ) => {
         paste! {
@@ -440,11 +459,58 @@ macro_rules! values {
                 )+
             }
 
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, From)]
+            pub enum Enum {
+                $(
+                    $enum_name($enum_name),
+                )+
+            }
+
+            impl Enum {
+                pub const fn enum_type(&self) -> EnumType {
+                    match self {
+                        $(
+                            Self::$enum_name(_) => EnumType::$enum_name,
+                        )+
+                    }
+                }
+
+                $(
+                    #[allow(irrefutable_let_patterns)]
+                    pub fn [<as_ $enum_name:snake>](self) -> Option<$enum_name> {
+                        let Self::$enum_name(v) = self else {
+                            return None;
+                        };
+                        Some(v)
+                    }
+
+                    pub fn [<as_ $enum_name:snake _unchecked>](self) -> $enum_name {
+                        self.[<as_ $enum_name:snake>]().expect(concat!(stringify!($enum_name)," value"))
+                    }
+                )+
+            }
+
+            #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+            pub enum EnumType {
+                $(
+                    $enum_name,
+                )+
+            }
+
+            $(
+                $(#[$enum_attr])*
+                #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+                pub enum $enum_name {
+                    $($enum_body)*
+                }
+            )+
+
             /// A typed value.
             #[derive(Debug, Clone, PartialEq, From)]
             pub enum Value {
                 Scalar(Scalar),
                 Text(String),
+                Enum(Enum),
             }
 
             impl Value {
@@ -453,6 +519,7 @@ macro_rules! values {
                     match self {
                         Self::Scalar(s) => ValueType::Scalar(s.scalar_type()),
                         Self::Text(_) => ValueType::Text,
+                        Self::Enum(e) => ValueType::Enum(e.enum_type()),
                     }
                 }
 
@@ -460,9 +527,9 @@ macro_rules! values {
 
                 $(
                     $(
-                        pub const fn [<new_ $unit:snake>](v: f64) -> Self {
+                        pub const fn [<$unit:snake>](v: f64) -> Self {
                             Self::Scalar(
-                              Scalar::Float(Float::[<new_ $unit:snake>](v))
+                              Scalar::Float(Float::[<$unit:snake>](v))
                             )
                         }
 
@@ -470,16 +537,22 @@ macro_rules! values {
                 )+
 
                 $(
-                    pub const fn [<new_ $int:snake>](v: $int_base_type) -> Self {
+                    pub const fn [<$int:snake>](v: $int_base_type) -> Self {
                         Self::Scalar(Scalar::Int(Int::$int($int::new(v))))
                     }
                 )+
 
-                pub const fn new_bool(v: bool) -> Self {
+                $(
+                    pub const fn [<$enum_name:snake>](v: $enum_name) -> Self {
+                        Self::Enum(Enum::$enum_name(v))
+                    }
+                )+
+
+                pub const fn bool(v: bool) -> Self {
                     Self::Scalar(Scalar::Bool(v))
                 }
 
-                pub fn new_text(s: impl Into<String>) -> Self {
+                pub fn text(s: impl Into<String>) -> Self {
                     Self::Text(s.into())
                 }
 
@@ -568,6 +641,19 @@ macro_rules! values {
                         self.[<as_ $int:snake>]().expect(concat!(stringify!($int)," value"))
                     }
                 )+
+
+                $(
+                    pub fn [<as_ $enum_name:snake>](self) -> Option<$enum_name> {
+                        let Self::Enum(v) = self else {
+                            return None;
+                        };
+                        v.[<as_ $enum_name:snake>]()
+                    }
+
+                    pub fn [<as_ $enum_name:snake _unchecked>](self) -> $enum_name {
+                        self.[<as_ $enum_name:snake>]().expect(concat!(stringify!($enum_name)," value"))
+                    }
+                )+
             }
 
             impl<T> From<T> for Value
@@ -583,6 +669,42 @@ macro_rules! values {
             pub enum ValueType {
                 Scalar(ScalarType),
                 Text,
+                Enum(EnumType),
+            }
+
+            impl ValueType {
+                $(
+                    $(
+                        pub const fn [<$unit:snake>]() -> Self {
+                            Self::Scalar(
+                                ScalarType::Float(
+                                  FloatType::[<$unit:snake>]()
+                                )
+                            )
+                        }
+                    )+
+                )+
+
+                $(
+                    pub const fn [<$int:snake>]() -> Self {
+                        Self::Scalar(ScalarType::Int(IntType::$int))
+                    }
+                )+
+
+                $(
+                    pub const fn [<$enum_name:snake>]() -> Self {
+                        Self::Enum(EnumType::$enum_name)
+                    }
+                )+
+
+                pub const fn bool() -> Self {
+                    Self::Scalar(ScalarType::Bool)
+                }
+
+                pub const fn text() -> Self {
+                    Self::Text
+                }
+
             }
 
             /// Elementary value that represents only a single data unit or value.
@@ -604,19 +726,19 @@ macro_rules! values {
 
                 $(
                     $(
-                        pub const fn [<new_ $unit:snake>](v: f64) -> Self {
-                            Self::Float(Float::[<new_ $unit:snake>](v))
+                        pub const fn [<$unit:snake>](v: f64) -> Self {
+                            Self::Float(Float::[<$unit:snake>](v))
                         }
                     )+
                 )+
 
                 $(
-                    pub const fn [<new_ $int:snake>](v: $int_base_type) -> Self {
-                        Self::Int(Int::[<new_ $int:snake>](v))
+                    pub const fn [<$int:snake>](v: $int_base_type) -> Self {
+                        Self::Int(Int::[<$int:snake>](v))
                     }
                 )+
 
-                pub const fn new_bool(v: bool) -> Self {
+                pub const fn bool(v: bool) -> Self {
                     Self::Bool(v)
                 }
 
@@ -729,9 +851,27 @@ values! {
                 Years, 24.0 * 365.0, "y";
             }
         }
-
         integers {
             Count, u64;
+        }
+        enums {
+            #[derive(Default, FromPrimitive, ToPrimitive)]
+            N2oEmissionFactorCalcMethod {
+              #[default]
+              TuWien2016,
+              Optimistic,
+              Pesimistic,
+              Ipcc2019,
+              Custom,
+            }
+            #[derive(Default, FromPrimitive, ToPrimitive)]
+            Ch4ChpEmissionFactorCalcMethod {
+                #[default]
+                GasolineEngine,
+                MicroGasTurbines,
+                JetEngine,
+                Custom,
+            }
         }
     }
 }

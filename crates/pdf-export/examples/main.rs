@@ -15,73 +15,85 @@ pub fn main() -> anyhow::Result<()> {
 }
 
 fn project_example_data() -> FormData {
-    let mut plant_profile = PlantProfile::default();
-    plant_profile.wastewater = Some(2_135_250.0);
-    plant_profile.influent_average = AnnualAverageInfluent {
-        total_nitrogen: Some(94.0),
-        chemical_oxygen_demand: Some(1_020.0),
-        total_organic_carbohydrates: Some(0.0),
-    };
-    plant_profile.effluent_average = AnnualAverageEffluent {
-        total_nitrogen: Some(15.77),
-        chemical_oxygen_demand: Some(47.18),
-    };
-    plant_profile.energy_consumption = EnergyConsumption {
-        sewage_gas_produced: Some(420_000.0),
-        methane_fraction: Some(62.0),
-        gas_supply: None,
-        purchase_of_biogas: Some(true),
-        total_power_consumption: Some(1_665_000.0),
-        on_site_power_generation: Some(810_000.0),
-        emission_factor_electricity_mix: Some(420.0),
-        heating_oil: Some(0.0),
-    };
-    plant_profile.sewage_sludge_treatment = SewageSludgeTreatment {
-        sludge_bags_are_closed: Some(false),
-        sludge_storage_containers_are_closed: Some(false),
-        sewage_sludge_for_disposal: Some(3016.5),
-        transport_distance: Some(150.0),
-        digester_count: Some(3),
-    };
-    plant_profile.operating_materials = OperatingMaterials {
-        fecl3: Some(310.5),
-        feclso4: Some(0.0),
-        caoh2: Some(0.0),
-        synthetic_polymers: Some(12.0),
-    };
-    plant_profile.side_stream_treatment = SideStreamTreatment {
-        total_nitrogen: Some(0.0),
-    };
+    let values = [
+        (Id::ProjectName, Some(Value::text("A Project Name"))),
+        (Id::PlantName, Some(Value::text("Muster Klärwerk"))),
+        (Id::PopulationEquivalent, Some(Value::count(50_000))),
+        (Id::Wastewater, Some(Value::qubicmeters(2_135_250.0))),
+        (
+            Id::InfluentNitrogen,
+            Some(Value::milligrams_per_liter(94.0)),
+        ),
+        (
+            Id::InfluentChemicalOxygenDemand,
+            Some(Value::milligrams_per_liter(1_020.0)),
+        ),
+        (
+            Id::InfluentTotalOrganicCarbohydrates,
+            Some(Value::milligrams_per_liter(0.0)),
+        ),
+        (
+            Id::EffluentNitrogen,
+            Some(Value::milligrams_per_liter(15.77)),
+        ),
+        (
+            Id::EffluentChemicalOxygenDemand,
+            Some(Value::milligrams_per_liter(47.18)),
+        ),
+        (Id::OperatingMaterialFeCl3, Some(Value::tons(310.5))),
+        (Id::OperatingMaterialFeClSO4, Some(Value::tons(0.0))),
+        (Id::OperatingMaterialCaOH2, Some(Value::tons(0.0))),
+        (
+            Id::OperatingMaterialSyntheticPolymers,
+            Some(Value::tons(12.0)),
+        ),
+        (Id::SewageGasProduced, Some(Value::qubicmeters(420_000.0))),
+        (Id::MethaneFraction, Some(Value::percent(62.0))),
+        (Id::PurchaseOfBiogas, Some(Value::bool(true))),
+        (
+            Id::TotalPowerConsumption,
+            Some(Value::kilowatthours(1_665_000.0)),
+        ),
+        (
+            Id::OnSitePowerGeneration,
+            Some(Value::kilowatthours(810_000.0)),
+        ),
+        (
+            Id::EmissionFactorElectricityMix,
+            Some(Value::grams_per_kilowatthour(420.0)),
+        ),
+        (Id::HeatingOil, Some(Value::liters(0.0))),
+        (Id::SludgeTreatmentBagsAreOpen, Some(Value::bool(true))),
+        (
+            Id::SludgeTreatmentStorageContainersAreOpen,
+            Some(Value::bool(true)),
+        ),
+        (Id::SludgeTreatmentDisposal, Some(Value::tons(3016.5))),
+        (
+            Id::SludgeTreatmentTransportDistance,
+            Some(Value::kilometers(150.0)),
+        ),
+        (Id::SludgeTreatmentDigesterCount, Some(Value::count(3))),
+        (Id::SideStreamTreatmentTotalNitrogen, Some(Value::tons(0.0))),
+        (
+            Id::SensitivityCO2FossilCustomFactor,
+            Some(Value::factor(0.0)),
+        ),
+        (Id::ScenarioSludgeBagsAreOpen, Some(Value::bool(true))),
+        (
+            Id::ScenarioSludgeStorageContainersAreOpen,
+            Some(Value::bool(true)),
+        ),
+        (
+            Id::ScenarioN2OSideStreamCoverIsOpen,
+            Some(Value::bool(true)),
+        ),
+    ];
 
-    let sensitivity_parameters = SensitivityParameters {
-        n2o_emissions: Default::default(),
-        ch4_chp_emissions: Default::default(),
-        ch4_sewage_sludge_emissions: Default::default(),
-        co2_fossil_emissions: FossilEmissonsSensitivity {
-            emission_factor: Some(0.0),
-        },
-    };
-
-    let optimization_scenario = OptimizationScenario {
-        sewage_sludge_treatment: SewageSludgeTreatmentScenario {
-            sludge_bags_are_closed: Some(false),
-            sludge_storage_containers_are_closed: Some(false),
-        },
-        energy_emissions: Default::default(),
-        side_stream_treatment: SideStreamTreatmentScenario {
-            side_stream_cover_is_closed: Some(false),
-        },
-    };
-
-    let mut data = FormData {
-        project_title: Some("A Project Name".to_string()),
-        plant_profile,
-        sensitivity_parameters,
-        optimization_scenario,
-    };
-
-    data.set(Id::PlantName, Some("Muster Klärwerk".to_string().into()));
-    data.set(Id::PopulationEquivalent, Some(Value::new_count(50_000)));
+    let mut data = FormData::default();
+    for (k, v) in values {
+        data.set(k, v);
+    }
 
     data
 }

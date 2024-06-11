@@ -3,7 +3,7 @@ use crate::{constants::*, units::*, *};
 fn ch4_combined_heat_and_power_plant_computation_helper(
     scenario: EmissionFactorCalculationMethods,
     profile: EmissionInfluencingValues,
-    ch4_chp_emission_factor: Option<CH4ChpEmissionFactorCalcMethod>,
+    ch4_chp_emission_factor: Option<Ch4ChpEmissionFactorCalcMethod>,
 ) -> f64 {
     let mut s2 = scenario;
     s2.ch4 = ch4_chp_emission_factor;
@@ -229,7 +229,9 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::TuWien2016,
+        n2o_custom_factor: None,
         ch4: None,
+        ch4_custom_factor: None,
     };
 
     let EmissionsCalculationOutcome {
@@ -321,7 +323,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
     );
@@ -329,7 +331,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
     );
@@ -341,7 +343,9 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::Optimistic,
+        n2o_custom_factor: None,
         ch4: None,
+        ch4_custom_factor: None,
     };
 
     let EmissionsCalculationOutcome {
@@ -433,7 +437,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
     );
@@ -441,7 +445,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
     );
@@ -453,7 +457,9 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::Pesimistic,
+        n2o_custom_factor: None,
         ch4: None,
+        ch4_custom_factor: None,
     };
 
     let EmissionsCalculationOutcome {
@@ -545,7 +551,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
     );
@@ -553,7 +559,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
     );
@@ -565,7 +571,9 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
 
     let scenario = EmissionFactorCalculationMethods {
         n2o: N2oEmissionFactorCalcMethod::Ipcc2019,
+        n2o_custom_factor: None,
         ch4: None,
+        ch4_custom_factor: None,
     };
 
     let EmissionsCalculationOutcome {
@@ -657,7 +665,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
     );
@@ -665,7 +673,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
     );
@@ -676,8 +684,10 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     let profile = example_values();
 
     let scenario = EmissionFactorCalculationMethods {
-        n2o: N2oEmissionFactorCalcMethod::Custom(Factor::new(1.0 / 100.0)),
+        n2o: N2oEmissionFactorCalcMethod::Custom,
+        n2o_custom_factor: Some(Factor::new(1.0 / 100.0)),
         ch4: None,
+        ch4_custom_factor: None,
     };
 
     let EmissionsCalculationOutcome {
@@ -769,7 +779,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
     );
@@ -777,7 +787,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
             profile,
-            Some(CH4ChpEmissionFactorCalcMethod::JetEngine)
+            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
     );
