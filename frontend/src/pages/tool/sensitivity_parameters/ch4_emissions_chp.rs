@@ -3,8 +3,9 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
-use klick_boundary::{default_values::CH4_DEFAULT_CUSTOM_FACTOR, FormData};
+use klick_boundary::FormData;
 use klick_domain::{
+    constants::EMISSION_FACTOR_CH4_CHP_CUSTOM_FACTOR_DEFAULT as CH4_DEFAULT_CUSTOM_FACTOR,
     units::{Ch4ChpEmissionFactorCalcMethod, Tons},
     InputValueId as Id, Value,
 };

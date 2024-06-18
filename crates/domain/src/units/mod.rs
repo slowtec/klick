@@ -38,7 +38,7 @@ macro_rules! float {
                 )+
             }
 
-            #[derive(Debug, Clone, Copy, PartialEq)]
+            #[derive(Debug, Clone, Copy, PartialEq, Eq)]
             pub enum [<$quantity Type>] {
                 $(
                   $unit,
@@ -246,7 +246,7 @@ macro_rules! floats {
                 )+
             }
 
-            #[derive(Debug, Clone, Copy, PartialEq, From)]
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, From)]
             pub enum FloatType {
                 $(
                   $float([<$float Type>]),
@@ -796,7 +796,7 @@ macro_rules! values {
                 }
             }
 
-            #[derive(Debug, Clone, Copy, PartialEq)]
+            #[derive(Debug, Clone, Copy, PartialEq, Eq)]
             pub enum ScalarType {
                 Float(FloatType),
                 Int(IntType),

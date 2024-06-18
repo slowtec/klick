@@ -7,7 +7,6 @@ use crate::*;
 pub const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 2.0;
 pub const _N2O_DEFAULT_SIDE_STREAM_FACTOR: f64 = 2.0;
 pub const CO2_DEFAULT_FOSSIL_FACTOR: f64 = 3.85;
-pub const CH4_DEFAULT_CUSTOM_FACTOR: f64 = 3.0;
 
 pub fn profile(mut data: FormData) -> FormData {
     data.sensitivity_parameters = Default::default();

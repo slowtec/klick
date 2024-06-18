@@ -2,17 +2,17 @@ use leptos::*;
 
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
-use klick_domain::{InputValueId as Id, Value, ValueType};
+use klick_domain::{InputValueId as Id, Value};
 use klick_presenter::ValueLabel;
 
-use crate::pages::tool::fields::{create_field_type, Limits};
+use crate::pages::tool::fields::create_field_type;
 
 #[allow(clippy::too_many_lines)]
 pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     let field_set_project_name = {
         let id = Id::ProjectName;
         let placeholder = Some("Projektname".to_string());
-        let field_type = create_field_type(form_data, id, ValueType::text(), placeholder, None);
+        let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
         let description = Some(
             "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. In der <b>angemeldeten</b> Version,
             dient der Projektname der Speicherung Ihrer Eingaben/Ergebnisse unter dem Reiter „Projekte“.
@@ -38,7 +38,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         let name = {
             let id = Id::PlantName;
             let placeholder = Some("Name der Kläranlage".to_string());
-            let field_type = create_field_type(form_data, id, ValueType::text(), placeholder, None);
+            let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
             let description = Some(
                 "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
             );
@@ -52,12 +52,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         let population = {
             let id = Id::PopulationEquivalent;
             let placeholder = Some("Angeschlossene Einwohner".to_string());
-            let limits = Some(Limits::Uint(forms::MinMax {
-                min: Some(0),
-                max: Some(5_000_000),
-            }));
-            let field_type =
-                create_field_type(form_data, id, ValueType::count(), placeholder, limits);
+            let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
             let description = Some(
                 "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
             );
@@ -72,12 +67,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         let wastewater = {
             let id = Id::Wastewater;
             let placeholder = Some("Abwassermenge".to_string());
-            let limits = Some(Limits::Float(forms::MinMax {
-                min: Some(0.0),
-                max: Some(1_000_000_000.0),
-            }));
-            let field_type =
-                create_field_type(form_data, id, ValueType::qubicmeters(), placeholder, limits);
+            let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
             Field {
                     label: id.label(),
                     description: Some(
@@ -102,22 +92,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         fields: [
             {
                 let id = Id::InfluentChemicalOxygenDemand;
-                let value_type = ValueType::milligrams_per_liter();
                 let placeholder = Some("CSB".to_string());
-                let limits = Some(Limits::Float(forms::MinMax {
-                    min: Some(
-                        0.0,
-                    ),
-                    max: Some(
-                        5000.0,
-                    ),
-                }));
                 let field_type = create_field_type(
                       form_data,
+                      form_data.read_only(),
                       id,
-                      value_type,
                       placeholder,
-                      limits,
                 );
                 Field {
                     label: id.label(),
@@ -131,20 +111,11 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             {
               let id = Id::InfluentNitrogen;
               let placeholder = Some("Gesamtstickstoff".to_string());
-              let limits = Some(Limits::Float(forms::MinMax {
-                  min: Some(
-                      0.0,
-                  ),
-                  max: Some(
-                      5000.0,
-                  ),
-              }));
               let field_type = create_field_type(
                     form_data,
+                    form_data.read_only(),
                     id,
-                    ValueType::milligrams_per_liter(),
                     placeholder,
-                    limits,
               );
               Field {
                   label: id.label(),
@@ -160,21 +131,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
               let placeholder = Some(
                   "TOC".to_string(),
               );
-                  let limits = Some(Limits::Float(forms::MinMax {
-                      min: Some(
-                          0.0,
-                      ),
-                      max: Some(
-                          2000.0,
-                      ),
-                  }));
-                  let field_type = create_field_type(
-                        form_data,
-                        id,
-                        ValueType::milligrams_per_liter(),
-                        placeholder,
-                        limits,
-                  );
+              let field_type = create_field_type(
+                    form_data,
+                    form_data.read_only(),
+                    id,
+                    placeholder,
+              );
               Field {
                   label: id.label(),
                   description: Some(
@@ -194,24 +156,15 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         fields: vec![
             {
                 let id = Id::EffluentChemicalOxygenDemand;
-                    let placeholder = Some(
-                        "CSB".to_string(),
-                    );
-                    let limits = Some(Limits::Float(forms::MinMax {
-                        min: Some(
-                            0.0,
-                        ),
-                        max: Some(
-                            1000.0,
-                        ),
-                    }));
-                  let field_type = create_field_type(
-                        form_data,
-                        id,
-                        ValueType::milligrams_per_liter(),
-                        placeholder,
-                        limits,
-                  );
+                let placeholder = Some(
+                    "CSB".to_string(),
+                );
+                let field_type = create_field_type(
+                      form_data,
+                      form_data.read_only(),
+                      id,
+                      placeholder,
+                );
             Field {
                 label: id.label(),
                 description: Some(
@@ -222,23 +175,14 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             }},
             {
                   let id = Id::EffluentNitrogen;
-                      let placeholder= Some(
-                          "Gesamtstickstoff".to_string(),
-                      );
-                      let limits = Some(Limits::Float(forms::MinMax {
-                          min: Some(
-                              0.0,
-                          ),
-                          max: Some(
-                              1000.0,
-                          ),
-                      }));
+                  let placeholder= Some(
+                      "Gesamtstickstoff".to_string(),
+                  );
                   let field_type = create_field_type(
                         form_data,
+                        form_data.read_only(),
                         id,
-                        ValueType::milligrams_per_liter(),
                         placeholder,
-                        limits,
                   );
               Field {
                   label: id.label(),
@@ -259,15 +203,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 let placeholder = Some(
                     "Gesamtstrombedarf".to_string(),
                 );
-                let limits = Some(Limits::Float(forms::MinMax {
-                    min: Some(
-                        0.0,
-                    ),
-                    max: Some(
-                        1_000_000_000.0,
-                    ),
-                }));
-                let field_type= create_field_type(form_data, id, ValueType::kilowatthours(), placeholder, limits);
+                let field_type= create_field_type(
+                    form_data,
+                    form_data.read_only(),
+                    id,
+                    placeholder,
+                );
                 let description = Some(
                     "Der Gesamt-Strombedarf Ihrer Kläranlage in Kilowattstunden (kWh) pro Jahr (a).",
                 );
@@ -283,15 +224,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 let placeholder = Some(
                     "Eigenstrom".to_string(),
                 );
-                let limits= Some(Limits::Float(forms::MinMax {
-                    min: Some(
-                        0.0,
-                    ),
-                    max: Some(
-                        50_000_000.0,
-                    ),
-                }));
-                let field_type= create_field_type(form_data, id, ValueType::kilowatthours(), placeholder, limits);
+                let field_type= create_field_type(
+                    form_data,
+                    form_data.read_only(),
+                    id,
+                    placeholder,
+                );
                 let description = Some(
                     "Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen.",
                 );
@@ -307,18 +245,15 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 let placeholder = Some(
                     "485".to_string(),
                 );
-                let limits = Some(Limits::Float(forms::MinMax {
-                    min: Some(
-                        0.0,
-                    ),
-                    max: Some(
-                        2500.0,
-                    ),
-                }));
                 let description = Some(
                     "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
                 );
-                let field_type= create_field_type(form_data, id, ValueType::grams_per_kilowatthour(), placeholder, limits);
+                let field_type= create_field_type(
+                    form_data,
+                    form_data.read_only(),
+                    id,
+                    placeholder,
+                );
                 Field {
                     label: id.label(),
                     description,
@@ -358,7 +293,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                       "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
                   ),
                   required: false,
-                  field_type: create_field_type(form_data, id, ValueType::bool(), None, None),
+                  field_type: create_field_type(
+                      form_data,
+                      form_data.read_only(),
+                      id,
+                      None,
+                  ),
               }
             },
             Field {
@@ -447,13 +387,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
              let placeholder = Some(
                  "Anzahl Faultürme".to_string(),
              );
-             let limits = Some(Limits::Uint(forms::MinMax {
-                 min: None,
-                 max: Some(
-                     9,
-                 ),
-             }));
-                let field_type = create_field_type(form_data, id, ValueType::count(), placeholder, limits);
+             let field_type = create_field_type(
+                   form_data,
+                   form_data.read_only(),
+                   id,
+                   placeholder,
+             );
             Field {
                 label: id.label(),
                 description: Some(
@@ -680,22 +619,14 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             }},
             {
               let id = Id::OperatingMaterialSyntheticPolymers;
-                    let placeholder = Some(
-                        "Polymere".to_string(),
-                    );
-                    let limits = Some(Limits::Float(forms::MinMax {
-                        min: None,
-                        max: Some(
-                            50000.0,
-                        ),
-                    }));
-
+              let placeholder = Some(
+                  "Polymere".to_string(),
+              );
               let field_type = create_field_type(
                   form_data,
+                  form_data.read_only(),
                   id,
-                  ValueType::tons(),
                   placeholder,
-                  limits,
               );
 
               Field {

@@ -2,38 +2,34 @@ use leptos::*;
 
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
-use klick_domain::{units::*, InputValueId as Id, Value, ValueType};
+use klick_domain::{units::*, value_spec, InputValueId as Id, Value, ValueSpec, ValueType};
 
-pub enum Limits {
-    Float(forms::MinMax<f64>),
-    Uint(forms::MinMax<u64>),
+fn form_limits(spec: &ValueSpec) -> MinMax<f64> {
+    MinMax {
+        min: spec.min(),
+        max: spec.min(),
+    }
 }
 
 pub fn create_field_type(
-    data: RwSignal<FormData>,
+    write: RwSignal<FormData>,
+    read: ReadSignal<FormData>,
     id: Id,
-    value_type: ValueType,
     placeholder: Option<String>,
-    limits: Option<Limits>,
 ) -> FieldType {
+    let spec = value_spec(&id);
+    let limits = form_limits(&spec);
+    let value_type = spec.value_type();
     match value_type {
         ValueType::Scalar(ScalarType::Float(float_type)) => {
             let initial_value = None; // TODO
-            let limits = match limits {
-                Some(Limits::Float(limits)) => limits,
-                None => forms::MinMax {
-                    min: None,
-                    max: None,
-                },
-                _ => panic!("expected float limits for {value_type:?}"),
-            };
             let (on_change, input, unit) = match float_type {
                 FloatType::Density(DensityType::MilligramsPerLiter) => {
                     let on_change = Callback::new(move |v: Option<_>| {
-                        data.update(|d| d.set(id, v.map(Value::milligrams_per_liter)));
+                        write.update(|d| d.set(id, v.map(Value::milligrams_per_liter)));
                     });
                     let input = Signal::derive(move || {
-                        data.with(|d| {
+                        read.with(|d| {
                             d.get(&id)
                                 .map(Value::as_milligrams_per_liter_unchecked)
                                 .map(f64::from)
@@ -44,10 +40,10 @@ pub fn create_field_type(
                 }
                 FloatType::Volume(VolumeType::Qubicmeters) => {
                     let on_change = Callback::new(move |v: Option<_>| {
-                        data.update(|d| d.set(id, v.map(Value::qubicmeters)));
+                        write.update(|d| d.set(id, v.map(Value::qubicmeters)));
                     });
                     let input = Signal::derive(move || {
-                        data.with(|d| {
+                        read.with(|d| {
                             d.get(&id)
                                 .map(Value::as_qubicmeters_unchecked)
                                 .map(f64::from)
@@ -58,20 +54,20 @@ pub fn create_field_type(
                 }
                 FloatType::Mass(MassType::Tons) => {
                     let on_change = Callback::new(move |v: Option<_>| {
-                        data.update(|d| d.set(id, v.map(Value::tons)));
+                        write.update(|d| d.set(id, v.map(Value::tons)));
                     });
                     let input = Signal::derive(move || {
-                        data.with(|d| d.get(&id).map(Value::as_tons_unchecked).map(f64::from))
+                        read.with(|d| d.get(&id).map(Value::as_tons_unchecked).map(f64::from))
                     });
                     let unit = "t";
                     (on_change, input, unit)
                 }
                 FloatType::Energy(EnergyType::Kilowatthours) => {
                     let on_change = Callback::new(move |v: Option<_>| {
-                        data.update(|d| d.set(id, v.map(Value::kilowatthours)));
+                        write.update(|d| d.set(id, v.map(Value::kilowatthours)));
                     });
                     let input = Signal::derive(move || {
-                        data.with(|d| {
+                        read.with(|d| {
                             d.get(&id)
                                 .map(Value::as_kilowatthours_unchecked)
                                 .map(f64::from)
@@ -84,10 +80,10 @@ pub fn create_field_type(
                     SpecificEnergyDensityType::GramsPerKilowatthour,
                 ) => {
                     let on_change = Callback::new(move |v: Option<_>| {
-                        data.update(|d| d.set(id, v.map(Value::grams_per_kilowatthour)));
+                        write.update(|d| d.set(id, v.map(Value::grams_per_kilowatthour)));
                     });
                     let input = Signal::derive(move || {
-                        data.with(|d| {
+                        read.with(|d| {
                             d.get(&id)
                                 .map(Value::as_grams_per_kilowatthour_unchecked)
                                 .map(f64::from)
@@ -109,10 +105,10 @@ pub fn create_field_type(
         }
         ValueType::Scalar(ScalarType::Bool) => {
             let on_change = Callback::new(move |v| {
-                data.update(|d| d.set(id, Some(Value::bool(v))));
+                write.update(|d| d.set(id, Some(Value::bool(v))));
             });
             let input = Signal::derive(move || {
-                data.with(|d| d.get(&id).map(Value::as_bool_unchecked).unwrap_or_default())
+                read.with(|d| d.get(&id).map(Value::as_bool_unchecked).unwrap_or_default())
             });
             FieldType::Bool {
                 initial_value: None, // TODO
@@ -121,20 +117,15 @@ pub fn create_field_type(
             }
         }
         ValueType::Scalar(ScalarType::Int(IntType::Count)) => {
-            let on_change = Callback::new(move |v| {
-                data.update(|d| d.plant_profile.sewage_sludge_treatment.digester_count = v);
+            let on_change = Callback::new(move |v: Option<_>| {
+                write.update(|d| d.set(id, v.map(Value::count)));
             });
             let input = Signal::derive(move || {
-                data.with(|d| d.plant_profile.sewage_sludge_treatment.digester_count)
+                read.with(|d| d.get(&id).map(Value::as_count_unchecked).map(u64::from))
             });
-
-            let limits = match limits {
-                Some(Limits::Uint(limits)) => limits,
-                None => forms::MinMax {
-                    min: None,
-                    max: None,
-                },
-                _ => panic!("expected integer limits for {value_type:?}"),
+            let limits = forms::MinMax {
+                min: limits.max.map(|max| max as u64),
+                max: limits.min.map(|min| min as u64),
             };
             FieldType::UnsignedInteger {
                 initial_value: None, // TODO
@@ -147,15 +138,11 @@ pub fn create_field_type(
         }
         ValueType::Text => {
             let on_change = Callback::new(move |v: Option<_>| {
-                data.update(|d| d.set(id, v.map(Value::text)));
+                write.update(|d| d.set(id, v.map(Value::text)));
             });
             let input =
-                Signal::derive(move || data.with(|d| d.get(&id).map(Value::as_text_unchecked)));
-            let max_len = match limits {
-                Some(Limits::Uint(limits)) => limits.max.map(|max| max as usize),
-                None => None,
-                _ => panic!("expected float limits for {value_type:?}"),
-            };
+                Signal::derive(move || read.with(|d| d.get(&id).map(Value::as_text_unchecked)));
+            let max_len = limits.max.map(|max| max as usize);
             FieldType::Text {
                 initial_value: None, // TODO
                 placeholder,

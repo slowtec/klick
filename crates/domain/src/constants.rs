@@ -12,6 +12,10 @@ pub const EMISSION_FACTOR_CH4_WATER: Percent = Percent::new(0.9);
 /// `[%]` ch4 factor
 pub const EMISSION_FACTOR_CH4_CHP: Percent = Percent::new(1.0);
 
+// TODO: what's the difference to `EMISSION_FACTOR_CH4_CHP`?
+/// `[%]` ch4 factor
+pub const EMISSION_FACTOR_CH4_CHP_CUSTOM_FACTOR_DEFAULT: Percent = Percent::new(3.0);
+
 /// `[%]` nitrogen effulent
 pub const EMISSION_FACTOR_N2O_WATER: Percent = Percent::new(0.5);
 
