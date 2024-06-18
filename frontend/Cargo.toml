@@ -3,7 +3,7 @@ name = "klick-frontend"
 version = "0.4.11"
 edition = "2021"
 publish = false
-rust-version = "1.78"
+rust-version = "1.79"
 
 [dependencies]
 # Project dependencies
@@ -19,7 +19,7 @@ chrono = "0.4"
 anyhow = "1.0.86"
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
-derive_more = "0.99.17"
+derive_more = "0.99.18"
 gloo-file = { version = "0.3.0", features = ["futures"] }
 gloo-storage = "0.3.0"
 js-sys = "0.3.69"
@@ -37,12 +37,12 @@ time = { version = "0.3.36", features = ["macros", "formatting"] }
 
 [patch.crates-io]
 # Local paths to library crates in workspace
-klick-app-api          = { path = "../crates/app-api"         }
-klick-app-components   = { path = "../crates/app-components"  }
-klick-app-charts       = { path = "../crates/app-charts"      }
-klick-boundary         = { path = "../crates/boundary"        }
-klick-domain           = { path = "../crates/domain"          }
-klick-presenter        = { path = "../crates/presenter"       }
+klick-app-api        = { path = "../crates/app-api"        }
+klick-app-components = { path = "../crates/app-components" }
+klick-app-charts     = { path = "../crates/app-charts"     }
+klick-boundary       = { path = "../crates/boundary"       }
+klick-domain         = { path = "../crates/domain"         }
+klick-presenter      = { path = "../crates/presenter"      }
 
 [profile.release]
 lto = true

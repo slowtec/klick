@@ -13,7 +13,7 @@ klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = { path = "../domain" }
 
 anyhow = "1.0.86"
-diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel = { version = "2.2.1", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = { version = "2.2.0", features = ["sqlite"] }
 # Bundle SQLite code to prevent dynamic linking.
 # The pinned version must be compatible with diesel! Try to update it
