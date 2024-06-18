@@ -69,7 +69,7 @@ impl ValueSpec {
         self.max
     }
 
-    pub const fn default(&self) -> Option<&Value> {
+    pub const fn default_value(&self) -> Option<&Value> {
         self.default.as_ref()
     }
 }

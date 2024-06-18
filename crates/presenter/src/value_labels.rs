@@ -2,6 +2,8 @@ use klick_domain as domain;
 
 use crate::InputValueId;
 
+// TODO: move to value_metadata
+
 pub trait ValueLabel {
     fn label(&self) -> &'static str;
     fn label_latex(&self) -> &'static str {

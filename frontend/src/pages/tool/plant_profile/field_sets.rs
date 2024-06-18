@@ -5,152 +5,44 @@ use klick_boundary::FormData;
 use klick_domain::{InputValueId as Id, Value};
 use klick_presenter::ValueLabel;
 
-use crate::pages::tool::fields::create_field_type;
+use crate::pages::tool::fields::{create_field, create_field_type};
 
 #[allow(clippy::too_many_lines)]
 pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
-    let field_set_project_name = {
-        let id = Id::ProjectName;
-        let placeholder = Some("Projektname".to_string());
-        let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
-        let description = Some(
-            "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. In der <b>angemeldeten</b> Version,
-            dient der Projektname der Speicherung Ihrer Eingaben/Ergebnisse unter dem Reiter „Projekte“.
+    let read = form_data.read_only();
+    let write = form_data.write_only();
 
-            Wenn Sie sich <b>nicht angemeldet</b> haben, wird der Projektname ausschließlich nur auf Ihrer Festplatte
-            gespeichert und in Ihrem lokalen Browser verarbeitet. Weitere Informationen zur Datenverarbeitung
-            finden Sie in den <b>FAQ</b>."
-        );
-        let field = Field {
-            label: id.label(),
-            description,
-            required: false,
-            field_type,
-        };
-        FieldSet {
-            title: None,
-            fields: vec![field],
-        }
+    let field_set_project_name = FieldSet {
+        title: None,
+        fields: [Id::ProjectName]
+            .into_iter()
+            .map(|id| create_field(write, read, id))
+            .collect(),
     };
 
     let field_set_basics = {
         let title = Some("Angaben zur Kläranlage");
-        let name = {
-            let id = Id::PlantName;
-            let placeholder = Some("Name der Kläranlage".to_string());
-            let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
-            let description = Some(
-                "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
-            );
-            Field {
-                label: id.label(),
-                description,
-                required: false,
-                field_type,
-            }
-        };
-        let population = {
-            let id = Id::PopulationEquivalent;
-            let placeholder = Some("Angeschlossene Einwohner".to_string());
-            let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
-            let description = Some(
-                "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
-            );
-
-            Field {
-                label: id.label(),
-                description,
-                required: true,
-                field_type,
-            }
-        };
-        let wastewater = {
-            let id = Id::Wastewater;
-            let placeholder = Some("Abwassermenge".to_string());
-            let field_type = create_field_type(form_data, form_data.read_only(), id, placeholder);
-            Field {
-                    label: id.label(),
-                    description: Some(
-                        "Die jährliche (a) Abwassermenge in Kubikmeter (m³) im Zulauf Ihrer Kläranlage.",
-                    ),
-                    required: true,
-                    field_type,
-                }
-        };
-
-        FieldSet {
-            title,
-            fields: vec![name, population, wastewater],
-        }
+        let fields = [Id::PlantName, Id::PopulationEquivalent, Id::Wastewater]
+            .into_iter()
+            .map(|id| create_field(write, read, id))
+            .collect();
+        FieldSet { title, fields }
     };
 
     [
       field_set_project_name,
       field_set_basics,
       FieldSet {
-        title: Some("Zulauf-Parameter (Jahresmittelwerte)"),
-        fields: [
-            {
-                let id = Id::InfluentChemicalOxygenDemand;
-                let placeholder = Some("CSB".to_string());
-                let field_type = create_field_type(
-                      form_data,
-                      form_data.read_only(),
-                      id,
-                      placeholder,
-                );
-                Field {
-                    label: id.label(),
-                    description: Some(
-                        "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
-                    ),
-                    required: true,
-                    field_type,
-                }
-            },
-            {
-              let id = Id::InfluentNitrogen;
-              let placeholder = Some("Gesamtstickstoff".to_string());
-              let field_type = create_field_type(
-                    form_data,
-                    form_data.read_only(),
-                    id,
-                    placeholder,
-              );
-              Field {
-                  label: id.label(),
-                  description: Some(
-                      "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-                  ),
-                  required: true,
-                  field_type,
-              }
-            },
-            {
-              let id = Id::InfluentTotalOrganicCarbohydrates;
-              let placeholder = Some(
-                  "TOC".to_string(),
-              );
-              let field_type = create_field_type(
-                    form_data,
-                    form_data.read_only(),
-                    id,
-                    placeholder,
-              );
-              Field {
-                  label: id.label(),
-                  description: Some(
-                      "Der Jahresmittelwert des Gesamten organischen Kohlenstoffs (Total Organic Carbon, TOC)
-                      des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).<br>
-                      Wenn Sie keinen Wert für den TOC haben dann dieses Feld bitte freilassen
-                      (Anm.: für die Berechnung der fossilen CO₂-Emissionen wird in diesem Fall der CSB verwendet). ",
-                  ),
-                  required: false,
-                  field_type,
-              }
-            },
-        ].to_vec(),
-    },
+            title: Some("Zulauf-Parameter (Jahresmittelwerte)"),
+            fields: [
+                Id::InfluentChemicalOxygenDemand,
+                Id::InfluentNitrogen,
+                Id::InfluentTotalOrganicCarbohydrates,
+            ]
+            .into_iter()
+            .map(|id| create_field(write, read, id))
+            .collect(),
+      },
     FieldSet {
         title: Some("Ablauf-Parameter (Jahresmittelwerte)"),
         fields: vec![
@@ -160,8 +52,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     "CSB".to_string(),
                 );
                 let field_type = create_field_type(
-                      form_data,
-                      form_data.read_only(),
+                      write,
+                      read,
                       id,
                       placeholder,
                 );
@@ -179,8 +71,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                       "Gesamtstickstoff".to_string(),
                   );
                   let field_type = create_field_type(
-                        form_data,
-                        form_data.read_only(),
+                        write,
+                        read,
                         id,
                         placeholder,
                   );
@@ -204,8 +96,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     "Gesamtstrombedarf".to_string(),
                 );
                 let field_type= create_field_type(
-                    form_data,
-                    form_data.read_only(),
+                    write,
+                    read,
                     id,
                     placeholder,
                 );
@@ -225,8 +117,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     "Eigenstrom".to_string(),
                 );
                 let field_type= create_field_type(
-                    form_data,
-                    form_data.read_only(),
+                    write,
+                    read,
                     id,
                     placeholder,
                 );
@@ -249,8 +141,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
                 );
                 let field_type= create_field_type(
-                    form_data,
-                    form_data.read_only(),
+                    write,
+                    read,
                     id,
                     placeholder,
                 );
@@ -294,8 +186,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                   ),
                   required: false,
                   field_type: create_field_type(
-                      form_data,
-                      form_data.read_only(),
+                      write,
+                      read,
                       id,
                       None,
                   ),
@@ -388,8 +280,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                  "Anzahl Faultürme".to_string(),
              );
              let field_type = create_field_type(
-                   form_data,
-                   form_data.read_only(),
+                   write,
+                   read,
                    id,
                    placeholder,
              );
@@ -623,8 +515,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                   "Polymere".to_string(),
               );
               let field_type = create_field_type(
-                  form_data,
-                  form_data.read_only(),
+                  write,
+                  read,
                   id,
                   placeholder,
               );

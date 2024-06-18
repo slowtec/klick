@@ -3,16 +3,36 @@ use leptos::*;
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
 use klick_domain::{units::*, value_spec, InputValueId as Id, Value, ValueSpec, ValueType};
+use klick_presenter::{metadata, Placeholder, ValueLabel};
 
 fn form_limits(spec: &ValueSpec) -> MinMax<f64> {
     MinMax {
         min: spec.min(),
-        max: spec.min(),
+        max: spec.max(),
+    }
+}
+
+pub fn create_field(write: WriteSignal<FormData>, read: ReadSignal<FormData>, id: Id) -> Field {
+    let spec = value_spec(&id);
+    let meta = metadata(&id);
+    let placeholder = match meta.placeholder {
+        Placeholder::Text(txt) => Some(txt.to_string()),
+        Placeholder::DefaultValue => spec.default_value().map(|v| format!("{v:?}")), // FIXME: format value
+        Placeholder::Label => Some(id.label().to_string()),
+        Placeholder::None => None,
+    };
+    let field_type = create_field_type(write, read, id, placeholder);
+    let description = Some(meta.description);
+    Field {
+        label: id.label(),
+        description,
+        required: !spec.optional(), // TODO: check for default value if not optional
+        field_type,
     }
 }
 
 pub fn create_field_type(
-    write: RwSignal<FormData>,
+    write: WriteSignal<FormData>,
     read: ReadSignal<FormData>,
     id: Id,
     placeholder: Option<String>,
@@ -124,8 +144,8 @@ pub fn create_field_type(
                 read.with(|d| d.get(&id).map(Value::as_count_unchecked).map(u64::from))
             });
             let limits = forms::MinMax {
-                min: limits.max.map(|max| max as u64),
-                max: limits.min.map(|min| min as u64),
+                min: limits.min.map(|min| min as u64),
+                max: limits.max.map(|max| max as u64),
             };
             FieldType::UnsignedInteger {
                 initial_value: None, // TODO
