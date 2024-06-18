@@ -10,7 +10,7 @@ use crate::{Markdown, Page, CHANGELOG_URL, VERSION};
 pub fn Footer() -> impl IntoView {
     view! {
       <footer class="bg-gray-100">
-        <div class="mx-auto max-w-7xl overflow-hidden px-6 py-16 sm:py-20 lg:px-8">
+        <div class="mx-auto max-w-7xl overflow-hidden px-6 pt-16 sm:pt-20 lg:px-8">
           <div class="mb-14">
             <div class="text-gray-600 text-center grid place-content-center">
               <div class="grid place-content-center mb-8" inner_html = LOGO></div>
@@ -18,14 +18,6 @@ pub fn Footer() -> impl IntoView {
             </div>
           </div>
           <div>
-            <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
-              <FooterLink link = LinkType::Page(Page::Home) label ="Über KlicK" />
-              <FooterLink link = LinkType::Page(Page::Tool) label ="Tool" />
-              <FooterLink link = LinkType::Page(Page::Faq) label ="FAQs" />
-              <FooterLink link = LinkType::External(WIKI_URL) label ="Wiki" />
-              <FooterLink link = LinkType::Page(Page::OpenSource) label ="Open Source" />
-              <FooterLink link = LinkType::Page(Page::Imprint) label ="Impressum" />
-            </nav>
             <div class="mt-10 flex justify-center space-x-10">
               <a href="https://codeberg.org/slowtec/klick" class="text-gray-400 hover:text-gray-500">
                 <span class="sr-only">Codeberg</span>
@@ -34,14 +26,25 @@ pub fn Footer() -> impl IntoView {
                 </svg>
               </a>
             </div>
-            <p class="mt-10 text-center text-xs leading-5 text-gray-500">
+            <p class="mb-8 mt-4 text-center text-xs leading-5 text-gray-400">
+              <a class="no-underline hover:underline" href= { CHANGELOG_URL} >"v" { VERSION }</a>
+            </p>
+            <p class="mb-8 text-center text-xs leading-5 text-gray-500">
               "Made with ♥ by "
               <a href="https://slowtec.de">"slowtec GmbH"</a>
             </p>
-            <p class="mt-10 text-center text-xs leading-5 text-gray-400">
-              <a class="no-underline hover:underline" href= { CHANGELOG_URL} >"v" { VERSION }</a>
-            </p>
           </div>
+
+          </div>
+        <div>
+          <nav class="sm:flex flex h-16 sm:flex sm:items-center justify-between sm:justify-center sm:space-x-12 bg-black" aria-label="Footer">
+          <FooterLink link = LinkType::Page(Page::Home) label ="Über KlicK" />
+          <FooterLink link = LinkType::Page(Page::Tool) label ="Tool" />
+          <FooterLink link = LinkType::Page(Page::Faq) label ="FAQs" />
+          <FooterLink link = LinkType::External(WIKI_URL) label ="Wiki" />
+          <FooterLink link = LinkType::Page(Page::OpenSource) label ="Open Source" />
+          <FooterLink link = LinkType::Page(Page::Imprint) label ="Impressum" />
+          </nav>
         </div>
       </footer>
     }
@@ -50,7 +53,7 @@ pub fn Footer() -> impl IntoView {
 #[component]
 fn FooterLink(link: LinkType, label: &'static str) -> impl IntoView {
     view! {
-      <div class="pb-6">
+      <div class="">
         <a
           href = {
             match link {
@@ -58,7 +61,7 @@ fn FooterLink(link: LinkType, label: &'static str) -> impl IntoView {
               LinkType::External(url) => url
             }
           }
-          class = "text-sm leading-6 text-gray-600 hover:text-gray-900">
+          class = "text-sm leading-6 text-white hover:text-gray-200">
           { label }
         </a>
       </div>
