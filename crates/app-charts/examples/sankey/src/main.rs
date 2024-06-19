@@ -20,32 +20,30 @@ fn MySankeyChart() -> impl IntoView {
     let indirect_emissions = 159.1;
     let other_indirect_emissions = 188.61643875;
 
-    let orange = Some(Color::new("orange"));
-    let indirect_emissions = sankey.insert_node(indirect_emissions, "Indirekte Emissionen", orange);
-    let electricity_mix = sankey.insert_node(electricity_mix, "Strommix", orange);
+    let indirect_emissions =
+        sankey.insert_node(indirect_emissions, "Indirekte Emissionen", None, None);
+    let electricity_mix = sankey.insert_node(electricity_mix, "Strommix", None, None);
 
-    let yellow = Some(Color::new("#fd0"));
     let other_indirect_emissions = sankey.insert_node(
         other_indirect_emissions,
         "Weitere Indirekte Emissionen",
-        yellow,
+        None,
+        None,
     );
-    let operating_materials = sankey.insert_node(operating_materials, "Betriebsstoffe", yellow);
-    let fecl3 = sankey.insert_node(fecl3, "Eisen(III)-chlorid-Lösung", yellow);
-    let feclso4 = sankey.insert_node(feclso4, "Eisenchloridsulfat-Lösung", yellow);
-    let caoh2 = sankey.insert_node(caoh2, "Kalkhydrat", yellow);
-    let fff = Some(Color::new("#555"));
-    let foobar_alpha = sankey.insert_node(foobar_alpha, "Foobar alpha Polymere1", fff);
-    let foobar_beta = sankey.insert_node(foobar_beta, "Foobar beta Polymere", fff);
-    let foobar_gamma = sankey.insert_node(foobar_gamma, "Foobar gamma Polymere", fff);
+    let operating_materials = sankey.insert_node(operating_materials, "Betriebsstoffe", None, None);
+    let fecl3 = sankey.insert_node(fecl3, "Eisen(III)-chlorid-Lösung", None, None);
+    let feclso4 = sankey.insert_node(feclso4, "Eisenchloridsulfat-Lösung", None, None);
+    let caoh2 = sankey.insert_node(caoh2, "Kalkhydrat", None, None);
+    let foobar_alpha = sankey.insert_node(foobar_alpha, "Foobar alpha Polymere1", None, None);
+    let foobar_beta = sankey.insert_node(foobar_beta, "Foobar beta Polymere", None, None);
+    let foobar_gamma = sankey.insert_node(foobar_gamma, "Foobar gamma Polymere", None, None);
 
     let synthetic_polymers =
-        sankey.insert_node(synthetic_polymers, "Synthetische Polymere", yellow);
+        sankey.insert_node(synthetic_polymers, "Synthetische Polymere", None, None);
     let sewage_sludge_transport =
-        sankey.insert_node(sewage_sludge_transport, "Klärschlamm Transport", yellow);
+        sankey.insert_node(sewage_sludge_transport, "Klärschlamm Transport", None, None);
 
-    let red = Some(Color::new("red"));
-    let emissions = sankey.insert_node(emissions, "Emission", red);
+    let emissions = sankey.insert_node(emissions, "Emission", None, None);
 
     let edges = [
         (foobar_gamma, fecl3),
@@ -75,46 +73,57 @@ fn MySankeyChart() -> impl IntoView {
 
     let mut other_sankey = SankeyData::new();
 
-    let c = other_sankey.insert_node(1.0, "c", None);
-    let a = other_sankey.insert_node(5.0, "a", None);
-    let b = other_sankey.insert_node(2.0, "b", None);
+    let red = Some(Color::new("red"));
+    let red_lite = Some(Color::new("#ffb2b2"));
 
-    let e = other_sankey.insert_node(5.0, "e", None);
-    let d = other_sankey.insert_node(5.0, "d", None);
-    let g = other_sankey.insert_node(7.0, "g", None);
-    let h = other_sankey.insert_node(8.0, "h", None);
-    let i = other_sankey.insert_node(10.0, "i", None);
-    let j = other_sankey.insert_node(5.0, "j", None);
-    let k = other_sankey.insert_node(23.0, "k", None);
-    let f = other_sankey.insert_node(5.0, "f", None);
+    let c = other_sankey.insert_node(1.0, "c", red, red_lite);
+    let a = other_sankey.insert_node(5.0, "a", red, red_lite);
+    let b = other_sankey.insert_node(2.0, "b", red, red_lite);
+    let g = other_sankey.insert_node(7.0, "g", red, red_lite);
+    let h = other_sankey.insert_node(8.0, "h", red, red_lite);
+
+    let orange = Some(Color::new("orange"));
+    let orange_lite = Some(Color::new("#ffe4b2"));
+
+    let e = other_sankey.insert_node(5.0, "e", orange, orange_lite);
+    let d = other_sankey.insert_node(5.0, "d", orange, orange_lite);
+    let i = other_sankey.insert_node(10.0, "i", orange, orange_lite);
+
+    let yellow = Some(Color::new("#fd0"));
+    let yellow_lite = Some(Color::new("#fff5b2"));
+
+    let j = other_sankey.insert_node(5.0, "j", yellow, yellow_lite);
+    let f = other_sankey.insert_node(5.0, "f", yellow, yellow_lite);
+    let z = other_sankey.insert_node(1.0, "p", yellow, yellow_lite);
+
+    let k = other_sankey.insert_node(24.0, "k", red, Some(Color::new("grey")));
 
     other_sankey.insert_edge(a, g);
     other_sankey.insert_edge(b, g);
-
     other_sankey.insert_edge(c, h);
     other_sankey.insert_edge(g, h);
+    other_sankey.insert_edge(h, k);
 
     other_sankey.insert_edge(d, i);
     other_sankey.insert_edge(e, i);
+    other_sankey.insert_edge(i, k);
 
     other_sankey.insert_edge(f, j);
-
-    other_sankey.insert_edge(h, k);
-    other_sankey.insert_edge(i, k);
     other_sankey.insert_edge(j, k);
+    other_sankey.insert_edge(z, k);
 
     let mut short_sankey = SankeyData::new();
-    let b = short_sankey.insert_node(20.0, "b", None);
-    let a = short_sankey.insert_node(10.0, "a", None);
-    let c = short_sankey.insert_node(30.0, "c", None);
+    let b = short_sankey.insert_node(20.0, "b", None, None);
+    let a = short_sankey.insert_node(10.0, "a", None, None);
+    let c = short_sankey.insert_node(30.0, "c", None, None);
 
     short_sankey.insert_edge(b, c);
     short_sankey.insert_edge(a, c);
 
     let mut short_sankey_w = SankeyData::new();
-    let b = short_sankey_w.insert_node(10.0, "b", None);
-    let a = short_sankey_w.insert_node(20.0, "a", None);
-    let c = short_sankey_w.insert_node(30.0, "c", None);
+    let b = short_sankey_w.insert_node(10.0, "b", None, None);
+    let a = short_sankey_w.insert_node(20.0, "a", None, None);
+    let c = short_sankey_w.insert_node(30.0, "c", None, None);
 
     short_sankey_w.insert_edge(b, c);
     short_sankey_w.insert_edge(a, c);

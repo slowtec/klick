@@ -13,6 +13,7 @@ fn test_sort() {
                     label: Some(id.to_string()),
                     value,
                     color: None,
+                    edge_color: None,
                 },
             )
         })
@@ -78,6 +79,7 @@ fn test_layers_sort() {
                     label: Some(id.to_string()),
                     value,
                     color: None,
+                    edge_color: None,
                 },
             )
         })
@@ -118,6 +120,7 @@ fn test_layers_sort_clone_different_weights() {
                     label: Some(id.to_string()),
                     value,
                     color: None,
+                    edge_color: None,
                 },
             )
         })
@@ -158,6 +161,7 @@ fn test_layers_long_sort() {
                     label: Some(id.to_string()),
                     value,
                     color: None,
+                    edge_color: None,
                 },
             )
         })
@@ -198,6 +202,7 @@ fn test_layers_long_sort_clone_different_weights() {
                     label: Some(id.to_string()),
                     value,
                     color: None,
+                    edge_color: None,
                 },
             )
         })
@@ -238,6 +243,7 @@ fn test_layers_fork_sort() {
                     label: Some(id.to_string()),
                     value,
                     color: None,
+                    edge_color: None,
                 },
             )
         })
@@ -282,6 +288,7 @@ fn test_layers_double_chain_fork() {
                     label: Some(id.to_string()),
                     value,
                     color: None,
+                    edge_color: None,
                 },
             )
         })
@@ -334,6 +341,7 @@ fn test_layers_nested_fork_sort() {
                 label: Some(id.to_string()),
                 value,
                 color: None,
+                edge_color: None,
             },
         )
     })
@@ -389,6 +397,7 @@ fn test_layers_nested_fork_sort_clone_different_weights() {
                 label: Some(id.to_string()),
                 value,
                 color: None,
+                edge_color: None,
             },
         )
     })

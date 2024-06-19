@@ -1,6 +1,7 @@
 use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
+    hash::Hash,
 };
 
 use leptos::*;
@@ -19,14 +20,23 @@ pub struct Node {
     pub value: f64,
     pub label: Option<String>,
     pub color: Option<Color>,
+    pub edge_color: Option<Color>,
 }
 
 impl Node {
-    const fn new(value: f64, label: Option<String>, color: Option<Color>) -> Self {
+    fn new(
+        value: f64,
+        label: Option<String>,
+        color: Option<Color>,
+        edge_color: Option<Color>,
+    ) -> Self {
+        let color = Some(color.unwrap_or(Color::new("#555")));
+        let edge_color = Some(edge_color.unwrap_or(Color::new("grey")));
         Self {
             value,
             label,
             color,
+            edge_color,
         }
     }
 }
@@ -68,16 +78,117 @@ impl Sankey {
         }
     }
 
-    pub fn insert_node<S>(&mut self, value: f64, label: S, color: Option<Color>) -> NodeId
+    pub fn insert_node<S>(
+        &mut self,
+        value: f64,
+        label: S,
+        color: Option<Color>,
+        edge_color: Option<Color>,
+    ) -> NodeId
     where
         S: Into<String>,
     {
         let id = self.nodes.len();
         let id = NodeId::new(id);
         let label = Some(label.into());
-        let node = Node::new(value, label, color);
+        let node = Node::new(value, label, color, edge_color);
         self.nodes.insert(id, node);
         id
+    }
+
+    // virtual nodes are not rendered but help to compute edge paths with no intersections
+    pub fn insert_virtual_nodes(&mut self) {
+        // STEP 1. let max_count i.e. find longest consecutive node<->edge count
+        let deps: HashMap<NodeId, Dependencies> = dependencies(&self.edges);
+        let root_layer = deps
+            .iter()
+            .filter_map(|(node, Dependencies { outputs, .. })| {
+                if outputs.is_empty() {
+                    Some(*node)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>();
+
+        fn count_nodes(deps: &HashMap<NodeId, Dependencies>, node: &NodeId) -> u64 {
+            let Dependencies { inputs, .. } = &deps[node];
+            if inputs.len() > 0 {
+                inputs
+                    .iter()
+                    .map(|el| count_nodes(&deps, el) + 1)
+                    .max()
+                    .unwrap_or(0)
+            } else {
+                0
+            }
+        }
+
+        let max_count: u64 = root_layer
+            .iter()
+            .map(|el| count_nodes(&deps, el))
+            .max()
+            .unwrap_or(0);
+        //log::info!("count: {max_count}");
+
+        // STEP 2. from all root nodes, travel left until leaf found, if count < max_count, fill
+        //          with virtual nodes
+        fn travel_and_expand(
+            s: &mut Sankey,
+            deps: &HashMap<NodeId, Dependencies>,
+            node: &NodeId,
+            max_count: u64,
+            count: u64,
+        ) {
+            let Dependencies {
+                inputs: node_inputs,
+                ..
+            } = &deps[node];
+            if node_inputs.len() > 0 {
+                node_inputs.iter().for_each(|before_node| {
+                    let Dependencies {
+                        inputs: before_node_inputs,
+                        ..
+                    } = &deps[before_node];
+                    if before_node_inputs.len() == 0 {
+                        let count = count + 1;
+                        if count < max_count {
+                            // let label = s.nodes[node].label.as_ref();
+                            // let before_label = s.nodes[before_node].label.as_ref();
+                            let patch = max_count - count;
+                            //log::info!("patch: {patch}, count: {count}, max_count: {max_count}, nodes: {:?} -> {:?}", before_label, label);
+                            if patch >= 1 {
+                                s.edges.remove(&Edge {
+                                    source: *before_node,
+                                    target: *node,
+                                });
+                                let value = s.nodes[before_node].value;
+                                let id = s.nodes.len();
+                                let new_node_id = NodeId::new(id);
+                                let edge_color = s.nodes[before_node].edge_color;
+                                // hiding the node with edge_color painting
+                                let new_node = Node::new(value, None, edge_color, edge_color);
+                                s.nodes.insert(new_node_id, new_node);
+                                s.edges.insert(Edge {
+                                    source: *before_node,
+                                    target: new_node_id,
+                                });
+                                s.edges.insert(Edge {
+                                    source: new_node_id,
+                                    target: *node,
+                                });
+                            }
+                        }
+                    } else {
+                        travel_and_expand(s, &deps, before_node, max_count, count + 1)
+                    }
+                });
+            }
+        }
+
+        root_layer
+            .iter()
+            .for_each(|el| travel_and_expand(self, &deps, el, max_count, 0));
     }
 
     pub fn insert_edge(&mut self, source: NodeId, target: NodeId) {
@@ -126,7 +237,7 @@ where
 
 #[component]
 fn InnerChart<F>(
-    sankey: Sankey,
+    mut sankey: Sankey,
     width: f64,
     height: f64,
     number_format: F,
@@ -137,6 +248,7 @@ where
 {
     let node_separation = height / 50.0;
     let node_width = width / 70.0; // TODO: make this configurable
+    sankey.insert_virtual_nodes();
     let deps = dependencies(&sankey.edges);
     let layers = layers(&deps, &sankey.nodes);
     let layer_x_positions = layer_x_positions(layers.len(), width, node_width);
@@ -174,14 +286,20 @@ where
                 }
             });
 
-            let fill = sankey.nodes[id].color.unwrap_or(Color::new("#555"));
+            let fill: Color = sankey.nodes[id].color.unwrap_or(Color::new("magenta"));
+
             view! {
               <rect
-                x = {x}
-                y = {y}
-                width = { node_width }
-                height = { node_height }
+                x = {format!("{x:.10}")}
+                y = {format!("{y:.10}")}
+                width = { {format!("{node_width:.10}")} }
+                height = { format!("{node_height:.10}") }
                 fill = { fill.as_str() }
+                stroke =  { fill.as_str() }
+                stroke-miterlimit = 0
+                stroke-opacity=1
+                stroke-width=1
+                stroke-dashoffset=0
               />
               <text
                 class = "label"
@@ -201,17 +319,21 @@ where
 
     let edges_to_svg = edge_positions
         .iter()
-        .map(|(from_top, from_bottom, to_top, to_bottom, color)| {
+        .map(|(from_top, from_bottom, to_top, to_bottom, edge_color)| {
             let d = edge_path(from_top, from_bottom, to_top, to_bottom);
 
             // TODO: use gradient
-            let fill = color.unwrap_or(Color::new("#555"));
+            let fill = edge_color.unwrap_or(Color::new("purple"));
 
             view! {
               <path
                 d = {d}
                 fill = { fill.as_str() }
-                opacity = 0.3
+                stroke = { fill.as_str() }
+                stroke-miterlimit = 0
+                stroke-opacity=1
+                stroke-width=1
+                stroke-dashoffset=0
               />
             }
         })
@@ -246,7 +368,7 @@ fn edge_path(from_top: &Point, from_bottom: &Point, to_top: &Point, to_bottom: &
 
     let mid_x = (from_top_x + to_top_x) / 2.0;
 
-    format!("M {from_top_x:.3} {from_top_y:.3} C {mid_x:.3} {from_top_y:.3}, {mid_x:.3} {to_top_y:.3}, {to_top_x:.3} {to_top_y:.3} L {to_bottom_x:.3} {to_bottom_y:.3} C {mid_x:.3} {to_bottom_y:.3}, {mid_x:.3} {from_bottom_y:.3}, {from_bottom_x:.3} {from_bottom_y:.3}  Z")
+    format!("M {from_top_x:.10} {from_top_y:.10} C {mid_x:.10} {from_top_y:.10}, {mid_x:.10} {to_top_y:.10}, {to_top_x:.10} {to_top_y:.10} L {to_bottom_x:.10} {to_bottom_y:.10} C {mid_x:.10} {to_bottom_y:.10}, {mid_x:.10} {from_bottom_y:.10}, {from_bottom_x:.10} {from_bottom_y:.10}  Z")
 }
 
 #[derive(Debug, Default)]
@@ -410,7 +532,7 @@ impl Point {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Color(&'static str);
 
 impl Color {
@@ -424,6 +546,7 @@ impl Color {
     }
 }
 
+// computes 2 edge paths between 2 nodes => one on top, one on bottom
 fn edge_positions(
     edges: &HashSet<Edge>,
     nodes: &HashMap<NodeId, Node>,
@@ -461,13 +584,12 @@ fn edge_positions(
                             .fold(0.0, |acc, id| acc + node_positions[&id].height);
                     }
                     let to_y_end = to_y_start + nodes[&edge.source].value * scale;
-                    let color = nodes[&edge.source].color;
                     let points = (
                         Point::new(from.x + node_width, from.y),
                         Point::new(from.x + node_width, from.y + from.height),
                         Point::new(to.x, to_y_start),
                         Point::new(to.x, to_y_end),
-                        color,
+                        nodes[&edge.source].edge_color,
                     );
                     Some(points)
                 })

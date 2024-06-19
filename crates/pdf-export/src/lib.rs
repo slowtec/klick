@@ -350,8 +350,13 @@ fn render_svg_sankey_chart(co2_equivalents: CO2Equivalents) -> String {
     let node_count = nodes.len();
     let node_ids: Vec<_> = nodes
         .into_iter()
-        .map(|(value, label, color)| {
-            sankey.insert_node(value, label, Some(charts::Color::new(color)))
+        .map(|(value, label, color, edge_color)| {
+            sankey.insert_node(
+                value,
+                label,
+                Some(charts::Color::new(color)),
+                Some(charts::Color::new(edge_color)),
+            )
         })
         .collect();
     assert_eq!(node_ids.len(), node_count);

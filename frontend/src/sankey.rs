@@ -48,7 +48,14 @@ pub fn Sankey(data: (domain::CO2Equivalents, domain::CalculatedEmissionFactors))
     let node_count = nodes.len();
     let node_ids: Vec<_> = nodes
         .into_iter()
-        .map(|(value, label, color)| sankey.insert_node(value, label, Some(Color::new(color))))
+        .map(|(value, label, color, edge_color)| {
+            sankey.insert_node(
+                value,
+                label,
+                Some(Color::new(color)),
+                Some(Color::new(edge_color)),
+            )
+        })
         .collect();
     assert_eq!(node_ids.len(), node_count);
 
