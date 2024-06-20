@@ -238,6 +238,10 @@ macro_rules! floats {
     {
         paste! {
 
+            pub trait UnitAbbreviation {
+                fn abbreviation(&self) -> &'static str;
+            }
+
             /// Typed floating-point number.
             #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, From)]
             pub enum Float {
@@ -263,7 +267,42 @@ macro_rules! floats {
                 )+
             }
 
+            impl UnitAbbreviation for FloatType {
+                fn abbreviation(&self) -> &'static str {
+                    match self {
+                        $(
+                            $(
+                                Self::$float([<$float Type>]::$unit) => $abbreviation,
+                            )+
+                        )+
+                    }
+                }
+            }
+
+            impl UnitAbbreviation for Float {
+                fn abbreviation(&self) -> &'static str {
+                    match self {
+                        $(
+                            Self::$float(q) => match q {
+                                $(
+                                   $float::$unit(_) => $abbreviation,
+                                )+
+                            }
+                        )+
+                    }
+                }
+            }
+
             impl Float {
+                pub const fn from_f64_with_type(value: f64, float_type: FloatType) -> Self {
+                    match float_type {
+                        $(
+                            $(
+                                FloatType::$float([<$float Type>]::$unit) => Self::[<$unit:snake>](value),
+                            )+
+                        )+
+                    }
+                }
 
                 pub const fn float_type(&self) -> FloatType {
                     match self {
@@ -320,6 +359,18 @@ macro_rules! floats {
                         }
                     )+
                 )+
+            }
+
+            impl From<Float> for f64 {
+                fn from(from: Float) -> Self {
+                    match from {
+                        $(
+                            $(
+                                Float::$float($float::$unit(v)) => f64::from(v),
+                            )+
+                        )+
+                    }
+                }
             }
 
             $(
