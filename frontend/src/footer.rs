@@ -42,18 +42,34 @@ pub fn Footer() -> impl IntoView {
           </div>
 
           </div>
-        <div>
-          <nav class="sm:flex flex h-16 sm:flex sm:items-center justify-between sm:justify-center sm:space-x-12 bg-black" aria-label="Footer">
-          <FooterLink link = LinkType::Page(Page::Home) label ="KlicK" />
-          <FooterLink link = LinkType::Page(Page::Tool) label ="Tool" />
-          <FooterLink link = LinkType::External(DATENSCHUTZ) label ="Datenschutz" />
-          <FooterLink link = LinkType::Page(Page::Faq) label ="FAQs" />
-          <FooterLink link = LinkType::External(ACCESSIBILITY) label ="Barrierefreiheit" />
-          <FooterLink link = LinkType::External(WIKI_URL) label ="Wiki" />
-          <FooterLink link = LinkType::Page(Page::OpenSource) label ="Open Source" />
-          <FooterLink link = LinkType::Page(Page::Imprint) label ="Impressum" />
-          <LinkedIn />
-          <TheLand />
+        <div class="bg-black">
+         <nav
+            class="py-4 grid grid-cols-1 xl:grid-cols-10"
+            aria-label="Footer"
+          >
+            <div class="grid gap-3 items-center justify-center justify-items-center md:grid-cols-8 xl:col-span-6">
+              <FooterLink link = LinkType::Page(Page::Home) label ="KlicK" />
+              <FooterLink link = LinkType::Page(Page::Tool) label ="Tool" />
+              <FooterLink link = LinkType::External(DATENSCHUTZ) label ="Datenschutz" />
+              <FooterLink link = LinkType::Page(Page::Faq) label ="FAQs" />
+              <FooterLink link = LinkType::External(ACCESSIBILITY) label ="Barrierefreiheit" />
+              <FooterLink link = LinkType::External(WIKI_URL) label ="Wiki" />
+              <FooterLink link = LinkType::Page(Page::OpenSource) label ="Open Source" />
+              <FooterLink link = LinkType::Page(Page::Imprint) label ="Impressum" />
+            </div>
+            <div class="my-3 grid gap-3 justify-center justify-items-center xl:grid-cols-2 xl:col-span-4">
+              <div class="my-3">
+                <a href="https://www.thelaend.de">
+                  <icons::TheLaend />
+                </a>
+              </div>
+              <div class="flex items-center">
+                <span class="text-white mr-3">"Folgen Sie uns auf LinkedIn"</span>
+                <a class="inline-block" href={ LINKEDIN }>
+                  <icons::LinkedIn />
+                </a>
+              </div>
+            </div>
           </nav>
         </div>
       </footer>
@@ -74,28 +90,6 @@ fn FooterLink(link: LinkType, label: &'static str) -> impl IntoView {
           class = "text-sm leading-6 text-white hover:text-gray-200">
           { label }
         </a>
-      </div>
-    }
-}
-
-#[component]
-fn TheLand() -> impl IntoView {
-    view! {
-      <div>
-      <a href="https://www.thelaend.de">
-        <icons::TheLaend />
-      </a>
-      </div>
-    }
-}
-
-#[component]
-fn LinkedIn() -> impl IntoView {
-    view! {
-      <div>
-      <a href={ LINKEDIN }>
-        <icons::LinkedIn />
-      </a>
       </div>
     }
 }

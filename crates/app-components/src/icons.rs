@@ -209,6 +209,7 @@ pub fn TheLaend() -> impl IntoView {
 pub fn LinkedIn() -> impl IntoView {
     view! {
       <svg
+        class="mr-3 w-6 h-6"
         width="30"
         height="30"
         fill="#ffffff"
