@@ -281,7 +281,7 @@ pub fn sensitivity_parameters_as_table(
     let lang = Lng::De;
 
     let n2o_emission_factor = output.map(|output| {
-        lang.format_number_with_precision(
+        lang.format_number_with_fixed_precision(
             f64::from(output.emission_factors.n2o.convert_to::<Percent>()),
             3,
         )
@@ -565,7 +565,7 @@ fn format_number(lang: Lng) -> impl Fn(f64) -> String {
 }
 
 fn format_number_with_thousands_seperator(lang: Lng) -> impl Fn(f64) -> String {
-    move |n| lang.format_number_with_thousands_seperator(n)
+    move |n| lang.format_number_with_fixed_precision(n, 0)
 }
 
 fn format_bool(lang: Lng) -> impl Fn(bool) -> String {

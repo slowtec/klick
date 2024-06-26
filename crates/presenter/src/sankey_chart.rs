@@ -28,8 +28,10 @@ pub fn create_sankey_chart_header(
         None => String::new(),
     };
 
-    let emission_factor = Lng::De
-        .format_number_with_precision(f64::from(emission_factors.n2o.convert_to::<Percent>()), 3);
+    let emission_factor = Lng::De.format_number_with_fixed_precision(
+        f64::from(emission_factors.n2o.convert_to::<Percent>()),
+        3,
+    );
 
     let method = formatting.fmt_label(calculation_methods.n2o);
 

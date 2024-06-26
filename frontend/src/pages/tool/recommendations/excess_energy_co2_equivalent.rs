@@ -56,6 +56,8 @@ pub fn options(
     //     View      //
     // -----   ----- //
 
+    let lng = Lng::De;
+
     view! {
       <Card id="recommenation-excess-energy" title ="Energiebedingte Emissionen" bg_color="bg-yellow">
         <p>
@@ -71,7 +73,11 @@ pub fn options(
           >
             <p>
             " Ihre Kläranlage ist energieneutral. Die Kläranlage spart "
-            { electricity_mix_savings.with(|d|d.map(|v|Lng::De.format_number_with_thousands_seperator(f64::from(v)))) }
+            {
+              electricity_mix_savings.with(|d|
+                d.map(|v| lng.format_number_with_fixed_precision(f64::from(v), 0))
+              )
+            }
             " t CO2-Äq./a ein."
             </p>
           </Show>
@@ -80,7 +86,11 @@ pub fn options(
           >
             <p>
             "Ihre Kläranlage benötigt weiterhin externen Strom (Versorger), wodurch "
-            { electricity_mix.with(|d|d.map(|v|Lng::De.format_number_with_thousands_seperator(f64::from(v)))) }
+            {
+              electricity_mix.with(|d|
+                d.map(|v| lng.format_number_with_fixed_precision(f64::from(v), 0))
+              )
+            }
             " t CO₂-Äq./a energiebedingte Emissionen entstehen."
             </p>
           </Show>

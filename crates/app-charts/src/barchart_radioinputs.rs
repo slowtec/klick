@@ -145,6 +145,7 @@ fn Bar(
     selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
     on_change: Callback<u64, ()>,
+    // TODO: add lng: Lng
 ) -> impl IntoView {
     let hovered = create_rw_signal(false);
     let fill = RwSignal::new("#0af");
@@ -167,7 +168,8 @@ fn Bar(
         font_weight.set("normal");
         font_size.set(0.0);
     };
-    let co2_value_label = Lng::De.format_number_with_thousands_seperator(co2_value);
+
+    let co2_value_label = Lng::De.format_number_with_fixed_precision(co2_value, 0);
     let gap = width * 0.01;
     let transparent_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
     let hovered_color = move || if hovered.get() { "grey" } else { "" };

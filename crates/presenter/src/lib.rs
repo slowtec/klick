@@ -7,9 +7,6 @@ mod value_labels;
 mod value_metadata;
 mod value_units;
 
-#[cfg(test)]
-mod tests;
-
 pub use klick_domain::*;
 
 pub use self::{

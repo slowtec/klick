@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fmt::Write,
-};
+use std::collections::{HashMap, HashSet};
 
 use leptos::*;
 use thiserror::Error;
@@ -19,6 +16,7 @@ pub fn render_field_sets(
     let mut set_views = vec![];
     let mut labels = HashMap::new();
     let missing_fields = RwSignal::new(HashSet::new());
+    let lng = Lng::De; // TODO
 
     for set in field_sets {
         let mut field_views = vec![];
@@ -26,27 +24,26 @@ pub fn render_field_sets(
         for field in set.fields {
             let id = crate::forms::dom_node_id();
             labels.insert(id, field.label);
-            let view = render_field(field, id, missing_fields);
+            let view = render_field(field, id, missing_fields, lng);
             field_views.push(view);
         }
 
-        set_views.push(
-            view! {
-              <fieldset class="border-b border-gray-900/10 pb-12 mb-6">
-                {
-                  set.title.map(|title| view! {
-                    <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">
-                      { title }
-                    </h3>
-                  })
-                }
-                <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
-                  { field_views }
-                </div>
-              </fieldset>
+        let view = view! {
+          <fieldset class="border-b border-gray-900/10 pb-12 mb-6">
+            {
+              set.title.map(|title| view! {
+                <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">
+                  { title }
+                </h3>
+              })
             }
-            .into_view(),
-        );
+            <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
+              { field_views }
+            </div>
+          </fieldset>
+        }
+        .into_view();
+        set_views.push(view);
     }
     (set_views, missing_fields.read_only(), labels)
 }
@@ -55,6 +52,7 @@ pub fn render_field(
     field: Field,
     id: FieldId,
     missing_fields: RwSignal<HashSet<FieldId>>,
+    lng: Lng,
 ) -> impl IntoView {
     let Field {
         label,
@@ -90,7 +88,7 @@ pub fn render_field(
                     }
                 });
             }
-            let view = view! {
+            view! {
               <TextInput
                 label
                 id
@@ -102,8 +100,7 @@ pub fn render_field(
                 on_change = on_change
               />
             }
-            .into_view();
-            view
+            .into_view()
         }
         FieldType::Float {
             placeholder,
@@ -112,7 +109,6 @@ pub fn render_field(
             limits,
             on_change,
             input,
-            ..
         } => {
             // TODO: write initial value
 
@@ -146,6 +142,7 @@ pub fn render_field(
                 required
                 input_value = input
                 on_change
+                lng
               />
             }
             .into_view()
@@ -157,7 +154,6 @@ pub fn render_field(
             limits,
             on_change,
             input,
-            ..
         } => {
             if required && initial_value.is_none() {
                 missing_fields.update(|x| {
@@ -178,7 +174,7 @@ pub fn render_field(
                 });
             }
 
-            let view = view! {
+            view! {
               <UnsignedIntegerInput
                 label
                 id
@@ -189,28 +185,25 @@ pub fn render_field(
                 required
                 input_value = input
                 on_change
+                lng
               />
             }
-            .into_view();
-            view
+            .into_view()
         }
         FieldType::Bool {
             initial_value: _,
             on_change,
             input,
-        } => {
-            let view = view! {
-              <BoolInput
-                label
-                id
-                input_value = input.into()
-                description
-                on_change
-              />
-            }
-            .into_view();
-            view
+        } => view! {
+          <BoolInput
+            label
+            id
+            input_value = input.into()
+            description
+            on_change
+          />
         }
+        .into_view(),
     }
 }
 
@@ -326,48 +319,6 @@ fn TextInput(
     }
 }
 
-// TODO: move this out of this layer (e.g. to presenter::Lng)
-pub fn parse_de_str_as_f64(input: &str) -> Result<f64, String> {
-    let float = input
-        .replace('.', "")
-        .replace(',', ".")
-        .trim()
-        .parse::<f64>();
-    match float {
-        Ok(v) => Ok(v),
-        Err(e) => Err(format!("{e}")),
-    }
-}
-
-// TODO: move this out of this layer (e.g. to presenter::Lng)
-pub fn format_f64_into_de_string(number: f64) -> String {
-    let num_str = format!("{number:.}");
-
-    let (integer, decimal) = if let Some(pos) = num_str.find('.') {
-        num_str.split_at(pos)
-    } else {
-        (&*num_str, "")
-    };
-
-    let integer_string =
-        integer
-            .chars()
-            .rev()
-            .enumerate()
-            .fold(String::new(), |mut output, (i, c)| {
-                let z: &str = if i != 0 && i % 3 == 0 && i != integer.len() {
-                    "."
-                } else {
-                    ""
-                };
-                let _ = write!(output, "{z}{c}");
-                output
-            });
-
-    let v = integer_string.chars().rev().collect::<String>();
-    format!("{v}{}", decimal.replace('.', ","))
-}
-
 #[component]
 fn FloatInput(
     label: &'static str,
@@ -379,6 +330,7 @@ fn FloatInput(
     required: bool,
     input_value: Signal<Option<f64>>,
     #[prop(into)] on_change: Callback<Option<f64>, ()>,
+    lng: Lng,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
@@ -390,11 +342,11 @@ fn FloatInput(
             txt.set(
                 input_value
                     .get()
-                    .map(format_f64_into_de_string)
+                    .map(|v| lng.format_number(v))
                     .unwrap_or_else(String::new),
             );
         }
-        match evaluate_float_input(&txt.get(), required, limits) {
+        match evaluate_float_input(&txt.get(), required, limits, lng) {
             Ok(_) => {
                 error.set(None);
             }
@@ -408,7 +360,7 @@ fn FloatInput(
 
     let on_input = move |ev| {
         let input = event_target_value(&ev);
-        let result = evaluate_float_input(&input, required, limits);
+        let result = evaluate_float_input(&input, required, limits, lng);
         txt.set(input);
         match result {
             Err(err) => {
@@ -427,10 +379,11 @@ fn FloatInput(
     let on_focus_out = move |_| {
         is_focussed.set(false);
     };
+
     let on_focus_in = move |_| {
         is_focussed.set(true);
         if let Some(value) = input_value.get() {
-            let new_txt = Lng::De.format_number(value);
+            let new_txt = lng.format_number(value);
             txt.set(new_txt)
         }
     };
@@ -490,16 +443,20 @@ fn evaluate_float_input(
     txt: &str,
     required: bool,
     limits: MinMax<f64>,
+    lng: Lng,
 ) -> Result<Option<f64>, FloatEvalError> {
-    evaluate_number_input(txt, required, limits, |x| parse_de_str_as_f64(x).ok())
+    evaluate_number_input(txt, required, limits, |x| lng.parse_str_as_f64(x).ok())
 }
 
 fn evaluate_u64_input(
     txt: &str,
     required: bool,
     limits: MinMax<u64>,
+    lng: Lng,
 ) -> Result<Option<u64>, NumberEvalError<u64>> {
-    evaluate_number_input(txt, required, limits, |x| x.parse().ok())
+    evaluate_number_input(txt, required, limits, |x| {
+        lng.parse_str_as_f64(x).ok().map(|v| v as u64)
+    })
 }
 
 fn evaluate_number_input<T, F>(
@@ -551,6 +508,7 @@ fn UnsignedIntegerInput(
     required: bool,
     input_value: Signal<Option<u64>>,
     #[prop(into)] on_change: Callback<Option<u64>, ()>,
+    lng: Lng,
 ) -> impl IntoView {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
@@ -562,11 +520,11 @@ fn UnsignedIntegerInput(
             txt.set(
                 input_value
                     .get()
-                    .map(|v| format!("{v}"))
+                    .map(|v| lng.format_number(v as f64))
                     .unwrap_or_else(String::new),
             );
         }
-        match evaluate_u64_input(&txt.get(), required, limits) {
+        match evaluate_u64_input(&txt.get(), required, limits, lng) {
             Ok(_) => {
                 error.set(None);
             }
@@ -580,7 +538,7 @@ fn UnsignedIntegerInput(
 
     let on_input = move |ev| {
         let input = event_target_value(&ev);
-        let result = evaluate_u64_input(&input, required, limits);
+        let result = evaluate_u64_input(&input, required, limits, lng);
         txt.set(input);
         match result {
             Err(err) => {
@@ -599,6 +557,7 @@ fn UnsignedIntegerInput(
     let on_focus_out = move |_| {
         is_focussed.set(false);
     };
+
     let on_focus_in = move |_| {
         is_focussed.set(true);
     };
@@ -623,7 +582,7 @@ fn UnsignedIntegerInput(
               let bg = if error.get().is_some() { "bg-red-100" } else { "" };
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
-            placeholder = { placeholder }
+            placeholder = placeholder
             on:input = on_input
             on:focusin = on_focus_in
             on:focusout = on_focus_out
@@ -668,39 +627,5 @@ fn BoolInput(
           <p class="text-gray-500">{ description }</p>
         </div>
       </div>
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn parse_a_german_input_string_as_f64() {
-        let result = parse_de_str_as_f64("1.100.100,23");
-        assert_eq!(result, Ok(1_100_100.23));
-    }
-    #[test]
-    fn parse_a_german_input_string_as_f64_trailing_space() {
-        let result = parse_de_str_as_f64("1.100.100,23 ");
-        assert_eq!(result, Ok(1_100_100.23));
-    }
-    #[test]
-    fn parse_a_german_input_string_as_f64_leading_space() {
-        let result = parse_de_str_as_f64(" 1.100.100,23");
-        assert_eq!(result, Ok(1_100_100.23));
-    }
-
-    #[test]
-    fn format_f64_as_german_string() {
-        assert_eq!(
-            format_f64_into_de_string(23_222_221_231.766_6),
-            "23.222.221.231,7666"
-        );
-        assert_eq!(
-            format_f64_into_de_string(23_222_221_231.0),
-            "23.222.221.231"
-        );
-        assert_eq!(format_f64_into_de_string(2.0), "2");
     }
 }
