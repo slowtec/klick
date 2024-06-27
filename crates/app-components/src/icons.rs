@@ -118,7 +118,7 @@ pub fn LightBulb() -> impl IntoView {
 pub fn Trash() -> impl IntoView {
     view! {
       <svg
-        class="mr-3 w-6 h-6"
+        class="mr-3 h-6 w-6"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.5"
@@ -137,7 +137,7 @@ pub fn Trash() -> impl IntoView {
 pub fn Bars3() -> impl IntoView {
     view! {
       <svg
-        class="mr-3 w-6 h-6"
+        class="mr-3 h-6 w-6"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.5"
@@ -230,6 +230,20 @@ pub fn LinkedIn() -> impl IntoView {
             d="m230 94.8c-25 0-43.5 10.7-54.7 23v-13c0-2.76-2.24-5-5-5h-59.6c-2.76 0-5 2.24-5 5v200c0 2.76 2.24 5 5 5h62.1c2.76 0 5-2.24 5-5v-98.9c0-33.3 9.05-46.3 32.3-46.3 25.3 0 27.3 20.8 27.3 48v97.2c0 2.76 2.24 5 5 5h62.1c2.76 0 5-2.24 5-5v-110c0-49.6-9.45-100-79.5-100z"
           />
         </g>
+      </svg>
+    }
+}
+
+#[component]
+pub fn ExternalLink() -> impl IntoView {
+    view! {
+      <svg
+        width="20"
+        height="25"
+        viewBox="0 0 80 40"
+        style = "display: inline; position: relative; top: -5px; left: 5px; margin-right: 5px;"
+      >
+      <path d="M48 26c-1.1 0-2 0.9-2 2v26H10V18h26c1.1 0 2-0.9 2-2s-0.9-2-2-2H8c-1.1 0-2 0.9-2 2v40c0 1.1 0.9 2 2 2h40c1.1 0 2-0.9 2-2V28C50 26.9 49.1 26 48 26z"></path><path d="M56 6H44c-1.1 0-2 0.9-2 2s0.9 2 2 2h7.2L30.6 30.6c-0.8 0.8-0.8 2 0 2.8C31 33.8 31.5 34 32 34s1-0.2 1.4-0.6L54 12.8V20c0 1.1 0.9 2 2 2s2-0.9 2-2V8C58 6.9 57.1 6 56 6z"></path>
       </svg>
     }
 }

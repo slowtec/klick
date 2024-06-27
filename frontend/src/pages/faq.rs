@@ -1,3 +1,5 @@
+use klick_app_components::icons;
+use klick_app_components::links::FAQ_DE;
 use leptos::*;
 
 #[component]
@@ -9,38 +11,17 @@ pub fn Faq() -> impl IntoView {
             <div class="lg:col-span-5">
               <h2 class="text-2xl font-bold leading-10 tracking-tight text-gray-900">Frequently asked questions</h2>
               <p class="mt-4 text-base leading-7 text-gray-600">
-                "Sie können die gesuchte Antwort nicht finden? Wenden Sie sich an unser "
-                <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">"Kundensupport"</a>"-Team."
+                "Sie können die gesuchte Antwort nicht finden?"
               </p>
-            </div>
-            <div class="mt-10 lg:col-span-7 lg:mt-0">
-              <dl class="space-y-10">
-                <QnA
-                  q = "Wie funktioniert es?"
-                  a = "Erläuterung."
-                />
-                <QnA
-                  q = "Was macht die Kläranlage?"
-                  a = "Klären."
-                />
-                <QnA
-                  q = "Emissionsfaktor?"
-                  a = "Der ist hoch."
-                />
-              </dl>
+              <p class="mt-4 text-base leading-7 text-gray-600">
+                <a href={FAQ_DE} class="font-semibold text-indigo-600 hover:text-indigo-500" style="text-decoration: underline;
+                text-decoration-color: currentcolor; -webkit-text-decoration-color: #ffed00; text-decoration-color: #ffed00; text-underline-offset: 4px;">
+                <icons::ExternalLink /> "Schauen sie in unser Wiki im Abschnitt FAQ"
+                </a>
+              </p>
             </div>
           </div>
         </div>
-      </div>
-    }
-}
-
-#[component]
-pub fn QnA(q: &'static str, a: &'static str) -> impl IntoView {
-    view! {
-      <div>
-        <dt class="text-base font-semibold leading-7 text-gray-900">{ q }</dt>
-        <dd class="mt-2 text-base leading-7 text-gray-600">{ a }</dd>
       </div>
     }
 }

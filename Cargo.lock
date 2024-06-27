@@ -1457,6 +1457,7 @@ dependencies = [
  "axum-extra",
  "headers",
  "klick-app-charts",
+ "klick-app-components",
  "klick-application",
  "klick-boundary",
  "klick-db-sqlite",

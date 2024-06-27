@@ -1,14 +1,14 @@
 use leptos::*;
 
-const LOGO: &str = include_str!("../assets/logo_BMWK_NKI.svg");
-const FOOTER_MD: &str = include_str!("../content/footer.md");
-const WIKI_URL: &str = "https://codeberg.org/slowtec/klick/wiki";
-const DATENSCHUTZ: &str = "https://www.umwelttechnik-bw.de/de/datenschutz";
-const ACCESSIBILITY: &str = "https://www.umwelttechnik-bw.de/de/erklaerung-barrierefreiheit";
-const LINKEDIN: &str = "https://www.linkedin.com/company/umwelttechnik-bw";
-const FAQ: &str = "https://codeberg.org/slowtec/klick/wiki/FAQ";
+pub const LOGO: &str = include_str!("../assets/logo_BMWK_NKI.svg");
+pub const FOOTER_MD: &str = include_str!("../content/footer.md");
 
 use klick_app_components::icons;
+use klick_app_components::links::ACCESSIBILITY;
+use klick_app_components::links::DATENSCHUTZ;
+use klick_app_components::links::FAQ_DE;
+use klick_app_components::links::LINKEDIN;
+use klick_app_components::links::WIKI_URL;
 
 use crate::{Markdown, Page, CHANGELOG_URL, VERSION};
 
@@ -50,10 +50,10 @@ pub fn Footer() -> impl IntoView {
             <div class="grid gap-3 items-center justify-center justify-items-center md:grid-cols-8 xl:col-span-6">
               <FooterLink link = LinkType::Page(Page::Home) label ="KlicK" />
               <FooterLink link = LinkType::Page(Page::Tool) label ="Tool" />
-              <FooterLink link = LinkType::External(DATENSCHUTZ) label ="Datenschutz" />
-              <FooterLink link = LinkType::Page(Page::Faq) label ="FAQs" />
-              <FooterLink link = LinkType::External(ACCESSIBILITY) label ="Barrierefreiheit" />
               <FooterLink link = LinkType::External(WIKI_URL) label ="Wiki" />
+              <FooterLink link = LinkType::External(FAQ_DE) label ="FAQs" />
+              <FooterLink link = LinkType::External(DATENSCHUTZ) label ="Datenschutz" />
+              <FooterLink link = LinkType::External(ACCESSIBILITY) label ="Barrierefreiheit" />
               <FooterLink link = LinkType::Page(Page::OpenSource) label ="Open Source" />
               <FooterLink link = LinkType::Page(Page::Imprint) label ="Impressum" />
             </div>

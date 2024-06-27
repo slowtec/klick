@@ -9,6 +9,8 @@ use url::Url;
 use klick_application::{NotificationEvent, NotificationGateway};
 use klick_domain::authentication::EmailNonce;
 
+use klick_app_components::links::DATENSCHUTZ;
+
 use crate::config::{Config, Encryption};
 
 #[derive(Clone)]
@@ -97,12 +99,15 @@ fn send_address_confirmation_mail(
     mailer: &Mailer,
 ) -> anyhow::Result<()> {
     // TODO: use templates
-
     let subject = "Emailadresse bestätigen / Anmeldung abschließen".to_string();
 
     let link = email_confirmation_url(nonce, base_url)?;
     let body = [
         "Willkommen beim KlicK-Tool \"Klimabilanz für Kläranlagen mit einem Klick\".\n\n",
+        "Wir verwenden Cookies und andere Technologien, um den Besuch auf unserer Website ",
+        "sicher und komfortabel zu gestalten. Um mehr zu erfahren, lesen Sie bitte unsere Datenschutzerklärung unter ",
+        { DATENSCHUTZ },
+        "\n\n",
         "Um Ihre Anmeldung abzuschließen, klicken Sie bitte auf folgenden Link:\n",
         &link,
         "\n\nWir wünschen viele gute Erkenntnisse mit dem KlicK-Tool!",
