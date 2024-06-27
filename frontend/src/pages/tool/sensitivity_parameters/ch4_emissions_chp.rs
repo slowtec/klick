@@ -20,6 +20,7 @@ pub fn CH4EmissionsCHP(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -50,7 +51,7 @@ pub fn CH4EmissionsCHP(
     // -----   ----- //
 
     let field_set = field_set(form_data.write_only(), input_data);
-    let (chp_view, _, _) = render_field_sets(vec![field_set]);
+    let (chp_view, _, _) = render_field_sets(vec![field_set], accessibility_always_show);
 
     // -----   ----- //
     //   Callbacks   //
@@ -102,8 +103,8 @@ pub fn CH4EmissionsCHP(
 
     view! {
       <div class = move ||{ if show_ch4_chp.get() { None } else { Some("hidden") } } >
-        <Card id = "sensitivity-ch4-chp" title = "Methanemissionen aus Blockheizkraftwerken (BHKW)" bg_color="bg-blue">
-          <InfoBox text = "BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf">
+        <Card id = "sensitivity-ch4-chp" title = "Methanemissionen aus Blockheizkraftwerken (BHKW)" bg_color="bg-blue" accessibility_always_show>
+          <InfoBox text = "BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf" accessibility_always_show>
             <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
               "Auch bei der Gasverwertung entstehen prozessbedingte Methan-Emissionen:
               BHKW-Motoren arbeiten nach dem Vier-Takt-Prinzip.
@@ -136,7 +137,7 @@ pub fn CH4EmissionsCHP(
             Durch Anklicken kann ein anderes Szenario ausgewählt werden."
             </p>
 
-            <InfoBox text = "Zusatzinformation zum Methanschlupf:">
+            <InfoBox text = "Zusatzinformation zum Methanschlupf:" accessibility_always_show>
               <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
                 "Die Gaszusammensetzung, Brennraumtemperatur (Gasfeuchte), Brennraumgestaltung und Betriebsweise beeinflussen die Verbrennungsvorgänge.
                 Bei hohen Sauerstoffkonzentrationen (Magerbetrieb), welche für die Reduktion der NOₓ,-Bildung bei hohen Temperaturen notwendig sind,

@@ -6,7 +6,10 @@ use klick_domain::{InputValueId as Id, Value};
 use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 #[component]
-pub fn CH4EmissionsOpenSludgeStorage(form_data: RwSignal<FormData>) -> impl IntoView {
+pub fn CH4EmissionsOpenSludgeStorage(
+    accessibility_always_show: Option<RwSignal<bool>>,
+    form_data: RwSignal<FormData>,
+) -> impl IntoView {
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
             d.get(&Id::SludgeTreatmentDigesterCount)
@@ -24,8 +27,8 @@ pub fn CH4EmissionsOpenSludgeStorage(form_data: RwSignal<FormData>) -> impl Into
     });
     view! {
       <div class = move || { if show_dialog.get() { None } else { Some("hidden") } } >
-      <Card id = "sensitivity-sludge-storage" title = "Methanemissionen aus der Schlammlagerung" bg_color="bg-blue">
-        <InfoBox text = " Emissionen aus der Schlammlagerung aerob-stabilisierter Schlämme weisen ein deutliches Emissionspotenzial auf">
+      <Card id = "sensitivity-sludge-storage" title = "Methanemissionen aus der Schlammlagerung" bg_color="bg-blue" accessibility_always_show>
+        <InfoBox text = " Emissionen aus der Schlammlagerung aerob-stabilisierter Schlämme weisen ein deutliches Emissionspotenzial auf" accessibility_always_show>
           <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 24-25)" url = DWA_MERKBLATT_URL>
             "Auch bei ordnungsgemäßem Betrieb enthalten gemeinsam aerob stabilisierte Schlämme mit ca.
             11 g oTM/(E·d) mehr leicht abbaubare Stoffe im Vergleich zu Faulschlämmen (ca. 4 g oTM/(E·d) im

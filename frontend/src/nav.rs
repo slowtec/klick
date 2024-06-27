@@ -1,9 +1,8 @@
 use leptos::*;
 use leptos_router::*;
 
-use klick_boundary::json_api::UserInfo;
-
 use crate::Page;
+use klick_boundary::json_api::UserInfo;
 
 #[component]
 pub fn Nav(
@@ -156,13 +155,11 @@ fn UserMenu(user_info: UserInfo, #[prop(into)] on_logout: Callback<()>) -> impl 
              role="menu"
              aria-orientation="vertical"
              aria-labelledby="user-menu-button"
-             tabindex="-1"
            >
              <a
                href="#"
                class="block px-4 py-2 text-sm text-gray-700"
                role="menuitem"
-               tabindex="-1"
                id="user-menu-item-2"
                on:click = move |_| on_logout.call(())
              >

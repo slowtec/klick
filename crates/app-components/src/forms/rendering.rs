@@ -15,6 +15,7 @@ type Labels = HashMap<FieldId, &'static str>;
 
 pub fn render_field_sets(
     field_sets: Vec<FieldSet>,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> (Vec<View>, ReadSignal<MissingFields>, Labels) {
     let mut set_views = vec![];
     let mut labels = HashMap::new();
@@ -27,7 +28,7 @@ pub fn render_field_sets(
         for field in set.fields {
             let id = crate::forms::dom_node_id();
             labels.insert(id, field.label);
-            let view = render_field(field, id, missing_fields, lng);
+            let view = render_field(field, id, missing_fields, lng, accessibility_always_show);
             field_views.push(view);
         }
 
@@ -56,6 +57,7 @@ pub fn render_field(
     id: FieldId,
     missing_fields: RwSignal<HashSet<FieldId>>,
     lng: Lng,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let Field {
         label,
@@ -101,6 +103,7 @@ pub fn render_field(
                 required
                 input_value = input
                 on_change = on_change
+                accessibility_always_show
               />
             }
             .into_view()
@@ -146,6 +149,7 @@ pub fn render_field(
                 input_value = input
                 on_change
                 lng
+                accessibility_always_show
               />
             }
             .into_view()
@@ -189,6 +193,7 @@ pub fn render_field(
                 input_value = input
                 on_change
                 lng
+                accessibility_always_show
               />
             }
             .into_view()
@@ -218,51 +223,22 @@ fn create_tooltip(
     description: Option<&'static str>,
     required: bool,
     _unit: Option<&'static str>,
+    accessibility_always_show: Option<RwSignal<bool>>,
+    id: FieldId,
 ) -> impl IntoView {
     let show_tooltip = RwSignal::new("none".to_string());
 
-    view! {
-      <div class="flex-col md:flex-row flex items-center md:justify-center">
-        <a
-          tabindex="-1"
-          role="link"
-          aria-label="tooltip 1"
-          class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
-          on:focus = move |_| {
-              show_tooltip.set("block".to_string());
-          }
-          on:blur = move |_| {
-              show_tooltip.set("none".to_string());
-          }
-        >
-          <div class="cursor-pointer">
-            <InfoIcon />
-          </div>
-          <div
-            role="tooltip"
-            class="z-20 -mt-20 w-64 absolute transition duration-150 ease-in-out left-0 ml-8 shadow-lg bg-white p-4 rounded"
-            style={ move || format!("display: {}", show_tooltip.get()) }
-          >
-            <svg
-              class="absolute left-0 -ml-2 bottom-0 top-0 h-full"
-              width="9px"
-              height="16px"
-              viewBox="0 0 9 16"
-            >
-              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                <g transform="translate(-874.000000, -1029.000000)" fill="#FFFFFF">
-                  <g transform="translate(850.000000, 975.000000)">
-                    <g transform="translate(24.000000, 0.000000)">
-                      <polygon
-                        transform="translate(4.500000, 62.000000) rotate(-90.000000) translate(-4.500000, -62.000000)"
-                        points="4.5 57.5 12.5 66.5 -3.5 66.5">
-                      </polygon>
-                    </g>
-                  </g>
-                </g>
-              </g>
-            </svg>
-            <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
+    let required_label = format!("{} {label}", if required { "*" } else { "" });
+    let show_accessibility_always_show = match accessibility_always_show {
+        Some(o) => o.get() == true,
+        None => false,
+    };
+    if show_accessibility_always_show {
+        view! {
+          <div>
+            <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
+              { required_label }
+            </label>
             <p class="text-xs leading-4 text-gray-600 pb-3" inner_html=description/>
             <Show when=move || required>
               <ul class="list-disc list-inside">
@@ -272,8 +248,67 @@ fn create_tooltip(
               </ul>
             </Show>
           </div>
-        </a>
-      </div>
+        }
+    } else {
+        view! {
+            <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
+            <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
+              { required_label }
+            </label>
+            <div class="flex-col md:flex-row flex items-center md:justify-center">
+              <a
+                tabindex="-1"
+                role="link"
+                aria-label="tooltip 1"
+                class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
+                on:focus = move |_| {
+                    show_tooltip.set("block".to_string());
+                }
+                on:blur = move |_| {
+                    show_tooltip.set("none".to_string());
+                }
+              >
+                <div class="cursor-pointer">
+                  <InfoIcon />
+                </div>
+                <div
+                  role="tooltip"
+                  class="z-20 -mt-20 w-64 absolute transition duration-150 ease-in-out left-0 ml-8 shadow-lg bg-white p-4 rounded"
+                  style={ move || format!("display: {}", show_tooltip.get()) }
+                >
+                  <svg
+                    class="absolute left-0 -ml-2 bottom-0 top-0 h-full"
+                    width="9px"
+                    height="16px"
+                    viewBox="0 0 9 16"
+                  >
+                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g transform="translate(-874.000000, -1029.000000)" fill="#FFFFFF">
+                        <g transform="translate(850.000000, 975.000000)">
+                          <g transform="translate(24.000000, 0.000000)">
+                            <polygon
+                              transform="translate(4.500000, 62.000000) rotate(-90.000000) translate(-4.500000, -62.000000)"
+                              points="4.5 57.5 12.5 66.5 -3.5 66.5">
+                            </polygon>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </svg>
+                  <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
+                  <p class="text-xs leading-4 text-gray-600 pb-3" inner_html=description/>
+                  <Show when=move || required>
+                    <ul class="list-disc list-inside">
+                    <Show when=move || required>
+                      <li class="text-xs leading-4 text-gray-600 pb-3">"Eingabe benötigt!"</li>
+                    </Show>
+                    </ul>
+                  </Show>
+                </div>
+              </a>
+            </div>
+        </div>
+        }
     }
 }
 
@@ -287,18 +322,11 @@ fn TextInput(
     required: bool,
     input_value: Signal<Option<String>>,
     #[prop(into)] on_change: Callback<Option<String>, ()>,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let required_label = format!("{} {label}", if required { "*" } else { "" });
-
     view! {
       <div id={format!("focus-{id}")}>
-        <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-          <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
-            { required_label }
-          </label>
-          { create_tooltip(label, description, required, None) }
-        </div>
-
+        { move || create_tooltip(label, description, required, None, accessibility_always_show, id) }
         <div class="relative mt-2 rounded-md shadow-sm group">
           <input
             type = "text"
@@ -334,6 +362,7 @@ fn FloatInput(
     input_value: Signal<Option<f64>>,
     #[prop(into)] on_change: Callback<Option<f64>, ()>,
     lng: Lng,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let format_number = move |v| lng.format_number(v);
     number_input_field(
@@ -349,6 +378,7 @@ fn FloatInput(
         evaluate_float_input,
         lng,
         format_number,
+        accessibility_always_show,
     )
 }
 
@@ -364,6 +394,7 @@ fn UnsignedIntegerInput(
     input_value: Signal<Option<u64>>,
     #[prop(into)] on_change: Callback<Option<u64>, ()>,
     lng: Lng,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let format_number = move |v| lng.format_number(v as f64);
     number_input_field(
@@ -379,6 +410,7 @@ fn UnsignedIntegerInput(
         evaluate_u64_input,
         lng,
         format_number,
+        accessibility_always_show,
     )
 }
 
@@ -395,6 +427,7 @@ fn number_input_field<F, N>(
     evaluate_input: F,
     lng: Lng,
     format_value: impl Fn(N) -> String + Copy + 'static,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView
 where
     F: Fn(&str, bool, MinMax<N>, Lng) -> Result<Option<N>, NumberEvalError<N>> + Copy + 'static,
@@ -460,13 +493,7 @@ where
 
     view! {
       <div>
-        <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-          <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
-            { required_label }
-          </label>
-          { create_tooltip(label, description, required, Some(unit)) }
-        </div>
-
+        { move || create_tooltip(label, description, required, None, accessibility_always_show, id) }
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             id = id.to_string()

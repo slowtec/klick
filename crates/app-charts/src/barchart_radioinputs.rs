@@ -181,6 +181,10 @@ fn Bar(
         on:mousedown = move |_| {
             on_change.call(i as u64);
         }
+        on:keypress = move |_| {
+          on_change.call(i as u64);
+        }
+        tabindex="0"
         cursor="pointer"
       >
         // transparent background for mouse events

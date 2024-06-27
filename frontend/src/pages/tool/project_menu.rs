@@ -196,7 +196,6 @@ where
        href= move || if disabled.get() { None } else { Some(href.unwrap_or("#")) }
        class = move || if disabled.get() { "cursor-not-allowed text-gray-400 group flex items-center px-4 py-2 text-sm" } else { "text-gray-700 group flex items-center px-4 py-2 text-sm" }
        role="menuitem"
-       tabindex="-1"
       >
         <div
           class= move || if disabled.get() { "text-gray-400" } else { "text-gray-400 group-hover:text-gray-500" }

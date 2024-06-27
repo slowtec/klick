@@ -2,9 +2,9 @@ use leptos::*;
 
 use crate::pages::tool::{Card, Cite, DWA_MERKBLATT_URL};
 
-pub fn options() -> impl IntoView {
+pub fn options(accessibility_always_show: Option<RwSignal<bool>>) -> impl IntoView {
     view! {
-      <Card id="recommendation-n2o-biological" title = "Lachgasemissionen bei der biologischen Reinigungsstufe" bg_color="bg-yellow">
+      <Card id="recommendation-n2o-biological" title = "Lachgasemissionen bei der biologischen Reinigungsstufe" bg_color="bg-yellow" accessibility_always_show>
         <p>
           "Lachgasemissionen tragen erheblich zum Gesamt-Treibhausgas-Potenzial von Kläranlagen bei.
           Das Auftreten von N₂O-Emissionen ist Anlagen-spezifisch,

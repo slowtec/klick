@@ -215,8 +215,7 @@ where
         href={ href.unwrap_or("#") }
         class="flex group items-center px-3 py-1 text-sm leading-6 text-gray-700 hover:text-gray-900"
         role="menuitem"
-        tabindex="-1"
-      >
+        >
        { icon }
        { label }
       </a>

@@ -36,7 +36,6 @@ const ENABLED_BUTTON_CLASS: &str = "rounded bg-primary px-2 py-1 text-sm font-se
 
 const DISABLED_BUTTON_CLASS: &str = "rounded bg-gray-100 px-2 py-1 text-sm font-semibold text-gray-300 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-not-allowed";
 #[component]
-
 fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) -> impl IntoView {
     let show_new_project = RwSignal::new(false);
     let api = RwSignal::new(api);

@@ -11,7 +11,7 @@ pub fn Faq() -> impl IntoView {
             <div class="lg:col-span-5">
               <h2 class="text-2xl font-bold leading-10 tracking-tight text-gray-900">Frequently asked questions</h2>
               <p class="mt-4 text-base leading-7 text-gray-600">
-                "Sie können die gesuchte Antwort nicht finden?"
+                "Sie haben eine Frage? Vielleicht wurde diese im FAQ schon beantwortet!"
               </p>
               <p class="mt-4 text-base leading-7 text-gray-600">
                 <a href={FAQ_DE} class="font-semibold text-indigo-600 hover:text-indigo-500" style="text-decoration: underline;

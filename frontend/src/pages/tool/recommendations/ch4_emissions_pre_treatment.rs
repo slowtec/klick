@@ -2,16 +2,16 @@ use leptos::*;
 
 use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
-pub fn options() -> impl IntoView {
+pub fn options(accessibility_always_show: Option<RwSignal<bool>>) -> impl IntoView {
     view! {
-      <Card id="recommendation-ch4-pre-treatment" title ="Methanemissionen aus der Vorklärung" bg_color="bg-yellow">
+      <Card id="recommendation-ch4-pre-treatment" title ="Methanemissionen aus der Vorklärung" bg_color="bg-yellow" accessibility_always_show>
         <p>
           "Eine gute Bewirtschaftung Ihrer Kläranlage ist ein zentraler Faktor für eine Verbesserung der Klimabilanz.
           Bezüglich der mechanischen Reinigungsstufe und Vorklärung kann sich dies für Methanemissionen wie folgt äußern:"
         </p>
         <ul class="ml-5 mt-4 list-disc">
           <li class="my-2">
-            <InfoBox text = "Vermeidung von langen Schlammaufenthaltszeiten zur Reduktion des Methanbildungspotenzials">
+            <InfoBox text = "Vermeidung von langen Schlammaufenthaltszeiten zur Reduktion des Methanbildungspotenzials" accessibility_always_show>
               <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S.28)" url = DWA_MERKBLATT_URL>
                 "In Vorklärbecken ermittelten ISGREN & MARTENSSEN (2013)
                 eine durchschnittliche CH₄-Konzentration (lediglich aus drei Proben)
@@ -28,7 +28,7 @@ pub fn options() -> impl IntoView {
             <InfoBox text =
               "Kontinuierlicher Primärschlammabzug so regulieren, dass einerseits ausreichend Kohlenstoff
               für die Denitrifikation und andererseits für eine Faulung (falls gegeben) zur Verfügung steht"
-            >
+              accessibility_always_show>
               <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S.18)" url = DWA_MERKBLATT_URL>
                 "In einer vergleichbaren Studie aus Dänemark wurde gezeigt,
                 dass auch große Kläranlagen mit hoher Stickstoffreinigungsleistung

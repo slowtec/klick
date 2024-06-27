@@ -5,6 +5,8 @@ use leptos::*;
 use leptos_meta::provide_meta_context;
 use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
 
+use leptos_hotkeys::{provide_hotkeys_context, scopes, use_hotkeys};
+
 use klick_app_api as api;
 use klick_boundary::{self as boundary, json_api::UserInfo};
 
@@ -44,6 +46,22 @@ const SECTION_ID_TOOL_HOME: &str = "tool-home";
 #[must_use]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+
+    // -- hotkeys -- //
+
+    let main_ref = create_node_ref::<html::Main>();
+    provide_hotkeys_context(main_ref, false, scopes!());
+    let accessibility_always_show: Option<RwSignal<bool>> = Some(RwSignal::new(false));
+
+    use_hotkeys!(("F1") => move |_| {
+      // log::info!("F1 has been pressed");
+      match accessibility_always_show {
+        Some(o) => {
+          // log::info!("accessibility_always_show: {}", o.get());
+          o.set(!o.get())},
+        None => {}
+      }
+    });
 
     // -- signals -- //
 
@@ -143,6 +161,7 @@ pub fn App() -> impl IntoView {
               let current_section = RwSignal::new(PageSection::DataCollection);
               view! {
                 <Main>
+                <main _ref=main_ref>
                   <header
                     class="prose"
                     id = move || current_section.get().section_id()
@@ -157,12 +176,15 @@ pub fn App() -> impl IntoView {
                         </a>
                       </span>
                     </h1>
+                    <p id="keyboard-hint" class="sr-only">Press F1 to display all hints inline.</p>
                   </header>
                   <Tool
                     api = authorized_api.into()
                     current_project
                     current_section
+                    accessibility_always_show
                   />
+                  </main>
                 </Main>
               }
             }

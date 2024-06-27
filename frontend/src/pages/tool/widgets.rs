@@ -7,8 +7,16 @@ pub const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";
 
 #[component]
-pub fn InfoBox(text: &'static str, children: Children) -> impl IntoView {
+pub fn InfoBox(
+    text: &'static str,
+    children: Children,
+    accessibility_always_show: Option<RwSignal<bool>>,
+) -> impl IntoView {
     let show = RwSignal::<bool>::new(false);
+    let combined_show_signal = Signal::derive(move || match accessibility_always_show {
+        Some(sig) => show.get() || sig.get(),
+        None => show.get(),
+    });
     let children = children();
 
     view! {
@@ -20,7 +28,7 @@ pub fn InfoBox(text: &'static str, children: Children) -> impl IntoView {
           <InfoIcon />
         </div>
       </p>
-      <div class = move || if show.get() { None } else { Some("hidden") } >
+      <div class = move || if combined_show_signal.get() { None } else { Some("hidden") } >
         { children }
       </div>
     }
@@ -32,8 +40,13 @@ pub fn Card(
     title: &'static str,
     children: Children,
     bg_color: &'static str,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let hide = RwSignal::<bool>::new(false);
+    let combined_hide_signal = Signal::derive(move || match accessibility_always_show {
+        Some(sig) => !sig.get() && hide.get(),
+        None => hide.get(),
+    });
 
     // TODO:
     // This is a bit of a hack, but it's ok for prototyping now.
@@ -44,8 +57,7 @@ pub fn Card(
         hide.set(state);
     }
     create_effect(move |_| {
-        let state = hide.get();
-        if let Err(err) = SessionStorage::set(&hidden_state_ss_id, state) {
+        if let Err(err) = SessionStorage::set(&hidden_state_ss_id, hide.get()) {
             log::warn!("Unable to store card hidden state: {err}");
         }
     });
@@ -60,9 +72,9 @@ pub fn Card(
           class = {format!("px-4 py-3 {bg_color} cursor-pointer flex items-center justify-between") }
           on:click = move |_| hide.update(|h| *h = !*h)
         >
-          <h3 class="font-bold text-lg">{ title }</h3>
+          <a href="#" tabindex="0"><h3 class="font-bold text-lg">{ title }</h3></a>
           <svg
-            class = move || if hide.get() { "w-3 h-3 rotate-180 shrink-0" } else { "w-3 h-3 shrink-0" }
+            class = move || if combined_hide_signal.get() { "w-3 h-3 rotate-180 shrink-0" } else { "w-3 h-3 shrink-0" }
             aria-hidden="true"
             fill="none"
             viewBox="0 0 10 6"
@@ -77,7 +89,7 @@ pub fn Card(
           </svg>
         </div>
         <div
-          class = move || if hide.get() { "hidden" } else { "px-4 py-4 sm:px-6 text-md" }
+          class = move || if combined_hide_signal.get() { "hidden" } else { "px-4 py-4 sm:px-6 text-md" }
         >
           { children }
         </div>

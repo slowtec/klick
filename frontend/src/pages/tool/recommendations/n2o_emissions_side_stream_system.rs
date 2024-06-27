@@ -12,13 +12,14 @@ pub fn options(
     input_data: ReadSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let field_set = field_set(form_data.write_only(), input_data);
-    let (form1, _, _) = render_field_sets(vec![field_set]);
+    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show);
 
     view! {
       <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >
-       <Card id = "recommendation-n2o-side-stream" title = "Lachgasemissionen bei der Prozesswasserbehandlung" bg_color="bg-yellow">
+       <Card id = "recommendation-n2o-side-stream" title = "Lachgasemissionen bei der Prozesswasserbehandlung" bg_color="bg-yellow" accessibility_always_show>
         <p class="my-2">
           "Da es sich bei Prozesswasserbehandlungsanlagen um relativ kleine Becken handelt, können die
           Lachgasemissionen hier durch Abdeckung und Abluftbehandlung (Oxidation) beseitigt werden."

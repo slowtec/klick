@@ -40,7 +40,7 @@ pub fn NewProject(
     let field_id = dom_node_id();
     let missing_fields = RwSignal::new(HashSet::new());
 
-    let field_view = render_field(field, field_id, missing_fields, Lng::De);
+    let field_view = render_field(field, field_id, missing_fields, Lng::De, None);
 
     let create_project = create_action(move |(): &()| {
         let mut project = FormData::default();

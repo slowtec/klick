@@ -11,6 +11,7 @@ pub fn options(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
+    accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -54,10 +55,10 @@ pub fn options(
     // -----   ----- //
 
     let field_set = field_set1(form_data.write_only(), input_data);
-    let (form1, _, _) = render_field_sets(vec![field_set]);
+    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show);
 
     let field_set = field_set2(form_data.write_only(), input_data);
-    let (form2, _, _) = render_field_sets(vec![field_set]);
+    let (form2, _, _) = render_field_sets(vec![field_set], accessibility_always_show);
 
     // -----   ----- //
     //     View      //
@@ -65,7 +66,7 @@ pub fn options(
 
     view! {
       <div class = move || { if show_dialog.get() { None } else { Some("hidden") } }>
-      <Card id="recommendation-ch4-open-digesters" title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-yellow">
+      <Card id="recommendation-ch4-open-digesters" title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-yellow" accessibility_always_show>
         <p>
           "Das Schließen von Schlammtaschen an Faultürmen und der Schlammlager wirkt sich durch die Eindämmung von Methanschlupfen positiv auf die Klimabilanz von Kläranlagen aus. Dies können Sie über die nachfolgenden Checkboxen bilanzieren."
         </p>
