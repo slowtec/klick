@@ -543,7 +543,7 @@ fn UnsignedIntegerInput(
         match result {
             Err(err) => {
                 error.set(Some(err.to_string()));
-                if err == NumberEvalError::Empty && !required {
+                if err == NumberEvalError::Empty {
                     on_change.call(None);
                 }
             }
