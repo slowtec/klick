@@ -3,11 +3,11 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
-use klick_boundary::{default_values::N2O_DEFAULT_CUSTOM_FACTOR, CalculationOutcome, FormData};
+use klick_boundary::{CalculationOutcome, FormData};
 use klick_domain::{units::N2oEmissionFactorCalcMethod, InputValueId as Id, Value};
-use klick_presenter::{Lng, ValueLabel};
+use klick_presenter::ValueLabel;
 
-use crate::pages::tool::Card;
+use crate::pages::tool::{fields::create_field, Card};
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -186,37 +186,8 @@ pub fn N2OEmissionsSensitivity(
 }
 
 fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
-    let custom_factor_field = Field {
-        label: "N₂O-EF Benutzerdefiniert",
-        description: Some(
-            "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
-            oder einer Messkampagne) einen Wert für den EF N₂O eintragen.
-
-            <br>Weiter muss die Auswahlmöglichkeit (Benutzerdefiniert) manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.",
-        ),
-        required: false,
-        field_type: FieldType::Float {
-            initial_value: None,
-            placeholder: Some(
-                Lng::De.format_number(N2O_DEFAULT_CUSTOM_FACTOR),
-            ),
-            limits: MinMax {
-                min: Some(
-                    0.0,
-                ),
-                max: Some(
-                    100.0,
-                ),
-            },
-            unit: "%",
-            on_change: Callback::new(move|v|{
-                form_data.update(|d| d.sensitivity_parameters.n2o_emissions.custom_emission_factor = v);
-            }),
-            input: Signal::derive(move||
-                form_data.with(|d|d.sensitivity_parameters.n2o_emissions.custom_emission_factor)
-            )
-        },
-    };
+    let id = Id::SensitivityN2OCustomFactor;
+    let custom_factor_field = create_field(form_data.write_only(), form_data.read_only(), id);
     let fields = vec![custom_factor_field];
     vec![FieldSet {
         title: None,
@@ -225,37 +196,8 @@ fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
 }
 
 fn side_stream_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
-    let custom_factor_field = Field {
-        label: "N₂O-EF Prozesswasser",
-        description: Some(
-            "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder
-            einer Messkampagne) einen Wert für den EF der Prozesswasserbehandlung eintragen.",
-        ),
-        required: false,
-        field_type: FieldType::Float {
-            initial_value: None,
-            placeholder: Some(Lng::De.format_number(N2O_DEFAULT_CUSTOM_FACTOR)),
-            limits: MinMax {
-                min: Some(0.0),
-                max: Some(100.0),
-            },
-            unit: "%",
-            on_change: Callback::new(move |v| {
-                form_data.update(|d| {
-                    d.sensitivity_parameters
-                        .n2o_emissions
-                        .side_stream_emission_factor = v;
-                });
-            }),
-            input: Signal::derive(move || {
-                form_data.with(|d| {
-                    d.sensitivity_parameters
-                        .n2o_emissions
-                        .side_stream_emission_factor
-                })
-            }),
-        },
-    };
+    let id = Id::SensitivityN2OSideStreamFactor;
+    let custom_factor_field = create_field(form_data.write_only(), form_data.read_only(), id);
     let fields = vec![custom_factor_field];
     vec![FieldSet {
         title: None,

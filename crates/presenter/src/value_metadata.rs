@@ -40,7 +40,7 @@ impl Placeholder {
     }
 }
 
-fn metadata_de() -> [(Id, FieldMetaData); 30] {
+fn metadata_de() -> [(Id, FieldMetaData); 33] {
     use FieldMetaData as M;
     use Placeholder as P;
     [
@@ -261,6 +261,30 @@ fn metadata_de() -> [(Id, FieldMetaData); 30] {
             M {
                 placeholder: P::default_value(),
                 description: "Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen.",
+            }
+        ),
+        (
+            Id::SensitivityCO2FossilCustomFactor,
+            M {
+                placeholder: P::default_value(),
+                description: "Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₂ eintragen.",
+            }
+        ),
+        (
+            Id::SensitivityN2OCustomFactor,
+            M {
+                placeholder: P::default_value(),
+                description: "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
+                  oder einer Messkampagne) einen Wert für den EF N₂O eintragen.
+                  <br/>Weiter muss die Auswahlmöglichkeit (Benutzerdefiniert) manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.",
+            }
+        ),
+        (
+            Id::SensitivityN2OSideStreamFactor,
+            M {
+                placeholder: P::default_value(),
+                description: "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder
+                    einer Messkampagne) einen Wert für den EF der Prozesswasserbehandlung eintragen.",
             }
         ),
     ]

@@ -56,7 +56,7 @@ pub struct FormData {
     // First page in the tool frontend
     pub plant_profile: PlantProfile,
     // Second page in the tool frontend
-    pub sensitivity_parameters: SensitivityParameters,
+    pub(crate) sensitivity_parameters: SensitivityParameters,
     // Third page in the tool frontend
     pub optimization_scenario: OptimizationScenario,
 }

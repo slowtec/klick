@@ -1,13 +1,5 @@
 use crate::*;
 
-// FIXME:
-// Move this constants into the domain layer
-// but also define all values,
-// that are optional also with `Option` type.
-pub const N2O_DEFAULT_CUSTOM_FACTOR: f64 = 2.0;
-pub const _N2O_DEFAULT_SIDE_STREAM_FACTOR: f64 = 2.0;
-pub const CO2_DEFAULT_FOSSIL_FACTOR: f64 = 3.85;
-
 pub fn profile(mut data: FormData) -> FormData {
     data.sensitivity_parameters = Default::default();
     data.optimization_scenario = Default::default();
@@ -17,10 +9,6 @@ pub fn profile(mut data: FormData) -> FormData {
 
 pub fn sensitivity(mut data: FormData) -> FormData {
     data.optimization_scenario = Default::default();
-    data.sensitivity_parameters
-        .n2o_emissions
-        .custom_emission_factor
-        .get_or_insert(N2O_DEFAULT_CUSTOM_FACTOR);
 
     // FIXME: set default values
     // match custom_sludge_bags_factor_field.get() {

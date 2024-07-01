@@ -1,4 +1,7 @@
-use std::{fmt, collections::{HashMap, HashSet}};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt,
+};
 
 use leptos::*;
 use thiserror::Error;
@@ -332,20 +335,20 @@ fn FloatInput(
     #[prop(into)] on_change: Callback<Option<f64>, ()>,
     lng: Lng,
 ) -> impl IntoView {
-    let format_number = move |v|{ lng.format_number(v) };
+    let format_number = move |v| lng.format_number(v);
     number_input_field(
-      label,
-      unit,
-      placeholder,
-      id,
-      description,
-      limits,
-      required,
-      input_value,
-      on_change,
-      evaluate_float_input,
-      lng,
-      format_number,
+        label,
+        unit,
+        placeholder,
+        id,
+        description,
+        limits,
+        required,
+        input_value,
+        on_change,
+        evaluate_float_input,
+        lng,
+        format_number,
     )
 }
 
@@ -362,24 +365,24 @@ fn UnsignedIntegerInput(
     #[prop(into)] on_change: Callback<Option<u64>, ()>,
     lng: Lng,
 ) -> impl IntoView {
-    let format_number = move |v|{ lng.format_number(v as f64) };
+    let format_number = move |v| lng.format_number(v as f64);
     number_input_field(
-      label,
-      unit,
-      placeholder,
-      id,
-      description,
-      limits,
-      required,
-      input_value,
-      on_change,
-      evaluate_u64_input,
-      lng,
-      format_number,
+        label,
+        unit,
+        placeholder,
+        id,
+        description,
+        limits,
+        required,
+        input_value,
+        on_change,
+        evaluate_u64_input,
+        lng,
+        format_number,
     )
 }
 
-fn number_input_field<F,N>(
+fn number_input_field<F, N>(
     label: &'static str,
     unit: &'static str,
     placeholder: String,
@@ -391,10 +394,11 @@ fn number_input_field<F,N>(
     on_change: Callback<Option<N>, ()>,
     evaluate_input: F,
     lng: Lng,
-    format_value: impl Fn(N) -> String +Copy + 'static
+    format_value: impl Fn(N) -> String + Copy + 'static,
 ) -> impl IntoView
-where F: Fn(&str, bool, MinMax<N>, Lng) -> Result<Option<N>, NumberEvalError<N>> + Copy + 'static,
-      N: Copy + Clone + PartialEq + fmt::Display + 'static
+where
+    F: Fn(&str, bool, MinMax<N>, Lng) -> Result<Option<N>, NumberEvalError<N>> + Copy + 'static,
+    N: Copy + Clone + PartialEq + fmt::Display + 'static,
 {
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
@@ -410,14 +414,14 @@ where F: Fn(&str, bool, MinMax<N>, Lng) -> Result<Option<N>, NumberEvalError<N>>
             txt.set(new_value);
         }
         match evaluate_input(&txt.get(), required, limits, lng) {
-             Ok(_) => {
-                 error.set(None);
-             }
-             Err(err) => {
-                 if err == NumberEvalError::Empty && !required {
-                     error.set(None);
-                 }
-             }
+            Ok(_) => {
+                error.set(None);
+            }
+            Err(err) => {
+                if err == NumberEvalError::Empty && !required {
+                    error.set(None);
+                }
+            }
         }
     });
 

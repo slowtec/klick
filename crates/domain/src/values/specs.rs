@@ -143,32 +143,50 @@ fn specs() -> [(Id, ValueSpec); 48] {
             Id::SensitivityN2OCalculationMethod,
             S::new(T::n2o_emission_factor_calc_method()),
         ),
-        (Id::SensitivityN2OCustomFactor, S::new(T::factor())),
-        (Id::SensitivityN2OSideStreamFactor, S::new(T::factor())),
+        (
+            Id::SensitivityN2OCustomFactor,
+            S::new_optional(T::percent())
+                .with_min(0.0)
+                .with_max(100.0)
+                .with_default(constants::EMISSION_FACTOR_N2O_DEFAULT.into()),
+        ),
+        (
+            Id::SensitivityN2OSideStreamFactor,
+            S::new_optional(T::percent())
+                .with_min(0.0)
+                .with_max(100.0)
+                .with_default(constants::EMISSION_FACTOR_N2O_DEFAULT.into()),
+        ),
         (
             Id::SensitivityCH4ChpCalculationMethod,
             S::new(T::ch4_chp_emission_factor_calc_method()),
         ),
         (
             Id::SensitivityCH4ChpCustomFactor,
-            S::new(T::factor())
+            S::new_optional(T::percent())
                 .with_min(0.0)
-                .with_max(1.0)
-                .with_default(constants::EMISSION_FACTOR_CH4_CHP_CUSTOM_FACTOR_DEFAULT.into()),
+                .with_max(100.0)
+                .with_default(constants::EMISSION_FACTOR_CH4_CHP_DEFAULT.into()),
         ),
-        (Id::SensitivityCO2FossilCustomFactor, S::new(T::factor())),
+        (
+            Id::SensitivityCO2FossilCustomFactor,
+            S::new_optional(T::percent())
+                .with_min(0.0)
+                .with_max(100.0)
+                .with_default(constants::EMISSION_FACTOR_CO2_DEFAULT.into()),
+        ),
         (
             Id::SensitivitySludgeBagsCustomFactor,
-            S::new(T::factor())
+            S::new(T::qubicmeters_per_hour())
                 .with_min(0.0)
-                .with_max(1.0)
+                .with_max(100.0)
                 .with_default(constants::EMISSION_FACTOR_SLUDGE_BAGS.into()),
         ),
         (
             Id::SensitivitySludgeStorageCustomFactor,
-            S::new(T::factor())
+            S::new(T::percent())
                 .with_min(0.0)
-                .with_max(1.0)
+                .with_max(100.0)
                 .with_default(constants::EMISSION_FACTOR_SLUDGE_STORAGE.into()),
         ),
         (Id::SludgeTreatmentBagsAreOpen, S::new(T::bool())),

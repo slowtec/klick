@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::InputValueId as Id;
+use klick_domain::{InputValueId as Id, Value};
 
 use crate::pages::tool::fields::create_field;
 
@@ -77,11 +77,15 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 required: false,
                 field_type: FieldType::Bool {
                     initial_value: None,
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.sewage_sludge_treatment.sludge_bags_are_closed = Some(v));
+                    on_change: Callback::new(move|v: bool|{
+                        form_data.update(|d|d.set(Id::SludgeTreatmentBagsAreOpen, Some(Value::bool(!v))));
                     }),
                     input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_bags_are_closed.unwrap_or_default())
+                        form_data.with(|d|d.get(&Id::SludgeTreatmentBagsAreOpen)
+                          .map(Value::as_bool_unchecked)
+                          .map(|v|!v) // open => closed
+                          .unwrap_or_default()
+                        )
                     })
                 },
             },
@@ -93,11 +97,15 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 required: false,
                 field_type: FieldType::Bool {
                     initial_value: None,
-                    on_change: Callback::new(move|v|{
-                        form_data.update(|d|d.plant_profile.sewage_sludge_treatment.sludge_storage_containers_are_closed = Some(v));
+                    on_change: Callback::new(move|v: bool|{
+                        form_data.update(|d|d.set(Id::SludgeTreatmentStorageContainersAreOpen, Some(Value::bool(!v))));
                     }),
                     input: Signal::derive(move||{
-                        form_data.with(|d|d.plant_profile.sewage_sludge_treatment.sludge_storage_containers_are_closed.unwrap_or_default())
+                        form_data.with(|d|d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+                          .map(Value::as_bool_unchecked)
+                          .map(|v|!v) // open => closed
+                          .unwrap_or_default()
+                        )
                     })
                 },
             },

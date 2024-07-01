@@ -3,9 +3,10 @@ use leptos::*;
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::InputValueId;
-use klick_presenter::{Lng, ValueLabel};
 
-use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
+use crate::pages::tool::{
+    fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
+};
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -49,34 +50,9 @@ pub fn CH4EmissionsOpenDigesters(
             && (sewage_gas_produced > 0.0 || digester_count > 0)
     });
 
-    let custom_factor_field = Field {
-             label: InputValueId::SensitivitySludgeBagsCustomFactor.label(),
-             description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
-             required: false,
-             field_type: FieldType::Float {
-                 initial_value: None,
-                 placeholder: Some(Lng::De.format_number(f64::from(klick_domain::constants::EMISSION_FACTOR_SLUDGE_BAGS))),
-                 limits: MinMax {
-                     min: Some(0.0),
-                     max: Some(100.0),
-                 },
-                 unit: "m³(CH₄)/h",
-                 on_change: Callback::new(move |v| {
-                     form_data.update(|d| {
-                         d.sensitivity_parameters
-                         .ch4_sewage_sludge_emissions
-                         .emission_factor_sludge_bags = v;
-                     });
-                 }),
-                 input: Signal::derive(move || {
-                     input_data.with(|d| {
-                         d.sensitivity_parameters
-                         .ch4_sewage_sludge_emissions
-                         .emission_factor_sludge_bags
-                     })
-                 }),
-             },
-         };
+    let id = InputValueId::SensitivitySludgeBagsCustomFactor;
+
+    let custom_factor_field = create_field(form_data.write_only(), input_data, id);
 
     let field_set = FieldSet {
         title: None,
@@ -85,34 +61,8 @@ pub fn CH4EmissionsOpenDigesters(
 
     let (fields_view1, _, _) = render_field_sets(vec![field_set]);
 
-    let custom_factor_field2 = Field {
-             label: InputValueId::SensitivitySludgeStorageCustomFactor.label(),
-             description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
-             required: false,
-             field_type: FieldType::Float {
-                 initial_value: None,
-                 placeholder: Some(Lng::De.format_number(f64::from(klick_domain::constants::EMISSION_FACTOR_SLUDGE_STORAGE))),
-                 limits: MinMax {
-                     min: Some(0.0),
-                     max: Some(100.0),
-                 },
-                 unit: "%",
-                 on_change: Callback::new(move |v| {
-                     form_data.update(|d| {
-                         d.sensitivity_parameters
-                         .ch4_sewage_sludge_emissions
-                         .emission_factor_sludge_storage_containers = v;
-                     });
-                 }),
-                 input: Signal::derive(move || {
-                     input_data.with(|d| {
-                         d.sensitivity_parameters
-                         .ch4_sewage_sludge_emissions
-                         .emission_factor_sludge_storage_containers
-                     })
-                 }),
-             },
-         };
+    let id = InputValueId::SensitivitySludgeStorageCustomFactor;
+    let custom_factor_field2 = create_field(form_data.write_only(), input_data, id);
 
     let field_set = FieldSet {
         title: None,

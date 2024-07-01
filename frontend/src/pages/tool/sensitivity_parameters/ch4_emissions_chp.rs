@@ -5,13 +5,14 @@ use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{
-    constants::EMISSION_FACTOR_CH4_CHP_CUSTOM_FACTOR_DEFAULT as CH4_DEFAULT_CUSTOM_FACTOR,
     units::{Ch4ChpEmissionFactorCalcMethod, Tons},
     InputValueId as Id, Value,
 };
-use klick_presenter::{Lng, ValueLabel};
+use klick_presenter::ValueLabel;
 
-use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
+use crate::pages::tool::{
+    fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
+};
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -177,34 +178,8 @@ pub fn CH4EmissionsCHP(
 }
 
 fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
-    let custom_factor_field = Field {
-        label: "BHKW CH₄-EF benutzerdefiniert",
-        description: Some("Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen."),
-        required: false,
-        field_type: FieldType::Float {
-            initial_value: None,
-            placeholder: Some(Lng::De.format_number(CH4_DEFAULT_CUSTOM_FACTOR)),
-            limits: MinMax {
-                min: Some(0.0),
-                max: Some(100.0),
-            },
-            unit: "%",
-            on_change: Callback::new(move |v| {
-                form_data.update(|d| {
-                    d.sensitivity_parameters
-                        .ch4_chp_emissions
-                        .custom_emission_factor = v;
-                });
-            }),
-            input: Signal::derive(move || {
-                input_data.with(|d| {
-                    d.sensitivity_parameters
-                        .ch4_chp_emissions
-                        .custom_emission_factor
-                })
-            }),
-        },
-    };
+    let custom_factor_field =
+        create_field(form_data, input_data, Id::SensitivityCH4ChpCustomFactor);
     let fields = vec![custom_factor_field];
     FieldSet {
         title: None,
