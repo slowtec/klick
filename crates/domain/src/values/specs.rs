@@ -244,26 +244,44 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (Id::ScenarioN2OSideStreamFactor, S::new(T::factor())),
         (Id::ScenarioN2OSideStreamCoverIsOpen, S::new(T::bool())),
-        (Id::ScenarioProcessEnergySaving, S::new(T::percent())),
-        (Id::ScenarioFossilEnergySaving, S::new(T::percent())),
-        (Id::ScenarioDistrictHeating, S::new(T::kilowatthours())),
+        (
+            Id::ScenarioProcessEnergySaving,
+            S::new_optional(T::percent()).with_min(0.0).with_max(100.0),
+        ),
+        (
+            Id::ScenarioFossilEnergySaving,
+            S::new_optional(T::percent()).with_min(0.0).with_max(100.0),
+        ),
+        (
+            Id::ScenarioDistrictHeating,
+            S::new_optional(T::kilowatthours()),
+        ),
         (
             Id::ScenarioPhotovoltaicEnergyExpansion,
             S::new(T::kilowatthours()),
         ),
         (
             Id::ScenarioEstimatedSelfPhotovolaticUsage,
-            S::new(T::percent()),
+            S::new_optional(T::percent())
+                .with_min(0.0)
+                .with_max(100.0)
+                .with_default(Value::percent(100.0)),
         ),
         (Id::ScenarioWindEnergyExpansion, S::new(T::kilowatthours())),
         (
             Id::ScenarioEstimatedSelfWindEnergyUsage,
-            S::new(T::percent()),
+            S::new_optional(T::percent())
+                .with_min(0.0)
+                .with_max(100.0)
+                .with_default(Value::percent(100.0)),
         ),
         (Id::ScenarioWaterEnergyExpansion, S::new(T::kilowatthours())),
         (
             Id::ScenarioEstimatedSelfWaterEnergyUsage,
-            S::new(T::percent()),
+            S::new_optional(T::percent())
+                .with_min(0.0)
+                .with_max(100.0)
+                .with_default(Value::percent(100.0)),
         ),
     ]
 }

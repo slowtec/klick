@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::InputValueId;
+use klick_domain::{InputValueId as Id, Value};
 
 use crate::pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
@@ -18,39 +18,39 @@ pub fn CH4EmissionsOpenDigesters(
     let show_sludge_bags_controls = Signal::derive(move || {
         // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
         form_data.with(|d| {
-            !d.plant_profile
-                .sewage_sludge_treatment
-                .sludge_bags_are_closed
+            !d.get(&Id::SludgeTreatmentBagsAreOpen)
+                .map(Value::as_bool_unchecked)
+                .map(|v| !v)
                 .unwrap_or(false)
         })
     });
     let show_sludge_storage_containers_controls = Signal::derive(move || {
         // a better way could be to check out.co2_equivalents.ch4_sludge_storage_containers > 0.0
         form_data.with(|d| {
-            !d.plant_profile
-                .sewage_sludge_treatment
-                .sludge_storage_containers_are_closed
+            !d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+                .map(Value::as_bool_unchecked)
+                .map(|v| !v)
                 .unwrap_or(false)
         })
     });
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
-            d.plant_profile
-                .sewage_sludge_treatment
-                .digester_count
-                .unwrap_or(0)
+            d.get(&Id::SludgeTreatmentDigesterCount)
+                .map(Value::as_count_unchecked)
+                .map(u64::from)
+                .unwrap_or_default()
         });
         let sewage_gas_produced = form_data.with(|d| {
-            d.plant_profile
-                .energy_consumption
-                .sewage_gas_produced
-                .unwrap_or(0.0)
+            d.get(&Id::SewageGasProduced)
+                .map(Value::as_qubicmeters_unchecked)
+                .map(f64::from)
+                .unwrap_or_default()
         });
         (show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get())
             && (sewage_gas_produced > 0.0 || digester_count > 0)
     });
 
-    let id = InputValueId::SensitivitySludgeBagsCustomFactor;
+    let id = Id::SensitivitySludgeBagsCustomFactor;
 
     let custom_factor_field = create_field(form_data.write_only(), input_data, id);
 
@@ -61,7 +61,7 @@ pub fn CH4EmissionsOpenDigesters(
 
     let (fields_view1, _, _) = render_field_sets(vec![field_set]);
 
-    let id = InputValueId::SensitivitySludgeStorageCustomFactor;
+    let id = Id::SensitivitySludgeStorageCustomFactor;
     let custom_factor_field2 = create_field(form_data.write_only(), input_data, id);
 
     let field_set = FieldSet {

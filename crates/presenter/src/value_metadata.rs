@@ -40,7 +40,7 @@ impl Placeholder {
     }
 }
 
-fn metadata_de() -> [(Id, FieldMetaData); 33] {
+fn metadata_de() -> [(Id, FieldMetaData); 42] {
     use FieldMetaData as M;
     use Placeholder as P;
     [
@@ -285,6 +285,70 @@ fn metadata_de() -> [(Id, FieldMetaData); 33] {
                 placeholder: P::default_value(),
                 description: "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder
                     einer Messkampagne) einen Wert für den EF der Prozesswasserbehandlung eintragen.",
+            }
+        ),
+        (
+            Id::ScenarioDistrictHeating,
+            M {
+                placeholder: P::text("Jahresleistung"),
+                description: "Angabe der Abgabeleistung an Fern-/Nahwärme in Kilowattstunden (kWh) pro Jahr (a).",
+
+            }
+        ),
+        (
+            Id::ScenarioEstimatedSelfWaterEnergyUsage,
+            M {
+                placeholder: P::default_value(),
+                description: "Geschätzte Eigennutzung der Wasserkraftleistung in Prozent (%).",
+            }
+        ),
+        (
+            Id::ScenarioWaterEnergyExpansion,
+            M {
+                placeholder: P::text("Jahresleistung"),
+                description: "Angabe des Zubaus an Wasserkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."
+            }
+        ),
+        (
+            Id::ScenarioEstimatedSelfWindEnergyUsage,
+            M {
+                placeholder: P::default_value(),
+                description: "Geschätzte Eigennutzung der Windkraftleistung in Prozent (%).",
+            }
+        ),
+        (
+            Id::ScenarioWindEnergyExpansion,
+            M {
+                placeholder: P::text("Jahresleistung"),
+                description: "Angabe des Zubaus an Windkraftleistung in Kilowattstunden (kWh) pro Jahr (a).",
+            }
+        ),
+        (
+            Id::ScenarioEstimatedSelfPhotovolaticUsage,
+            M {
+                placeholder: P::default_value(),
+                description: "Geschätzte Eigennutzung der Photovoltaikleistung in Prozent (%).",
+            }
+        ),
+        (
+           Id::ScenarioPhotovoltaicEnergyExpansion,
+            M {
+                    placeholder: P::text("Jahresleistung"),
+                    description: "Angabe des Zubaus an Photovoltaikleistung in Kilowattstunden (kWh) pro Jahr (a).",
+            }
+        ),
+        (
+            Id::ScenarioFossilEnergySaving,
+            M {
+                    placeholder: P::text("Jahreseinsparung"),
+                    description: "Angabe der geschätzten Energieeinsparung bei fossilen Energieträgern (z.B. Heizöl/Erdgas) in Prozent (%).",
+            }
+        ),
+        (
+            Id::ScenarioProcessEnergySaving,
+            M {
+               placeholder: P::text("Jahreseinsparung"),
+               description: "Angabe der geschätzten Energieeinsparung bei Kläranlagen-Prozessen in Prozent (%).",
             }
         ),
     ]

@@ -2,6 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
+use klick_domain::{InputValueId as Id, Value};
 use klick_presenter::*;
 
 use crate::pages::tool::{CalculationOutcome, Card};
@@ -53,26 +54,21 @@ pub fn options(
 }
 
 fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+    let id = Id::ScenarioN2OSideStreamCoverIsOpen;
     let custom_factor_field = Field {
-        label: InputValueId::ScenarioN2OSideStreamCoverIsOpen.label(), // TODO: Rename ID
+        label: id.label(),
         description: None,
         required: false,
         field_type: FieldType::Bool {
             initial_value: None,
-            on_change: Callback::new(move |v| {
+            on_change: Callback::new(move |v: bool| {
                 form_data.update(|d| {
-                    d.optimization_scenario
-                        .side_stream_treatment
-                        .side_stream_cover_is_closed = Some(v);
+                    d.set(id, Some(Value::bool(!v)));
                 });
             }),
             input: Signal::derive(move || {
                 input_data
-                    .with(|d| {
-                        d.optimization_scenario
-                            .side_stream_treatment
-                            .side_stream_cover_is_closed
-                    })
+                    .with(|d| d.get(&id).map(Value::as_bool_unchecked).map(|v| !v))
                     .unwrap_or(false)
             }),
         },

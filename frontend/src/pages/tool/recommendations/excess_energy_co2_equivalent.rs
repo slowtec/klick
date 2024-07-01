@@ -2,10 +2,10 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::units::*;
+use klick_domain::{units::*, InputValueId as Id};
 use klick_presenter::*;
 
-use crate::pages::tool::{CalculationOutcome, Card};
+use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
 
 #[allow(clippy::too_many_lines)] // TODO
 pub fn options(
@@ -149,278 +149,59 @@ pub fn options(
     }
 }
 
-#[allow(clippy::too_many_lines)] // TODO
 fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> Vec<FieldSet> {
     vec![
         FieldSet {
             title: Some("Prozesse und fossile Energieträger"),
             fields: vec![
-                Field {
-                    label: InputValueId::ScenarioProcessEnergySaving.label(),
-                    description: Some("Angabe der geschätzten Energieeinsparung bei Kläranlagen-Prozessen in Prozent (%)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("Jahreseinsparung".to_string()),
-                        limits: MinMax {
-                            min: Some(0.0),
-                            max: Some(100.0),
-                        },
-                        unit: "%",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .process_energy_savings = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .process_energy_savings
-                            })
-                        }),
-                    },
-                },
-                Field {
-                    label: InputValueId::ScenarioFossilEnergySaving.label(),
-                    description: Some("Angabe der geschätzten Energieeinsparung bei fossilen Energieträgern (z.B. Heizöl/Erdgas) in Prozent (%)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("Jahreseinsparung".to_string()),
-                        limits: MinMax {
-                            min: Some(0.0),
-                            max: Some(100.0),
-                        },
-                        unit: "%",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .fossil_energy_savings = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .fossil_energy_savings
-                            })
-                        }),
-                    },
-                },
+                create_field(form_data, input_data, Id::ScenarioProcessEnergySaving),
+                create_field(form_data, input_data, Id::ScenarioFossilEnergySaving),
             ],
         },
         FieldSet {
             title: Some("Photovoltaik"),
             fields: vec![
-                Field {
-                    label: InputValueId::ScenarioPhotovoltaicEnergyExpansion.label(),
-                    description: Some("Angabe des Zubaus an Photovoltaikleistung in Kilowattstunden (kWh) pro Jahr (a)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("Jahresleistung".to_string()),
-                        limits: MinMax {
-                            min: None,
-                            max: None,
-                        },
-                        unit: "kWh/a",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .photovoltaic_energy_expansion = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .photovoltaic_energy_expansion
-                            })
-                        }),
-                    },
-                },
-                Field {
-                    label: InputValueId::ScenarioEstimatedSelfPhotovolaticUsage.label(),
-                    description: Some("Geschätzte Eigennutzung der Photovoltaikleistung in Prozent (%)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("100".to_string()),
-                        limits: MinMax {
-                            min: Some(0.0),
-                            max: Some(100.0),
-                        },
-                        unit: "%",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .estimated_self_photovoltaic_usage = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .estimated_self_photovoltaic_usage
-                            })
-                        }),
-                    },
-                },
+                create_field(
+                    form_data,
+                    input_data,
+                    Id::ScenarioPhotovoltaicEnergyExpansion,
+                ),
+                create_field(
+                    form_data,
+                    input_data,
+                    Id::ScenarioEstimatedSelfPhotovolaticUsage,
+                ),
             ],
         },
         FieldSet {
             title: Some("Windkraft"),
             fields: vec![
-                Field {
-                    label: InputValueId::ScenarioWindEnergyExpansion.label(),
-                    description: Some("Angabe des Zubaus an Windkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("Jahresleistung".to_string()),
-                        limits: MinMax {
-                            min: None,
-                            max: None,
-                        },
-                        unit: "kWh/a",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .wind_energy_expansion = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .wind_energy_expansion
-                            })
-                        }),
-                    },
-                },
-                Field {
-                    label: InputValueId::ScenarioEstimatedSelfWindEnergyUsage.label(),
-                    description: Some("Geschätzte Eigennutzung der Windkraftleistung in Prozent (%)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("100".to_string()),
-                        limits: MinMax {
-                            min: Some(0.0),
-                            max: Some(100.0),
-                        },
-                        unit: "%",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .estimated_self_wind_energy_usage = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .estimated_self_wind_energy_usage
-                            })
-                        }),
-                    },
-                },
+                create_field(form_data, input_data, Id::ScenarioWindEnergyExpansion),
+                create_field(
+                    form_data,
+                    input_data,
+                    Id::ScenarioEstimatedSelfWindEnergyUsage,
+                ),
             ],
         },
         FieldSet {
             title: Some("Wasserkraft"),
             fields: vec![
-                Field {
-                    label: InputValueId::ScenarioWaterEnergyExpansion.label(),
-                    description: Some("Angabe des Zubaus an Wasserkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("Jahresleistung".to_string()),
-                        limits: MinMax {
-                            min: None,
-                            max: None,
-                        },
-                        unit: "kWh/a",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .water_energy_expansion = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .water_energy_expansion
-                            })
-                        }),
-                    },
-                },
-                Field {
-                    label: InputValueId::ScenarioEstimatedSelfWaterEnergyUsage.label(),
-                    description: Some("Geschätzte Eigennutzung der Wasserkraftleistung in Prozent (%)."),
-                    required: false,
-                    field_type: FieldType::Float {
-                        initial_value: None,
-                        placeholder: Some("100".to_string()),
-                        limits: MinMax {
-                            min: Some(0.0),
-                            max: Some(100.0),
-                        },
-                        unit: "%",
-                        on_change: Callback::new(move |v| {
-                            form_data.update(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .estimated_self_water_energy_usage = v;
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            input_data.with(|d| {
-                                d.optimization_scenario
-                                    .energy_emissions
-                                    .estimated_self_water_energy_usage
-                            })
-                        }),
-                    },
-                },
+                create_field(form_data, input_data, Id::ScenarioWaterEnergyExpansion),
+                create_field(
+                    form_data,
+                    input_data,
+                    Id::ScenarioEstimatedSelfWaterEnergyUsage,
+                ),
             ],
         },
         FieldSet {
             title: Some("Abwärmenutzung"),
-            fields: vec![Field {
-                label: InputValueId::ScenarioDistrictHeating.label(),
-                description: Some("Angabe der Abgabeleistung an Fern-/Nahwärme in Kilowattstunden (kWh) pro Jahr (a)."),
-                required: false,
-                field_type: FieldType::Float {
-                    initial_value: None,
-                    placeholder: Some("Jahresleistung".to_string()),
-                    limits: MinMax {
-                        min: None,
-                        max: None,
-                    },
-                    unit: "kWh/a",
-                    on_change: Callback::new(move |v| {
-                        form_data.update(|d| {
-                            d.optimization_scenario.energy_emissions.district_heating = v;
-                        });
-                    }),
-                    input: Signal::derive(move || {
-                        input_data
-                            .with(|d| d.optimization_scenario.energy_emissions.district_heating)
-                    }),
-                },
-            }],
+            fields: vec![create_field(
+                form_data,
+                input_data,
+                Id::ScenarioDistrictHeating,
+            )],
         },
     ]
 }

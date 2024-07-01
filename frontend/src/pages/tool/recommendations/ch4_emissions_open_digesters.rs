@@ -2,6 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
+use klick_domain::{InputValueId as Id, Value};
 
 use crate::pages::tool::{CalculationOutcome, Card};
 
@@ -17,34 +18,32 @@ pub fn options(
 
     let show_sludge_bags_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.plant_profile
-                .sewage_sludge_treatment
-                .sludge_bags_are_closed
-                != Some(true)
+            d.get(&Id::SludgeTreatmentBagsAreOpen)
+                .map(Value::as_bool_unchecked)
+                != Some(false)
         })
     });
 
     let show_sludge_storage_containers_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.plant_profile
-                .sewage_sludge_treatment
-                .sludge_storage_containers_are_closed
-                != Some(true)
+            d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+                .map(Value::as_bool_unchecked)
+                != Some(false)
         })
     });
 
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
-            d.plant_profile
-                .sewage_sludge_treatment
-                .digester_count
-                .unwrap_or(0)
+            d.get(&Id::SludgeTreatmentDigesterCount)
+                .map(Value::as_count_unchecked)
+                .map(u64::from)
+                .unwrap_or_default()
         });
         let sewage_gas_produced = form_data.with(|d| {
-            d.plant_profile
-                .energy_consumption
-                .sewage_gas_produced
-                .unwrap_or(0.0)
+            d.get(&Id::SewageGasProduced)
+                .map(Value::as_qubicmeters_unchecked)
+                .map(f64::from)
+                .unwrap_or_default()
         });
         (show_sludge_bags_controls.get() || show_sludge_storage_containers_controls.get())
             && (sewage_gas_produced > 0.0 || digester_count > 0)
@@ -110,24 +109,21 @@ pub fn options(
 }
 
 fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+    let id = Id::ScenarioSludgeBagsAreOpen;
     let custom_factor_field1 = Field {
         label: "Sließen der Schlammtaschen",
         description: None,
         required: false,
         field_type: FieldType::Bool {
             initial_value: None,
-            on_change: Callback::new(move |v| {
-                form_data.update(|d| {
-                    d.optimization_scenario
-                        .sewage_sludge_treatment
-                        .sludge_bags_are_closed = Some(v);
-                });
+            on_change: Callback::new(move |v: bool| {
+                form_data.update(|d| d.set(id, Some(Value::bool(!v))));
             }),
             input: Signal::derive(move || {
                 input_data.with(|d| {
-                    d.optimization_scenario
-                        .sewage_sludge_treatment
-                        .sludge_bags_are_closed
+                    d.get(&id)
+                        .map(Value::as_bool_unchecked)
+                        .map(|v| !v)
                         .unwrap_or(false)
                 })
             }),
@@ -141,24 +137,21 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
 }
 
 fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+    let id = Id::ScenarioSludgeStorageContainersAreOpen;
     let custom_factor_field2 = Field {
         label: "Sließen der Schlammlagerung",
         description: None,
         required: false,
         field_type: FieldType::Bool {
             initial_value: None,
-            on_change: Callback::new(move |v| {
-                form_data.update(|d| {
-                    d.optimization_scenario
-                        .sewage_sludge_treatment
-                        .sludge_storage_containers_are_closed = Some(v);
-                });
+            on_change: Callback::new(move |v: bool| {
+                form_data.update(|d| d.set(id, Some(Value::bool(!v))));
             }),
             input: Signal::derive(move || {
                 input_data.with(|d| {
-                    d.optimization_scenario
-                        .sewage_sludge_treatment
-                        .sludge_storage_containers_are_closed
+                    d.get(&id)
+                        .map(Value::as_bool_unchecked)
+                        .map(|v| !v)
                         .unwrap_or(false)
                 })
             }),

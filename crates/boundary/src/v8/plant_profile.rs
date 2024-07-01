@@ -16,8 +16,8 @@ pub struct PlantProfile {
 
     pub(crate) influent_average: AnnualAverageInfluent,
     pub(crate) effluent_average: AnnualAverageEffluent,
-    pub energy_consumption: EnergyConsumption,
-    pub sewage_sludge_treatment: SewageSludgeTreatment,
+    pub(crate) energy_consumption: EnergyConsumption,
+    pub(crate) sewage_sludge_treatment: SewageSludgeTreatment,
     pub(crate) side_stream_treatment: SideStreamTreatment,
     pub(crate) operating_materials: OperatingMaterials,
 }

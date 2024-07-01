@@ -2,10 +2,7 @@ use derive_more::From;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-use klick_domain::{
-    self as domain,
-    units::{Factor, Percent, RatioExt, Value},
-};
+use klick_domain::{self as domain, Value};
 
 pub use crate::v7::ProjectId;
 
@@ -22,7 +19,7 @@ pub struct Data {
 }
 
 #[derive(Serialize, Deserialize, From)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
 #[serde(untagged)]
 pub enum Project {
     Saved(SavedProject),
@@ -39,7 +36,7 @@ impl Project {
 }
 
 #[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
 pub struct SavedProject {
     pub id: ProjectId,
     pub created_at: OffsetDateTime,
@@ -54,21 +51,22 @@ pub struct FormData {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) project_title: Option<String>,
     // First page in the tool frontend
-    pub plant_profile: PlantProfile,
+    pub(crate) plant_profile: PlantProfile,
     // Second page in the tool frontend
     pub(crate) sensitivity_parameters: SensitivityParameters,
     // Third page in the tool frontend
-    pub optimization_scenario: OptimizationScenario,
+    pub(crate) optimization_scenario: OptimizationScenario,
 }
 
 // NOTE:
 // In the future, we want to use a HashMap,
 // which is why we are first implementing manual access via variable IDs.
 impl FormData {
+    // TODO: return reference: Option<&Value>
     pub fn get(&self, id: &domain::InputValueId) -> Option<Value> {
         use domain::{InputValueId as Id, Value as V};
 
-        match id {
+        let value = match id {
             Id::ProjectName => self.project_title.clone().map(Value::Text),
             Id::PlantName => self.plant_profile.plant_name.clone().map(Value::Text),
             Id::PopulationEquivalent => self
@@ -127,12 +125,12 @@ impl FormData {
                 .sensitivity_parameters
                 .n2o_emissions
                 .custom_emission_factor
-                .map(percent_as_factor_value),
+                .map(V::percent),
             Id::SensitivityN2OSideStreamFactor => self
                 .sensitivity_parameters
                 .n2o_emissions
                 .side_stream_emission_factor
-                .map(percent_as_factor_value),
+                .map(V::percent),
             Id::SensitivityCH4ChpCalculationMethod => self
                 .sensitivity_parameters
                 .ch4_chp_emissions
@@ -143,22 +141,22 @@ impl FormData {
                 .sensitivity_parameters
                 .ch4_chp_emissions
                 .custom_emission_factor
-                .map(percent_as_factor_value),
+                .map(V::percent),
             Id::SensitivityCO2FossilCustomFactor => self
                 .sensitivity_parameters
                 .co2_fossil_emissions
                 .emission_factor
-                .map(percent_as_factor_value),
+                .map(V::percent),
             Id::SensitivitySludgeBagsCustomFactor => self
                 .sensitivity_parameters
                 .ch4_sewage_sludge_emissions
                 .emission_factor_sludge_bags
-                .map(percent_as_factor_value),
+                .map(V::qubicmeters_per_hour),
             Id::SensitivitySludgeStorageCustomFactor => self
                 .sensitivity_parameters
                 .ch4_sewage_sludge_emissions
                 .emission_factor_sludge_storage_containers
-                .map(percent_as_factor_value),
+                .map(V::percent),
             Id::SludgeTreatmentBagsAreOpen => self
                 .plant_profile
                 .sewage_sludge_treatment
@@ -294,7 +292,12 @@ impl FormData {
                 .energy_emissions
                 .district_heating
                 .map(V::kilowatthours),
-        }
+        };
+        debug_assert!(value
+            .as_ref()
+            .map(|v| v.value_type() == domain::value_spec(id).value_type())
+            .unwrap_or(true));
+        value
     }
 
     // TODO:
@@ -307,6 +310,12 @@ impl FormData {
     // }
     pub fn set(&mut self, id: domain::InputValueId, value: Option<Value>) {
         use domain::{InputValueId as Id, Value as V};
+
+        log::debug!("Set {id:?}: {value:?}");
+        debug_assert!(value
+            .as_ref()
+            .map(|v| v.value_type() == domain::value_spec(&id).value_type())
+            .unwrap_or(true));
 
         match id {
             Id::ProjectName => {
@@ -379,12 +388,13 @@ impl FormData {
             Id::SensitivityN2OCustomFactor => {
                 self.sensitivity_parameters
                     .n2o_emissions
-                    .custom_emission_factor = value.map(factor_value_as_percent);
+                    .custom_emission_factor = value.map(V::as_percent_unchecked).map(Into::into);
             }
             Id::SensitivityN2OSideStreamFactor => {
                 self.sensitivity_parameters
                     .n2o_emissions
-                    .side_stream_emission_factor = value.map(factor_value_as_percent);
+                    .side_stream_emission_factor =
+                    value.map(V::as_percent_unchecked).map(Into::into);
             }
             Id::SensitivityCH4ChpCalculationMethod => {
                 self.sensitivity_parameters
@@ -396,22 +406,25 @@ impl FormData {
             Id::SensitivityCH4ChpCustomFactor => {
                 self.sensitivity_parameters
                     .ch4_chp_emissions
-                    .custom_emission_factor = value.map(factor_value_as_percent);
+                    .custom_emission_factor = value.map(V::as_percent_unchecked).map(Into::into);
             }
             Id::SensitivityCO2FossilCustomFactor => {
                 self.sensitivity_parameters
                     .co2_fossil_emissions
-                    .emission_factor = value.map(factor_value_as_percent);
+                    .emission_factor = value.map(V::as_percent_unchecked).map(Into::into);
             }
             Id::SensitivitySludgeBagsCustomFactor => {
                 self.sensitivity_parameters
                     .ch4_sewage_sludge_emissions
-                    .emission_factor_sludge_bags = value.map(factor_value_as_percent);
+                    .emission_factor_sludge_bags = value
+                    .map(V::as_qubicmeters_per_hour_unchecked)
+                    .map(Into::into);
             }
             Id::SensitivitySludgeStorageCustomFactor => {
                 self.sensitivity_parameters
                     .ch4_sewage_sludge_emissions
-                    .emission_factor_sludge_storage_containers = value.map(factor_value_as_percent);
+                    .emission_factor_sludge_storage_containers =
+                    value.map(V::as_percent_unchecked).map(Into::into);
             }
             Id::SludgeTreatmentBagsAreOpen => {
                 let closed = value.map(V::as_bool_unchecked).map(|v| !v); // open => closed
@@ -554,12 +567,4 @@ impl FormData {
             }
         }
     }
-}
-
-fn percent_as_factor_value(v: f64) -> Value {
-    Percent::new(v).convert_to::<Factor>().into()
-}
-
-fn factor_value_as_percent(v: Value) -> f64 {
-    v.as_factor_unchecked().convert_to::<Percent>().into()
 }
