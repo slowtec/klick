@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::{fmt, collections::{HashMap, HashSet}};
 
 use leptos::*;
 use thiserror::Error;
@@ -332,40 +332,103 @@ fn FloatInput(
     #[prop(into)] on_change: Callback<Option<f64>, ()>,
     lng: Lng,
 ) -> impl IntoView {
+    let format_number = move |v|{ lng.format_number(v) };
+    number_input_field(
+      label,
+      unit,
+      placeholder,
+      id,
+      description,
+      limits,
+      required,
+      input_value,
+      on_change,
+      evaluate_float_input,
+      lng,
+      format_number,
+    )
+}
+
+#[component]
+fn UnsignedIntegerInput(
+    label: &'static str,
+    unit: &'static str,
+    placeholder: String,
+    id: FieldId,
+    description: Option<&'static str>,
+    limits: MinMax<u64>,
+    required: bool,
+    input_value: Signal<Option<u64>>,
+    #[prop(into)] on_change: Callback<Option<u64>, ()>,
+    lng: Lng,
+) -> impl IntoView {
+    let format_number = move |v|{ lng.format_number(v as f64) };
+    number_input_field(
+      label,
+      unit,
+      placeholder,
+      id,
+      description,
+      limits,
+      required,
+      input_value,
+      on_change,
+      evaluate_u64_input,
+      lng,
+      format_number,
+    )
+}
+
+fn number_input_field<F,N>(
+    label: &'static str,
+    unit: &'static str,
+    placeholder: String,
+    id: FieldId,
+    description: Option<&'static str>,
+    limits: MinMax<N>,
+    required: bool,
+    input_value: Signal<Option<N>>,
+    on_change: Callback<Option<N>, ()>,
+    evaluate_input: F,
+    lng: Lng,
+    format_value: impl Fn(N) -> String +Copy + 'static
+) -> impl IntoView
+where F: Fn(&str, bool, MinMax<N>, Lng) -> Result<Option<N>, NumberEvalError<N>> + Copy + 'static,
+      N: Copy + Clone + PartialEq + fmt::Display + 'static
+{
     let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
     let txt = RwSignal::new(String::new());
     let is_focussed = RwSignal::new(false);
 
-    create_effect(move |_| {
+    Effect::new(move |_| {
         if !is_focussed.get() {
-            txt.set(
-                input_value
-                    .get()
-                    .map(|v| lng.format_number(v))
-                    .unwrap_or_else(String::new),
-            );
+            let new_value = input_value
+                .get()
+                .map(format_value)
+                .unwrap_or_else(String::new);
+            txt.set(new_value);
         }
-        match evaluate_float_input(&txt.get(), required, limits, lng) {
-            Ok(_) => {
-                error.set(None);
-            }
-            Err(err) => {
-                if err == FloatEvalError::Empty && !required {
-                    error.set(None);
-                }
-            }
+        match evaluate_input(&txt.get(), required, limits, lng) {
+             Ok(_) => {
+                 error.set(None);
+             }
+             Err(err) => {
+                 if err == NumberEvalError::Empty && !required {
+                     error.set(None);
+                 }
+             }
         }
     });
 
     let on_input = move |ev| {
         let input = event_target_value(&ev);
-        let result = evaluate_float_input(&input, required, limits, lng);
+        let result = evaluate_input(&input, required, limits, lng);
         txt.set(input);
         match result {
             Err(err) => {
                 error.set(Some(err.to_string()));
-                if err == FloatEvalError::Empty {
+                if err == NumberEvalError::Empty {
                     on_change.call(None);
                 }
             }
@@ -383,7 +446,7 @@ fn FloatInput(
     let on_focus_in = move |_| {
         is_focussed.set(true);
         if let Some(value) = input_value.get() {
-            let new_txt = lng.format_number(value);
+            let new_txt = format_value(value);
             txt.set(new_txt)
         }
     };
@@ -402,13 +465,13 @@ fn FloatInput(
 
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
-            id = { id.to_string() }
+            id = id.to_string()
             type="text"
             class = move || {
               let bg = if error.get().is_some() { "bg-red-100" } else { "" };
               format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
             }
-            placeholder = { placeholder }
+            placeholder = placeholder
             on:input = on_input
             on:focusin = on_focus_in
             on:focusout = on_focus_out
@@ -419,7 +482,9 @@ fn FloatInput(
           </div>
         </div>
         <Show when=move || error.get().is_some()>
-          <p class="mt-2 text-sm" style="color: red">{ move || error.get() }</p>
+          <p class="mt-2 text-sm" style="color: red">
+            { move || error.get() }
+          </p>
         </Show>
       </div>
     }
@@ -495,108 +560,6 @@ fn check_min_max<T: PartialOrd>(v: T, limits: MinMax<T>) -> Result<(), NumberEva
         }
     }
     Ok(())
-}
-
-#[component]
-fn UnsignedIntegerInput(
-    label: &'static str,
-    unit: &'static str,
-    placeholder: String,
-    id: FieldId,
-    description: Option<&'static str>,
-    limits: MinMax<u64>,
-    required: bool,
-    input_value: Signal<Option<u64>>,
-    #[prop(into)] on_change: Callback<Option<u64>, ()>,
-    lng: Lng,
-) -> impl IntoView {
-    let required_label = format!("{} {}", if required { "*" } else { "" }, label);
-    let error = RwSignal::new(Option::<String>::None);
-    let txt = RwSignal::new(String::new());
-    let is_focussed = RwSignal::new(false);
-
-    create_effect(move |_| {
-        if !is_focussed.get() {
-            txt.set(
-                input_value
-                    .get()
-                    .map(|v| lng.format_number(v as f64))
-                    .unwrap_or_else(String::new),
-            );
-        }
-        match evaluate_u64_input(&txt.get(), required, limits, lng) {
-            Ok(_) => {
-                error.set(None);
-            }
-            Err(err) => {
-                if err == NumberEvalError::Empty && !required {
-                    error.set(None);
-                }
-            }
-        }
-    });
-
-    let on_input = move |ev| {
-        let input = event_target_value(&ev);
-        let result = evaluate_u64_input(&input, required, limits, lng);
-        txt.set(input);
-        match result {
-            Err(err) => {
-                error.set(Some(err.to_string()));
-                if err == NumberEvalError::Empty {
-                    on_change.call(None);
-                }
-            }
-            Ok(value) => {
-                error.set(None);
-                on_change.call(value);
-            }
-        }
-    };
-
-    let on_focus_out = move |_| {
-        is_focussed.set(false);
-    };
-
-    let on_focus_in = move |_| {
-        is_focussed.set(true);
-    };
-
-    // FIXME: Format input as string and remove delemiters
-    // FIXME: trigger focusout on Enter or Escape
-
-    view! {
-      <div>
-        <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-          <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
-            { required_label }
-          </label>
-          { create_tooltip(label, description, required, Some(unit)) }
-        </div>
-
-        <div class="relative mt-2 rounded-md shadow-sm">
-          <input
-            id = { id.to_string() }
-            type="text"
-            class = move || {
-              let bg = if error.get().is_some() { "bg-red-100" } else { "" };
-              format!("{} {bg}", "block w-full rounded-md border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6")
-            }
-            placeholder = placeholder
-            on:input = on_input
-            on:focusin = on_focus_in
-            on:focusout = on_focus_out
-            prop:value = txt
-          />
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <span class="text-gray-500 sm:text-sm">{ unit }</span>
-          </div>
-        </div>
-        <Show when=move || error.get().is_some()>
-          <p class="mt-2 text-sm" style="color: red">{ move || error.get() }</p>
-        </Show>
-      </div>
-    }
 }
 
 #[component]
