@@ -49,15 +49,13 @@ pub fn App() -> impl IntoView {
 
     // -- hotkeys -- //
 
-    let main_ref = create_node_ref::<html::Main>();
-    provide_hotkeys_context(main_ref, false, scopes!());
+    let app_ref = create_node_ref::<html::Div>();
+    provide_hotkeys_context(app_ref, false, scopes!());
     let accessibility_always_show: Option<RwSignal<bool>> = Some(RwSignal::new(false));
 
     use_hotkeys!(("F1") => move |_| {
-      // log::info!("F1 has been pressed");
       match accessibility_always_show {
         Some(o) => {
-          // log::info!("accessibility_always_show: {}", o.get());
           o.set(!o.get())},
         None => {}
       }
@@ -136,156 +134,156 @@ pub fn App() -> impl IntoView {
     });
 
     view! {
-      <Nav
-        current_page = current_page.into()
-        user_info = user_info.into()
-        on_logout
-      />
-      <Router>
-        <Routes>
-          <Route
-            path=Page::Home.path()
-            view= move ||{
-              set_current_page.update(|p|*p = Page::Home);
-              view! {
-                <Main>
-                  <Markdown content = ABOUT_MD />
-                </Main>
-              }
-            }
-          />
-          <Route
-            path=Page::Tool.path()
-            view= move ||{
-              set_current_page.update(|p|*p = Page::Tool);
-              let current_section = RwSignal::new(PageSection::DataCollection);
-              view! {
-                <Main>
-                <main _ref=main_ref>
-                  <header
-                    class="prose"
-                    id = move || current_section.get().section_id()
-                  >
-                    <h1 class="mb-8">
-                      "KlicK-Tool "
-                      <span class="font-light text-xl text-gray-600">
-                        <a
-                          class="font-light text-xl no-underline hover:underline"
-                          href= { CHANGELOG_URL } >
-                          "(v" { VERSION } ")"
-                        </a>
-                      </span>
-                    </h1>
-                    <p id="keyboard-hint" class="sr-only">Press F1 to display all hints inline.</p>
-                  </header>
-                  <Tool
-                    api = authorized_api.into()
-                    current_project
-                    current_section
-                    accessibility_always_show
-                  />
-                  </main>
-                </Main>
-              }
-            }
-          />
-          <Route
-            path=Page::Faq.path()
-            view= move || {
-              set_current_page.update(|p|*p = Page::Faq);
-              view! {
-                <Main>
-                  <header class="prose">
-                    <h1>"FAQs"</h1>
-                  </header>
-                  <Faq />
-                </Main>
-              }
-            }
-          />
-          <Route
-            path=Page::OpenSource.path()
-            view= move || {
-              set_current_page.update(|p|*p = Page::OpenSource);
-              view! {
-                <Main>
-                  <Markdown content = OPEN_SOURCE_MD />
-                </Main>
-              }
-            }
-          />
-          <Route
-            path=Page::Imprint.path()
-            view= move || {
-              set_current_page.update(|p|*p = Page::Imprint);
-              view! {
-                <Main>
-                  <Markdown content = IMPRINT_MD />
-                </Main>
-              }
-            }
-          />
-          <Route
-              path=Page::Login.path()
-              view=move || {
-                  view! {
-                      <Login
-                          api=unauthorized_api
-                          on_success=move |api: api::AuthorizedApi| {
-                              log::info!("Successfully logged in");
-                              authorized_api.update(|v| *v = Some(api.clone()));
-                              let navigate = use_navigate();
-                              navigate(Page::Home.path(), NavigateOptions::default());
-                              fetch_user_info.dispatch(api);
-                          }
-                      />
-                  }
-              }
-          />
-          <Route
-              path=Page::Register.path()
-              view=move || {
-                  view! { <Register api=unauthorized_api /> }
-              }
-          />
-          <Route
-              path=Page::ResetPasswordRequest.path()
-              view=move || {
-                  view! { <ResetPasswordRequest api=unauthorized_api /> }
-              }
-          />
-          <Route
-              path=Page::ResetPassword.path()
-              view=move || {
-                  view! { <ResetPassword api=unauthorized_api /> }
-              }
-          />
-          <Route
-              path=Page::ConfirmEmailAddress.path()
-              view= move || {
-                  view! { <ConfirmEmailAddress api=unauthorized_api /> }
-              }
-          />
-          <Route
-              path=Page::Projects.path()
-              view = move || {
-                set_current_page.update(|p|*p = Page::Projects);
+      <div _ref=app_ref>
+        <Nav
+          current_page = current_page.into()
+          user_info = user_info.into()
+          on_logout
+        />
+        <Router>
+          <Routes>
+            <Route
+              path=Page::Home.path()
+              view= move ||{
+                set_current_page.update(|p|*p = Page::Home);
                 view! {
                   <Main>
-                    <header class="prose">
-                      <h1 class="mb-8">"Projekte"</h1>
+                    <Markdown content = ABOUT_MD />
+                  </Main>
+                }
+              }
+            />
+            <Route
+              path=Page::Tool.path()
+              view= move ||{
+                set_current_page.update(|p|*p = Page::Tool);
+                let current_section = RwSignal::new(PageSection::DataCollection);
+                view! {
+                  <Main>
+                    <header
+                      class="prose"
+                      id = move || current_section.get().section_id()
+                    >
+                      <h1 class="mb-8">
+                        "KlicK-Tool "
+                        <span class="font-light text-xl text-gray-600">
+                          <a
+                            class="font-light text-xl no-underline hover:underline"
+                            href= { CHANGELOG_URL } >
+                            "(v" { VERSION } ")"
+                          </a>
+                        </span>
+                      </h1>
+                      <p id="keyboard-hint" class="sr-only">Press F1 to display all hints inline.</p>
                     </header>
-                    <Projects
+                    <Tool
                       api = authorized_api.into()
                       current_project
+                      current_section
+                      accessibility_always_show
                     />
                   </Main>
                 }
               }
-          />
-        </Routes>
-      </Router>
-      <Footer />
+            />
+            <Route
+              path=Page::Faq.path()
+              view= move || {
+                set_current_page.update(|p|*p = Page::Faq);
+                view! {
+                  <Main>
+                    <header class="prose">
+                      <h1>"FAQs"</h1>
+                    </header>
+                    <Faq />
+                  </Main>
+                }
+              }
+            />
+            <Route
+              path=Page::OpenSource.path()
+              view= move || {
+                set_current_page.update(|p|*p = Page::OpenSource);
+                view! {
+                  <Main>
+                    <Markdown content = OPEN_SOURCE_MD />
+                  </Main>
+                }
+              }
+            />
+            <Route
+              path=Page::Imprint.path()
+              view= move || {
+                set_current_page.update(|p|*p = Page::Imprint);
+                view! {
+                  <Main>
+                    <Markdown content = IMPRINT_MD />
+                  </Main>
+                }
+              }
+            />
+            <Route
+                path=Page::Login.path()
+                view=move || {
+                    view! {
+                        <Login
+                            api=unauthorized_api
+                            on_success=move |api: api::AuthorizedApi| {
+                                log::info!("Successfully logged in");
+                                authorized_api.update(|v| *v = Some(api.clone()));
+                                let navigate = use_navigate();
+                                navigate(Page::Home.path(), NavigateOptions::default());
+                                fetch_user_info.dispatch(api);
+                            }
+                        />
+                    }
+                }
+            />
+            <Route
+                path=Page::Register.path()
+                view=move || {
+                    view! { <Register api=unauthorized_api /> }
+                }
+            />
+            <Route
+                path=Page::ResetPasswordRequest.path()
+                view=move || {
+                    view! { <ResetPasswordRequest api=unauthorized_api /> }
+                }
+            />
+            <Route
+                path=Page::ResetPassword.path()
+                view=move || {
+                    view! { <ResetPassword api=unauthorized_api /> }
+                }
+            />
+            <Route
+                path=Page::ConfirmEmailAddress.path()
+                view= move || {
+                    view! { <ConfirmEmailAddress api=unauthorized_api /> }
+                }
+            />
+            <Route
+                path=Page::Projects.path()
+                view = move || {
+                  set_current_page.update(|p|*p = Page::Projects);
+                  view! {
+                    <Main>
+                      <header class="prose">
+                        <h1 class="mb-8">"Projekte"</h1>
+                      </header>
+                      <Projects
+                        api = authorized_api.into()
+                        current_project
+                      />
+                    </Main>
+                  }
+                }
+            />
+          </Routes>
+        </Router>
+        <Footer />
+      </div>
     }
 }
 
