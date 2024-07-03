@@ -1,7 +1,9 @@
 use klick_domain::{
-    units::{Int, Scalar},
+    units::{Enum, Int, Scalar},
     Value,
 };
+
+use crate::value_labels::ValueLabel;
 
 #[cfg(test)]
 mod tests;
@@ -77,7 +79,10 @@ impl Lng {
                 Scalar::Int(Int::Count(cnt)) => self.format_number(u64::from(*cnt) as f64),
             },
             Value::Text(txt) => txt.clone(),
-            Value::Enum(v) => format!("{v:?}"), // TODO
+            Value::Enum(v) => match v {
+                Enum::N2oEmissionFactorCalcMethod(v) => v.label().to_string(),
+                Enum::Ch4ChpEmissionFactorCalcMethod(v) => v.label().to_string(),
+            },
         }
     }
 
