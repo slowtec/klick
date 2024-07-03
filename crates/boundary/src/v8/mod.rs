@@ -19,7 +19,7 @@ pub struct Data {
 }
 
 #[derive(Serialize, Deserialize, From)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 #[serde(untagged)]
 pub enum Project {
     Saved(SavedProject),
@@ -36,7 +36,7 @@ impl Project {
 }
 
 #[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
+#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct SavedProject {
     pub id: ProjectId,
     pub created_at: OffsetDateTime,

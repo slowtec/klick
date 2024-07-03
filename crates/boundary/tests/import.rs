@@ -105,7 +105,7 @@ fn import_v1() {
     );
     assert_eq!(
         data.get(&Id::SensitivityN2OCustomFactor),
-        Some(Value::factor(0.015))
+        Some(Value::percent(1.5))
     );
     assert_eq!(
         data.get(&Id::SensitivityN2OCalculationMethod)
@@ -207,7 +207,7 @@ fn import_v2() {
 
     assert_eq!(
         data.get(&Id::SensitivityN2OCustomFactor),
-        Some(Value::factor(0.015))
+        Some(Value::percent(1.5))
     );
     assert_eq!(
         data.get(&Id::SensitivityN2OCalculationMethod)
@@ -306,11 +306,11 @@ fn import_v7() {
     assert_eq!(project.get(&Id::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
         project.get(&Id::SensitivitySludgeBagsCustomFactor),
-        Some(Percent::new(1.12).convert_to::<Factor>().into())
+        Some(QubicmetersPerHour::new(1.12).into())
     );
     assert_eq!(
         project.get(&Id::SensitivitySludgeStorageCustomFactor),
-        Some(Percent::new(1.13).convert_to::<Factor>().into())
+        Some(Percent::new(1.13).into())
     );
 }
 

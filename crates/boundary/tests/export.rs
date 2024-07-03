@@ -18,7 +18,7 @@ fn export() {
             units::N2oEmissionFactorCalcMethod::Custom,
         )),
     );
-    data.set(Id::SensitivityN2OCustomFactor, Some(Value::factor(0.015)));
+    data.set(Id::SensitivityN2OCustomFactor, Some(Value::percent(01.5)));
     data.set(
         Id::SensitivityCH4ChpCalculationMethod,
         Some(Value::ch4_chp_emission_factor_calc_method(
@@ -27,7 +27,7 @@ fn export() {
     );
     data.set(
         Id::SensitivityCH4ChpCustomFactor,
-        Some(Value::factor(0.0345)),
+        Some(Value::percent(3.45)),
     );
 
     let project = SavedProject {
@@ -85,7 +85,7 @@ fn roundtrip() {
             units::N2oEmissionFactorCalcMethod::Pesimistic,
         )),
     );
-    data.set(Id::SensitivityN2OCustomFactor, Some(Value::factor(0.013)));
+    data.set(Id::SensitivityN2OCustomFactor, Some(Value::percent(1.3)));
 
     data.set(
         Id::SensitivityCH4ChpCalculationMethod,
@@ -95,7 +95,7 @@ fn roundtrip() {
     );
     data.set(
         Id::SensitivityCH4ChpCustomFactor,
-        Some(Value::factor(0.0345)),
+        Some(Value::percent(3.45)),
     );
 
     let project = Project::Saved(SavedProject {
