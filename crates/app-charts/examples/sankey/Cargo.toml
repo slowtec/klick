@@ -10,4 +10,4 @@ klick-app-charts = { path = "../.." }
 console_error_panic_hook = "0.1.7"
 console_log = "1.0.0"
 leptos = { version = "0.6.12", features = ["csr"] }
-log = "0.4.21"
+log = "0.4.22"

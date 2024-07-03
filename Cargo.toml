@@ -56,7 +56,7 @@ klick-backend = "=0.0.0"
 # External dependencies
 anyhow = "1.0.86"
 env_logger = "0.11.3"
-log = "0.4.21"
+log = "0.4.22"
 
 [dependencies.tokio]
 version = "1.38.0"
