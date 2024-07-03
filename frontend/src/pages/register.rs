@@ -15,7 +15,7 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
     let (register_error, set_register_error) = create_signal(None::<String>);
     let (wait_for_response, set_wait_for_response) = create_signal(false);
 
-    let register_action = create_action(move |(email, password): &(String, String)| {
+    let register_action = Action::new(move |(email, password): &(String, String)| {
         let email = email.to_string();
         let password = password.to_string();
         let credentials = json_api::Credentials { email, password };
@@ -106,13 +106,12 @@ pub fn InfoBox(
     success_title: &'static str,
     success_description: &'static str,
 ) -> impl IntoView {
-    const DEFAULT_CLASS: &str =
-        "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-gray-100";
-    const SUCCESS_CLASS: &str =
-        "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none bg-green-100";
-
     view! {
-      <div class = move || if success.get() { SUCCESS_CLASS } else { DEFAULT_CLASS } >
+      <div
+        class = "lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none"
+        class = ("bg-gray-100", move || !success.get())
+        class = ("bg-green-100", move || success.get())
+      >
         <div class="px-4 py-6 md:p-12 md:mx-6">
           <Show
             when = move || success.get()

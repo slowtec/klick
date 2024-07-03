@@ -103,6 +103,7 @@ impl AuthorizedApi {
         Self { url, token }
     }
 
+    #[must_use]
     fn auth_header_value(&self) -> String {
         format!("Bearer {}", self.token.token)
     }
@@ -142,7 +143,7 @@ impl AuthorizedApi {
     }
 
     #[must_use]
-    pub fn token(&self) -> &ApiToken {
+    pub const fn token(&self) -> &ApiToken {
         &self.token
     }
 

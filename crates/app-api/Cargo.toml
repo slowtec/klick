@@ -8,7 +8,7 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
-klick-boundary = "=0.0.0"
+klick-boundary = { version = "=0.0.0", features =  ["conversion", "extra-derive"] }
 
 log = "0.4.22"
 serde = { version = "1.0.203", features = ["derive"] }

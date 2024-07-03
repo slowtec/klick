@@ -1,4 +1,3 @@
-#[allow(clippy::wildcard_imports)]
 // TODO: merge both barchart components
 mod barchart;
 mod barchart_radioinputs;

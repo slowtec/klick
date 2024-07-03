@@ -68,5 +68,10 @@ mod_module_files = "allow"
 # Allow leptos #[component] to create empty docs
 empty_docs = "allow"
 
+# In general, wildcard imports should be avoided
+# but since we are using the `leptos` framework,
+# it is quite common to import a prelude.
+wildcard_imports = "allow"
+
 [build-dependencies]
 toml = "0.8.14"

@@ -76,7 +76,7 @@ pub fn create_field_type(
                     write.update(|d| d.set(id, Some(Value::bool(v))));
                 });
                 let input = Signal::derive(move || {
-                    read.with(|d| d.get(&id).map(Value::as_bool_unchecked).unwrap_or_default())
+                    read.with(|d| d.get(&id).is_some_and(Value::as_bool_unchecked))
                 });
                 FieldType::Bool {
                     initial_value: None, // TODO

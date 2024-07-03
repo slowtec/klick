@@ -59,7 +59,7 @@ pub fn N2OEmissionsSensitivity(
             d.set(
                 Id::SensitivityN2OCalculationMethod,
                 Some(Value::n2o_emission_factor_calc_method(method)),
-            )
+            );
         });
     };
 

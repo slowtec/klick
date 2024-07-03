@@ -21,7 +21,7 @@ pub fn Login(
 
     let last_typed_credentials = RwSignal::new(None);
 
-    let login_action = create_action(move |(email, password): &(String, String)| {
+    let login_action = Action::new(move |(email, password): &(String, String)| {
         log::debug!("Try to login with {email}");
         let email = email.to_string();
         let password = password.to_string();
@@ -67,7 +67,7 @@ pub fn Login(
         }
     });
 
-    let resend_confirmation_mail = create_action(move |(): &()| {
+    let resend_confirmation_mail = Action::new(move |(): &()| {
         show_resent_confirmation_button.set(false);
         set_login_error.set(None);
 

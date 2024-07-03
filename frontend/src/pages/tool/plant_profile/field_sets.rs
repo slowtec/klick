@@ -83,8 +83,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     input: Signal::derive(move||{
                         form_data.with(|d|d.get(&Id::SludgeTreatmentBagsAreOpen)
                           .map(Value::as_bool_unchecked)
-                          .map(|v|!v) // open => closed
-                          .unwrap_or_default()
+                          .is_some_and(|v|!v)
                         )
                     })
                 },
@@ -103,8 +102,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                     input: Signal::derive(move||{
                         form_data.with(|d|d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
                           .map(Value::as_bool_unchecked)
-                          .map(|v|!v) // open => closed
-                          .unwrap_or_default()
+                          .is_some_and(|v|!v)
                         )
                     })
                 },

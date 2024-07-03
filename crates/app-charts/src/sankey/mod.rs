@@ -24,6 +24,7 @@ pub struct Node {
 }
 
 impl Node {
+    #[must_use]
     fn new(
         value: f64,
         label: Option<String>,
@@ -49,6 +50,7 @@ pub struct NodePosition {
 }
 
 impl NodePosition {
+    #[must_use]
     const fn new(x: f64, y: f64, height: f64) -> Self {
         Self { x, y, height }
     }
@@ -58,6 +60,7 @@ impl NodePosition {
 pub struct NodeId(pub usize);
 
 impl NodeId {
+    #[must_use]
     const fn new(id: usize) -> Self {
         Self(id)
     }
@@ -111,81 +114,13 @@ impl Sankey {
             })
             .collect::<Vec<_>>();
 
-        fn count_nodes(deps: &HashMap<NodeId, Dependencies>, node: &NodeId) -> u64 {
-            let Dependencies { inputs, .. } = &deps[node];
-            if !inputs.is_empty() {
-                inputs
-                    .iter()
-                    .map(|el| count_nodes(deps, el) + 1)
-                    .max()
-                    .unwrap_or(0)
-            } else {
-                0
-            }
-        }
-
         let max_count: u64 = root_layer
             .iter()
             .map(|el| count_nodes(&deps, el))
             .max()
             .unwrap_or(0);
-        //log::info!("count: {max_count}");
 
-        // STEP 2. from all root nodes, travel left until leaf found, if count < max_count, fill
-        //          with virtual nodes
-        fn travel_and_expand(
-            s: &mut Sankey,
-            deps: &HashMap<NodeId, Dependencies>,
-            node: &NodeId,
-            max_count: u64,
-            count: u64,
-        ) {
-            let Dependencies {
-                inputs: node_inputs,
-                ..
-            } = &deps[node];
-            if !node_inputs.is_empty() {
-                for before_node in node_inputs {
-                    let Dependencies {
-                        inputs: before_node_inputs,
-                        ..
-                    } = &deps[before_node];
-                    if before_node_inputs.is_empty() {
-                        let count = count + 1;
-                        if count < max_count {
-                            // let label = s.nodes[node].label.as_ref();
-                            // let before_label = s.nodes[before_node].label.as_ref();
-                            let patch = max_count - count;
-                            //log::info!("patch: {patch}, count: {count}, max_count: {max_count}, nodes: {:?} -> {:?}", before_label, label);
-                            if patch >= 1 {
-                                s.edges.remove(&Edge {
-                                    source: *before_node,
-                                    target: *node,
-                                });
-                                let value = s.nodes[before_node].value;
-                                let id = s.nodes.len();
-                                let new_node_id = NodeId::new(id);
-                                let edge_color = s.nodes[before_node].edge_color;
-                                // hiding the node with edge_color painting
-                                let new_node = Node::new(value, None, edge_color, edge_color);
-                                s.nodes.insert(new_node_id, new_node);
-                                s.edges.insert(Edge {
-                                    source: *before_node,
-                                    target: new_node_id,
-                                });
-                                s.edges.insert(Edge {
-                                    source: new_node_id,
-                                    target: *node,
-                                });
-                            }
-                        }
-                    } else {
-                        travel_and_expand(s, deps, before_node, max_count, count + 1);
-                    }
-                }
-            }
-        }
-
+        // STEP 2.
         root_layer
             .iter()
             .for_each(|el| travel_and_expand(self, &deps, el, max_count, 0));
@@ -199,6 +134,74 @@ impl Sankey {
     pub fn node_value(&self, id: &NodeId) -> Option<f64> {
         self.nodes.get(id).map(|n| n.value)
     }
+}
+
+// From all root nodes, travel left until leaf found, if count < max_count,
+// fill with virtual nodes
+fn travel_and_expand(
+    s: &mut Sankey,
+    deps: &HashMap<NodeId, Dependencies>,
+    node: &NodeId,
+    max_count: u64,
+    count: u64,
+) {
+    let Dependencies {
+        inputs: node_inputs,
+        ..
+    } = &deps[node];
+    if node_inputs.is_empty() {
+        return;
+    }
+    for before_node in node_inputs {
+        let Dependencies {
+            inputs: before_node_inputs,
+            ..
+        } = &deps[before_node];
+        if !before_node_inputs.is_empty() {
+            travel_and_expand(s, deps, before_node, max_count, count + 1);
+            continue;
+        }
+        let count = count + 1;
+        if count >= max_count {
+            continue;
+        };
+        let patch = max_count - count;
+        if patch < 1 {
+            continue;
+        }
+        s.edges.remove(&Edge {
+            source: *before_node,
+            target: *node,
+        });
+        let value = s.nodes[before_node].value;
+        let id = s.nodes.len();
+        let new_node_id = NodeId::new(id);
+        let edge_color = s.nodes[before_node].edge_color;
+        // hiding the node with edge_color painting
+        let new_node = Node::new(value, None, edge_color, edge_color);
+        s.nodes.insert(new_node_id, new_node);
+        s.edges.insert(Edge {
+            source: *before_node,
+            target: new_node_id,
+        });
+        s.edges.insert(Edge {
+            source: new_node_id,
+            target: *node,
+        });
+    }
+}
+
+#[must_use]
+fn count_nodes(deps: &HashMap<NodeId, Dependencies>, node: &NodeId) -> u64 {
+    let Dependencies { inputs, .. } = &deps[node];
+    if inputs.is_empty() {
+        return 0;
+    }
+    inputs
+        .iter()
+        .map(|el| count_nodes(deps, el) + 1)
+        .max()
+        .unwrap_or(0)
 }
 
 #[component]
@@ -225,8 +228,8 @@ where
           transform = format!("translate(0.0,{margin_y})")
         >
           <InnerChart sankey
-            width = { width - margin_x * 2.0 }
-            height = { height - margin_y * 2.0 }
+            width = width - margin_x * 2.0
+            height = height - margin_y * 2.0
             number_format
             font_size = font_size
           />
@@ -278,10 +281,9 @@ where
             let node_height = node_position.height;
             let value = sankey.nodes[id].value;
             let label = sankey.nodes[id].label.as_ref().map(|label| {
-                let l = format!("{} {}", label, number_format(value));
                 view! {
                   <tspan>
-                    { l }
+                    { label } " " { number_format(value) }
                   </tspan>
                 }
             });
@@ -290,12 +292,12 @@ where
 
             view! {
               <rect
-                x = {format!("{x:.10}")}
-                y = {format!("{y:.10}")}
-                width = { {format!("{node_width:.10}")} }
-                height = { format!("{node_height:.10}") }
-                fill = { fill.as_str() }
-                stroke =  { fill.as_str() }
+                x = format!("{x:.10}")
+                y = format!("{y:.10}")
+                width = format!("{node_width:.10}")
+                height = format!("{node_height:.10}")
+                fill = fill.as_str()
+                stroke = fill.as_str()
                 stroke-miterlimit = 0
                 stroke-opacity=1
                 stroke-width=1
@@ -303,12 +305,12 @@ where
               />
               <text
                 class = "label"
-                x = {x + node_width + font_size/2.0 }
-                y = {y + node_height /2.0 }
+                x = x + node_width + font_size/2.0
+                y = y + node_height /2.0
                 fill = "#111"
                 text-anchor = "start"
                 font-family = "sans-serif"
-                font-size = { font_size }
+                font-size = font_size
                 dominant-baseline = "middle"
               >
                 { label }
@@ -328,8 +330,8 @@ where
             view! {
               <path
                 d = {d}
-                fill = { fill.as_str() }
-                stroke = { fill.as_str() }
+                fill = fill.as_str()
+                stroke = fill.as_str()
                 stroke-miterlimit = 0
                 stroke-opacity=1
                 stroke-width=1
@@ -527,6 +529,7 @@ struct Point {
 }
 
 impl Point {
+    #[must_use]
     const fn new(x: f64, y: f64) -> Self {
         Self { x, y }
     }
@@ -540,6 +543,7 @@ impl Color {
     pub const fn new(c: &'static str) -> Self {
         Self(c)
     }
+
     #[must_use]
     pub const fn as_str(&self) -> &'static str {
         self.0
@@ -566,11 +570,8 @@ fn edge_positions(
                 .iter()
                 .filter_map(|node| {
                     let from = node_positions[node];
-                    let Some(edge) = edges.iter().find(|edge| edge.source == *node) else {
-                        return None;
-                    };
+                    let edge = edges.iter().find(|edge| edge.source == *node)?;
                     let to = node_positions[&edge.target];
-
                     let scale = to.height / total_input_values[&edge.target];
                     let mut to_y_start = node_positions.get(&edge.target).unwrap().y;
                     if (from.y - to.y).abs() > 1.0 {

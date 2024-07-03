@@ -1,11 +1,8 @@
-#![allow(clippy::wildcard_imports)]
-
 use gloo_storage::{LocalStorage, Storage};
 use leptos::*;
+use leptos_hotkeys::{provide_hotkeys_context, scopes, use_hotkeys};
 use leptos_meta::provide_meta_context;
 use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
-
-use leptos_hotkeys::{provide_hotkeys_context, scopes, use_hotkeys};
 
 use klick_app_api as api;
 use klick_boundary::{self as boundary, json_api::UserInfo};
@@ -53,17 +50,17 @@ pub fn App() -> impl IntoView {
     provide_hotkeys_context(app_ref, false, scopes!());
     let accessibility_always_show: Option<RwSignal<bool>> = Some(RwSignal::new(false));
 
-    use_hotkeys!(("F1") => move |_| {
+    use_hotkeys!(("F1") => move |()| {
       match accessibility_always_show {
         Some(o) => {
-          o.set(!o.get())},
+          o.set(!o.get());},
         None => {}
       }
     });
 
     // -- signals -- //
 
-    let (current_page, set_current_page) = create_signal(Page::Home);
+    let (current_page, set_current_page) = RwSignal::new(Page::Home).split();
     let authorized_api = RwSignal::new(None::<api::AuthorizedApi>);
     let user_info = RwSignal::new(None::<UserInfo>);
     let logged_in = Signal::derive(move || user_info.get().is_some());
@@ -71,7 +68,7 @@ pub fn App() -> impl IntoView {
 
     // -- actions -- //
 
-    let fetch_user_info = create_action(move |api: &api::AuthorizedApi| {
+    let fetch_user_info = Action::new(move |api: &api::AuthorizedApi| {
         let api = api.clone();
         async move {
             match api.user_info().await {
@@ -87,7 +84,7 @@ pub fn App() -> impl IntoView {
         }
     });
 
-    let logout = create_action(move |(): &()| async move {
+    let logout = Action::new(move |(): &()| async move {
         match authorized_api.get() {
             Some(api) => match api.logout().await {
                 Ok(()) => {
@@ -123,7 +120,7 @@ pub fn App() -> impl IntoView {
 
     // -- effects -- //
 
-    create_effect(move |_| {
+    Effect::new(move |_| {
         if let Some(api) = authorized_api.get() {
             log::debug!("API is now authorized: save token in LocalStorage");
             LocalStorage::set(API_TOKEN_STORAGE_KEY, api.token()).expect("LocalStorage::set");
@@ -174,7 +171,9 @@ pub fn App() -> impl IntoView {
                           </a>
                         </span>
                       </h1>
-                      <p id="keyboard-hint" class="sr-only">Press F1 to display all hints inline.</p>
+                      <p id="keyboard-hint" class="sr-only">
+                        "Press F1 to display all hints inline."
+                      </p>
                     </header>
                     <Tool
                       api = authorized_api.into()

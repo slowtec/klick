@@ -21,8 +21,7 @@ pub fn CH4EmissionsOpenDigesters(
         form_data.with(|d| {
             !d.get(&Id::SludgeTreatmentBagsAreOpen)
                 .map(Value::as_bool_unchecked)
-                .map(|v| !v)
-                .unwrap_or(false)
+                .is_some_and(|v| !v)
         })
     });
     let show_sludge_storage_containers_controls = Signal::derive(move || {
@@ -30,8 +29,7 @@ pub fn CH4EmissionsOpenDigesters(
         form_data.with(|d| {
             !d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
                 .map(Value::as_bool_unchecked)
-                .map(|v| !v)
-                .unwrap_or(false)
+                .is_some_and(|v| !v)
         })
     });
     let show_dialog = Signal::derive(move || {

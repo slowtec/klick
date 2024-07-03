@@ -11,6 +11,7 @@ pub use self::rendering::*;
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
+#[must_use]
 fn unique_id() -> usize {
     ID_COUNTER.fetch_add(1, Ordering::SeqCst)
 }
@@ -42,7 +43,7 @@ impl Field {
     #[must_use]
     pub const fn unit(&self) -> Option<&'static str> {
         match self.field_type {
-            FieldType::Float { unit, .. } => Some(unit),
+            FieldType::Float { unit, .. } | FieldType::UnsignedInteger { unit, .. } => Some(unit),
             _ => None,
         }
     }
@@ -59,7 +60,6 @@ pub struct MinMax<T> {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub enum FieldType {
     Float {
         initial_value: Option<f64>,

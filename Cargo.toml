@@ -80,6 +80,11 @@ module_name_repetitions = "allow"
 # This is a matter of taste... and I just like it that way ;-P
 mod_module_files = "allow"
 
+# In general, wildcard imports should be avoided
+# but since we are using the `leptos` framework,
+# it is quite common to import a prelude.
+wildcard_imports = "allow"
+
 [profile.dev]
 panic = "abort"
 

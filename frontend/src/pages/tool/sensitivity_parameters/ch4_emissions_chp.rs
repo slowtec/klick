@@ -66,7 +66,7 @@ pub fn CH4EmissionsCHP(
             d.set(
                 Id::SensitivityCH4ChpCalculationMethod,
                 Some(Value::ch4_chp_emission_factor_calc_method(method)),
-            )
+            );
         });
     };
 

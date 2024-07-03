@@ -121,12 +121,7 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 form_data.update(|d| d.set(id, Some(Value::bool(!v))));
             }),
             input: Signal::derive(move || {
-                input_data.with(|d| {
-                    d.get(&id)
-                        .map(Value::as_bool_unchecked)
-                        .map(|v| !v)
-                        .unwrap_or(false)
-                })
+                input_data.with(|d| d.get(&id).map(Value::as_bool_unchecked).is_some_and(|v| !v))
             }),
         },
     };
@@ -149,12 +144,7 @@ fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 form_data.update(|d| d.set(id, Some(Value::bool(!v))));
             }),
             input: Signal::derive(move || {
-                input_data.with(|d| {
-                    d.get(&id)
-                        .map(Value::as_bool_unchecked)
-                        .map(|v| !v)
-                        .unwrap_or(false)
-                })
+                input_data.with(|d| d.get(&id).map(Value::as_bool_unchecked).is_some_and(|v| !v))
             }),
         },
     };
