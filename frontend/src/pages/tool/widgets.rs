@@ -1,7 +1,7 @@
 use gloo_storage::{SessionStorage, Storage};
 use leptos::*;
 
-use klick_app_components::forms::InfoIcon;
+use klick_app_components::icons;
 
 pub const DWA_MERKBLATT_URL: &str =
     "https://shop.dwa.de/DWA-M-230-1-Treibhausgasemissionen-10-2022/M-230-T1-22";
@@ -25,7 +25,7 @@ pub fn InfoBox(
           class="mx-1 cursor-pointer inline-block"
           on:click = move |_| show.update(|x|*x = !*x)
         >
-          <InfoIcon />
+          <icons::InformationCircle />
         </div>
       </p>
       <div class = move || if combined_show_signal.get() { None } else { Some("hidden") } >
@@ -53,10 +53,12 @@ pub fn Card(
     // In the long term we need a dedicated model for the "view state"
     // that is not the same as the data model.
     let hidden_state_ss_id = card_id_to_session_store_hidden_state_id(id);
+
     if let Ok(Some(state)) = SessionStorage::get(&hidden_state_ss_id) {
         hide.set(state);
     }
-    create_effect(move |_| {
+
+    Effect::new(move |_| {
         if let Err(err) = SessionStorage::set(&hidden_state_ss_id, hide.get()) {
             log::warn!("Unable to store card hidden state: {err}");
         }

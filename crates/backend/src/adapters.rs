@@ -80,6 +80,15 @@ impl TryFrom<json_api::Credentials> for Credentials {
     }
 }
 
+impl From<CredentialParsingError> for ApiError {
+    fn from(from: CredentialParsingError) -> Self {
+        match from {
+            CredentialParsingError::EmailAddress(err) => ApiError::LoginEmail(err),
+            CredentialParsingError::Password(err) => ApiError::LoginPassword(err),
+        }
+    }
+}
+
 // TODO: tidy up and uwe json_api::Error directly
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {

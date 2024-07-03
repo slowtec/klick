@@ -183,14 +183,8 @@ async fn login(
     State(state): State<AppState>,
     Json(credentials): Json<json_api::Credentials>,
 ) -> Result<json_api::ApiToken> {
-    let json_api::Credentials { email, password } = credentials;
+    let adapters::Credentials { email, password } = credentials.try_into()?;
     log::debug!("{email} tries to login");
-    let email = email
-        .parse::<EmailAddress>()
-        .map_err(ApiError::LoginEmail)?;
-    let password = password
-        .parse::<Password>()
-        .map_err(ApiError::LoginPassword)?;
     let account = usecases::login(&state.db, &email, &password)?;
     debug_assert_eq!(account.email_address, email);
     let token = Uuid::new_v4();
@@ -236,14 +230,8 @@ async fn resent_confirmation_email(
     State(state): State<AppState>,
     Json(credentials): Json<json_api::Credentials>,
 ) -> Result<()> {
-    let json_api::Credentials { email, password } = credentials;
+    let adapters::Credentials { email, password } = credentials.try_into()?;
     log::debug!("{email} requests a new email to confirm");
-    let email = email
-        .parse::<EmailAddress>()
-        .map_err(ApiError::LoginEmail)?;
-    let password = password
-        .parse::<Password>()
-        .map_err(ApiError::LoginPassword)?;
     usecases::resend_confirmation_email(&state.db, &state.notification_gw, email, &password)
         .map_err(|err| {
             log::warn!("Unable to resent confirmation email: {err}");

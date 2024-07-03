@@ -8,6 +8,8 @@ use thiserror::Error;
 
 use klick_presenter::Lng;
 
+use crate::icons;
+
 use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 
 type MissingFields = HashSet<FieldId>;
@@ -81,7 +83,7 @@ pub fn render_field(
             }
 
             if required {
-                create_effect(move |_| {
+                Effect::new(move |_| {
                     if input.with(|x| x.is_some()) {
                         missing_fields.update(|x| {
                             x.remove(&id);
@@ -124,7 +126,7 @@ pub fn render_field(
                 });
             }
             if required {
-                create_effect(move |_| {
+                Effect::new(move |_| {
                     if input.with(|x| x.is_some()) {
                         missing_fields.update(|x| {
                             x.remove(&id);
@@ -168,7 +170,7 @@ pub fn render_field(
                 });
             }
             if required {
-                create_effect(move |_| {
+                Effect::new(move |_| {
                     if input.get().is_some() {
                         missing_fields.update(|x| {
                             x.remove(&id);
@@ -215,8 +217,6 @@ pub fn render_field(
     }
 }
 
-pub use crate::icons::InformationCircle as InfoIcon;
-
 // TODO: don't render if description is None
 fn create_tooltip(
     label: &'static str,
@@ -229,11 +229,9 @@ fn create_tooltip(
     let show_tooltip = RwSignal::new("none".to_string());
 
     let required_label = format!("{} {label}", if required { "*" } else { "" });
-    let show_accessibility_always_show = match accessibility_always_show {
-        Some(o) => o.get() == true,
-        None => false,
-    };
-    if show_accessibility_always_show {
+    let always_show_accessibility = accessibility_always_show.map(|o| o.get()).unwrap_or(false);
+
+    if always_show_accessibility {
         view! {
           <div>
             <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
@@ -251,7 +249,7 @@ fn create_tooltip(
         }
     } else {
         view! {
-            <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
+          <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
             <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
               { required_label }
             </label>
@@ -269,7 +267,7 @@ fn create_tooltip(
                 }
               >
                 <div class="cursor-pointer">
-                  <InfoIcon />
+                  <icons::InformationCircle />
                 </div>
                 <div
                   role="tooltip"
@@ -307,7 +305,7 @@ fn create_tooltip(
                 </div>
               </a>
             </div>
-        </div>
+          </div>
         }
     }
 }
@@ -433,7 +431,6 @@ where
     F: Fn(&str, bool, MinMax<N>, Lng) -> Result<Option<N>, NumberEvalError<N>> + Copy + 'static,
     N: Copy + Clone + PartialEq + fmt::Display + 'static,
 {
-    let required_label = format!("{} {}", if required { "*" } else { "" }, label);
     let error = RwSignal::new(Option::<String>::None);
     let txt = RwSignal::new(String::new());
     let is_focussed = RwSignal::new(false);
