@@ -4,6 +4,7 @@
 use leptos::*;
 
 #[component]
+#[must_use]
 pub fn CloudArrowDown() -> impl IntoView {
     view! {
       <svg
@@ -23,6 +24,7 @@ pub fn CloudArrowDown() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn CloudArrowUp() -> impl IntoView {
     view! {
       <svg
@@ -39,6 +41,7 @@ pub fn CloudArrowUp() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn DocumentArrowDown() -> impl IntoView {
     view! {
       <svg
@@ -58,6 +61,7 @@ pub fn DocumentArrowDown() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn DocumentArrowUp() -> impl IntoView {
     view! {
       <svg
@@ -77,6 +81,7 @@ pub fn DocumentArrowUp() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn Backspace() -> impl IntoView {
     view! {
       <svg
@@ -96,6 +101,7 @@ pub fn Backspace() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn LightBulb() -> impl IntoView {
     view! {
       <svg
@@ -115,6 +121,7 @@ pub fn LightBulb() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn Trash() -> impl IntoView {
     view! {
       <svg
@@ -134,6 +141,7 @@ pub fn Trash() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn Bars3() -> impl IntoView {
     view! {
       <svg
@@ -153,6 +161,7 @@ pub fn Bars3() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn InformationCircle() -> impl IntoView {
     view! {
       <svg
@@ -176,6 +185,7 @@ pub fn InformationCircle() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn TheLaend() -> impl IntoView {
     view! {
       <svg
@@ -206,6 +216,7 @@ pub fn TheLaend() -> impl IntoView {
 
 // This one is from <https://www.svgrepo.com>
 #[component]
+#[must_use]
 pub fn LinkedIn() -> impl IntoView {
     view! {
       <svg
@@ -235,6 +246,7 @@ pub fn LinkedIn() -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn ExternalLink() -> impl IntoView {
     view! {
       <svg

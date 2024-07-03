@@ -4,6 +4,7 @@ use crate::{default_values, CalculationOutcome, EvaluationData, FormData};
 
 // TODO:
 // Handle these calculations as usecases in the domain layer.
+#[must_use]
 pub fn calculate(form_data: FormData) -> CalculationOutcome {
     log::debug!("Calculate");
     let profile_input = default_values::profile(form_data.clone());
@@ -26,7 +27,7 @@ pub fn calculate(form_data: FormData) -> CalculationOutcome {
         .sensitivity_parameters
         .ch4_chp_emissions
         .try_into()
-        .unwrap_or_else(|_| (None, None));
+        .unwrap_or((None, None));
 
     let profile: Option<(_, _)> = profile_input.clone().try_into().ok(); // TODO: avoid clone
     let sensitivity: Option<(_, _)> = sensitivity_input.clone().try_into().ok(); // TODO: avoid clone

@@ -18,7 +18,7 @@ pub fn bar_chart_radio_input(
 ) -> String {
     render_view_as_svg(move || {
         let selected_bar = RwSignal::new(selected);
-        let data = data.into();
+        let data = data;
         view! {
           <BarChartRadioInput
             width
@@ -35,7 +35,7 @@ pub fn bar_chart_radio_input(
 #[must_use]
 pub fn bar_chart(data: Vec<BarChartArguments>, width: f64, height: f64) -> String {
     render_view_as_svg(move || {
-        let data = data.into();
+        let data = data;
         view! {
           <BarChart
             width

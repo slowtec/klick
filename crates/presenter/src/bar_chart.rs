@@ -1,5 +1,6 @@
 use klick_domain::CO2Equivalents;
 
+#[must_use]
 pub fn recommendation_diff_bar_chart(
     old: CO2Equivalents,
     new: CO2Equivalents,
@@ -40,6 +41,7 @@ pub fn recommendation_diff_bar_chart(
     .collect()
 }
 
+#[must_use]
 pub fn sensitivity_diff_bar_chart(
     old: CO2Equivalents,
     new: CO2Equivalents,

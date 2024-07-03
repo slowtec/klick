@@ -15,6 +15,7 @@ use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 type MissingFields = HashSet<FieldId>;
 type Labels = HashMap<FieldId, &'static str>;
 
+#[must_use]
 pub fn render_field_sets(
     field_sets: Vec<FieldSet>,
     accessibility_always_show: Option<RwSignal<bool>>,
@@ -54,6 +55,7 @@ pub fn render_field_sets(
     (set_views, missing_fields.read_only(), labels)
 }
 
+#[must_use]
 pub fn render_field(
     field: Field,
     id: FieldId,
@@ -84,7 +86,7 @@ pub fn render_field(
 
             if required {
                 Effect::new(move |_| {
-                    if input.with(|x| x.is_some()) {
+                    if input.with(std::option::Option::is_some) {
                         missing_fields.update(|x| {
                             x.remove(&id);
                         });
@@ -127,7 +129,7 @@ pub fn render_field(
             }
             if required {
                 Effect::new(move |_| {
-                    if input.with(|x| x.is_some()) {
+                    if input.with(std::option::Option::is_some) {
                         missing_fields.update(|x| {
                             x.remove(&id);
                         });
@@ -208,7 +210,7 @@ pub fn render_field(
           <BoolInput
             label
             id
-            input_value = input.into()
+            input_value = input
             description
             on_change
           />
@@ -229,7 +231,7 @@ fn create_tooltip(
     let show_tooltip = RwSignal::new("none".to_string());
 
     let required_label = format!("{} {label}", if required { "*" } else { "" });
-    let always_show_accessibility = accessibility_always_show.map(|o| o.get()).unwrap_or(false);
+    let always_show_accessibility = accessibility_always_show.is_some_and(|o| o.get());
 
     if always_show_accessibility {
         view! {
@@ -437,10 +439,7 @@ where
 
     Effect::new(move |_| {
         if !is_focussed.get() {
-            let new_value = input_value
-                .get()
-                .map(format_value)
-                .unwrap_or_else(String::new);
+            let new_value = input_value.get().map(format_value).unwrap_or_default();
             txt.set(new_value);
         }
         match evaluate_input(&txt.get(), required, limits, lng) {
@@ -481,7 +480,7 @@ where
         is_focussed.set(true);
         if let Some(value) = input_value.get() {
             let new_txt = format_value(value);
-            txt.set(new_txt)
+            txt.set(new_txt);
         }
     };
 

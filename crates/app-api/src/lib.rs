@@ -34,6 +34,7 @@ impl fmt::Debug for AuthorizedApi {
 }
 
 impl UnauthorizedApi {
+    #[must_use]
     pub const fn new(url: &'static str) -> Self {
         Self { url }
     }
@@ -97,6 +98,7 @@ impl UnauthorizedApi {
 }
 
 impl AuthorizedApi {
+    #[must_use]
     pub const fn new(url: &'static str, token: ApiToken) -> Self {
         Self { url, token }
     }
@@ -139,6 +141,7 @@ impl AuthorizedApi {
         self.send(Request::get(&url)).await
     }
 
+    #[must_use]
     pub fn token(&self) -> &ApiToken {
         &self.token
     }
@@ -149,12 +152,12 @@ impl AuthorizedApi {
     }
 
     pub async fn read_project(&self, id: &ProjectId) -> Result<SavedProject, Value> {
-        let url = format!("{}/project/{}", self.url, id.0.to_string());
+        let url = format!("{}/project/{}", self.url, id.0);
         self.send(Request::get(&url)).await
     }
 
     pub async fn update_project(&self, project: &SavedProject) -> Result<(), Value> {
-        let url = format!("{}/project/{}", self.url, project.id.0.to_string());
+        let url = format!("{}/project/{}", self.url, project.id.0);
         self.send_with_json(Request::put(&url), project).await
     }
 
@@ -164,7 +167,7 @@ impl AuthorizedApi {
     }
 
     pub async fn delete_project(&self, id: ProjectId) -> Result<(), Value> {
-        let url = format!("{}/project/{}", self.url, id.0.to_string());
+        let url = format!("{}/project/{}", self.url, id.0);
         self.send(Request::delete(&url)).await
     }
 
@@ -172,11 +175,7 @@ impl AuthorizedApi {
         &self,
         id: &ProjectId,
     ) -> Result<DownloadRequestResponse, Value> {
-        let url = format!(
-            "{}/project/{}/export?format=pdf",
-            self.url,
-            id.0.to_string()
-        );
+        let url = format!("{}/project/{}/export?format=pdf", self.url, id.0);
         self.send(Request::get(&url)).await
     }
 }

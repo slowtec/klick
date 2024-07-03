@@ -37,12 +37,12 @@ pub fn create_sankey_chart_header(
 
     let n2o_label = match formatting {
         Formatting::Text => "N₂O",
-        Formatting::LaTeX => r#"N\textsubscript{2}O"#,
+        Formatting::LaTeX => r"N\textsubscript{2}O",
     };
 
     let co2_label = match formatting {
         Formatting::Text => "CO₂",
-        Formatting::LaTeX => r#"CO\textsubscript{2}"#,
+        Formatting::LaTeX => r"CO\textsubscript{2}",
     };
 
     format!(

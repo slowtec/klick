@@ -113,10 +113,10 @@ impl Sankey {
 
         fn count_nodes(deps: &HashMap<NodeId, Dependencies>, node: &NodeId) -> u64 {
             let Dependencies { inputs, .. } = &deps[node];
-            if inputs.len() > 0 {
+            if !inputs.is_empty() {
                 inputs
                     .iter()
-                    .map(|el| count_nodes(&deps, el) + 1)
+                    .map(|el| count_nodes(deps, el) + 1)
                     .max()
                     .unwrap_or(0)
             } else {
@@ -144,13 +144,13 @@ impl Sankey {
                 inputs: node_inputs,
                 ..
             } = &deps[node];
-            if node_inputs.len() > 0 {
-                node_inputs.iter().for_each(|before_node| {
+            if !node_inputs.is_empty() {
+                for before_node in node_inputs {
                     let Dependencies {
                         inputs: before_node_inputs,
                         ..
                     } = &deps[before_node];
-                    if before_node_inputs.len() == 0 {
+                    if before_node_inputs.is_empty() {
                         let count = count + 1;
                         if count < max_count {
                             // let label = s.nodes[node].label.as_ref();
@@ -180,9 +180,9 @@ impl Sankey {
                             }
                         }
                     } else {
-                        travel_and_expand(s, &deps, before_node, max_count, count + 1)
+                        travel_and_expand(s, deps, before_node, max_count, count + 1);
                     }
-                });
+                }
             }
         }
 
@@ -429,10 +429,10 @@ pub fn recursive_layers(
     let mut leafs = vec![];
 
     current_layer.sort_by(|a, b| {
-        return nodes[b]
+        nodes[b]
             .value
             .partial_cmp(&nodes[a].value)
-            .unwrap_or(Ordering::Equal);
+            .unwrap_or(Ordering::Equal)
     });
     let mut t_roots = vec![];
     for el in current_layer {
@@ -481,8 +481,8 @@ fn node_positions(
             let y = if j == 0 {
                 layer_y
             } else {
-                deps[&id].inputs.iter().fold(f64::INFINITY, |y, successor| {
-                    y.min(node_positions[&successor].y)
+                deps[id].inputs.iter().fold(f64::INFINITY, |y, successor| {
+                    y.min(node_positions[successor].y)
                 })
             };
             let height = nodes[id].value * scale;
@@ -557,7 +557,7 @@ fn edge_positions(
 ) -> Vec<(Point, Point, Point, Point, Option<Color>)> {
     let mut total_input_values = HashMap::<NodeId, f64>::new();
     for Edge { source, target } in edges {
-        *total_input_values.entry(*target).or_default() += nodes[&source].value;
+        *total_input_values.entry(*target).or_default() += nodes[source].value;
     }
     layers
         .iter()
@@ -577,11 +577,11 @@ fn edge_positions(
                         let prev_nodes = deps[&edge.target]
                             .inputs
                             .iter()
-                            .filter(|id| from.y - node_positions[&id].y > 1.0)
+                            .filter(|id| from.y - node_positions[id].y > 1.0)
                             .collect::<Vec<_>>();
                         to_y_start += prev_nodes
                             .iter()
-                            .fold(0.0, |acc, id| acc + node_positions[&id].height);
+                            .fold(0.0, |acc, id| acc + node_positions[id].height);
                     }
                     let to_y_end = to_y_start + nodes[&edge.source].value * scale;
                     let points = (

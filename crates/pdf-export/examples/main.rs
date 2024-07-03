@@ -1,6 +1,6 @@
 use std::{fs::File, io::prelude::*};
 
-use klick_boundary::*;
+use klick_boundary::FormData;
 use klick_domain::{InputValueId as Id, Value};
 
 use klick_pdf_export::export_to_pdf;

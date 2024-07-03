@@ -15,6 +15,7 @@ fn unique_id() -> usize {
     ID_COUNTER.fetch_add(1, Ordering::SeqCst)
 }
 
+#[must_use]
 pub fn dom_node_id() -> FieldId // String
 {
     // DOM element IDs needs to be locally unique
@@ -38,6 +39,7 @@ pub struct Field {
 }
 
 impl Field {
+    #[must_use]
     pub const fn unit(&self) -> Option<&'static str> {
         match self.field_type {
             FieldType::Float { unit, .. } => Some(unit),
@@ -47,7 +49,7 @@ impl Field {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Display)]
-#[display(fmt = "field-{}", _0)]
+#[display(fmt = "field-{_0}")]
 pub struct FieldId(usize);
 
 #[derive(Debug, Clone, Copy)]

@@ -293,10 +293,8 @@ impl FormData {
                 .district_heating
                 .map(V::kilowatthours),
         };
-        debug_assert!(value
-            .as_ref()
-            .map(|v| v.value_type() == domain::value_spec(id).value_type())
-            .unwrap_or(true));
+        debug_assert!(value.as_ref().map_or(true, |v| v.value_type()
+            == domain::value_spec(id).value_type()));
         value
     }
 
@@ -312,10 +310,8 @@ impl FormData {
         use domain::{InputValueId as Id, Value as V};
 
         log::debug!("Set {id:?}: {value:?}");
-        debug_assert!(value
-            .as_ref()
-            .map(|v| v.value_type() == domain::value_spec(&id).value_type())
-            .unwrap_or(true));
+        debug_assert!(value.as_ref().map_or(true, |v| v.value_type()
+            == domain::value_spec(&id).value_type()));
 
         match id {
             Id::ProjectName => {

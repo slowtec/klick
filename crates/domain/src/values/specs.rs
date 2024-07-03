@@ -1,5 +1,6 @@
 use crate::{constants, units::*, InputValueId as Id};
 
+#[must_use]
 pub fn value_spec(id: &Id) -> ValueSpec {
     specs()
         .into_iter()

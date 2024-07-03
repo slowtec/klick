@@ -1,5 +1,6 @@
 use crate::*;
 
+#[must_use]
 pub fn profile(mut data: FormData) -> FormData {
     data.sensitivity_parameters = Default::default();
     data.optimization_scenario = Default::default();
@@ -7,6 +8,7 @@ pub fn profile(mut data: FormData) -> FormData {
     add_missing_values(data)
 }
 
+#[must_use]
 pub fn sensitivity(mut data: FormData) -> FormData {
     data.optimization_scenario = Default::default();
 
@@ -28,6 +30,7 @@ pub fn sensitivity(mut data: FormData) -> FormData {
     add_missing_values(data)
 }
 
+#[must_use]
 pub fn recommendations(data: FormData) -> FormData {
     add_missing_values(data)
 }

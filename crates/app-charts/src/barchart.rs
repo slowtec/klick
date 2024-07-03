@@ -133,8 +133,8 @@ fn Bar(
         LabelPosition::Bottom => -font_size.get(),
     };
     let percentage_label = match percentage {
-        Some(p) => format!(" / {:.2}%", p),
-        None => "".to_string(),
+        Some(p) => format!(" / {p:.2}%"),
+        None => String::new(),
     };
     view! {
       <g class="barchart">

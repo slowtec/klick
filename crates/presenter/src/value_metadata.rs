@@ -1,5 +1,6 @@
 use klick_domain::InputValueId as Id;
 
+#[must_use]
 pub fn metadata(id: &Id) -> FieldMetaData {
     metadata_de()
         .into_iter()
@@ -23,18 +24,22 @@ pub enum Placeholder {
 }
 
 impl Placeholder {
+    #[must_use]
     pub const fn label() -> Self {
         Self::Label
     }
 
+    #[must_use]
     pub const fn text(txt: &'static str) -> Self {
         Self::Text(txt)
     }
 
+    #[must_use]
     pub const fn default_value() -> Self {
         Self::DefaultValue
     }
 
+    #[must_use]
     pub const fn none() -> Self {
         Self::None
     }

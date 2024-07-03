@@ -233,8 +233,7 @@ fn render_markdown_template(
         .profile
         .input
         .get(&Id::PlantName)
-        .map(Value::as_text_unchecked)
-        .unwrap_or_else(|| "Klärwerk".to_string());
+        .map_or_else(|| "Klärwerk".to_string(), Value::as_text_unchecked);
 
     let plant_profile_sankey_header = outcome
         .profile
@@ -264,7 +263,7 @@ fn render_markdown_template(
         recommendation_barchart_svg_file_path,
     };
 
-    let rendered = TEMPLATES.render(MARKDOWN_TEMPLATE_NAME, &Context::from_serialize(&data)?)?;
+    let rendered = TEMPLATES.render(MARKDOWN_TEMPLATE_NAME, &Context::from_serialize(data)?)?;
     Ok(rendered)
 }
 

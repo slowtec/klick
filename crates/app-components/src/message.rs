@@ -1,6 +1,7 @@
 use leptos::*;
 
 #[component]
+#[must_use]
 pub fn InfoMessage(message: &'static str) -> impl IntoView {
     view! {
       <div class="rounded-md bg-blue-50 p-4">
@@ -23,6 +24,7 @@ pub fn InfoMessage(message: &'static str) -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn SuccessMessage(message: &'static str) -> impl IntoView {
     view! {
       <div class="rounded-md bg-green-50 p-4">
@@ -51,6 +53,7 @@ pub fn SuccessMessage(message: &'static str) -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn ErrorMessage(message: &'static str) -> impl IntoView {
     view! {
       <div class="rounded-md bg-red-50 p-4">
