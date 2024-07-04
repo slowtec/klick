@@ -16,13 +16,7 @@
           pkgs = import nixpkgs {
             inherit system overlays;
           };
-          rust = pkgs.rust-bin.stable.latest.default.override {
-            extensions = [ "rustfmt" "clippy" ];
-            targets = [
-              "x86_64-unknown-linux-musl" # used for the backend
-              "wasm32-unknown-unknown"    # used for the frontend
-            ];
-          };
+          rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
           platform_packages =
             if pkgs.stdenv.isLinux then
               with pkgs; [ ]

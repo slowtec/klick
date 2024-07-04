@@ -55,7 +55,7 @@ pub fn sankey_chart<F>(
     height: f64,
     number_format: F,
     font_size: f64,
-    aria_label: Option<String>
+    aria_label: Option<String>,
 ) -> String
 where
     F: Fn(f64) -> String + 'static,

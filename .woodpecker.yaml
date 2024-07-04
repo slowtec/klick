@@ -1,0 +1,22 @@
+# TODO: use flake.nix & just to run tests
+
+steps:
+  - name: Check formatting
+    when:
+      event: [push, pull_request]
+    image: rust
+    environment: [CARGO_TERM_COLOR=always]
+    commands:
+      - rustup default
+      - cargo fmt --check
+      - cd frontend && cargo fmt --check
+
+  - name: Test
+    when:
+      event: [push, pull_request]
+    image: rust
+    environment: [CARGO_TERM_COLOR=always]
+    commands:
+      - rustup default
+      - cargo test --package klick-domain
+      - cargo test --package klick-boundary

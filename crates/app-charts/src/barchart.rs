@@ -10,10 +10,10 @@ pub struct BarChartArguments {
 #[component]
 #[allow(clippy::module_name_repetitions)]
 pub fn BarChart(
-  width: f64, 
-  height: f64, 
-  data: Vec<BarChartArguments>,
-  aria_label: Option<String>,
+    width: f64,
+    height: f64,
+    data: Vec<BarChartArguments>,
+    aria_label: Option<String>,
 ) -> impl IntoView {
     let margin = 10.0;
 
