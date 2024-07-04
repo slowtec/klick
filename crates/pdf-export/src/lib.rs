@@ -368,7 +368,7 @@ fn render_svg_sankey_chart(co2_equivalents: CO2Equivalents) -> String {
 
     let number_format = |n| Lng::De.format_number_with_fixed_precision(n, 0);
 
-    charts::ssr::sankey_chart(sankey, 1200.0, 800.0, number_format, 16.0)
+    charts::ssr::sankey_chart(sankey, 1200.0, 800.0, number_format, 16.0, None)
 }
 
 fn render_pdf(markdown: String) -> anyhow::Result<Vec<u8>> {

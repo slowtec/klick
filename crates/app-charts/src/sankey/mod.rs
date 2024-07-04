@@ -211,6 +211,7 @@ pub fn Chart<F>(
     height: f64,
     number_format: F,
     font_size: f64,
+    aria_label: Option<String>,
 ) -> impl IntoView
 where
     F: Fn(f64) -> String,
@@ -223,6 +224,8 @@ where
         width = format!("{width}px")
         height = format!("{height}px")
         viewBox = format!("0.0 0.0 {width} {height}")
+        role = "img"
+        aria_label = aria_label
       >
         <g
           transform = format!("translate(0.0,{margin_y})")

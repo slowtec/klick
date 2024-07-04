@@ -1,6 +1,6 @@
 # Webtool - Klimabilanz für Kläranlagen mit einem Klick
 
-![Kläranlage](klaeranlage.jpg)
+![Foto (Außenaufnahme) eiens Teils der biologischen Reinigungsstufe einer Modell-Kläranlage. Ein Steg führt über das Reinigungsbecken, auf dem Steg steht eine Gruppe von Personen die an einer Fachexkursion teilnehmen. Das Becken durchfließt (braunes) Abwasser. An der Abwasseroberfläche treibt eine gelbe Messhaube die dort verschnürt ist. Die Messhaube dient der Echtzeitmessung von (unsichtbaren) Treibhausgasen die aus dem Becken austreten können.](klaeranlage.jpg)
 
 Willkommen zum interaktiven Webtool der **Umwelttechnik BW**.
 Das Klick-Tool soll Sie als Kläranlagenbetreiber/-in,

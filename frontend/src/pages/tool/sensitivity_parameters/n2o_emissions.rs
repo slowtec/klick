@@ -87,6 +87,7 @@ pub fn N2OEmissionsSensitivity(
                     data
                     selected_bar = selected_scenario_index
                     emission_factor_label = Some("N₂O EF")
+                    aria_label = Some("Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Lachgasemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.".to_string())
                     on_change = on_bar_chart_input_changed
                   />
                 }

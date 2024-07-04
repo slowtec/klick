@@ -19,7 +19,7 @@ pub fn Nav(
 
             <div class="flex">
               <div class="flex flex-shrink-0 items-center">
-                <img class="h-16 w-auto" src="logo-utbw-solo.svg" alt="Umwelt Technik BW" />
+                <img class="h-16 w-auto" src="logo-utbw-solo.svg" alt="Das Logo der Umwelttechnik Baden-Württemberg ist eine Adaption der (kleinen) Landesdienstflagge Baden-Württembergs. Sie zeigt die drei stilisierten Löwen des Bundeslandes und einen diagonalen Streifen in der goldgelben Flaggen-Farbe welcher hinter den Löwen und dem nebenstehenden Schriftzug “UMWELT TECHNIK BW” verläuft." />
               </div>
               <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <NavLink page=Page::Home current_page label="KlicK" />

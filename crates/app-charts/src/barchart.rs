@@ -9,7 +9,12 @@ pub struct BarChartArguments {
 
 #[component]
 #[allow(clippy::module_name_repetitions)]
-pub fn BarChart(width: f64, height: f64, data: Vec<BarChartArguments>) -> impl IntoView {
+pub fn BarChart(
+  width: f64, 
+  height: f64, 
+  data: Vec<BarChartArguments>,
+  aria_label: Option<String>,
+) -> impl IntoView {
     let margin = 10.0;
 
     let inner_width = width - 2.0 * margin;
@@ -23,6 +28,8 @@ pub fn BarChart(width: f64, height: f64, data: Vec<BarChartArguments>) -> impl I
         height=format!("{height}px")
         viewBox=format!("0 0 {width} {height}")
         xmlns="http://www.w3.org/2000/svg"
+        role = "img"
+        aria_label = aria_label
       >
         <g transform=format!("translate({margin},{margin})")>
           <g transform=format!("translate(0,{x_axis_position})")>

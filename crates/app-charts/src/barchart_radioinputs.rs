@@ -17,6 +17,7 @@ pub fn BarChartRadioInput(
     data: Vec<BarChartRadioInputArguments>,
     selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
+    aria_label: Option<String>,
     #[prop(into)] on_change: Callback<u64, ()>,
 ) -> impl IntoView {
     let margin = 10.0;
@@ -30,6 +31,8 @@ pub fn BarChartRadioInput(
         height=format!("{height}px")
         viewBox=format!("0 0 {width} {height}")
         xmlns="http://www.w3.org/2000/svg"
+        role = "img"
+        aria_label = aria_label
       >
         <g transform=format!("translate({margin},{margin})")>
           // <g transform=format!("translate(0,{inner_height})")>

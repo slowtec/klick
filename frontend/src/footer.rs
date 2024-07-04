@@ -19,7 +19,7 @@ pub fn Footer() -> impl IntoView {
         <div class="mx-auto max-w-7xl overflow-hidden px-6 pt-16 sm:pt-20 lg:px-8">
           <div class="mb-14">
             <div class="text-gray-600 text-center grid place-content-center">
-              <div class="grid place-content-center mb-8" inner_html = LOGO></div>
+              <div class="grid place-content-center mb-8" role="img" aria-label="Logo des Bundesministeriums für Wirtschaft und Klimaschutz (BMWK) sowie der Nationalen Klimaschutzinitiative (NKI). Über dem BMWK-Logo steht die Beschreibung: gefördert durch und unter dem BMWK-Logo steht dazugehörig: aufgrund eines Beschlusses des Deutschen Bundestages" inner_html = LOGO></div>
               <Markdown content = FOOTER_MD />
             </div>
           </div>

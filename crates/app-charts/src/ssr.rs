@@ -26,6 +26,7 @@ pub fn bar_chart_radio_input(
             data
             selected_bar = selected_bar.into()
             emission_factor_label
+            aria_label = None
             on_change = |_|{}
           />
         }
@@ -41,6 +42,7 @@ pub fn bar_chart(data: Vec<BarChartArguments>, width: f64, height: f64) -> Strin
             width
             height
             data
+            aria_label = None
           />
         }
     })
@@ -53,6 +55,7 @@ pub fn sankey_chart<F>(
     height: f64,
     number_format: F,
     font_size: f64,
+    aria_label: Option<String>
 ) -> String
 where
     F: Fn(f64) -> String + 'static,
@@ -65,6 +68,7 @@ where
             height
             number_format
             font_size
+            aria_label
           />
         }
     })

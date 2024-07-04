@@ -153,6 +153,7 @@ pub fn SensitivityParameters(
                       width = 1100.0
                       height = 400.0
                       data=barchart_arguments_filtered
+                      aria_label = Some("Ein Balkendiagramm innerhalb der Sensitivität, welches nur angezeigt wird, wenn eine Verbesserung / Verschlechterung durch eine Auswahl eingetreten ist.".to_string())
                   />
                   }
               }))

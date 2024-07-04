@@ -94,6 +94,7 @@ pub fn CH4EmissionsCHP(
                     data
                     selected_bar = selected_scenario_index
                     emission_factor_label = Some("CH₄ EF")
+                    aria_label = Some("Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Methanemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.".to_string())
                     on_change = on_bar_chart_input_changed
                   />
                 }

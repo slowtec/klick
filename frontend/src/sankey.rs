@@ -66,12 +66,13 @@ pub fn Sankey(data: (domain::CO2Equivalents, domain::CalculatedEmissionFactors))
     }
 
     Some(view! {
-      <SankeyChart
-        sankey = { sankey }
-        width = 1200.0
-        height = 800.0
-        number_format = format_large_number
-        font_size = 16.0
-      />
+        <SankeyChart
+            sankey = { sankey }
+            width = 1200.0
+            height = 800.0
+            number_format = format_large_number
+            font_size = 16.0
+            aria_label = Some("Die ausgewerteten Eingabedaten werden in einem Sankey-Diagramm dargestellt. Das Diagramm zeigt die bilanzierten Treibhausgasemissionen als CO2-Äquivalente in Tonnen pro Jahr für die einzelnen Entstehungsorte / Quellen. Das Diagramm hat seitlich angeordnete 4 Ebenen die die Flusspfade des Diagramms verbinden und die sich wie folgt gliedern: bullet point ganz rechts sind die Gesamtemissionen als ein Balken zusammengefasst; bullet point mittig-recht sind drei Balken zu sehen, die direkte, indirekten und weitere indirekte Emissionen wiedergeben; bullet point mittig-link werden einige der direkten, indirekten und weiteren indirekten Emissionen, nochmals näher beschrieben als Lachgas- und Methan-basierte Emissionen als direkte Emission und Betriebsstoffe als weitere indirekte Emission. bullet point ganz links im Bild findet sich die Balken der einzelnen Emissionen wieder wie: N2O Anlage, N2O Gewässer, CH₄ Schlupf Schlammtasche, CH₄ Schlupf Schlammlagerung, CH₄ BHKW, CH₄ Gewässer, CO₂ Emissionen, Fossile CO₂-Emissionen, Strommix, Eisendreichloridlösung, Synthetische Polymere, Klärschlammtransport.".to_string())
+        />
     })
 }
