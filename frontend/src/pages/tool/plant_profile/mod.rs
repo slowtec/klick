@@ -51,9 +51,6 @@ pub fn DataCollection(
         Some(view! {
           <ListOfMissingFields
               missing_fields
-              before_focus = move || {
-                  current_section.set(PageSection::DataCollection);
-              }
           />
         })
     };
@@ -61,13 +58,13 @@ pub fn DataCollection(
     view! {
       <div>
         { field_views }
-        { list_of_missing_fields }
         <Show when = move || !missing_fields.get().is_empty()>
           <p>
             "Bitte ergänzen Sie folgende Werte, damit die Gesamtemissionen Ihrer Kläranlage,
             anhand verschiedener Szenarien, berechnet werden können:"
           </p>
         </Show>
+        { list_of_missing_fields }
         <h4 class="my-8 text-lg font-bold">
         { move || outcome.with(|out|out.profile.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(

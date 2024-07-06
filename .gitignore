@@ -3,3 +3,5 @@ target
 copy-script.bat
 vcs.xml
 workspace.xml
+bash-wrapper.sh
+db.sqlite
