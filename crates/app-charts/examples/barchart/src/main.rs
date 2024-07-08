@@ -154,49 +154,49 @@ fn MyBarChart() -> impl IntoView {
         width = 1200.0
         height = 400.0
         data=b1.get()
-        None
+        aria_label = None
       />
       <h1>"BarChart Example b2"</h1>
       <BarChart
         width = 1200.0
         height = 400.0
         data=b2.get()
-        None
+        aria_label = None
       />
       <h1>"BarChart Example b3"</h1>
       <BarChart
         width = 1200.0
         height = 400.0
         data=b3.get()
-        None
+        aria_label = None
       />
       <h1>"BarChart Example b4"</h1>
       <BarChart
         width = 1200.0
         height = 400.0
         data=b4.get()
-        None
+        aria_label = None
       />
       <h1>"BarChart Example b5"</h1>
       <BarChart
         width = 1200.0
         height = 400.0
         data=b5.get()
-        None
+        aria_label = None
       />
       <h1>"BarChart Example b6"</h1>
       <BarChart
         width = 1200.0
         height = 400.0
         data=b6.get()
-        None
+        aria_label = None
       />
       <h1>"BarChart Example b71"</h1>
       <BarChart
         width = 1200.0
         height = 400.0
         data=b7.get()
-        None
+        aria_label = None
       />
     }
 }
