@@ -46,7 +46,8 @@ macro_rules! float {
             }
 
             impl $quantity {
-                #[must_use] pub fn convert_to<T>(self) -> Self
+                #[must_use]
+                pub fn convert_to<T>(self) -> Self
                     where T: [<$quantity Ext>] + Into<Self>
                 {
                     match self {
@@ -56,7 +57,8 @@ macro_rules! float {
                     }
                 }
 
-                #[must_use] pub const fn [<$quantity:snake _type>](&self) -> [<$quantity Type>] {
+                #[must_use]
+                pub const fn [<$quantity:snake _type>](&self) -> [<$quantity Type>] {
                     match self {
                         $(
                           Self::$unit(_) => [<$quantity Type>]::$unit,
@@ -66,13 +68,15 @@ macro_rules! float {
 
                 $(
                     #[allow(irrefutable_let_patterns)]
-                    #[must_use] pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                    #[must_use]
+                    pub const fn [<as_ $unit:snake>](self) -> Option<$unit> {
                         let Self::$unit(v) = self else {
                             return None;
                         };
                         Some(v)
                     }
 
+                    #[must_use]
                     pub fn [<unchecked_ $unit:snake>](self) -> $unit {
                         self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit), " value"))
                     }
@@ -294,7 +298,8 @@ macro_rules! floats {
             }
 
             impl Float {
-                #[must_use] pub const fn from_f64_with_type(value: f64, float_type: FloatType) -> Self {
+                #[must_use]
+                pub const fn from_f64_with_type(value: f64, float_type: FloatType) -> Self {
                     match float_type {
                         $(
                             $(
@@ -304,7 +309,8 @@ macro_rules! floats {
                     }
                 }
 
-                #[must_use] pub const fn float_type(&self) -> FloatType {
+                #[must_use]
+                pub const fn float_type(&self) -> FloatType {
                     match self {
                         $(
                             Self::$float(q) => match q {
@@ -317,14 +323,16 @@ macro_rules! floats {
                 }
 
                 $(
-                    #[must_use] pub const fn [<$float:snake>](v: $float) -> Self {
+                    #[must_use]
+                    pub const fn [<$float:snake>](v: $float) -> Self {
                         Self::$float(v)
                     }
                 )+
 
                 $(
                     $(
-                        #[must_use] pub const fn [<$unit:snake>](v: f64) -> Self {
+                        #[must_use]
+                        pub const fn [<$unit:snake>](v: f64) -> Self {
                             Self::$float($float::$unit($unit::new(v)))
                         }
                     )+
@@ -332,13 +340,15 @@ macro_rules! floats {
 
                 $(
                     #[allow(irrefutable_let_patterns)]
-                    #[must_use] pub fn [<as_ $float:snake>](self) -> Option<$float> {
+                    #[must_use]
+                    pub const fn [<as_ $float:snake>](self) -> Option<$float> {
                         let Self::$float(v) = self else {
                             return None;
                         };
                         Some(v)
                     }
 
+                    #[must_use]
                     pub fn [<as_ $float:snake _unchecked>](self) -> $float {
                         self.[<as_ $float:snake>]().expect(concat!(stringify!($float), " value"))
                     }
@@ -347,13 +357,15 @@ macro_rules! floats {
                 $(
                     $(
                         #[allow(irrefutable_let_patterns)]
-                        #[must_use] pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                        #[must_use]
+                        pub const fn [<as_ $unit:snake>](self) -> Option<$unit> {
                             let Self::$float(v) = self else {
                                 return None;
                             };
                             v.[<as_ $unit:snake>]()
                         }
 
+                        #[must_use]
                         pub fn [<as_ $unit:snake _unchecked>](self) -> $unit {
                             self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit)," value"))
                         }
@@ -413,7 +425,8 @@ macro_rules! integers {
             }
 
             impl Int {
-                #[must_use] pub const fn int_type(&self) -> IntType {
+                #[must_use]
+                pub const fn int_type(&self) -> IntType {
                     match self {
                         $(
                           Self::$int(_) => IntType::$int,
@@ -422,14 +435,16 @@ macro_rules! integers {
                 }
 
                 $(
-                    #[must_use] pub const fn [<$int:snake>](v: $int_base_type) -> Self {
+                    #[must_use]
+                    pub const fn [<$int:snake>](v: $int_base_type) -> Self {
                         Self::$int($int::new(v))
                     }
                 )+
 
                 $(
                     #[allow(irrefutable_let_patterns)]
-                    #[must_use] pub fn [<as_ $int:snake>](self) -> Option<$int> {
+                    #[must_use]
+                    pub const fn [<as_ $int:snake>](self) -> Option<$int> {
                         let Self::$int(v) = self else {
                             return None;
                         };
@@ -450,7 +465,8 @@ macro_rules! integers {
                 pub struct $int($int_base_type);
 
                 impl $int {
-                    #[must_use] pub const fn new(v: $int_base_type) -> Self {
+                    #[must_use]
+                    pub const fn new(v: $int_base_type) -> Self {
                         Self(v)
                     }
                 }
@@ -518,7 +534,8 @@ macro_rules! values {
             }
 
             impl Enum {
-                #[must_use] pub const fn enum_type(&self) -> EnumType {
+                #[must_use]
+                pub const fn enum_type(&self) -> EnumType {
                     match self {
                         $(
                             Self::$enum_name(_) => EnumType::$enum_name,
@@ -528,13 +545,15 @@ macro_rules! values {
 
                 $(
                     #[allow(irrefutable_let_patterns)]
-                    #[must_use] pub fn [<as_ $enum_name:snake>](self) -> Option<$enum_name> {
+                    #[must_use]
+                    pub const fn [<as_ $enum_name:snake>](self) -> Option<$enum_name> {
                         let Self::$enum_name(v) = self else {
                             return None;
                         };
                         Some(v)
                     }
 
+                    #[must_use]
                     pub fn [<as_ $enum_name:snake _unchecked>](self) -> $enum_name {
                         self.[<as_ $enum_name:snake>]().expect(concat!(stringify!($enum_name)," value"))
                     }
@@ -578,7 +597,8 @@ macro_rules! values {
 
                 $(
                     $(
-                        #[must_use] pub const fn [<$unit:snake>](v: f64) -> Self {
+                        #[must_use]
+                        pub const fn [<$unit:snake>](v: f64) -> Self {
                             Self::Scalar(
                               Scalar::Float(Float::[<$unit:snake>](v))
                             )
@@ -588,18 +608,21 @@ macro_rules! values {
                 )+
 
                 $(
-                    #[must_use] pub const fn [<$int:snake>](v: $int_base_type) -> Self {
+                    #[must_use]
+                    pub const fn [<$int:snake>](v: $int_base_type) -> Self {
                         Self::Scalar(Scalar::Int(Int::$int($int::new(v))))
                     }
                 )+
 
                 $(
-                    #[must_use] pub const fn [<$enum_name:snake>](v: $enum_name) -> Self {
+                    #[must_use]
+                    pub const fn [<$enum_name:snake>](v: $enum_name) -> Self {
                         Self::Enum(Enum::$enum_name(v))
                     }
                 )+
 
-                #[must_use] pub const fn bool(v: bool) -> Self {
+                #[must_use]
+                pub const fn bool(v: bool) -> Self {
                     Self::Scalar(Scalar::Bool(v))
                 }
 
@@ -609,99 +632,115 @@ macro_rules! values {
 
                 // --- getters --- //
 
-                #[must_use] pub fn as_scalar(self) -> Option<Scalar> {
+                #[must_use]
+                pub fn as_scalar(self) -> Option<Scalar> {
                     let Self::Scalar(v) = self else {
                         return None;
                     };
                     Some(v)
                 }
 
-                #[must_use] pub fn as_scalar_unchecked(self) -> Scalar {
+                #[must_use]
+                pub fn as_scalar_unchecked(self) -> Scalar {
                     self.as_scalar().expect("scalar value")
                 }
 
-                #[must_use] pub fn as_text(self) -> Option<String> {
+                #[must_use]
+                pub fn as_text(self) -> Option<String> {
                     let Self::Text(v) = self else {
                         return None;
                     };
                     Some(v)
                 }
 
-                #[must_use] pub fn as_text_unchecked(self) -> String {
+                #[must_use]
+                pub fn as_text_unchecked(self) -> String {
                     self.as_text().expect("text value")
                 }
 
-                #[must_use] pub fn as_float(self) -> Option<Float> {
+                #[must_use]
+                pub fn as_float(self) -> Option<Float> {
                     let Self::Scalar(v) = self else {
                         return None;
                     };
                     v.as_float()
                 }
 
-                #[must_use] pub fn as_float_unchecked(self) -> Float {
+                #[must_use]
+                pub fn as_float_unchecked(self) -> Float {
                     self.as_float().expect("float value")
                 }
 
-                #[must_use] pub fn as_int(self) -> Option<Int> {
+                #[must_use]
+                pub fn as_int(self) -> Option<Int> {
                     let Self::Scalar(v) = self else {
                         return None;
                     };
                     v.as_int()
                 }
 
-                #[must_use] pub fn as_int_unchecked(self) -> Int {
+                #[must_use]
+                pub fn as_int_unchecked(self) -> Int {
                     self.as_int().expect("integer value")
                 }
 
-                #[must_use] pub fn as_bool(self) -> Option<bool> {
+                #[must_use]
+                pub fn as_bool(self) -> Option<bool> {
                     let Self::Scalar(v) = self else {
                         return None;
                     };
                     v.as_bool()
                 }
 
-                #[must_use] pub fn as_bool_unchecked(self) -> bool {
+                #[must_use]
+                pub fn as_bool_unchecked(self) -> bool {
                     self.as_bool().expect("bool value")
                 }
 
 
                 $(
                     $(
-                        #[must_use] pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                        #[must_use]
+                        pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
                             let Self::Scalar(v) = self else {
                                 return None;
                             };
                             v.[<as_ $unit:snake>]()
                         }
 
-                        #[must_use] pub fn [<as_ $unit:snake _unchecked>](self) -> $unit {
+                        #[must_use]
+                        pub fn [<as_ $unit:snake _unchecked>](self) -> $unit {
                             self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit)," value"))
                         }
                     )+
                 )+
 
                 $(
-                    #[must_use] pub fn [<as_ $int:snake>](self) -> Option<$int> {
+                    #[must_use]
+                    pub fn [<as_ $int:snake>](self) -> Option<$int> {
                         let Self::Scalar(v) = self else {
                             return None;
                         };
                         v.[<as_ $int:snake>]()
                     }
 
-                    #[must_use] pub fn [<as_ $int:snake _unchecked>](self) -> $int {
+                    #[must_use]
+                    pub fn [<as_ $int:snake _unchecked>](self) -> $int {
                         self.[<as_ $int:snake>]().expect(concat!(stringify!($int)," value"))
                     }
                 )+
 
                 $(
-                    #[must_use] pub fn [<as_ $enum_name:snake>](self) -> Option<$enum_name> {
+                    #[must_use]
+                    pub fn [<as_ $enum_name:snake>](self) -> Option<$enum_name> {
                         let Self::Enum(v) = self else {
                             return None;
                         };
                         v.[<as_ $enum_name:snake>]()
                     }
 
-                    #[must_use] pub fn [<as_ $enum_name:snake _unchecked>](self) -> $enum_name {
+                    #[must_use]
+                    pub fn [<as_ $enum_name:snake _unchecked>](self) -> $enum_name {
                         self.[<as_ $enum_name:snake>]().expect(concat!(stringify!($enum_name)," value"))
                     }
                 )+
@@ -726,7 +765,8 @@ macro_rules! values {
             impl ValueType {
                 $(
                     $(
-                        #[must_use] pub const fn [<$unit:snake>]() -> Self {
+                        #[must_use]
+                        pub const fn [<$unit:snake>]() -> Self {
                             Self::Scalar(
                                 ScalarType::Float(
                                   FloatType::[<$unit:snake>]()
@@ -737,22 +777,26 @@ macro_rules! values {
                 )+
 
                 $(
-                    #[must_use] pub const fn [<$int:snake>]() -> Self {
+                    #[must_use]
+                    pub const fn [<$int:snake>]() -> Self {
                         Self::Scalar(ScalarType::Int(IntType::$int))
                     }
                 )+
 
                 $(
-                    #[must_use] pub const fn [<$enum_name:snake>]() -> Self {
+                    #[must_use]
+                    pub const fn [<$enum_name:snake>]() -> Self {
                         Self::Enum(EnumType::$enum_name)
                     }
                 )+
 
-                #[must_use] pub const fn bool() -> Self {
+                #[must_use]
+                pub const fn bool() -> Self {
                     Self::Scalar(ScalarType::Bool)
                 }
 
-                #[must_use] pub const fn text() -> Self {
+                #[must_use]
+                pub const fn text() -> Self {
                     Self::Text
                 }
 
@@ -767,7 +811,8 @@ macro_rules! values {
             }
 
             impl Scalar {
-                #[must_use] pub const fn scalar_type(&self) -> ScalarType {
+                #[must_use]
+                pub const fn scalar_type(&self) -> ScalarType {
                     match self {
                       Self::Float(f) => ScalarType::Float(f.float_type()),
                       Self::Int(i) => ScalarType::Int(i.int_type()),
@@ -777,25 +822,29 @@ macro_rules! values {
 
                 $(
                     $(
-                        #[must_use] pub const fn [<$unit:snake>](v: f64) -> Self {
+                        #[must_use]
+                        pub const fn [<$unit:snake>](v: f64) -> Self {
                             Self::Float(Float::[<$unit:snake>](v))
                         }
                     )+
                 )+
 
                 $(
-                    #[must_use] pub const fn [<$int:snake>](v: $int_base_type) -> Self {
+                    #[must_use]
+                    pub const fn [<$int:snake>](v: $int_base_type) -> Self {
                         Self::Int(Int::[<$int:snake>](v))
                     }
                 )+
 
-                #[must_use] pub const fn bool(v: bool) -> Self {
+                #[must_use]
+                pub const fn bool(v: bool) -> Self {
                     Self::Bool(v)
                 }
 
                 $(
                     $(
-                        #[must_use] pub fn [<as_ $unit:snake>](self) -> Option<$unit> {
+                        #[must_use]
+                        pub const fn [<as_ $unit:snake>](self) -> Option<$unit> {
                             let Self::Float(v) = self else {
                                 return None;
                             };
@@ -805,7 +854,8 @@ macro_rules! values {
                 )+
 
                 $(
-                    #[must_use] pub fn [<as_ $int:snake>](self) -> Option<$int> {
+                    #[must_use]
+                    pub const fn [<as_ $int:snake>](self) -> Option<$int> {
                         let Self::Int(v) = self else {
                             return None;
                         };
@@ -813,36 +863,42 @@ macro_rules! values {
                     }
                 )+
 
-                #[must_use] pub fn as_float(self) -> Option<Float> {
+                #[must_use]
+                pub const fn as_float(self) -> Option<Float> {
                     let Self::Float(v) = self else {
                         return None;
                     };
                     Some(v)
                 }
 
-                #[must_use] pub fn as_float_unchecked(self) -> Float {
+                #[must_use]
+                pub fn as_float_unchecked(self) -> Float {
                     self.as_float().expect("float value")
                 }
 
-                #[must_use] pub fn as_int(self) -> Option<Int> {
+                #[must_use]
+                pub const fn as_int(self) -> Option<Int> {
                     let Self::Int(v) = self else {
                         return None;
                     };
                     Some(v)
                 }
 
-                #[must_use] pub fn as_int_unchecked(self) -> Int {
+                #[must_use]
+                pub fn as_int_unchecked(self) -> Int {
                     self.as_int().expect("integer value")
                 }
 
-                #[must_use] pub fn as_bool(self) -> Option<bool> {
+                #[must_use]
+                pub const fn as_bool(self) -> Option<bool> {
                     let Self::Bool(v) = self else {
                         return None;
                     };
                     Some(v)
                 }
 
-                #[must_use] pub fn as_bool_unchecked(self) -> bool {
+                #[must_use]
+                pub fn as_bool_unchecked(self) -> bool {
                     self.as_bool().expect("bool value")
                 }
             }

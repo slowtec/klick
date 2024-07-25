@@ -11,11 +11,11 @@ derive_more = "0.99.18"
 http = "1.1.0"
 http-serde = "2.1.1"
 log = "0.4.22"
-serde = { version = "1.0.203", features = ["derive"] }
+serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.120"
-thiserror = "1.0.61"
+thiserror = "1.0.63"
 time = { version = "0.3.36", features = ["serde"] }
-uuid = { version = "1.9.1", features = ["serde"] }
+uuid = { version = "1.10.0", features = ["serde"] }
 
 [dependencies.klick-domain]
 path = "../domain"
@@ -29,7 +29,7 @@ optional = true
 [dev-dependencies]
 klick-boundary = { version = "=0.0.0", features = ["extra-derive", "conversion"] }
 
-uuid = { version = "1.9.1", features = ["v4"] }
+uuid = { version = "1.10.0", features = ["v4"] }
 
 [features]
 conversion = []

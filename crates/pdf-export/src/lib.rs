@@ -1,9 +1,8 @@
 #![allow(unused)] // FIXME
 
-use std::{io::Write, path::Path};
+use std::{io::Write, path::Path, sync::LazyLock};
 
 use anyhow::bail;
-use lazy_static::lazy_static;
 use num_traits::ToPrimitive;
 use pandoc::{InputFormat, InputKind, MarkdownExtension, OutputFormat, OutputKind, PandocOutput};
 use serde::Serialize;
@@ -25,16 +24,14 @@ const MARKDOWN_TEMPLATE_NAME: &str = "report.md";
 const LATEX_TABLE_TEMPLATE: &str = include_str!("../templates/table.tex.template");
 const LATEX_TABLE_TEMPLATE_NAME: &str = "table.tex";
 
-lazy_static! {
-    pub static ref TEMPLATES: Tera = {
-        let mut tera = Tera::default();
-        tera.add_raw_template(MARKDOWN_TEMPLATE_NAME, MARKDOWN_TEMPLATE)
-            .expect("valid markdown template");
-        tera.add_raw_template(LATEX_TABLE_TEMPLATE_NAME, LATEX_TABLE_TEMPLATE)
-            .expect("valid table template");
-        tera
-    };
-}
+pub static TEMPLATES: LazyLock<Tera> = LazyLock::new(|| {
+    let mut tera = Tera::default();
+    tera.add_raw_template(MARKDOWN_TEMPLATE_NAME, MARKDOWN_TEMPLATE)
+        .expect("valid markdown template");
+    tera.add_raw_template(LATEX_TABLE_TEMPLATE_NAME, LATEX_TABLE_TEMPLATE)
+        .expect("valid table template");
+    tera
+});
 
 pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     let date = current_date_as_string()?;

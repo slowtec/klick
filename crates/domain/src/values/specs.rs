@@ -42,7 +42,7 @@ impl ValueSpec {
     }
 
     #[must_use]
-    fn new_with_default(default_value: Value) -> Self {
+    const fn new_with_default(default_value: Value) -> Self {
         let value_type = default_value.value_type();
         let default = Some(default_value);
         Self {
