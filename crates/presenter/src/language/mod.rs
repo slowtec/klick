@@ -40,6 +40,14 @@ impl Lng {
     }
 
     #[must_use]
+    pub fn format_number_without_thousands_separators<N>(&self, n: N) -> String
+    where
+        N: Into<f64>,
+    {
+        n.into().to_string().replace('.', self.decimal_separator())
+    }
+
+    #[must_use]
     pub fn format_number_with_fixed_precision<N>(&self, n: N, precision: usize) -> String
     where
         N: Into<f64>,

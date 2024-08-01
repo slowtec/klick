@@ -376,6 +376,7 @@ fn FloatInput(
     accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let format_number = move |v| lng.format_number(v);
+    let format_plain_number = move |v| lng.format_number_without_thousands_separators(v);
     number_input_field(
         label,
         unit,
@@ -389,6 +390,7 @@ fn FloatInput(
         evaluate_float_input,
         lng,
         format_number,
+        format_plain_number,
         accessibility_always_show,
     )
 }
@@ -408,6 +410,7 @@ fn UnsignedIntegerInput(
     accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let format_number = move |v| lng.format_number(v as f64);
+    let format_plain_number = move |v| lng.format_number_without_thousands_separators(v as f64);
     number_input_field(
         label,
         unit,
@@ -421,6 +424,7 @@ fn UnsignedIntegerInput(
         evaluate_u64_input,
         lng,
         format_number,
+        format_plain_number,
         accessibility_always_show,
     )
 }
@@ -438,6 +442,7 @@ fn number_input_field<F, N>(
     evaluate_input: F,
     lng: Lng,
     format_value: impl Fn(N) -> String + Copy + 'static,
+    format_plain_value: impl Fn(N) -> String + Copy + 'static,
     accessibility_always_show: Option<RwSignal<bool>>,
 ) -> impl IntoView
 where
@@ -490,7 +495,7 @@ where
     let on_focus_in = move |_| {
         is_focussed.set(true);
         if let Some(value) = input_value.get() {
-            let new_txt = format_value(value);
+            let new_txt = format_plain_value(value);
             txt.set(new_txt);
         }
     };

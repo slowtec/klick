@@ -16,6 +16,29 @@ mod format {
     }
 
     #[test]
+    fn german_numbers_without_thousands_separators() {
+        let lng = Lng::De;
+        assert_eq!(lng.format_number_without_thousands_separators(0.6), "0,6");
+        assert_eq!(lng.format_number_without_thousands_separators(6.0), "6");
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000),
+            "6000"
+        );
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000.0),
+            "6000"
+        );
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000.1),
+            "6000,1"
+        );
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000.123_456_789),
+            "6000,123456789"
+        );
+    }
+
+    #[test]
     fn english_numbers() {
         let lng = Lng::En;
         assert_eq!(lng.format_number(0.6), "0.6");
@@ -23,6 +46,29 @@ mod format {
         assert_eq!(lng.format_number(6.01), "6.01");
         assert_eq!(lng.format_number(6_000), "6,000");
         assert_eq!(lng.format_number(6_000.0), "6,000");
+    }
+
+    #[test]
+    fn english_numbers_without_thousands_separators() {
+        let lng = Lng::En;
+        assert_eq!(lng.format_number_without_thousands_separators(0.6), "0.6");
+        assert_eq!(lng.format_number_without_thousands_separators(6.0), "6");
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000),
+            "6000"
+        );
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000.0),
+            "6000"
+        );
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000.1),
+            "6000.1"
+        );
+        assert_eq!(
+            lng.format_number_without_thousands_separators(6_000.123_456_789),
+            "6000.123456789"
+        );
     }
 
     #[test]
