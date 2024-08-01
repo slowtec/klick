@@ -14,7 +14,7 @@ pub fn Faq() -> impl IntoView {
                 "Sie haben eine Frage? Vielleicht wurde diese im FAQ schon beantwortet!"
               </p>
               <p class="mt-4 text-base leading-7 text-gray-600">
-                <a href={FAQ_DE} class="font-semibold text-indigo-600 hover:text-indigo-500" style="text-decoration: underline;
+                <a href={FAQ_DE} target="_blank" class="font-semibold text-indigo-600 hover:text-indigo-500" style="text-decoration: underline;
                 text-decoration-color: currentcolor; -webkit-text-decoration-color: #ffed00; text-decoration-color: #ffed00; text-underline-offset: 4px;">
                 <icons::ExternalLink /> "Schauen sie in unser Wiki im Abschnitt FAQ"
                 </a>
