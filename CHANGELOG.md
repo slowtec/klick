@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.12 (2024-08-24)
+
+- Changed
+  - #268 accessibility enhancements
+  - #267 #260 #270 CI/CD / FAQ / Datenschutz
+  - #272 Adjust footer layout
+  - Refactor: Access form data via IDs 
+- Fixed
+  - #252 clicking required field jumps to somewhere!
+  - #185 sankey drawing fixed
+
 ## v0.4.11 (2024-03-29)
 
 - Added:

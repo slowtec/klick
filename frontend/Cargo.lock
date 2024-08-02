@@ -840,7 +840,7 @@ dependencies = [
 
 [[package]]
 name = "klick-domain"
-version = "0.4.11"
+version = "0.4.12"
 dependencies = [
  "bs58",
  "derive_more",
@@ -856,7 +856,7 @@ dependencies = [
 
 [[package]]
 name = "klick-frontend"
-version = "0.4.11"
+version = "0.4.12"
 dependencies = [
  "anyhow",
  "chrono",
