@@ -85,7 +85,7 @@ pub fn calculate_emissions(
         nitrogen_influent,
         nitrogen_effluent,
     );
-    debug_assert!(n2o_emission_factor < Factor::new(1.0));
+    debug_assert!(nitrogen_influent > MilligramsPerLiter::new(0.1));
 
     let (n2o_plant, n2o_water) = calculate_nitrous_oxide(
         nitrogen_influent,

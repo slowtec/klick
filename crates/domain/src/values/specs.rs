@@ -113,7 +113,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         (
             Id::InfluentNitrogen,
             S::new(T::milligrams_per_liter())
-                .with_min(0.0)
+                .with_min(1.0) // must not be 0.0 to prevent division by 0
                 .with_max(5000.0),
         ),
         (
