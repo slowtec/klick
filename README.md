@@ -43,6 +43,14 @@ ln -s /home/klick-app/klick-v0.4.x /home/klick-app/klick
 systemctl start klick-app
 ```
 
+# Access report
+
+On the server run this command:
+
+    zcat -f /var/log/nginx/access.log* | goaccess --log-format=COMBINED -a --anonymize-ip -o /tmp/report.html
+
+Then download `/tmp/report.html` and send via email.
+
 ## License
 
 Copyright (c) 2023 - 2024 [slowtec GmbH](https://slowtec.de)

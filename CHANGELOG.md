@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.13 (2024-09-06)
+
+- Changed
+  - #287 Lachgasemissionen [n2o anlage] statt [gesammtemissionen]  
+  - #281 F1 now hides the (i) button in the handlungsempfehlungen
+  - #187 N-Eliminationsrate Formel hängt sich auf  
+
 ## v0.4.12 (2024-08-24)
 
 - Changed
