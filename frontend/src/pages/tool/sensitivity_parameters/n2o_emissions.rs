@@ -79,7 +79,7 @@ pub fn N2OEmissionsSensitivity(
                     .map(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
                             label: Some(szenario.label()),
-                            value: outcome.co2_equivalents.total_emissions.into(),
+                            value: outcome.co2_equivalents.n2o_plant.into(),
                             emission_factor: f64::from(outcome.emission_factors.n2o),
                         },
                     )
@@ -112,7 +112,7 @@ pub fn N2OEmissionsSensitivity(
           </p>
 
           <p class="my-2">
-            "Da das Auftreten von N₂O-Emissionen in der Regel anlagenspezifisch ist, bietet das KlicK-Tool weitere
+            "Da das Auftreten von N₂O-Emissionen in der Regel anlagenspezifisch ist " <b> "[N₂O Anlage] " </b> ", bietet das KlicK-Tool weitere
             Auswertungsszenarien für Lachgasemissionen an. Diese sind im folgenden Balkendiagramm dargestellt,
             einschließlich der daraus resultierenden Lachgasemissionen [als CO₂-Äquivalente]."
           </p>
