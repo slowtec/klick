@@ -14,7 +14,7 @@ pub fn CH4EmissionsOpenDigesters(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let show_sludge_bags_controls = Signal::derive(move || {
         // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
@@ -58,7 +58,7 @@ pub fn CH4EmissionsOpenDigesters(
         fields: vec![custom_factor_field],
     };
 
-    let (fields_view1, _, _) = render_field_sets(vec![field_set], accessibility_always_show);
+    let (fields_view1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
 
     let id = Id::SensitivitySludgeStorageCustomFactor;
     let custom_factor_field2 = create_field(form_data.write_only(), input_data, id);
@@ -68,7 +68,7 @@ pub fn CH4EmissionsOpenDigesters(
         fields: vec![custom_factor_field2],
     };
 
-    let (fields_view2, _, _) = render_field_sets(vec![field_set], accessibility_always_show);
+    let (fields_view2, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
 
     // FIXME: set default values in page::tool::default_values
     // create_effect(move |_| {
@@ -89,7 +89,7 @@ pub fn CH4EmissionsOpenDigesters(
 
     view! {
       <div class = move || { if show_dialog.get() { None } else { Some("hidden") } } >
-        <Card id = "sensitivity-open-digesters" title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue" accessibility_always_show>
+        <Card id = "sensitivity-open-digesters" title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue" accessibility_always_show_option>
           <div class = move || { if show_sludge_bags_controls.get() { None } else { Some("hidden") } } >
              <p class="my-2">
              "Durch "<b>"offene Schlammtaschen an Faultürmen"</b>" kann Methan entweichen. Nachfolgend kann für den
@@ -104,7 +104,7 @@ pub fn CH4EmissionsOpenDigesters(
              </div>
           </div>
           <div class = move || { if show_sludge_storage_containers_controls.get() { None } else { Some("hidden") } } >
-            <InfoBox text = "Die Schlammlagerung trägt maßgeblich zu Methanemissionen bei" accessibility_always_show>
+            <InfoBox text = "Die Schlammlagerung trägt maßgeblich zu Methanemissionen bei" accessibility_always_show_option>
               <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S. 24)" url = DWA_MERKBLATT_URL >
               "In Abhängigkeit vom technischen Ausfaulgrad der Schlammfaulung und der Lagerzeit können bei der
               Faulschlammlagerung noch bis zu 15 kg CO"<sub>2</sub>"-Äquivalente/(E·a) emittiert werden (Quelle: DWA 2020).

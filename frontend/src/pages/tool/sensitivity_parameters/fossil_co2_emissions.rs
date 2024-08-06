@@ -13,13 +13,13 @@ pub fn FossilCO2Emissions(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let field_set = field_set(form_data.write_only(), input_data);
-    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show);
+    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
 
     view! {
-       <Card id="sensitivity-fossil-co2" title = "Fossile CO₂-Emissionen aus Abwasser" bg_color="bg-blue" accessibility_always_show>
+       <Card id="sensitivity-fossil-co2" title = "Fossile CO₂-Emissionen aus Abwasser" bg_color="bg-blue" accessibility_always_show_option>
          <p class="my-2">
            "Der überwiegende Teil des aus dem Abwasser freigesetzten CO₂ ist biogenen Ursprungs. Dieses CO₂ gilt daher als
                 klimaneutral und wird in der Treibhausgasbilanz nicht berücksichtigt. Ein kleinerer Teil des CO₂ führt auf
@@ -42,7 +42,7 @@ pub fn FossilCO2Emissions(
          </p>
          { form1 }
          <InfoBox text = "Zusätzlich zu den fossilen CO₂-Emissionen aus der biologischen Reinigung, wurde ein
-           erheblicher Anteil dieser Emissionen in Klärschlämmen und im Klärgas gemessen" accessibility_always_show>
+           erheblicher Anteil dieser Emissionen in Klärschlämmen und im Klärgas gemessen" accessibility_always_show_option>
              <Cite source = "Auszug aus dem UBA Text 149/2022 (S. 5)" url = DWA_MERKBLATT_URL>
              "Die Untersuchungsergebnisse zeigen, dass Klärschlämme aus kommunalen Anlagen mit untergeordneten gewerblichen
                   Abwässern (< 45 %, berechnet als mittlere Auslastung der Einwohnerwerte abzüglich der angeschlossenen Einwohnerzahl)

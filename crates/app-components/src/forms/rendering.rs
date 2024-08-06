@@ -18,7 +18,7 @@ type Labels = HashMap<FieldId, &'static str>;
 #[must_use]
 pub fn render_field_sets(
     field_sets: Vec<FieldSet>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> (Vec<View>, ReadSignal<MissingFields>, Labels) {
     let mut set_views = vec![];
     let mut labels = HashMap::new();
@@ -31,7 +31,13 @@ pub fn render_field_sets(
         for field in set.fields {
             let id = crate::forms::dom_node_id();
             labels.insert(id, field.label);
-            let view = render_field(field, id, missing_fields, lng, accessibility_always_show);
+            let view = render_field(
+                field,
+                id,
+                missing_fields,
+                lng,
+                accessibility_always_show_option,
+            );
             field_views.push(view);
         }
 
@@ -61,7 +67,7 @@ pub fn render_field(
     id: FieldId,
     missing_fields: RwSignal<HashSet<FieldId>>,
     lng: Lng,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let Field {
         label,
@@ -107,7 +113,7 @@ pub fn render_field(
                 required
                 input_value = input
                 on_change = on_change
-                accessibility_always_show
+                accessibility_always_show_option
               />
             }
             .into_view()
@@ -153,7 +159,7 @@ pub fn render_field(
                 input_value = input
                 on_change
                 lng
-                accessibility_always_show
+                accessibility_always_show_option
               />
             }
             .into_view()
@@ -197,7 +203,7 @@ pub fn render_field(
                 input_value = input
                 on_change
                 lng
-                accessibility_always_show
+                accessibility_always_show_option
               />
             }
             .into_view()
@@ -223,7 +229,7 @@ fn create_tooltip(
     label: &'static str,
     description: Option<&'static str>, // TODO: pass description as Markdown instead of raw HTML
     required: bool,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
     id: FieldId,
 ) -> impl IntoView {
     let Some(description) = description else {
@@ -232,7 +238,7 @@ fn create_tooltip(
 
     let show_tooltip = RwSignal::new(false);
     let required_hint = if required { "* " } else { "" };
-    let always_show_accessibility = accessibility_always_show.is_some_and(|o| o.get());
+    let always_show_accessibility = accessibility_always_show_option.is_some_and(|o| o.get());
 
     // TODO: check current language
     let input_required_message = "Eingabe benötigt!";
@@ -333,11 +339,11 @@ fn TextInput(
     required: bool,
     input_value: Signal<Option<String>>,
     #[prop(into)] on_change: Callback<Option<String>, ()>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     view! {
       <div id={ format!("focus-{id}") }>
-        { move || create_tooltip(label, description, required, accessibility_always_show, id) }
+        { move || create_tooltip(label, description, required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm group">
           <input
             type = "text"
@@ -373,7 +379,7 @@ fn FloatInput(
     input_value: Signal<Option<f64>>,
     #[prop(into)] on_change: Callback<Option<f64>, ()>,
     lng: Lng,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let format_number = move |v| lng.format_number(v);
     let format_plain_number = move |v| lng.format_number_without_thousands_separators(v);
@@ -391,7 +397,7 @@ fn FloatInput(
         lng,
         format_number,
         format_plain_number,
-        accessibility_always_show,
+        accessibility_always_show_option,
     )
 }
 
@@ -407,7 +413,7 @@ fn UnsignedIntegerInput(
     input_value: Signal<Option<u64>>,
     #[prop(into)] on_change: Callback<Option<u64>, ()>,
     lng: Lng,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let format_number = move |v| lng.format_number(v as f64);
     let format_plain_number = move |v| lng.format_number_without_thousands_separators(v as f64);
@@ -425,7 +431,7 @@ fn UnsignedIntegerInput(
         lng,
         format_number,
         format_plain_number,
-        accessibility_always_show,
+        accessibility_always_show_option,
     )
 }
 
@@ -443,7 +449,7 @@ fn number_input_field<F, N>(
     lng: Lng,
     format_value: impl Fn(N) -> String + Copy + 'static,
     format_plain_value: impl Fn(N) -> String + Copy + 'static,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView
 where
     F: Fn(&str, bool, MinMax<N>, Lng) -> Result<Option<N>, NumberEvalError<N>> + Copy + 'static,
@@ -505,7 +511,7 @@ where
 
     view! {
       <div>
-        { move || create_tooltip(label, description, required, accessibility_always_show, id) }
+        { move || create_tooltip(label, description, required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             id = id.to_string()

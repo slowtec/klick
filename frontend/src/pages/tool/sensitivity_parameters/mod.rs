@@ -26,7 +26,7 @@ pub fn SensitivityParameters(
     current_section: RwSignal<PageSection>,
     outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
@@ -72,29 +72,29 @@ pub fn SensitivityParameters(
           form_data
           outcome
           show_side_stream_controls
-          accessibility_always_show
+          accessibility_always_show_option
         />
         <CH4EmissionsCHP
           form_data
           input_data = form_data.read_only()
           outcome
-          accessibility_always_show
+          accessibility_always_show_option
         />
         <CH4EmissionsOpenDigesters
           form_data
           input_data = form_data.read_only()
           outcome
-          accessibility_always_show
+          accessibility_always_show_option
         />
         <CH4EmissionsOpenSludgeStorage
           form_data
-          accessibility_always_show
+          accessibility_always_show_option
         />
         <FossilCO2Emissions
           form_data
           input_data = form_data.read_only()
           outcome
-          accessibility_always_show
+          accessibility_always_show_option
         />
 
         <h4 class="my-8 text-lg font-bold">

@@ -58,7 +58,7 @@ pub fn Tool(
     api: Signal<Option<AuthorizedApi>>,
     current_project: RwSignal<Option<Project>>,
     current_section: RwSignal<PageSection>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -275,7 +275,7 @@ pub fn Tool(
               form_data
               current_section
               outcome = outcome.into()
-              accessibility_always_show
+              accessibility_always_show_option
             />
         }
         .into_view(),
@@ -285,7 +285,7 @@ pub fn Tool(
               current_section
               outcome = outcome.into()
               show_side_stream_controls
-              accessibility_always_show
+              accessibility_always_show_option
             />
         }
         .into_view(),
@@ -295,7 +295,7 @@ pub fn Tool(
               outcome = outcome.into()
               show_side_stream_controls
               current_section
-              accessibility_always_show
+              accessibility_always_show_option
             />
         }
         .into_view(),

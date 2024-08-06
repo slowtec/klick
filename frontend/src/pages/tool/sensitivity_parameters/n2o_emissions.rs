@@ -15,7 +15,7 @@ pub fn N2OEmissionsSensitivity(
     form_data: RwSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -39,12 +39,16 @@ pub fn N2OEmissionsSensitivity(
     // -----   ----- //
 
     let n2o_custom_factor_field_set = n2o_custom_factor(form_data);
-    let (n2o_custom_factor_view, _, _) =
-        render_field_sets(n2o_custom_factor_field_set, accessibility_always_show);
+    let (n2o_custom_factor_view, _, _) = render_field_sets(
+        n2o_custom_factor_field_set,
+        accessibility_always_show_option,
+    );
 
     let side_stream_factor_field_set = side_stream_factor(form_data);
-    let (side_stream_factor_view, _, _) =
-        render_field_sets(side_stream_factor_field_set, accessibility_always_show);
+    let (side_stream_factor_view, _, _) = render_field_sets(
+        side_stream_factor_field_set,
+        accessibility_always_show_option,
+    );
 
     // -----   ----- //
     //   Callbacks   //
@@ -96,7 +100,7 @@ pub fn N2OEmissionsSensitivity(
     };
 
     view! {
-      <Card id = "sensitivity-n2o" title = "Lachgasemissionen" bg_color="bg-blue" accessibility_always_show>
+      <Card id = "sensitivity-n2o" title = "Lachgasemissionen" bg_color="bg-blue" accessibility_always_show_option>
         <div class="my-4 ml-4">
 
           <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Lachgasemissionen bei der biologischen Reinigungsstufe"</h3>

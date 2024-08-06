@@ -10,19 +10,23 @@ pub const DWA_MERKBLATT_URL: &str =
 pub fn InfoBox(
     text: &'static str,
     children: Children,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let show = RwSignal::<bool>::new(false);
-    let combined_show_signal = Signal::derive(move || match accessibility_always_show {
+    let accessibility_always_show =
+        Signal::derive(move || match accessibility_always_show_option {
+            Some(sig) => sig.get(),
+            None => false,
+        });
+    let combined_show_signal = Signal::derive(move || match accessibility_always_show_option {
         Some(sig) => show.get() || sig.get(),
         None => show.get(),
     });
     let children = children();
-
     view! {
       <p>{ text }
         <div
-          class="mx-1 cursor-pointer inline-block"
+          class = move || if accessibility_always_show.get() { Some("hidden") } else { Some("mx-1 cursor-pointer inline-block") }
           on:click = move |_| show.update(|x|*x = !*x)
         >
           <icons::InformationCircle />
@@ -40,10 +44,10 @@ pub fn Card(
     title: &'static str,
     children: Children,
     bg_color: &'static str,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let hide = RwSignal::<bool>::new(false);
-    let combined_hide_signal = Signal::derive(move || match accessibility_always_show {
+    let combined_hide_signal = Signal::derive(move || match accessibility_always_show_option {
         Some(sig) => !sig.get() && hide.get(),
         None => hide.get(),
     });

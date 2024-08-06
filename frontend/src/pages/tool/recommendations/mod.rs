@@ -25,7 +25,7 @@ pub fn Recommendations(
     outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     current_section: RwSignal<PageSection>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
@@ -73,7 +73,7 @@ pub fn Recommendations(
       </h4>
       { form_data_overview }
       { n2o_emissions_in_the_biological_treatment_stage::options(
-        accessibility_always_show
+        accessibility_always_show_option
       ) }
       {
         n2o_emissions_side_stream_system::options(
@@ -81,26 +81,26 @@ pub fn Recommendations(
           form_data.read_only(),
           outcome,
           show_side_stream_controls,
-          accessibility_always_show
+          accessibility_always_show_option
         )
       }
       { ch4_emissions_pre_treatment::options(
-        accessibility_always_show
+        accessibility_always_show_option
       ) }
       { ch4_emissions_open_digesters::options(
           form_data,
           form_data.read_only(),
           outcome,
-          accessibility_always_show,
+          accessibility_always_show_option,
       ) }
       { leak_test::options(
-        accessibility_always_show
+        accessibility_always_show_option
       ) }
       { excess_energy_co2_equivalent::options(
           form_data,
           form_data.read_only(),
           outcome,
-          accessibility_always_show,
+          accessibility_always_show_option,
         )
       }
 

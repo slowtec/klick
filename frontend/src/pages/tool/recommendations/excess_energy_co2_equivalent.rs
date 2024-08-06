@@ -12,7 +12,7 @@ pub fn options(
     form_data: RwSignal<FormData>,
     input_data: ReadSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
@@ -51,7 +51,7 @@ pub fn options(
     // -----   ----- //
 
     let field_sets = field_sets(form_data.write_only(), input_data);
-    let (view, _, _) = render_field_sets(field_sets, accessibility_always_show);
+    let (view, _, _) = render_field_sets(field_sets, accessibility_always_show_option);
 
     // -----   ----- //
     //     View      //
@@ -60,7 +60,7 @@ pub fn options(
     let lng = Lng::De;
 
     view! {
-      <Card id="recommenation-excess-energy" title ="Energiebedingte Emissionen" bg_color="bg-yellow" accessibility_always_show>
+      <Card id="recommenation-excess-energy" title ="Energiebedingte Emissionen" bg_color="bg-yellow" accessibility_always_show_option>
         <p>
         <b>"Energiesparmaßnahmen"</b>" und "<b>"Erneuerbare Energien"</b>" können maßgeblich zur Minderung indirekter Emissionen und
              zur Energieautarkie beitragen. Um die positiven Auswirkungen eines Zubaus der erneuerbaren Energien:

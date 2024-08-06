@@ -48,10 +48,10 @@ pub fn App() -> impl IntoView {
 
     let app_ref = create_node_ref::<html::Div>();
     provide_hotkeys_context(app_ref, false, scopes!());
-    let accessibility_always_show: Option<RwSignal<bool>> = Some(RwSignal::new(false));
+    let accessibility_always_show_option: Option<RwSignal<bool>> = Some(RwSignal::new(false));
 
     use_hotkeys!(("F1") => move |()| {
-      match accessibility_always_show {
+      match accessibility_always_show_option {
         Some(o) => {
           o.set(!o.get());},
         None => {}
@@ -179,7 +179,7 @@ pub fn App() -> impl IntoView {
                       api = authorized_api.into()
                       current_project
                       current_section
-                      accessibility_always_show
+                      accessibility_always_show_option
                     />
                   </Main>
                 }

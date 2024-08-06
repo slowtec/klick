@@ -20,7 +20,7 @@ pub fn DataCollection(
     form_data: RwSignal<FormData>,
     current_section: RwSignal<PageSection>,
     outcome: Signal<CalculationOutcome>,
-    accessibility_always_show: Option<RwSignal<bool>>,
+    accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     // -----   ----- //
     //     Form      //
@@ -28,7 +28,7 @@ pub fn DataCollection(
 
     let field_sets = field_sets(form_data);
     let (field_views, missing_fields, labels) =
-        render_field_sets(field_sets, accessibility_always_show);
+        render_field_sets(field_sets, accessibility_always_show_option);
     let labels = Rc::new(labels);
 
     // -----   ----- //
