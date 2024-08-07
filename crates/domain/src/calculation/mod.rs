@@ -350,10 +350,10 @@ pub fn extrapolate_according_to_tu_wien_2016(
     nitrogen_influent: MilligramsPerLiter,
     nitrogen_effluent: MilligramsPerLiter,
 ) -> Factor {
-    let n_elim = (nitrogen_influent - nitrogen_effluent) / nitrogen_influent;
-    let ef = Percent::new(-0.049 * n_elim * 100.0 + 4.553);
+    let n_elim = Factor::new(1.0) - (nitrogen_effluent / nitrogen_influent);
+    let ef = Percent::new(-0.047 * n_elim * 100.0 + 4.362);
     if ef.is_sign_negative() {
-        Factor::new(0.002)
+        Factor::new(0.0)
     } else {
         ef.convert_to::<Factor>()
     }

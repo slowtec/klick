@@ -277,13 +277,13 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
-    assert_eq!(f64::from(n2o), 0.004_750_531_914_893_612);
+    assert_eq!(f64::from(n2o), 0.0045049999999999995);
     assert_eq!(f64::from(ch4), 0.01);
 
     // create_test_results_on_changes_co2_equivalents(co2_equivalents);
-    assert_eq!(f64::from(n2o_plant), 409.049_735_737_499_53);
+    assert_eq!(f64::from(n2o_plant), 387.9079422074999);
     assert_eq!(f64::from(n2o_water), 72.228_354_412_5);
-    assert_eq!(f64::from(n2o_emissions), 481.278_090_149_999_5);
+    assert_eq!(f64::from(n2o_emissions), 460.1362966199999);
     assert_eq!(f64::from(ch4_plant), 0.0);
     assert_eq!(
         f64::from(ch4_sludge_storage_containers),
@@ -305,8 +305,8 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(f64::from(gas_emissions), 0.0);
     assert_eq!(f64::from(operating_materials), 149.0475);
     assert_eq!(f64::from(sewage_sludge_transport), 23.981_175);
-    assert_eq!(f64::from(total_emissions), 1_332.127_611_089_999_6);
-    assert_eq!(f64::from(direct_emissions), 799.998_936_089_999_6);
+    assert_eq!(f64::from(total_emissions), 1310.98581756);
+    assert_eq!(f64::from(direct_emissions), 778.8571425599999);
     assert_eq!(f64::from(process_energy_savings), 0.0);
     assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
     assert_eq!(f64::from(wind_expansion_savings), 0.0);
@@ -913,5 +913,29 @@ fn calculate_oil_gas_savings_test() {
     assert_eq!(
         calculate_oil_gas_savings(Tons::new(40.15), Tons::new(20.0), Percent::new(20.0)),
         Tons::new(12.03)
+    );
+}
+
+#[test]
+fn extrapolate_according_to_tu_wien_2016_small() {
+    assert_eq!(
+        // nitrogen_influent: MilligramsPerLiter, nitrogen_effluent: MilligramsPerLiter,
+        extrapolate_according_to_tu_wien_2016(
+            MilligramsPerLiter::new(1000.0),
+            MilligramsPerLiter::new(1.0)
+        ),
+        Factor::new(0.0)
+    );
+}
+
+#[test]
+fn extrapolate_according_to_tu_wien_2016_large() {
+    assert_eq!(
+        // nitrogen_influent: MilligramsPerLiter, nitrogen_effluent: MilligramsPerLiter,
+        extrapolate_according_to_tu_wien_2016(
+            MilligramsPerLiter::new(1.0),
+            MilligramsPerLiter::new(1000.0)
+        ),
+        Factor::new(46.99662)
     );
 }
