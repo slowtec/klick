@@ -60,7 +60,7 @@ fn delete_outdated_unconfirmed_accounts() {
     let id = ProjectId::new();
     let created_at = OffsetDateTime::now_utc();
     let modified_at = None;
-    let data = FormData::default();
+    let data = FormData::default().into();
     let project = Project {
         id,
         created_at,

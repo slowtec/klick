@@ -44,8 +44,11 @@ pub fn NewProject(
 
     let create_project = create_action(move |(): &()| {
         let mut project = FormData::default();
-        let title = title.get().map(Value::text);
-        project.set(Id::ProjectName, title);
+        if let Some(title) = title.get().map(Value::text) {
+            project.insert(Id::ProjectName, title);
+        } else {
+            project.remove(&Id::ProjectName);
+        }
         async move {
             wait_for_response.set(true);
             let result = api.get().create_project(&project).await;

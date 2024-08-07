@@ -20,6 +20,7 @@ pub fn options(
     let show_sludge_bags_controls = Signal::derive(move || {
         form_data.with(|d| {
             d.get(&Id::SludgeTreatmentBagsAreOpen)
+                .cloned()
                 .map(Value::as_bool_unchecked)
                 != Some(false)
         })
@@ -28,6 +29,7 @@ pub fn options(
     let show_sludge_storage_containers_controls = Signal::derive(move || {
         form_data.with(|d| {
             d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+                .cloned()
                 .map(Value::as_bool_unchecked)
                 != Some(false)
         })
@@ -36,12 +38,14 @@ pub fn options(
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
             d.get(&Id::SludgeTreatmentDigesterCount)
+                .cloned()
                 .map(Value::as_count_unchecked)
                 .map(u64::from)
                 .unwrap_or_default()
         });
         let sewage_gas_produced = form_data.with(|d| {
             d.get(&Id::SewageGasProduced)
+                .cloned()
                 .map(Value::as_qubicmeters_unchecked)
                 .map(f64::from)
                 .unwrap_or_default()
@@ -118,10 +122,17 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
         field_type: FieldType::Bool {
             initial_value: None,
             on_change: Callback::new(move |v: bool| {
-                form_data.update(|d| d.set(id, Some(Value::bool(!v))));
+                form_data.update(|d| {
+                    d.insert(id, Value::bool(!v));
+                });
             }),
             input: Signal::derive(move || {
-                input_data.with(|d| d.get(&id).map(Value::as_bool_unchecked).is_some_and(|v| !v))
+                input_data.with(|d| {
+                    d.get(&id)
+                        .cloned()
+                        .map(Value::as_bool_unchecked)
+                        .is_some_and(|v| !v)
+                })
             }),
         },
     };
@@ -141,10 +152,17 @@ fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
         field_type: FieldType::Bool {
             initial_value: None,
             on_change: Callback::new(move |v: bool| {
-                form_data.update(|d| d.set(id, Some(Value::bool(!v))));
+                form_data.update(|d| {
+                    d.insert(id, Value::bool(!v));
+                });
             }),
             input: Signal::derive(move || {
-                input_data.with(|d| d.get(&id).map(Value::as_bool_unchecked).is_some_and(|v| !v))
+                input_data.with(|d| {
+                    d.get(&id)
+                        .cloned()
+                        .map(Value::as_bool_unchecked)
+                        .is_some_and(|v| !v)
+                })
             }),
         },
     };

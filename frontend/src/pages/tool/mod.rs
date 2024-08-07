@@ -4,7 +4,7 @@ use leptos::*;
 use klick_app_components::message::*;
 use klick_boundary::{
     calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, Data, FormData,
-    Project, ProjectId, SavedProject,
+    JsonFormData, Project, ProjectId, SavedProject,
 };
 use klick_domain::{InputValueId as Id, Value};
 use klick_presenter as presenter;
@@ -73,6 +73,7 @@ pub fn Tool(
     let show_side_stream_controls = Signal::derive(move || {
         form_data.with(|d| {
             d.get(&Id::SideStreamTreatmentTotalNitrogen)
+                .cloned()
                 .map(Value::as_tons_unchecked)
                 .is_some_and(|v| f64::from(v) > 0.0)
         })
@@ -107,7 +108,7 @@ pub fn Tool(
                     Project::Saved(d) => d.data,
                     Project::Unsaved(d) => d,
                 };
-                form_data.set(data);
+                form_data.set(FormData::from(data));
             }
         }
     });
@@ -142,13 +143,18 @@ pub fn Tool(
                 };
                 let result_msg = match project {
                     Project::Saved(mut p) => {
-                        let name = p.data.get(&Id::ProjectName).map(Value::as_text_unchecked);
+                        let mut data = FormData::from(p.data);
+                        let name = data
+                            .get(&Id::ProjectName)
+                            .cloned()
+                            .map(Value::as_text_unchecked);
                         if name.is_none() || name.as_deref() == Some("") {
-                            p.data.set(
+                            data.insert(
                                 Id::ProjectName,
-                                Some(Value::text(DEFAULT_UNNAMED_PROJECT_TITLE)),
+                                Value::text(DEFAULT_UNNAMED_PROJECT_TITLE),
                             );
                         }
+                        p.data = data.into();
                         api.update_project(&p)
                             .await
                             .map(|()| {
@@ -160,13 +166,14 @@ pub fn Tool(
                                 "Das Projekt konnte leider nicht gespeichert werden."
                             })
                     }
-                    Project::Unsaved(mut p) => {
-                        let name = p.get(&Id::ProjectName).map(Value::as_text_unchecked);
+                    Project::Unsaved(p) => {
+                        let mut p = FormData::from(p);
+                        let name = p
+                            .get(&Id::ProjectName)
+                            .cloned()
+                            .map(Value::as_text_unchecked);
                         if name.is_none() || name.as_deref() == Some("") {
-                            p.set(
-                                Id::ProjectName,
-                                Some(Value::text(DEFAULT_UNNAMED_PROJECT_TITLE)),
-                            );
+                            p.insert(Id::ProjectName, Value::text(DEFAULT_UNNAMED_PROJECT_TITLE));
                         }
                         api.create_project(&p)
                             .await
@@ -204,7 +211,7 @@ pub fn Tool(
 
     let download = {
         move |()| -> ObjectUrl {
-            let data = form_data.get();
+            let data = JsonFormData::from(form_data.get());
             let project = Project::from(data);
             let data = Data { project };
             let json_bytes = export_to_vec_pretty(&data);
@@ -217,7 +224,7 @@ pub fn Tool(
 
     let save_project = {
         move |()| {
-            let project_data = form_data.get();
+            let project_data = JsonFormData::from(form_data.get());
             let project = match current_project.get() {
                 Some(Project::Saved(p)) => {
                     let SavedProject {
@@ -262,7 +269,7 @@ pub fn Tool(
         let Some(p) = current_project.get() else {
             return;
         };
-        form_data.set(p.form_data().clone());
+        form_data.set(p.form_data().clone().into());
     });
 
     // -----   ----- //

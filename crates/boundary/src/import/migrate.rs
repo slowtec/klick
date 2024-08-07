@@ -363,7 +363,7 @@ pub fn from_v6(data: v6::Data) -> v7::Data {
     v7::Data { project }
 }
 
-impl From<v7::ProjectData> for v8::FormData {
+impl From<v7::ProjectData> for v8::JsonFormData {
     fn from(from: v7::ProjectData) -> Self {
         let v7::ProjectData {
             title: project_title,

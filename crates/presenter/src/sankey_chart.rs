@@ -16,6 +16,7 @@ pub fn create_sankey_chart_header(
 ) -> String {
     let population_equivalent = match &data
         .get(&Id::PopulationEquivalent)
+        .cloned()
         .map(Value::as_count_unchecked)
         .map(u64::from)
     {
@@ -23,7 +24,11 @@ pub fn create_sankey_chart_header(
         None => String::new(),
     };
 
-    let plant_name = match &data.get(&Id::PlantName).map(Value::as_text_unchecked) {
+    let plant_name = match &data
+        .get(&Id::PlantName)
+        .cloned()
+        .map(Value::as_text_unchecked)
+    {
         Some(v) => v.to_string(),
         None => String::new(),
     };

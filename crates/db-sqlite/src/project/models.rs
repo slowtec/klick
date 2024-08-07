@@ -5,7 +5,7 @@ use klick_domain as domain;
 
 use crate::schema;
 
-type Project = domain::Project<boundary::FormData>;
+type Project = domain::Project<boundary::JsonFormData>;
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = schema::projects)]

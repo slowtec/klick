@@ -7,7 +7,7 @@ use klick_domain::{units, InputValueId as Id, Value};
 #[test]
 fn export() {
     let id = ProjectId(Uuid::new_v4());
-    let mut data = FormData::default();
+    let mut data = JsonFormData::default();
 
     data.set(Id::ProjectName, Some(Value::text("Project")));
     data.set(Id::PlantName, Some("test export".to_string().into()));
@@ -70,7 +70,7 @@ fn export() {
 #[test]
 fn roundtrip() {
     let id = ProjectId(Uuid::new_v4());
-    let mut data = FormData::default();
+    let mut data = JsonFormData::default();
 
     data.set(Id::ProjectName, Some(Value::text("Project")));
     data.set(Id::PlantName, Some("test export".to_string().into()));

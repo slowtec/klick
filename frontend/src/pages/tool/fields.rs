@@ -54,11 +54,22 @@ pub fn create_field_type(
                         .map(|v| Float::from_f64_with_type(v, float_type))
                         .map(Scalar::Float)
                         .map(Value::Scalar);
-                    write.update(|d| d.set(id, value));
+                    write.update(|d| {
+                        if let Some(value) = value {
+                            d.insert(id, value);
+                        } else {
+                            d.remove(&id);
+                        }
+                    });
                 });
 
                 let input = Signal::derive(move || {
-                    read.with(|d| d.get(&id).map(Value::as_float_unchecked).map(f64::from))
+                    read.with(|d| {
+                        d.get(&id)
+                            .cloned()
+                            .map(Value::as_float_unchecked)
+                            .map(f64::from)
+                    })
                 });
 
                 let unit = float_type.abbreviation();
@@ -73,10 +84,12 @@ pub fn create_field_type(
             }
             ScalarType::Bool => {
                 let on_change = Callback::new(move |v| {
-                    write.update(|d| d.set(id, Some(Value::bool(v))));
+                    write.update(|d| {
+                        d.insert(id, Value::bool(v));
+                    });
                 });
                 let input = Signal::derive(move || {
-                    read.with(|d| d.get(&id).is_some_and(Value::as_bool_unchecked))
+                    read.with(|d| d.get(&id).cloned().is_some_and(Value::as_bool_unchecked))
                 });
                 FieldType::Bool {
                     initial_value: None, // TODO
@@ -86,10 +99,21 @@ pub fn create_field_type(
             }
             ScalarType::Int(IntType::Count) => {
                 let on_change = Callback::new(move |v: Option<_>| {
-                    write.update(|d| d.set(id, v.map(Value::count)));
+                    write.update(|d| {
+                        if let Some(value) = v.map(Value::count) {
+                            d.insert(id, value);
+                        } else {
+                            d.remove(&id);
+                        }
+                    });
                 });
                 let input = Signal::derive(move || {
-                    read.with(|d| d.get(&id).map(Value::as_count_unchecked).map(u64::from))
+                    read.with(|d| {
+                        d.get(&id)
+                            .cloned()
+                            .map(Value::as_count_unchecked)
+                            .map(u64::from)
+                    })
                 });
                 let limits = forms::MinMax {
                     min: limits.min.map(|min| min as u64),
@@ -107,10 +131,17 @@ pub fn create_field_type(
         },
         ValueType::Text => {
             let on_change = Callback::new(move |v: Option<_>| {
-                write.update(|d| d.set(id, v.map(Value::text)));
+                write.update(|d| {
+                    if let Some(value) = v.map(Value::text) {
+                        d.insert(id, value);
+                    } else {
+                        d.remove(&id);
+                    }
+                });
             });
-            let input =
-                Signal::derive(move || read.with(|d| d.get(&id).map(Value::as_text_unchecked)));
+            let input = Signal::derive(move || {
+                read.with(|d| d.get(&id).cloned().map(Value::as_text_unchecked))
+            });
             let max_len = limits.max.map(|max| max as usize);
             FieldType::Text {
                 initial_value: None, // TODO

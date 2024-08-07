@@ -16,7 +16,7 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
 
 fn example_values() -> EmissionInfluencingValues {
     EmissionInfluencingValues {
-        population_equivalent: 50_000.0,
+        population_equivalent: Count::new(50_000),
         wastewater: Qubicmeters::new(2_135_250.0),
         influent_nitrogen: MilligramsPerLiter::new(94.0),
         influent_chemical_oxygen_demand: MilligramsPerLiter::new(1_020.0),
@@ -823,8 +823,8 @@ fn calculate_n2o_side_streams() {
 
 #[test]
 fn calculate_ch4_plant_test() {
-    assert_eq!(calculate_ch4_plant(50000.0), Tons::new(322.0));
-    assert_eq!(calculate_ch4_plant(0.0), Tons::new(0.0));
+    assert_eq!(calculate_ch4_plant(Count::new(50_000)), Tons::new(322.0));
+    assert_eq!(calculate_ch4_plant(Count::zero()), Tons::zero());
 }
 
 #[test]
@@ -832,7 +832,7 @@ fn test_calculate_fossil_emissions() {
     assert_eq!(
         calculate_fossil_emissions(
             MilligramsPerLiter::new(300.0),
-            MilligramsPerLiter::new(0.0),
+            MilligramsPerLiter::zero(),
             Factor::new(0.0385),
             Qubicmeters::new(2_135_250.0)
         ),

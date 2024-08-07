@@ -276,7 +276,7 @@ async fn reset_password(
 async fn new_project(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
-    Json(data): Json<boundary::FormData>,
+    Json(data): Json<boundary::JsonFormData>,
 ) -> Result<boundary::ProjectId> {
     let account = account_from_token(&state, auth)?;
     let id = usecases::create_new_project(&state.db, &account, data)?;
@@ -367,7 +367,7 @@ async fn get_download(
                 boundary::Project::Unsaved(d) => d,
             };
             // FIXME: check if pdf was alread made
-            let bytes = export_to_pdf(project_data)?;
+            let bytes = export_to_pdf(project_data.into())?;
             let headers = [
                 (header::CONTENT_TYPE, "application/pdf"),
                 (

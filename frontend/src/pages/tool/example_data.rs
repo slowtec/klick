@@ -57,7 +57,7 @@ pub fn example_form_data() -> FormData {
     ];
 
     for (id, v) in values {
-        data.set(id, Some(v));
+        data.insert(id, v);
     }
     data
 }

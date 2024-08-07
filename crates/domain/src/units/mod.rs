@@ -350,7 +350,15 @@ macro_rules! floats {
 
                     #[must_use]
                     pub fn [<as_ $float:snake _unchecked>](self) -> $float {
-                        self.[<as_ $float:snake>]().expect(concat!(stringify!($float), " value"))
+                        self.[<as_ $float:snake>]()
+                            .ok_or_else(||
+                              format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                                  expected_type = stringify!($float),
+                                  actual_type = self.float_type(),
+                                  value = self
+                              )
+                            )
+                            .unwrap()
                     }
                 )+
 
@@ -367,7 +375,15 @@ macro_rules! floats {
 
                         #[must_use]
                         pub fn [<as_ $unit:snake _unchecked>](self) -> $unit {
-                            self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit)," value"))
+                            self.[<as_ $unit:snake>]()
+                                .ok_or_else(||
+                                  format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                                      expected_type = stringify!($unit),
+                                      actual_type = self.float_type(),
+                                      value = self
+                                  )
+                                )
+                                .unwrap()
                         }
                     )+
                 )+
@@ -469,6 +485,11 @@ macro_rules! integers {
                     pub const fn new(v: $int_base_type) -> Self {
                         Self(v)
                     }
+
+                    #[must_use]
+                    pub const fn zero() -> Self {
+                        Self(0)
+                    }
                 }
 
                 impl From<$int> for $int_base_type {
@@ -555,7 +576,15 @@ macro_rules! values {
 
                     #[must_use]
                     pub fn [<as_ $enum_name:snake _unchecked>](self) -> $enum_name {
-                        self.[<as_ $enum_name:snake>]().expect(concat!(stringify!($enum_name)," value"))
+                        self.[<as_ $enum_name:snake>]()
+                            .ok_or_else(||
+                              format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                                  expected_type = stringify!($enum_name),
+                                  actual_type = self.enum_type(),
+                                  value = self
+                              )
+                            )
+                            .unwrap()
                     }
                 )+
             }
@@ -632,7 +661,9 @@ macro_rules! values {
 
                 // --- getters --- //
 
+
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_scalar(self) -> Option<Scalar> {
                     let Self::Scalar(v) = self else {
                         return None;
@@ -641,11 +672,21 @@ macro_rules! values {
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_scalar_unchecked(self) -> Scalar {
-                    self.as_scalar().expect("scalar value")
+                    self.clone().as_scalar()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(Scalar),
+                              actual_type = self.value_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_text(self) -> Option<String> {
                     let Self::Text(v) = self else {
                         return None;
@@ -654,11 +695,21 @@ macro_rules! values {
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_text_unchecked(self) -> String {
-                    self.as_text().expect("text value")
+                    self.clone().as_text()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(String),
+                              actual_type = self.value_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_float(self) -> Option<Float> {
                     let Self::Scalar(v) = self else {
                         return None;
@@ -667,11 +718,21 @@ macro_rules! values {
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_float_unchecked(self) -> Float {
-                    self.as_float().expect("float value")
+                    self.clone().as_float()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(Float),
+                              actual_type = self.value_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_int(self) -> Option<Int> {
                     let Self::Scalar(v) = self else {
                         return None;
@@ -680,11 +741,21 @@ macro_rules! values {
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_int_unchecked(self) -> Int {
-                    self.as_int().expect("integer value")
+                    self.clone().as_int()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(Int),
+                              actual_type = self.value_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_bool(self) -> Option<bool> {
                     let Self::Scalar(v) = self else {
                         return None;
@@ -693,10 +764,18 @@ macro_rules! values {
                 }
 
                 #[must_use]
+                // TODO: rename 'as' -> 'into'
                 pub fn as_bool_unchecked(self) -> bool {
-                    self.as_bool().expect("bool value")
+                    self.clone().as_bool()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(bool),
+                              actual_type = self.value_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
-
 
                 $(
                     $(
@@ -710,7 +789,15 @@ macro_rules! values {
 
                         #[must_use]
                         pub fn [<as_ $unit:snake _unchecked>](self) -> $unit {
-                            self.[<as_ $unit:snake>]().expect(concat!(stringify!($unit)," value"))
+                            self.clone().[<as_ $unit:snake>]()
+                                .ok_or_else(||
+                                  format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                                      expected_type = stringify!($unit),
+                                      actual_type = self.value_type(),
+                                      value = self
+                                  )
+                                )
+                                .unwrap()
                         }
                     )+
                 )+
@@ -726,7 +813,15 @@ macro_rules! values {
 
                     #[must_use]
                     pub fn [<as_ $int:snake _unchecked>](self) -> $int {
-                        self.[<as_ $int:snake>]().expect(concat!(stringify!($int)," value"))
+                        self.clone().[<as_ $int:snake>]()
+                            .ok_or_else(||
+                              format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                                  expected_type = stringify!($init),
+                                  actual_type = self.value_type(),
+                                  value = self
+                              )
+                            )
+                            .unwrap()
                     }
                 )+
 
@@ -741,7 +836,15 @@ macro_rules! values {
 
                     #[must_use]
                     pub fn [<as_ $enum_name:snake _unchecked>](self) -> $enum_name {
-                        self.[<as_ $enum_name:snake>]().expect(concat!(stringify!($enum_name)," value"))
+                        self.clone().[<as_ $enum_name:snake>]()
+                            .ok_or_else(||
+                              format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                                  expected_type = stringify!($enum_name),
+                                  actual_type = self.value_type(),
+                                  value = self
+                              )
+                            )
+                            .unwrap()
                     }
                 )+
             }
@@ -873,7 +976,15 @@ macro_rules! values {
 
                 #[must_use]
                 pub fn as_float_unchecked(self) -> Float {
-                    self.as_float().expect("float value")
+                    self.as_float()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(Float),
+                              actual_type = self.scalar_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
 
                 #[must_use]
@@ -886,7 +997,15 @@ macro_rules! values {
 
                 #[must_use]
                 pub fn as_int_unchecked(self) -> Int {
-                    self.as_int().expect("integer value")
+                    self.as_int()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(Int),
+                              actual_type = self.scalar_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
 
                 #[must_use]
@@ -899,7 +1018,15 @@ macro_rules! values {
 
                 #[must_use]
                 pub fn as_bool_unchecked(self) -> bool {
-                    self.as_bool().expect("bool value")
+                    self.as_bool()
+                        .ok_or_else(||
+                          format!("expected a {expected_type} but found a {actual_type:?}: {value:?}",
+                              expected_type = stringify!(bool),
+                              actual_type = self.scalar_type(),
+                              value = self
+                          )
+                        )
+                        .unwrap()
                 }
             }
 

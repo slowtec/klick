@@ -4,7 +4,7 @@ use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
     units::{Percent, RatioExt},
-    InputValueId as Id,
+    InputValueId as Id, Value,
 };
 
 use crate::{Lng, ValueLabel, ValueUnit};
@@ -133,10 +133,10 @@ pub fn sensitivity_parameters_as_table(
 ) -> Table {
     let lang = Lng::De;
 
-    let n2o_emission_factor =
+    let n2o_emission_factor: Option<Value> =
         output.map(|output| output.emission_factors.n2o.convert_to::<Percent>().into());
 
-    let ch4_chp_emission_factor =
+    let ch4_chp_emission_factor: Option<Value> =
         output.map(|output| output.emission_factors.ch4.convert_to::<Percent>().into());
 
     let sections = vec![
@@ -147,7 +147,7 @@ pub fn sensitivity_parameters_as_table(
                     Id::SensitivityN2OCalculationMethod,
                     data.get(&Id::SensitivityN2OCalculationMethod),
                 ),
-                (Id::SensitivityN2OCustomFactor, n2o_emission_factor),
+                (Id::SensitivityN2OCustomFactor, n2o_emission_factor.as_ref()),
                 (
                     Id::SensitivityN2OSideStreamFactor,
                     data.get(&Id::SensitivityN2OCustomFactor),
@@ -161,7 +161,10 @@ pub fn sensitivity_parameters_as_table(
                     Id::SensitivityCH4ChpCalculationMethod,
                     data.get(&Id::SensitivityCH4ChpCalculationMethod),
                 ),
-                (Id::SensitivityCH4ChpCustomFactor, ch4_chp_emission_factor),
+                (
+                    Id::SensitivityCH4ChpCustomFactor,
+                    ch4_chp_emission_factor.as_ref(),
+                ),
             ],
         ),
         (

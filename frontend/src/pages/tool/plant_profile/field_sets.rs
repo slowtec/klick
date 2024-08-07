@@ -78,10 +78,11 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 field_type: FieldType::Bool {
                     initial_value: None,
                     on_change: Callback::new(move|v: bool|{
-                        form_data.update(|d|d.set(Id::SludgeTreatmentBagsAreOpen, Some(Value::bool(!v))));
+                        form_data.update(|d|{d.insert(Id::SludgeTreatmentBagsAreOpen, Value::bool(!v));});
                     }),
                     input: Signal::derive(move||{
                         form_data.with(|d|d.get(&Id::SludgeTreatmentBagsAreOpen)
+                          .cloned()
                           .map(Value::as_bool_unchecked)
                           .is_some_and(|v|!v)
                         )
@@ -97,10 +98,11 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 field_type: FieldType::Bool {
                     initial_value: None,
                     on_change: Callback::new(move|v: bool|{
-                        form_data.update(|d|d.set(Id::SludgeTreatmentStorageContainersAreOpen, Some(Value::bool(!v))));
+                        form_data.update(|d|{d.insert(Id::SludgeTreatmentStorageContainersAreOpen, Value::bool(!v)); });
                     }),
                     input: Signal::derive(move||{
                         form_data.with(|d|d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+                          .cloned()
                           .map(Value::as_bool_unchecked)
                           .is_some_and(|v|!v)
                         )

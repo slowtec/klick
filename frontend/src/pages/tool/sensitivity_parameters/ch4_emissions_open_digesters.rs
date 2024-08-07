@@ -20,6 +20,7 @@ pub fn CH4EmissionsOpenDigesters(
         // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
         form_data.with(|d| {
             !d.get(&Id::SludgeTreatmentBagsAreOpen)
+                .cloned()
                 .map(Value::as_bool_unchecked)
                 .is_some_and(|v| !v)
         })
@@ -28,6 +29,7 @@ pub fn CH4EmissionsOpenDigesters(
         // a better way could be to check out.co2_equivalents.ch4_sludge_storage_containers > 0.0
         form_data.with(|d| {
             !d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+                .cloned()
                 .map(Value::as_bool_unchecked)
                 .is_some_and(|v| !v)
         })
@@ -35,12 +37,14 @@ pub fn CH4EmissionsOpenDigesters(
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
             d.get(&Id::SludgeTreatmentDigesterCount)
+                .cloned()
                 .map(Value::as_count_unchecked)
                 .map(u64::from)
                 .unwrap_or_default()
         });
         let sewage_gas_produced = form_data.with(|d| {
             d.get(&Id::SewageGasProduced)
+                .cloned()
                 .map(Value::as_qubicmeters_unchecked)
                 .map(f64::from)
                 .unwrap_or_default()

@@ -64,12 +64,17 @@ fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>)
             initial_value: None,
             on_change: Callback::new(move |v: bool| {
                 form_data.update(|d| {
-                    d.set(id, Some(Value::bool(!v)));
+                    d.insert(id, Value::bool(!v));
                 });
             }),
             input: Signal::derive(move || {
                 input_data
-                    .with(|d| d.get(&id).map(Value::as_bool_unchecked).map(|v| !v))
+                    .with(|d| {
+                        d.get(&id)
+                            .cloned()
+                            .map(Value::as_bool_unchecked)
+                            .map(|v| !v)
+                    })
                     .unwrap_or(false)
             }),
         },

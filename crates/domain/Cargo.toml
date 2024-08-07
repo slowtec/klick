@@ -8,6 +8,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+anyhow = "1.0.86"
 bs58 = "0.5.1"
 derive_more = "0.99.18"
 mailparse = "0.15.0"

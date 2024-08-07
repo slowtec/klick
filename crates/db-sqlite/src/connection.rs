@@ -17,7 +17,7 @@ use klick_domain::{
 
 use crate::{account, account_token, project};
 
-type Project = domain::Project<boundary::FormData>;
+type Project = domain::Project<boundary::JsonFormData>;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -117,7 +117,7 @@ impl AccountTokenRepo for Connection {
     }
 }
 
-impl ProjectRepo<boundary::FormData> for Connection {
+impl ProjectRepo<boundary::JsonFormData> for Connection {
     fn find_project(&self, id: &ProjectId) -> Result<Option<Project>, anyhow::Error> {
         project::queries::find_project(&mut self.0.lock(), id)
     }

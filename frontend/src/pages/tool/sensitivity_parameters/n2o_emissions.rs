@@ -24,6 +24,7 @@ pub fn N2OEmissionsSensitivity(
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
             d.get(&Id::SensitivityN2OCalculationMethod)
+                .cloned()
                 .map(Value::as_n2o_emission_factor_calc_method_unchecked)
         })
     });
@@ -60,9 +61,9 @@ pub fn N2OEmissionsSensitivity(
             return;
         };
         form_data.update(|d| {
-            d.set(
+            d.insert(
                 Id::SensitivityN2OCalculationMethod,
-                Some(Value::n2o_emission_factor_calc_method(method)),
+                Value::n2o_emission_factor_calc_method(method),
             );
         });
     };

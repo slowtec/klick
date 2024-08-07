@@ -74,6 +74,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         .sensitivity
         .input
         .get(&Id::SensitivityN2OCalculationMethod)
+        .cloned()
         .map(Value::as_n2o_emission_factor_calc_method_unchecked)
         .as_ref()
         .and_then(ToPrimitive::to_u64);
@@ -81,6 +82,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         .sensitivity
         .input
         .get(&Id::SensitivityCH4ChpCalculationMethod)
+        .cloned()
         .map(Value::as_ch4_chp_emission_factor_calc_method_unchecked)
         .as_ref()
         .and_then(ToPrimitive::to_u64);
@@ -230,6 +232,7 @@ fn render_markdown_template(
         .profile
         .input
         .get(&Id::PlantName)
+        .cloned()
         .map_or_else(|| "Klärwerk".to_string(), Value::as_text_unchecked);
 
     let plant_profile_sankey_header = outcome

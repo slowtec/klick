@@ -15,85 +15,59 @@ pub fn main() -> anyhow::Result<()> {
 }
 
 fn project_example_data() -> FormData {
-    let values = [
-        (Id::ProjectName, Some(Value::text("A Project Name"))),
-        (Id::PlantName, Some(Value::text("Muster Klärwerk"))),
-        (Id::PopulationEquivalent, Some(Value::count(50_000))),
-        (Id::Wastewater, Some(Value::qubicmeters(2_135_250.0))),
-        (
-            Id::InfluentNitrogen,
-            Some(Value::milligrams_per_liter(94.0)),
-        ),
+    [
+        (Id::ProjectName, Value::text("A Project Name")),
+        (Id::PlantName, Value::text("Muster Klärwerk")),
+        (Id::PopulationEquivalent, Value::count(50_000)),
+        (Id::Wastewater, Value::qubicmeters(2_135_250.0)),
+        (Id::InfluentNitrogen, Value::milligrams_per_liter(94.0)),
         (
             Id::InfluentChemicalOxygenDemand,
-            Some(Value::milligrams_per_liter(1_020.0)),
+            Value::milligrams_per_liter(1_020.0),
         ),
         (
             Id::InfluentTotalOrganicCarbohydrates,
-            Some(Value::milligrams_per_liter(0.0)),
+            Value::milligrams_per_liter(0.0),
         ),
-        (
-            Id::EffluentNitrogen,
-            Some(Value::milligrams_per_liter(15.77)),
-        ),
+        (Id::EffluentNitrogen, Value::milligrams_per_liter(15.77)),
         (
             Id::EffluentChemicalOxygenDemand,
-            Some(Value::milligrams_per_liter(47.18)),
+            Value::milligrams_per_liter(47.18),
         ),
-        (Id::OperatingMaterialFeCl3, Some(Value::tons(310.5))),
-        (Id::OperatingMaterialFeClSO4, Some(Value::tons(0.0))),
-        (Id::OperatingMaterialCaOH2, Some(Value::tons(0.0))),
-        (
-            Id::OperatingMaterialSyntheticPolymers,
-            Some(Value::tons(12.0)),
-        ),
-        (Id::SewageGasProduced, Some(Value::qubicmeters(420_000.0))),
-        (Id::MethaneFraction, Some(Value::percent(62.0))),
-        (Id::PurchaseOfBiogas, Some(Value::bool(true))),
-        (
-            Id::TotalPowerConsumption,
-            Some(Value::kilowatthours(1_665_000.0)),
-        ),
-        (
-            Id::OnSitePowerGeneration,
-            Some(Value::kilowatthours(810_000.0)),
-        ),
+        (Id::OperatingMaterialFeCl3, Value::tons(310.5)),
+        (Id::OperatingMaterialFeClSO4, Value::tons(0.0)),
+        (Id::OperatingMaterialCaOH2, Value::tons(0.0)),
+        (Id::OperatingMaterialSyntheticPolymers, Value::tons(12.0)),
+        (Id::SewageGasProduced, Value::qubicmeters(420_000.0)),
+        (Id::MethaneFraction, Value::percent(62.0)),
+        (Id::PurchaseOfBiogas, Value::bool(true)),
+        (Id::TotalPowerConsumption, Value::kilowatthours(1_665_000.0)),
+        (Id::OnSitePowerGeneration, Value::kilowatthours(810_000.0)),
         (
             Id::EmissionFactorElectricityMix,
-            Some(Value::grams_per_kilowatthour(420.0)),
+            Value::grams_per_kilowatthour(420.0),
         ),
-        (Id::HeatingOil, Some(Value::liters(0.0))),
-        (Id::SludgeTreatmentBagsAreOpen, Some(Value::bool(true))),
+        (Id::HeatingOil, Value::liters(0.0)),
+        (Id::SludgeTreatmentBagsAreOpen, Value::bool(true)),
         (
             Id::SludgeTreatmentStorageContainersAreOpen,
-            Some(Value::bool(true)),
+            Value::bool(true),
         ),
-        (Id::SludgeTreatmentDisposal, Some(Value::tons(3016.5))),
+        (Id::SludgeTreatmentDisposal, Value::tons(3016.5)),
         (
             Id::SludgeTreatmentTransportDistance,
-            Some(Value::kilometers(150.0)),
+            Value::kilometers(150.0),
         ),
-        (Id::SludgeTreatmentDigesterCount, Some(Value::count(3))),
-        (Id::SideStreamTreatmentTotalNitrogen, Some(Value::tons(0.0))),
-        (
-            Id::SensitivityCO2FossilCustomFactor,
-            Some(Value::factor(0.0)),
-        ),
-        (Id::ScenarioSludgeBagsAreOpen, Some(Value::bool(true))),
+        (Id::SludgeTreatmentDigesterCount, Value::count(3)),
+        (Id::SideStreamTreatmentTotalNitrogen, Value::tons(0.0)),
+        (Id::SensitivityCO2FossilCustomFactor, Value::factor(0.0)),
+        (Id::ScenarioSludgeBagsAreOpen, Value::bool(true)),
         (
             Id::ScenarioSludgeStorageContainersAreOpen,
-            Some(Value::bool(true)),
+            Value::bool(true),
         ),
-        (
-            Id::ScenarioN2OSideStreamCoverIsOpen,
-            Some(Value::bool(true)),
-        ),
-    ];
-
-    let mut data = FormData::default();
-    for (k, v) in values {
-        data.set(k, v);
-    }
-
-    data
+        (Id::ScenarioN2OSideStreamCoverIsOpen, Value::bool(true)),
+    ]
+    .into_iter()
+    .collect()
 }

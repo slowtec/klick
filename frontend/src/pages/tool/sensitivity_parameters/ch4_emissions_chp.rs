@@ -29,6 +29,7 @@ pub fn CH4EmissionsCHP(
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
             d.get(&Id::SensitivityCH4ChpCalculationMethod)
+                .cloned()
                 .map(Value::as_ch4_chp_emission_factor_calc_method_unchecked)
         })
     });
@@ -63,9 +64,9 @@ pub fn CH4EmissionsCHP(
             return;
         };
         form_data.update(|d| {
-            d.set(
+            d.insert(
                 Id::SensitivityCH4ChpCalculationMethod,
-                Some(Value::ch4_chp_emission_factor_calc_method(method)),
+                Value::ch4_chp_emission_factor_calc_method(method),
             );
         });
     };

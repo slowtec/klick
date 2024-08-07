@@ -405,8 +405,9 @@ pub fn calculate_n2o_side_stream(
 }
 
 #[must_use]
-pub fn calculate_ch4_plant(population_equivalent: f64) -> Tons {
-    Grams::new(population_equivalent * EMISSION_FACTOR_CH4_PLANT * GWP_CH4).convert_to::<Tons>()
+pub fn calculate_ch4_plant(population_equivalent: Count) -> Tons {
+    Grams::new(u64::from(population_equivalent) as f64 * EMISSION_FACTOR_CH4_PLANT * GWP_CH4)
+        .convert_to::<Tons>()
 }
 
 #[must_use]
