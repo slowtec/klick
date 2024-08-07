@@ -1,4 +1,4 @@
-use crate::{constants, units::*, InputValueId as Id};
+use crate::{constants, units::*, InputValueId as Id, Value as V};
 
 #[must_use]
 pub fn value_spec(id: &Id) -> ValueSpec {
@@ -124,7 +124,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::InfluentTotalOrganicCarbohydrates,
-            S::new_optional(T::milligrams_per_liter())
+            S::new_with_default(V::milligrams_per_liter(0.0))
                 .with_min(0.0)
                 .with_max(2000.0),
         ),
@@ -142,7 +142,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::SideStreamTreatmentTotalNitrogen,
-            S::new_optional(T::tons()),
+            S::new_with_default(V::tons(0.0)),
         ),
         (
             Id::OperatingMaterialFeCl3,
@@ -150,11 +150,11 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::OperatingMaterialFeClSO4,
-            S::new_optional(T::tons()).with_max(100_000.0),
+            S::new_with_default(V::tons(0.0)).with_max(100_000.0),
         ),
         (
             Id::OperatingMaterialCaOH2,
-            S::new_optional(T::tons()).with_max(500_000.0),
+            S::new_with_default(V::tons(0.0)).with_max(500_000.0),
         ),
         (
             Id::OperatingMaterialSyntheticPolymers,
@@ -162,7 +162,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::SensitivityN2OCalculationMethod,
-            S::new(T::n2o_emission_factor_calc_method()),
+            S::new_with_default(V::n2o_emission_factor_calc_method(Default::default())),
         ),
         (
             Id::SensitivityN2OCustomFactor,
@@ -178,7 +178,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::SensitivityCH4ChpCalculationMethod,
-            S::new(T::ch4_chp_emission_factor_calc_method()),
+            S::new_with_default(V::ch4_chp_emission_factor_calc_method(Default::default())),
         ),
         (
             Id::SensitivityCH4ChpCustomFactor,
@@ -204,10 +204,13 @@ fn specs() -> [(Id, ValueSpec); 48] {
                 .with_min(0.0)
                 .with_max(100.0),
         ),
-        (Id::SludgeTreatmentBagsAreOpen, S::new(T::bool())),
+        (
+            Id::SludgeTreatmentBagsAreOpen,
+            S::new_with_default(V::bool(true)),
+        ),
         (
             Id::SludgeTreatmentStorageContainersAreOpen,
-            S::new(T::bool()),
+            S::new_with_default(V::bool(true)),
         ),
         (
             Id::SludgeTreatmentDisposal,
@@ -215,26 +218,28 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::SludgeTreatmentTransportDistance,
-            S::new_optional(T::kilometers())
+            S::new_with_default(V::kilometers(0.0))
                 .with_min(0.0)
                 .with_max(2000.0),
         ),
         (
             Id::SludgeTreatmentDigesterCount,
-            S::new_optional(T::count()).with_max(9.0),
+            S::new_with_default(V::count(0)).with_min(0.0).with_max(9.0),
         ),
         (
             Id::SewageGasProduced,
-            S::new_optional(T::qubicmeters())
+            S::new_with_default(V::qubicmeters(0.0))
                 .with_min(0.0)
                 .with_max(100_000_000.0),
         ),
         (
             Id::MethaneFraction,
-            S::new_optional(T::percent()).with_min(0.0).with_max(90.0),
+            S::new_with_default(V::percent(62.0))
+                .with_min(0.0)
+                .with_max(90.0),
         ),
-        (Id::GasSupply, S::new_optional(T::qubicmeters())),
-        (Id::PurchaseOfBiogas, S::new(T::bool())),
+        (Id::GasSupply, S::new_with_default(V::qubicmeters(0.0))),
+        (Id::PurchaseOfBiogas, S::new_with_default(V::bool(false))),
         (
             Id::TotalPowerConsumption,
             S::new(T::kilowatthours())
@@ -243,7 +248,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::OnSitePowerGeneration,
-            S::new_optional(T::kilowatthours())
+            S::new_with_default(V::kilowatthours(0.0))
                 .with_min(0.0)
                 .with_max(50_000_000.0),
         ),
@@ -253,53 +258,63 @@ fn specs() -> [(Id, ValueSpec); 48] {
                 .with_min(0.0)
                 .with_max(2500.0),
         ),
-        (Id::HeatingOil, S::new_optional(T::liters())),
-        (Id::ScenarioSludgeBagsAreOpen, S::new(T::bool())),
+        (Id::HeatingOil, S::new_with_default(V::liters(0.0))),
+        (
+            Id::ScenarioSludgeBagsAreOpen,
+            S::new_with_default(V::bool(true)),
+        ),
         (
             Id::ScenarioSludgeStorageContainersAreOpen,
-            S::new(T::bool()),
+            S::new_with_default(V::bool(true)),
         ),
         (Id::ScenarioN2OSideStreamFactor, S::new(T::factor())),
-        (Id::ScenarioN2OSideStreamCoverIsOpen, S::new(T::bool())),
+        (
+            Id::ScenarioN2OSideStreamCoverIsOpen,
+            S::new_with_default(V::bool(true)),
+        ),
         (
             Id::ScenarioProcessEnergySaving,
-            S::new_optional(T::percent()).with_min(0.0).with_max(100.0),
+            S::new_with_default(V::percent(0.0))
+                .with_min(0.0)
+                .with_max(100.0),
         ),
         (
             Id::ScenarioFossilEnergySaving,
-            S::new_optional(T::percent()).with_min(0.0).with_max(100.0),
+            S::new_with_default(V::percent(0.0))
+                .with_min(0.0)
+                .with_max(100.0),
         ),
         (
             Id::ScenarioDistrictHeating,
-            S::new_optional(T::kilowatthours()),
+            S::new_with_default(V::kilowatthours(0.0)),
         ),
         (
             Id::ScenarioPhotovoltaicEnergyExpansion,
-            S::new_optional(T::kilowatthours()),
+            S::new_with_default(V::kilowatthours(0.0)),
         ),
         (
             Id::ScenarioEstimatedSelfPhotovolaticUsage,
-            S::new_with_default(Value::percent(100.0))
+            S::new_with_default(V::percent(100.0))
                 .with_min(0.0)
                 .with_max(100.0),
         ),
         (
             Id::ScenarioWindEnergyExpansion,
-            S::new_optional(T::kilowatthours()),
+            S::new_with_default(V::kilowatthours(0.0)),
         ),
         (
             Id::ScenarioEstimatedSelfWindEnergyUsage,
-            S::new_with_default(Value::percent(100.0))
+            S::new_with_default(V::percent(100.0))
                 .with_min(0.0)
                 .with_max(100.0),
         ),
         (
             Id::ScenarioWaterEnergyExpansion,
-            S::new_optional(T::kilowatthours()),
+            S::new_with_default(V::kilowatthours(0.0)),
         ),
         (
             Id::ScenarioEstimatedSelfWaterEnergyUsage,
-            S::new_with_default(Value::percent(100.0))
+            S::new_with_default(V::percent(100.0))
                 .with_min(0.0)
                 .with_max(100.0),
         ),

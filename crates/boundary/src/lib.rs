@@ -16,7 +16,6 @@ mod v7;
 mod v8;
 
 mod calculation;
-pub mod default_values;
 pub mod json_api;
 
 pub use self::{

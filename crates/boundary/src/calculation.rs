@@ -1,15 +1,15 @@
 use klick_domain::{self as domain, units::*};
 
-use crate::{default_values, CalculationOutcome, EvaluationData, FormData};
+use crate::{CalculationOutcome, EvaluationData, FormData};
 
 // TODO:
 // Handle these calculations as usecases in the domain layer.
 #[must_use]
 pub fn calculate(form_data: FormData) -> CalculationOutcome {
     log::debug!("Calculate");
-    let profile_input = default_values::profile(form_data.clone());
-    let sensitivity_input = default_values::sensitivity(form_data.clone());
-    let recommendation_input = default_values::recommendations(form_data);
+    let profile_input = form_data.clone();
+    let sensitivity_input = form_data.clone();
+    let recommendation_input = form_data;
 
     let custom_n2o_emission_factor = sensitivity_input
         .sensitivity_parameters
