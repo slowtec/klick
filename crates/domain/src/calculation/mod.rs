@@ -9,6 +9,10 @@ use crate::{
 
 use crate::units::GramsPerKilowatthour;
 
+mod emission_groups;
+
+use self::emission_groups::calculate_emission_groups;
+
 #[must_use]
 #[allow(clippy::too_many_lines)] // TODO
 pub fn calculate_emissions(
@@ -125,8 +129,6 @@ pub fn calculate_emissions(
         wastewater,
     );
 
-    let n2o_emissions = n2o_plant + n2o_water + n2o_side_stream;
-
     let with_digestion = sewage_gas_produced > Qubicmeters::new(0.001) && digester_count > 0;
 
     let ch4_sludge_storage_containers = if with_digestion {
@@ -160,9 +162,6 @@ pub fn calculate_emissions(
         calculate_ch4_plant(population_equivalent)
     };
 
-    let ch4_emissions =
-        ch4_plant + ch4_sludge_storage_containers + ch4_sludge_bags + ch4_water + ch4_chp;
-
     let power_production_consumption_difference =
         total_power_consumption - on_site_power_generation;
 
@@ -190,15 +189,11 @@ pub fn calculate_emissions(
     let feclso4 = feclso4 * EMISSION_FACTOR_FECLSO4;
     let caoh2 = caoh2 * EMISSION_FACTOR_CAOH2;
 
-    let operating_materials = synthetic_polymers + feclso4 + caoh2 + fecl3;
-
     let sewage_sludge_transport = (sewage_sludge_for_disposal
         * FUEL_CONSUMPTION
         * transport_distance
         * EMISSION_FACTOR_DIESEL)
         .convert_to();
-
-    let direct_emissions = ch4_emissions + n2o_emissions + fossil_emissions;
 
     let process_energy_savings = calculate_process_energy_savings(
         external_energy,
@@ -240,11 +235,6 @@ pub fn calculate_emissions(
         electricity_mix = Tons::zero();
     }
 
-    let indirect_emissions =
-        electricity_mix + oil_emissions_with_savings_applied + gas_emissions_with_savings_applied;
-    let other_indirect_emissions = operating_materials + sewage_sludge_transport;
-    let total_emissions = direct_emissions + indirect_emissions + other_indirect_emissions;
-
     // -------    ------ //
     //   Pack variables  //
     // -------    ------ //
@@ -253,7 +243,6 @@ pub fn calculate_emissions(
         (Out::N2oPlant, n2o_plant),
         (Out::N2oWater, n2o_water),
         (Out::N2oSideStream, n2o_side_stream),
-        (Out::N2oEmissions, n2o_emissions),
         (Out::Ch4Plant, ch4_plant),
         (
             Out::Ch4SludgeStorageContainers,
@@ -262,7 +251,6 @@ pub fn calculate_emissions(
         (Out::Ch4SludgeBags, ch4_sludge_bags),
         (Out::Ch4Water, ch4_water),
         (Out::Ch4CombinedHeatAndPowerPlant, ch4_chp),
-        (Out::Ch4Emissions, ch4_emissions),
         (Out::FossilEmissions, fossil_emissions),
         (Out::Fecl3, fecl3),
         (Out::Feclso4, feclso4),
@@ -271,10 +259,7 @@ pub fn calculate_emissions(
         (Out::ElectricityMix, electricity_mix),
         (Out::OilEmissions, oil_emissions_with_savings_applied),
         (Out::GasEmissions, gas_emissions_with_savings_applied),
-        (Out::OperatingMaterials, operating_materials),
         (Out::SewageSludgeTransport, sewage_sludge_transport),
-        (Out::TotalEmissions, total_emissions),
-        (Out::DirectEmissions, direct_emissions),
         (Out::ProcessEnergySavings, process_energy_savings),
         (
             Out::PhotovoltaicExpansionSavings,
@@ -284,12 +269,38 @@ pub fn calculate_emissions(
         (Out::WaterExpansionSavings, water_expansion_savings),
         (Out::DistrictHeatingSavings, district_heating_savings),
         (Out::FossilEnergySavings, fossil_energy_savings_emissions),
-        (Out::IndirectEmissions, indirect_emissions),
-        (Out::OtherIndirectEmissions, other_indirect_emissions),
         (Out::ExcessEnergyCo2Equivalent, excess_energy_co2_equivalent),
     ]
     .into_iter()
     .collect();
+
+    let edges = [
+        (Out::Ch4SludgeBags, Out::Ch4Emissions),
+        (Out::Ch4SludgeStorageContainers, Out::Ch4Emissions),
+        (Out::Ch4Plant, Out::Ch4Emissions),
+        (Out::Ch4Water, Out::Ch4Emissions),
+        (Out::Ch4CombinedHeatAndPowerPlant, Out::Ch4Emissions),
+        (Out::N2oPlant, Out::N2oEmissions),
+        (Out::N2oWater, Out::N2oEmissions),
+        (Out::N2oSideStream, Out::N2oEmissions),
+        (Out::SyntheticPolymers, Out::OperatingMaterials),
+        (Out::Feclso4, Out::OperatingMaterials),
+        (Out::Caoh2, Out::OperatingMaterials),
+        (Out::Fecl3, Out::OperatingMaterials),
+        (Out::N2oEmissions, Out::DirectEmissions),
+        (Out::Ch4Emissions, Out::DirectEmissions),
+        (Out::FossilEmissions, Out::DirectEmissions),
+        (Out::ElectricityMix, Out::IndirectEmissions),
+        (Out::OilEmissions, Out::IndirectEmissions),
+        (Out::GasEmissions, Out::IndirectEmissions),
+        (Out::OperatingMaterials, Out::OtherIndirectEmissions),
+        (Out::SewageSludgeTransport, Out::OtherIndirectEmissions),
+        (Out::OtherIndirectEmissions, Out::TotalEmissions),
+        (Out::DirectEmissions, Out::TotalEmissions),
+        (Out::IndirectEmissions, Out::TotalEmissions),
+    ];
+
+    let co2_equivalents = calculate_emission_groups(co2_equivalents, &edges);
 
     let emission_factors = CalculatedEmissionFactors {
         n2o: n2o_emission_factor,

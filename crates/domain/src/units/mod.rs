@@ -1,6 +1,6 @@
 use std::{
     fmt,
-    ops::{Add, Div, Mul, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, Mul, Sub, SubAssign},
 };
 
 use derive_more::From;
@@ -136,6 +136,12 @@ macro_rules! float {
 
                     fn add(self, rhs: $unit) -> Self::Output {
                         Self::new(self.0 + rhs.0)
+                    }
+                }
+
+                impl AddAssign<$unit> for $unit {
+                    fn add_assign(&mut self, rhs: $unit) {
+                        self.0 += rhs.0;
                     }
                 }
 
