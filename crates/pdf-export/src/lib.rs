@@ -14,8 +14,7 @@ use klick_boundary as boundary;
 use klick_domain::{
     self as domain,
     units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
-    CO2Equivalents, EmissionInfluencingValues, EmissionsCalculationOutcome, InputValueId as Id,
-    OutputValueId as Out, Value,
+    CO2Equivalents, EmissionsCalculationOutcome, InputValueId as Id, OutputValueId as Out, Value,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
 

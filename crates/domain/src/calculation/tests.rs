@@ -1,15 +1,17 @@
-use crate::{constants::*, units::*, OutputValueId as Out, *};
+use std::collections::HashMap;
+
+use crate::{constants::*, units::*, InputValueId as Id, OutputValueId as Out, Value as V, *};
 
 fn ch4_combined_heat_and_power_plant_computation_helper(
     scenario: EmissionFactorCalculationMethods,
-    profile: EmissionInfluencingValues,
+    profile: &HashMap<Id, Value>,
     ch4_chp_emission_factor: Option<Ch4ChpEmissionFactorCalcMethod>,
 ) -> f64 {
     let mut s2 = scenario;
     s2.ch4 = ch4_chp_emission_factor;
     let EmissionsCalculationOutcome {
         co2_equivalents, ..
-    } = calculate_emissions(profile, s2);
+    } = calculate_emissions(&profile, s2).unwrap();
 
     f64::from(
         co2_equivalents
@@ -19,48 +21,40 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
     )
 }
 
-fn example_values() -> EmissionInfluencingValues {
-    EmissionInfluencingValues {
-        population_equivalent: Count::new(50_000),
-        wastewater: Qubicmeters::new(2_135_250.0),
-        influent_nitrogen: MilligramsPerLiter::new(94.0),
-        influent_chemical_oxygen_demand: MilligramsPerLiter::new(1_020.0),
-        influent_total_organic_carbohydrates: MilligramsPerLiter::new(382.5),
-        effluent_nitrogen: MilligramsPerLiter::new(15.77),
-        effluent_chemical_oxygen_demand: MilligramsPerLiter::new(47.18),
-        sewage_gas_produced: Qubicmeters::new(420_000.0),
-        methane_fraction: Percent::new(62.0),
-        total_power_consumption: Kilowatthours::new(1_665_000.0),
-        on_site_power_generation: Kilowatthours::new(810_000.0),
-        emission_factor_electricity_mix: GramsPerKilowatthour::new(420.0),
-        heating_oil: Liters::new(0.0),
-        gas_supply: Qubicmeters::new(0.0),
-        purchase_of_biogas: false,
-        sludge_bags_are_open: true,
-        sludge_bags_factor: None,
-        sludge_storage_containers_are_open: true,
-        sludge_storage_containers_factor: None,
-        sewage_sludge_for_disposal: Tons::new(3016.5),
-        transport_distance: Kilometers::new(150.0),
-        digester_count: Some(1),
-        operating_material_fecl3: Tons::new(310.5),
-        operating_material_feclso4: Tons::new(0.0),
-        operating_material_caoh2: Tons::new(0.0),
-        operating_material_synthetic_polymers: Tons::new(12.0),
-        emission_factor_co2_fossil: Factor::new(0.0),
-        emission_factor_n2o_side_stream: Factor::new(0.0),
-        side_stream_treatment_total_nitrogen: Tons::new(0.0),
-        side_stream_cover_is_open: true,
-        process_energy_savings: Percent::new(0.0),
-        fossil_energy_savings: Percent::new(0.0),
-        district_heating: Kilowatthours::new(0.0),
-        photovoltaic_energy_expansion: Kilowatthours::new(0.0),
-        estimated_self_photovoltaic_usage: Percent::new(0.0),
-        wind_energy_expansion: Kilowatthours::new(0.0),
-        estimated_self_wind_energy_usage: Percent::new(0.0),
-        water_energy_expansion: Kilowatthours::new(0.0),
-        estimated_self_water_energy_usage: Percent::new(0.0),
-    }
+fn example_values() -> HashMap<Id, Value> {
+    [
+        (Id::PopulationEquivalent, V::count(50_000)),
+        (Id::Wastewater, V::qubicmeters(2_135_250.0)),
+        (Id::InfluentNitrogen, V::milligrams_per_liter(94.0)),
+        (
+            Id::InfluentChemicalOxygenDemand,
+            V::milligrams_per_liter(1_020.0),
+        ),
+        (
+            Id::InfluentTotalOrganicCarbohydrates,
+            V::milligrams_per_liter(382.5),
+        ),
+        (Id::EffluentNitrogen, V::milligrams_per_liter(15.77)),
+        (
+            Id::EffluentChemicalOxygenDemand,
+            V::milligrams_per_liter(47.18),
+        ),
+        (Id::SewageGasProduced, V::qubicmeters(420_000.0)),
+        (Id::TotalPowerConsumption, V::kilowatthours(1_665_000.0)),
+        (Id::OnSitePowerGeneration, V::kilowatthours(810_000.0)),
+        (
+            Id::EmissionFactorElectricityMix,
+            V::grams_per_kilowatthour(420.0),
+        ),
+        (Id::SludgeTreatmentDisposal, V::tons(3016.5)),
+        (Id::SludgeTreatmentTransportDistance, V::kilometers(150.0)),
+        (Id::SludgeTreatmentDigesterCount, V::count(1)),
+        (Id::OperatingMaterialFeCl3, V::tons(310.5)),
+        (Id::OperatingMaterialSyntheticPolymers, V::tons(12.0)),
+        (Id::SensitivityCO2FossilCustomFactor, V::percent(0.0)),
+    ]
+    .into_iter()
+    .collect()
 }
 
 // a helper to update the tests
@@ -239,12 +233,17 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ch4: None,
         ch4_custom_factor: None,
     };
+    let mut values = profile.clone();
+    values.insert(
+        Id::SensitivityN2OCalculationMethod,
+        V::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::TuWien2016),
+    );
 
     let EmissionsCalculationOutcome {
         co2_equivalents: eq,
         emission_factors,
         ..
-    } = calculate_emissions(profile, scenario);
+    } = calculate_emissions(&values, scenario).unwrap();
 
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
@@ -337,7 +336,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
@@ -345,7 +344,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
@@ -367,7 +366,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         co2_equivalents,
         emission_factors,
         ..
-    } = calculate_emissions(profile, scenario);
+    } = calculate_emissions(&profile, scenario).unwrap();
 
     let CO2Equivalents {
         n2o_plant,
@@ -451,7 +450,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
@@ -459,7 +458,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
@@ -481,7 +480,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         co2_equivalents,
         emission_factors,
         ..
-    } = calculate_emissions(profile, scenario);
+    } = calculate_emissions(&profile, scenario).unwrap();
 
     let CO2Equivalents {
         n2o_plant,
@@ -565,7 +564,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
@@ -573,7 +572,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
@@ -595,7 +594,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         co2_equivalents,
         emission_factors,
         ..
-    } = calculate_emissions(profile, scenario);
+    } = calculate_emissions(&profile, scenario).unwrap();
 
     let CO2Equivalents {
         n2o_plant,
@@ -679,7 +678,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
         78.47154
@@ -687,7 +686,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             scenario,
-            profile,
+            &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
         130.785_900_000_000_03
@@ -709,7 +708,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         co2_equivalents: eq,
         emission_factors,
         ..
-    } = calculate_emissions(profile, scenario);
+    } = calculate_emissions(&profile, scenario).unwrap();
 
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
