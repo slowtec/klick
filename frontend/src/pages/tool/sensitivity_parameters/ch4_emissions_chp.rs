@@ -6,7 +6,7 @@ use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{
     units::{Ch4ChpEmissionFactorCalcMethod, Tons},
-    InputValueId as Id, Value,
+    InputValueId as Id, OutputValueId as Out, Value,
 };
 use klick_presenter::ValueLabel;
 
@@ -160,12 +160,12 @@ pub fn CH4EmissionsCHP(
                       <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                         <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
                         <dd class="text-lg py-1 px-3">
-                          { format!("{:.1}", f64::from(out.co2_equivalents.ch4_combined_heat_and_power_plant)).replace('.',",") }
+                          { format!("{:.1}", f64::from(out.co2_equivalents.get(&Out::Ch4CombinedHeatAndPowerPlant).copied().unwrap())).replace('.',",") }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                         </dd>
                         <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                         <dd class="text-lg py-1 px-3">
-                          { format!("{:.1}", f64::from(out.co2_equivalents.total_emissions)).replace('.',",") }
+                          { format!("{:.1}", f64::from(out.co2_equivalents.get(&Out::TotalEmissions).copied().unwrap())).replace('.',",") }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                         </dd>
                       </dl>

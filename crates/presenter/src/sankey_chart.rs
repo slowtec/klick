@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
-    units::{Percent, RatioExt},
-    CO2Equivalents, InputValueId as Id, Value,
+    units::{Percent, RatioExt, Tons},
+    InputValueId as Id, OutputValueId as Out, Value,
 };
 
 use crate::{Formatting, Lng};
@@ -57,216 +59,133 @@ pub fn create_sankey_chart_header(
 
 #[must_use]
 pub fn create_sankey_chart_data(
-    co2_equivalents: CO2Equivalents,
+    co2_equivalents: HashMap<Out, Tons>,
 ) -> (
     Vec<(f64, &'static str, &'static str, &'static str)>,
     Vec<(usize, usize)>,
 ) {
-    let CO2Equivalents {
-        n2o_plant,
-        n2o_water,
-        n2o_side_stream,
-        n2o_emissions,
-        ch4_plant,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_water,
-        ch4_combined_heat_and_power_plant,
-        ch4_emissions,
-        fossil_emissions,
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-        electricity_mix,
-        oil_emissions,
-        gas_emissions,
-        operating_materials,
-        sewage_sludge_transport,
-        total_emissions,
-        direct_emissions,
-        process_energy_savings: _,
-        photovoltaic_expansion_savings: _,
-        wind_expansion_savings: _,
-        water_expansion_savings: _,
-        district_heating_savings: _,
-        fossil_energy_savings: _,
-        indirect_emissions,
-        other_indirect_emissions,
-        excess_energy_co2_equivalent: _,
-    } = co2_equivalents;
-
-    let mut nodes: Vec<(f64, &str, &str, &str)> = vec![];
-
-    let orange = "orange";
-    let orange_lite = "#ffe4b2";
-    nodes.push((
-        indirect_emissions.into(),
-        "Indirekte Emissionen",
-        orange,
-        orange_lite,
-    ));
-    let indirect_emissions = nodes.len() - 1;
-
-    nodes.push((electricity_mix.into(), "Strommix", orange, orange_lite));
-    let electricity_mix = nodes.len() - 1;
-
-    nodes.push((oil_emissions.into(), "Heizöl", orange, orange_lite));
-    let oil_emissions = nodes.len() - 1;
-
-    nodes.push((gas_emissions.into(), "Gas", orange, orange_lite));
-    let gas_emissions = nodes.len() - 1;
-
-    let yellow = "#fd0";
-    let yellow_lite = "#fff5b2";
-
-    nodes.push((
-        other_indirect_emissions.into(),
-        "Weitere Indirekte Emissionen",
-        yellow,
-        yellow_lite,
-    ));
-    let other_indirect_emissions = nodes.len() - 1;
-
-    nodes.push((
-        operating_materials.into(),
-        "Betriebsstoffe",
-        yellow,
-        yellow_lite,
-    ));
-    let operating_materials = nodes.len() - 1;
-
-    nodes.push((
-        fecl3.into(),
-        "Eisen(III)-chlorid-Lösung",
-        yellow,
-        yellow_lite,
-    ));
-    let fecl3 = nodes.len() - 1;
-
-    nodes.push((
-        feclso4.into(),
-        "Eisenchloridsulfat-Lösung",
-        yellow,
-        yellow_lite,
-    ));
-    let feclso4 = nodes.len() - 1;
-
-    nodes.push((caoh2.into(), "Kalkhydrat", yellow, yellow_lite));
-    let caoh2 = nodes.len() - 1;
-
-    nodes.push((
-        synthetic_polymers.into(),
-        "Synthetische Polymere",
-        yellow,
-        yellow_lite,
-    ));
-    let synthetic_polymers = nodes.len() - 1;
-
-    nodes.push((
-        sewage_sludge_transport.into(),
-        "Klärschlamm Transport",
-        yellow,
-        yellow_lite,
-    ));
-    let sewage_sludge_transport = nodes.len() - 1;
-
-    let red = "red";
-    let red_lite = "#ffb2b2";
-    nodes.push((total_emissions.into(), "Emission", red, red_lite));
-    let emissions = nodes.len() - 1;
-
-    nodes.push((direct_emissions.into(), "Direkte Emissionen", red, red_lite));
-    let direct_emissions = nodes.len() - 1;
-
-    nodes.push((n2o_emissions.into(), "Lachgasemissionen", red, red_lite));
-    let n2o_emissions = nodes.len() - 1;
-
-    nodes.push((ch4_emissions.into(), "Methanemissionen", red, red_lite));
-    let ch4_emissions = nodes.len() - 1;
-
-    nodes.push((n2o_plant.into(), "N₂O Anlage", red, red_lite));
-    let n2o_plant = nodes.len() - 1;
-
-    nodes.push((
-        n2o_side_stream.into(),
-        "N₂O Prozesswasserbehandlung",
-        red,
-        red_lite,
-    ));
-    let n2o_side_stream = nodes.len() - 1;
-
-    nodes.push((n2o_water.into(), "N₂O Gewässer", red, red_lite));
-    let n2o_water = nodes.len() - 1;
-
-    nodes.push((ch4_plant.into(), "CH₄ Anlage (unspez.)", red, red_lite));
-    let ch4_plant = nodes.len() - 1;
-
-    nodes.push((
-        ch4_sludge_storage_containers.into(),
-        "CH₄ Schlupf Schlammlagerung",
-        red,
-        red_lite,
-    ));
-    let ch4_sludge_storage_containers = nodes.len() - 1;
-
-    nodes.push((
-        ch4_sludge_bags.into(),
-        "CH₄ Schlupf Schlammtasche",
-        red,
-        red_lite,
-    ));
-    let ch4_sludge_bags = nodes.len() - 1;
-
-    nodes.push((ch4_water.into(), "CH₄ Gewässer", red, red_lite));
-    let ch4_water = nodes.len() - 1;
-
-    nodes.push((
-        ch4_combined_heat_and_power_plant.into(),
-        "CH₄ BHKW",
-        red,
-        red_lite,
-    ));
-    let ch4_combined_heat_and_power_plant = nodes.len() - 1;
-
-    nodes.push((
-        fossil_emissions.into(),
-        "Fossile CO₂-Emissionen",
-        red,
-        red_lite,
-    ));
-    let fossil_emissions = nodes.len() - 1;
-
-    let unfiltered_edges = [
-        (fecl3, operating_materials),
-        (synthetic_polymers, operating_materials),
-        (sewage_sludge_transport, other_indirect_emissions),
-        (feclso4, operating_materials),
-        (caoh2, operating_materials),
-        (n2o_plant, n2o_emissions),
-        (n2o_side_stream, n2o_emissions),
-        (n2o_water, n2o_emissions),
-        (n2o_emissions, direct_emissions),
-        (ch4_plant, ch4_emissions),
-        (ch4_sludge_storage_containers, ch4_emissions),
-        (ch4_sludge_bags, ch4_emissions),
-        (ch4_water, ch4_emissions),
-        (ch4_combined_heat_and_power_plant, ch4_emissions),
-        (ch4_emissions, direct_emissions),
-        (fossil_emissions, direct_emissions),
-        (electricity_mix, indirect_emissions),
-        (oil_emissions, indirect_emissions),
-        (gas_emissions, indirect_emissions),
-        (operating_materials, other_indirect_emissions),
-        (other_indirect_emissions, emissions),
-        (direct_emissions, emissions),
-        (indirect_emissions, emissions),
+    let node_labels = [
+        (Out::N2oPlant, "N₂O Anlage", "red", "#ffb2b2"),
+        (Out::N2oWater, "N₂O Gewässer", "red", "#ffb2b2"),
+        (
+            Out::N2oSideStream,
+            "N₂O Prozesswasserbehandlung",
+            "red",
+            "#ffb2b2",
+        ),
+        (Out::N2oEmissions, "Lachgasemissionen", "red", "#ffb2b2"),
+        (Out::Ch4Plant, "CH₄ Anlage", "red", "#ffb2b2"),
+        (
+            Out::Ch4SludgeStorageContainers,
+            "CH₄ Schlamm Lagerung",
+            "red",
+            "#ffb2b2",
+        ),
+        (Out::Ch4SludgeBags, "CH₄ Schlammtasche", "red", "#ffb2b2"),
+        (Out::Ch4Water, "CH₄ Gewässer", "red", "#ffb2b2"),
+        (
+            Out::Ch4CombinedHeatAndPowerPlant,
+            "CH₄ BHKW",
+            "red",
+            "#ffb2b2",
+        ),
+        (Out::Ch4Emissions, "Methanemissionen", "red", "#ffb2b2"),
+        (
+            Out::FossilEmissions,
+            "Fossile CO₂-Emissionen",
+            "red",
+            "#ffb2b2",
+        ),
+        (Out::Fecl3, "Eisen(III)-chlorid-Lösung", "yellow", "#fff5b2"),
+        (
+            Out::Feclso4,
+            "Eisenchloridsulfat-Lösung",
+            "yellow",
+            "#fff5b2",
+        ),
+        (Out::Caoh2, "Kalkhydrat", "yellow", "#fff5b2"),
+        (
+            Out::SyntheticPolymers,
+            "Synthetische Polymere",
+            "yellow",
+            "#fff5b2",
+        ),
+        (Out::ElectricityMix, "Strommix", "orange", "#ffe4b2"),
+        (Out::OilEmissions, "Heizöl", "orange", "#ffe4b2"),
+        (Out::GasEmissions, "Gas", "orange", "#ffe4b2"),
+        (
+            Out::OperatingMaterials,
+            "Betriebsstoffe",
+            "yellow",
+            "#fff5b2",
+        ),
+        (
+            Out::SewageSludgeTransport,
+            "Klärschlamm Transport",
+            "yellow",
+            "#fff5b2",
+        ),
+        (Out::TotalEmissions, "Gesamtemissionen", "black", "#000000"),
+        (Out::DirectEmissions, "Direkte Emissionen", "red", "#ffb2b2"),
+        (
+            Out::IndirectEmissions,
+            "Indirekte Emissionen",
+            "orange",
+            "#ffe4b2",
+        ),
+        (
+            Out::OtherIndirectEmissions,
+            "Weitere Indirekte Emissionen",
+            "yellow",
+            "#fff5b2",
+        ),
     ];
 
-    let filtered_edges: Vec<_> = unfiltered_edges
-        .into_iter()
-        .filter(|(from, to)| nodes[*from].0 > 0.0 && nodes[*to].0 > 0.0)
+    let nodes = node_labels
+        .iter()
+        .map(|(id, label, color, color_lite)| {
+            (
+                f64::from(co2_equivalents.get(id).copied().unwrap_or_else(Tons::zero)),
+                *label,
+                *color,
+                *color_lite,
+            )
+        })
         .collect();
 
-    (nodes, filtered_edges)
+    let edges = [
+        (Out::Ch4SludgeBags, Out::Ch4Emissions),
+        (Out::Ch4SludgeStorageContainers, Out::Ch4Emissions),
+        (Out::Ch4Plant, Out::Ch4Emissions),
+        (Out::Ch4Water, Out::Ch4Emissions),
+        (Out::Ch4CombinedHeatAndPowerPlant, Out::Ch4Emissions),
+        (Out::N2oPlant, Out::N2oEmissions),
+        (Out::N2oWater, Out::N2oEmissions),
+        (Out::N2oSideStream, Out::N2oEmissions),
+        (Out::N2oEmissions, Out::DirectEmissions),
+        (Out::Ch4Emissions, Out::DirectEmissions),
+        (Out::FossilEmissions, Out::DirectEmissions),
+        (Out::ElectricityMix, Out::IndirectEmissions),
+        (Out::OilEmissions, Out::IndirectEmissions),
+        (Out::GasEmissions, Out::IndirectEmissions),
+        (Out::OperatingMaterials, Out::OtherIndirectEmissions),
+        (Out::OtherIndirectEmissions, Out::TotalEmissions),
+        (Out::DirectEmissions, Out::TotalEmissions),
+        (Out::IndirectEmissions, Out::TotalEmissions),
+    ];
+
+    let mut connections: Vec<(usize, usize)> = Vec::new();
+    for (from, to) in edges.iter() {
+        let from_idx = node_labels
+            .iter()
+            .position(|(id, _, _, _)| id == from)
+            .unwrap();
+        let to_idx = node_labels
+            .iter()
+            .position(|(id, _, _, _)| id == to)
+            .unwrap();
+        connections.push((from_idx, to_idx));
+    }
+
+    (nodes, connections)
 }

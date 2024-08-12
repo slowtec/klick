@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::{units::*, InputValueId as Id};
+use klick_domain::{units::*, InputValueId as Id, OutputValueId as Out};
 use klick_presenter::*;
 
 use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
@@ -20,10 +20,12 @@ pub fn options(
 
     let excess_energy_co2_equivalent = Signal::derive(move || {
         outcome.with(|out| {
-            out.recommendation
-                .output
-                .as_ref()
-                .map(|out| out.co2_equivalents.excess_energy_co2_equivalent)
+            out.recommendation.output.as_ref().map(|out| {
+                out.co2_equivalents
+                    .get(&Out::ExcessEnergyCo2Equivalent)
+                    .copied()
+                    .unwrap()
+            })
         })
     });
 
@@ -32,17 +34,21 @@ pub fn options(
             out.recommendation.output.as_ref().map(|out| {
                 // TOOD: move this to calculation module
                 let eq = &out.co2_equivalents;
-                (eq.total_emissions - eq.excess_energy_co2_equivalent) * Factor::new(-1.0)
+                (eq.get(&Out::TotalEmissions).copied().unwrap()
+                    - eq.get(&Out::ExcessEnergyCo2Equivalent).copied().unwrap())
+                    * Factor::new(-1.0)
             })
         })
     });
 
     let electricity_mix = Signal::derive(move || {
         outcome.with(|out| {
-            out.recommendation
-                .output
-                .as_ref()
-                .map(|out| out.co2_equivalents.electricity_mix)
+            out.recommendation.output.as_ref().map(|out| {
+                out.co2_equivalents
+                    .get(&Out::ElectricityMix)
+                    .copied()
+                    .unwrap()
+            })
         })
     });
 
@@ -97,51 +103,38 @@ pub fn options(
           </Show>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
         { move || outcome.with(|out|out.recommendation.output.clone().map(|out|{
+
+            let eq = out.co2_equivalents;
+            let lang = Lng::De;
+
+            let list = [
+              (Out::ProcessEnergySavings, "CO₂ Einsparung durch Energieeinsparung bei Prozessen"),
+              (Out::FossilEnergySavings,"CO₂ Einsparung bei Fossilen Energiequellen"),
+              (Out::PhotovoltaicExpansionSavings, "CO₂ Einsparung durch Photovoltaik"),
+              (Out::WindExpansionSavings, "CO₂ Einsparung durch Windkraft"),
+              (Out::WaterExpansionSavings, "CO₂ Einsparung durch Wasserkraft"),
+              (Out::DistrictHeatingSavings, "CO₂ Einsparung durch Abwärmenutzung"),
+            ]
+            .into_iter()
+            .filter_map(|(id, label)| {
+                let value = eq.get(&id).copied().unwrap();
+                if value > Tons::zero() {
+                   Some((label, value))
+                } else {
+                   None
+                }
+            })
+            .map(|(label, value)| view! {
+                <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ label }</dt>
+                <dd class="text-lg py-1 px-3">
+                    { lang.format_value(&Value::from(value)) }
+                    <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
+                </dd>
+            })
+            .collect::<Vec<_>>();
+
             view! {
-              <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
-                <Show when= move || (f64::from(out.co2_equivalents.process_energy_savings) > 0.0) >
-                  <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CO₂ Einsparung durch Energieeinsparung bei Prozessen"</dt>
-                <dd class="text-lg py-1 px-3">
-                  { format!("{:.1}", f64::from(out.co2_equivalents.process_energy_savings)).replace('.',",") }
-                  <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
-                </dd>
-                </Show>
-                <Show when= move || (f64::from(out.co2_equivalents.fossil_energy_savings) > 0.0) >
-                  <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CO₂ Einsparung bei Fossilen Energiequellen"</dt>
-                <dd class="text-lg py-1 px-3">
-                  { format!("{:.1}", f64::from(out.co2_equivalents.fossil_energy_savings)).replace('.',",") }
-                  <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
-                </dd>
-                </Show>
-                <Show when= move || (f64::from(out.co2_equivalents.photovoltaic_expansion_savings) > 0.0) >
-                  <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CO₂ Einsparung durch Photovoltaik"</dt>
-                <dd class="text-lg py-1 px-3">
-                  { format!("{:.1}", f64::from(out.co2_equivalents.photovoltaic_expansion_savings)).replace('.',",") }
-                  <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
-                </dd>
-                </Show>
-                <Show when= move || (f64::from(out.co2_equivalents.wind_expansion_savings) > 0.0) >
-                  <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CO₂ Einsparung durch Windkraft"</dt>
-                <dd class="text-lg py-1 px-3">
-                  { format!("{:.1}", f64::from(out.co2_equivalents.wind_expansion_savings)).replace('.',",") }
-                  <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
-                </dd>
-                </Show>
-                <Show when= move || (f64::from(out.co2_equivalents.water_expansion_savings) > 0.0) >
-                <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CO₂ Einsparung durch Wasserkraft"</dt>
-                <dd class="text-lg py-1 px-3">
-                  { format!("{:.1}", f64::from(out.co2_equivalents.water_expansion_savings)).replace('.',",") }
-                  <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
-                </dd>
-                </Show>
-                <Show when= move || (f64::from(out.co2_equivalents.district_heating_savings) > 0.0) >
-                <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"CO₂ Einsparung durch Abwärmenutzung"</dt>
-                <dd class="text-lg py-1 px-3">
-                  { format!("{:.1}", f64::from(out.co2_equivalents.district_heating_savings)).replace('.',",") }
-                  <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
-                </dd>
-                </Show>
-              </dl>
+              <dl class="mx-3 my-2 grid grid-cols-2 text-sm"> { list } </dl>
             }
           }))
         }

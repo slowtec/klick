@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::InputValueId as Id;
+use klick_domain::{InputValueId as Id, OutputValueId as Out};
 
 use crate::pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
@@ -63,12 +63,12 @@ pub fn FossilCO2Emissions(
                  <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Fossile CO₂-Emissionen"</dt>
                    <dd class="text-lg py-1 px-3">
-                     { format!("{:.1}", f64::from(out.fossil_emissions)).replace('.',",") }
+                     { format!("{:.1}", f64::from(out.get(&Out::FossilEmissions).copied().unwrap())).replace('.',",") }
                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                    </dd>
                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                    <dd class="text-lg py-1 px-3">
-                     { format!("{:.1}", f64::from(out.total_emissions)).replace('.',",") }
+                     { format!("{:.1}", f64::from(out.get(&Out::TotalEmissions).copied().unwrap())).replace('.',",") }
                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                    </dd>
                  </dl>

@@ -3,8 +3,8 @@ mod tests;
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
-    constants::*, units::*, CO2Equivalents, CalculatedEmissionFactors,
-    EmissionFactorCalculationMethods, EmissionInfluencingValues, EmissionsCalculationOutcome,
+    constants::*, units::*, CalculatedEmissionFactors, EmissionFactorCalculationMethods,
+    EmissionInfluencingValues, EmissionsCalculationOutcome, OutputValueId as Out,
 };
 
 use crate::units::GramsPerKilowatthour;
@@ -249,39 +249,47 @@ pub fn calculate_emissions(
     //   Pack variables  //
     // -------    ------ //
 
-    let co2_equivalents = CO2Equivalents {
-        n2o_plant,
-        n2o_water,
-        n2o_side_stream,
-        n2o_emissions,
-        ch4_plant,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_water,
-        ch4_combined_heat_and_power_plant: ch4_chp, // FIXME rename to ch4_chp
-        ch4_emissions,
-        fossil_emissions,
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-        electricity_mix,
-        oil_emissions: oil_emissions_with_savings_applied,
-        gas_emissions: gas_emissions_with_savings_applied,
-        operating_materials,
-        sewage_sludge_transport,
-        total_emissions,
-        direct_emissions,
-        process_energy_savings,
-        photovoltaic_expansion_savings,
-        wind_expansion_savings,
-        water_expansion_savings,
-        district_heating_savings,
-        fossil_energy_savings: fossil_energy_savings_emissions,
-        indirect_emissions,
-        other_indirect_emissions,
-        excess_energy_co2_equivalent,
-    };
+    let co2_equivalents = [
+        (Out::N2oPlant, n2o_plant),
+        (Out::N2oWater, n2o_water),
+        (Out::N2oSideStream, n2o_side_stream),
+        (Out::N2oEmissions, n2o_emissions),
+        (Out::Ch4Plant, ch4_plant),
+        (
+            Out::Ch4SludgeStorageContainers,
+            ch4_sludge_storage_containers,
+        ),
+        (Out::Ch4SludgeBags, ch4_sludge_bags),
+        (Out::Ch4Water, ch4_water),
+        (Out::Ch4CombinedHeatAndPowerPlant, ch4_chp),
+        (Out::Ch4Emissions, ch4_emissions),
+        (Out::FossilEmissions, fossil_emissions),
+        (Out::Fecl3, fecl3),
+        (Out::Feclso4, feclso4),
+        (Out::Caoh2, caoh2),
+        (Out::SyntheticPolymers, synthetic_polymers),
+        (Out::ElectricityMix, electricity_mix),
+        (Out::OilEmissions, oil_emissions_with_savings_applied),
+        (Out::GasEmissions, gas_emissions_with_savings_applied),
+        (Out::OperatingMaterials, operating_materials),
+        (Out::SewageSludgeTransport, sewage_sludge_transport),
+        (Out::TotalEmissions, total_emissions),
+        (Out::DirectEmissions, direct_emissions),
+        (Out::ProcessEnergySavings, process_energy_savings),
+        (
+            Out::PhotovoltaicExpansionSavings,
+            photovoltaic_expansion_savings,
+        ),
+        (Out::WindExpansionSavings, wind_expansion_savings),
+        (Out::WaterExpansionSavings, water_expansion_savings),
+        (Out::DistrictHeatingSavings, district_heating_savings),
+        (Out::FossilEnergySavings, fossil_energy_savings_emissions),
+        (Out::IndirectEmissions, indirect_emissions),
+        (Out::OtherIndirectEmissions, other_indirect_emissions),
+        (Out::ExcessEnergyCo2Equivalent, excess_energy_co2_equivalent),
+    ]
+    .into_iter()
+    .collect();
 
     let emission_factors = CalculatedEmissionFactors {
         n2o: n2o_emission_factor,

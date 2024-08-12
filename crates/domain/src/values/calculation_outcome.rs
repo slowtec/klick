@@ -1,10 +1,10 @@
-use crate::{
-    units::*, CO2Equivalents, CalculatedEmissionFactors, EmissionFactorCalculationMethods,
-};
+use std::collections::HashMap;
+
+use crate::{units::*, CalculatedEmissionFactors, EmissionFactorCalculationMethods, OutputValueId};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct EmissionsCalculationOutcome {
-    pub co2_equivalents: CO2Equivalents,
+    pub co2_equivalents: HashMap<OutputValueId, Tons>,
     pub emission_factors: CalculatedEmissionFactors,
     pub calculation_methods: EmissionFactorCalculationMethods,
 }

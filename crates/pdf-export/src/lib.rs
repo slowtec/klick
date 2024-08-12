@@ -1,6 +1,6 @@
 #![allow(unused)] // FIXME
 
-use std::{io::Write, path::Path, sync::LazyLock};
+use std::{collections::HashMap, io::Write, path::Path, sync::LazyLock};
 
 use anyhow::bail;
 use num_traits::ToPrimitive;
@@ -15,7 +15,7 @@ use klick_domain::{
     self as domain,
     units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
     CO2Equivalents, EmissionInfluencingValues, EmissionsCalculationOutcome, InputValueId as Id,
-    Value,
+    OutputValueId as Out, Value,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
 
@@ -303,7 +303,11 @@ fn render_n2o_scenarios_svg_bar_chart(
             } = emissions_calculation_outcome;
             charts::BarChartRadioInputArguments {
                 label: Some(method.label()),
-                value: co2_equivalents.total_emissions.into(),
+                value: co2_equivalents
+                    .get(&Out::TotalEmissions)
+                    .copied()
+                    .unwrap()
+                    .into(),
                 emission_factor: emission_factors.n2o.into(),
             }
         })
@@ -342,7 +346,7 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
     )
 }
 
-fn render_svg_sankey_chart(co2_equivalents: CO2Equivalents) -> String {
+fn render_svg_sankey_chart(co2_equivalents: HashMap<Out, Tons>) -> String {
     let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
 
     let mut sankey = charts::SankeyData::new();
