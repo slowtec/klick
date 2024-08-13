@@ -1,66 +1,5 @@
 use crate::{constants, units::*, InputValueId as Id, Value as V};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum InputValueId {
-    ProjectName,
-    PlantName,
-
-    PopulationEquivalent,
-    Wastewater,
-
-    InfluentNitrogen,
-    InfluentChemicalOxygenDemand,
-    InfluentTotalOrganicCarbohydrates,
-
-    EffluentNitrogen,
-    EffluentChemicalOxygenDemand,
-
-    SewageGasProduced,
-    MethaneFraction,
-    GasSupply,
-    PurchaseOfBiogas,
-    TotalPowerConsumption,
-    OnSitePowerGeneration,
-    EmissionFactorElectricityMix,
-    HeatingOil,
-
-    SideStreamTreatmentTotalNitrogen,
-
-    OperatingMaterialFeCl3,
-    OperatingMaterialFeClSO4,
-    OperatingMaterialCaOH2,
-    OperatingMaterialSyntheticPolymers,
-
-    SensitivityN2OCalculationMethod,
-    SensitivityN2OCustomFactor,
-    SensitivityN2OSideStreamFactor,
-    SensitivityCH4ChpCalculationMethod,
-    SensitivityCH4ChpCustomFactor,
-    SensitivityCO2FossilCustomFactor,
-    SensitivitySludgeBagsCustomFactor,
-    SensitivitySludgeStorageCustomFactor,
-
-    SludgeTreatmentBagsAreOpen,
-    SludgeTreatmentStorageContainersAreOpen,
-    SludgeTreatmentDisposal,
-    SludgeTreatmentTransportDistance,
-    SludgeTreatmentDigesterCount,
-
-    ScenarioSludgeBagsAreOpen,
-    ScenarioSludgeStorageContainersAreOpen,
-    ScenarioN2OSideStreamFactor,
-    ScenarioN2OSideStreamCoverIsOpen,
-    ScenarioProcessEnergySaving,
-    ScenarioFossilEnergySaving,
-    ScenarioDistrictHeating,
-    ScenarioPhotovoltaicEnergyExpansion,
-    ScenarioEstimatedSelfPhotovolaticUsage,
-    ScenarioWindEnergyExpansion,
-    ScenarioEstimatedSelfWindEnergyUsage,
-    ScenarioWaterEnergyExpansion,
-    ScenarioEstimatedSelfWaterEnergyUsage,
-}
-
 #[must_use]
 pub fn value_spec(id: &Id) -> ValueSpec {
     specs()
@@ -72,7 +11,6 @@ pub fn value_spec(id: &Id) -> ValueSpec {
 
 #[derive(Debug)]
 pub struct ValueSpec {
-    value_type: ValueType,
     optional: bool,
     min: Option<f64>, // TODO: use Scalar
     max: Option<f64>, // TODO: use Scalar
@@ -81,9 +19,8 @@ pub struct ValueSpec {
 
 impl ValueSpec {
     #[must_use]
-    const fn new(value_type: ValueType) -> Self {
+    const fn new() -> Self {
         Self {
-            value_type,
             optional: false,
             min: None,
             max: None,
@@ -92,9 +29,8 @@ impl ValueSpec {
     }
 
     #[must_use]
-    const fn new_optional(value_type: ValueType) -> Self {
+    const fn new_optional() -> Self {
         Self {
-            value_type,
             optional: true,
             min: None,
             max: None,
@@ -104,10 +40,8 @@ impl ValueSpec {
 
     #[must_use]
     const fn new_with_default(default_value: Value) -> Self {
-        let value_type = default_value.value_type();
         let default = Some(default_value);
         Self {
-            value_type,
             optional: true,
             min: None,
             max: None,
@@ -125,11 +59,6 @@ impl ValueSpec {
     const fn with_max(mut self, max: f64) -> Self {
         self.max = Some(max);
         self
-    }
-
-    #[must_use]
-    pub const fn value_type(&self) -> ValueType {
-        self.value_type
     }
 
     #[must_use]
@@ -156,32 +85,27 @@ impl ValueSpec {
 // TODO: check optional values
 fn specs() -> [(Id, ValueSpec); 48] {
     use ValueSpec as S;
-    use ValueType as T;
 
     [
-        (Id::ProjectName, S::new_optional(T::text())),
-        (Id::PlantName, S::new_optional(T::text())),
+        (Id::ProjectName, S::new_optional()),
+        (Id::PlantName, S::new_optional()),
         (
             Id::PopulationEquivalent,
-            S::new(T::count()).with_min(0.0).with_max(5_000_000.0),
+            S::new().with_min(0.0).with_max(5_000_000.0),
         ),
         (
             Id::Wastewater,
-            S::new(T::qubicmeters())
-                .with_min(0.0)
-                .with_max(1_000_000_000.0),
+            S::new().with_min(0.0).with_max(1_000_000_000.0),
         ),
         (
             Id::InfluentNitrogen,
-            S::new(T::milligrams_per_liter())
+            S::new()
                 .with_min(1.0) // must not be 0.0 to prevent division by 0
                 .with_max(5000.0),
         ),
         (
             Id::InfluentChemicalOxygenDemand,
-            S::new(T::milligrams_per_liter())
-                .with_min(0.0)
-                .with_max(5000.0),
+            S::new().with_min(0.0).with_max(5000.0),
         ),
         (
             Id::InfluentTotalOrganicCarbohydrates,
@@ -191,24 +115,17 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::EffluentNitrogen,
-            S::new(T::milligrams_per_liter())
-                .with_min(0.0)
-                .with_max(1000.0),
+            S::new().with_min(0.0).with_max(1000.0),
         ),
         (
             Id::EffluentChemicalOxygenDemand,
-            S::new(T::milligrams_per_liter())
-                .with_min(0.0)
-                .with_max(1000.0),
+            S::new().with_min(0.0).with_max(1000.0),
         ),
         (
             Id::SideStreamTreatmentTotalNitrogen,
             S::new_with_default(V::tons(0.0)),
         ),
-        (
-            Id::OperatingMaterialFeCl3,
-            S::new(T::tons()).with_max(500_000.0),
-        ),
+        (Id::OperatingMaterialFeCl3, S::new().with_max(500_000.0)),
         (
             Id::OperatingMaterialFeClSO4,
             S::new_with_default(V::tons(0.0)).with_max(100_000.0),
@@ -219,7 +136,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::OperatingMaterialSyntheticPolymers,
-            S::new(T::tons()).with_max(50000.0),
+            S::new().with_max(50000.0),
         ),
         (
             Id::SensitivityN2OCalculationMethod,
@@ -273,10 +190,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
             Id::SludgeTreatmentStorageContainersAreOpen,
             S::new_with_default(V::bool(true)),
         ),
-        (
-            Id::SludgeTreatmentDisposal,
-            S::new(T::tons()).with_max(500_000.0),
-        ),
+        (Id::SludgeTreatmentDisposal, S::new().with_max(500_000.0)),
         (
             Id::SludgeTreatmentTransportDistance,
             S::new_with_default(V::kilometers(0.0))
@@ -303,9 +217,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         (Id::PurchaseOfBiogas, S::new_with_default(V::bool(false))),
         (
             Id::TotalPowerConsumption,
-            S::new(T::kilowatthours())
-                .with_min(0.0)
-                .with_max(1_000_000_000.0),
+            S::new().with_min(0.0).with_max(1_000_000_000.0),
         ),
         (
             Id::OnSitePowerGeneration,
@@ -315,9 +227,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
         ),
         (
             Id::EmissionFactorElectricityMix,
-            S::new(T::grams_per_kilowatthour())
-                .with_min(0.0)
-                .with_max(2500.0),
+            S::new().with_min(0.0).with_max(2500.0),
         ),
         (Id::HeatingOil, S::new_with_default(V::liters(0.0))),
         (
@@ -328,7 +238,7 @@ fn specs() -> [(Id, ValueSpec); 48] {
             Id::ScenarioSludgeStorageContainersAreOpen,
             S::new_with_default(V::bool(true)),
         ),
-        (Id::ScenarioN2OSideStreamFactor, S::new(T::factor())),
+        (Id::ScenarioN2OSideStreamFactor, S::new()),
         (
             Id::ScenarioN2OSideStreamCoverIsOpen,
             S::new_with_default(V::bool(true)),
@@ -380,4 +290,223 @@ fn specs() -> [(Id, ValueSpec); 48] {
                 .with_max(100.0),
         ),
     ]
+}
+
+macro_rules! specs {
+    (
+        $(
+            $enum_name:ident {
+                $(
+                    $variant:ident = {
+                        unit = $unit:ident;
+                        $(optional = $optional:tt;)?
+                        $(default = $default:expr;)?
+                        $(min = $min:expr;)?
+                        $(max = $max:expr;)?
+                    }$(,)?
+                )+
+            }$(,)?
+        )+
+    ) => {
+        $(
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+            pub enum $enum_name {
+                $(
+                    $variant,
+                )*
+            }
+
+            impl $enum_name {
+                #[must_use]
+                pub fn is_optional(&self) -> bool {
+                    match self {
+                        $(
+                            Self::$variant => {
+                                // match stringify!($($optional)?) {
+                                //   "true" => true,
+                                //   _ => false,
+                                // }
+                                todo!("Don't use this yet!")
+                            },
+                        )*
+                    }
+                }
+
+                #[must_use]
+                pub fn value_type(&self) -> ValueType {
+                    match self {
+                        $(
+                            Self::$variant => {
+                                $unit::VALUE_TYPE
+                            }
+                        )*
+                    }
+                }
+
+            }
+        )*
+
+
+    };
+}
+
+specs! {
+    InputValueId {
+        ProjectName = {
+           unit = String;
+           optional = true;
+        },
+        PlantName = {
+           unit = String;
+           optional = true;
+        },
+
+        PopulationEquivalent = {
+            unit = Count;
+        },
+        Wastewater = {
+            unit = Qubicmeters;
+        },
+
+        InfluentNitrogen = {
+            unit = MilligramsPerLiter;
+        },
+        InfluentChemicalOxygenDemand = {
+            unit = MilligramsPerLiter;
+        },
+        InfluentTotalOrganicCarbohydrates = {
+            unit = MilligramsPerLiter;
+        },
+
+        EffluentNitrogen = {
+            unit = MilligramsPerLiter;
+
+        },
+        EffluentChemicalOxygenDemand = {
+            unit = MilligramsPerLiter;
+        },
+
+        SewageGasProduced = {
+            unit = Qubicmeters;
+        },
+        MethaneFraction = {
+            unit = Percent;
+        },
+        GasSupply = {
+            unit = Qubicmeters;
+        },
+        PurchaseOfBiogas = {
+            unit = bool;
+        },
+        TotalPowerConsumption = {
+            unit = Kilowatthours;
+        },
+        OnSitePowerGeneration = {
+            unit = Kilowatthours;
+        },
+        EmissionFactorElectricityMix = {
+            unit = GramsPerKilowatthour;
+        },
+        HeatingOil = {
+            unit = Liters;
+        },
+
+        SideStreamTreatmentTotalNitrogen = {
+            unit = Tons;
+        },
+
+        OperatingMaterialFeCl3 = {
+            unit = Tons;
+        },
+        OperatingMaterialFeClSO4 = {
+            unit = Tons;
+        },
+        OperatingMaterialCaOH2 = {
+            unit = Tons;
+        },
+        OperatingMaterialSyntheticPolymers = {
+            unit = Tons;
+        },
+
+        SensitivityN2OCalculationMethod = {
+            unit = N2oEmissionFactorCalcMethod;
+
+        },
+        SensitivityN2OCustomFactor = {
+            unit = Percent;
+        },
+        SensitivityN2OSideStreamFactor = {
+            unit = Percent;
+        },
+        SensitivityCH4ChpCalculationMethod = {
+            unit = Ch4ChpEmissionFactorCalcMethod;
+        },
+        SensitivityCH4ChpCustomFactor = {
+            unit = Percent;
+        },
+        SensitivityCO2FossilCustomFactor = {
+            unit = Percent;
+        },
+        SensitivitySludgeBagsCustomFactor = {
+            unit = QubicmetersPerHour;
+        },
+        SensitivitySludgeStorageCustomFactor = {
+            unit = Percent;
+        },
+        SludgeTreatmentBagsAreOpen = {
+            unit = bool;
+        },
+        SludgeTreatmentStorageContainersAreOpen = {
+            unit = bool;
+        },
+        SludgeTreatmentDisposal = {
+            unit = Tons;
+        },
+        SludgeTreatmentTransportDistance = {
+            unit = Kilometers;
+        },
+        SludgeTreatmentDigesterCount = {
+            unit = Count;
+        },
+
+        ScenarioSludgeBagsAreOpen = {
+            unit = bool;
+        },
+        ScenarioSludgeStorageContainersAreOpen = {
+            unit = bool;
+        },
+        ScenarioN2OSideStreamFactor = {
+            unit = Percent;
+        },
+        ScenarioN2OSideStreamCoverIsOpen = {
+            unit = bool;
+        },
+        ScenarioProcessEnergySaving = {
+            unit = Percent;
+        },
+        ScenarioFossilEnergySaving = {
+            unit = Percent;
+        },
+        ScenarioDistrictHeating = {
+            unit = Kilowatthours;
+        },
+        ScenarioPhotovoltaicEnergyExpansion = {
+            unit = Kilowatthours;
+        },
+        ScenarioEstimatedSelfPhotovolaticUsage = {
+            unit = Percent;
+        },
+        ScenarioWindEnergyExpansion = {
+            unit = Kilowatthours;
+        },
+        ScenarioEstimatedSelfWindEnergyUsage = {
+            unit = Percent;
+        },
+        ScenarioWaterEnergyExpansion = {
+            unit = Kilowatthours;
+        },
+        ScenarioEstimatedSelfWaterEnergyUsage = {
+            unit = Percent;
+        },
+    }
 }

@@ -44,7 +44,7 @@ pub fn create_field_type(
 ) -> FieldType {
     let spec = value_spec(&id);
     let limits = form_limits(&spec);
-    let value_type = spec.value_type();
+    let value_type = id.value_type();
     match value_type {
         ValueType::Scalar(scalar) => match scalar {
             ScalarType::Float(float_type) => {

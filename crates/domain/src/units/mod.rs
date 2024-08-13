@@ -89,6 +89,16 @@ macro_rules! float {
                 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
                 pub struct $unit($base_type);
 
+                impl ValueTypeExt for $unit {
+                    const VALUE_TYPE: ValueType = ValueType::Scalar(
+                        ScalarType::Float(
+                            FloatType::$quantity(
+                                [<$quantity Type>]::$unit
+                            )
+                        )
+                    );
+                }
+
                 impl $unit {
                     #[must_use]
                     pub const fn new(value: $base_type) -> Self {
@@ -503,6 +513,10 @@ macro_rules! integers {
                         v.0
                     }
                 }
+
+                impl ValueTypeExt for $int {
+                    const VALUE_TYPE: ValueType = ValueType::Scalar(ScalarType::Int(IntType::$int));
+                }
             )+
         }
     };
@@ -551,6 +565,18 @@ macro_rules! values {
                     #[int_attr:meta]
                     $int, $int_base_type;
                 )+
+            }
+
+            pub trait ValueTypeExt {
+                const VALUE_TYPE : ValueType;
+            }
+
+            impl ValueTypeExt for bool {
+                const VALUE_TYPE : ValueType = ValueType::Scalar(ScalarType::Bool);
+            }
+
+            impl ValueTypeExt for String {
+                const VALUE_TYPE : ValueType = ValueType::Text;
             }
 
             #[derive(Debug, Clone, Copy, PartialEq, Eq, From)]
@@ -607,6 +633,10 @@ macro_rules! values {
                 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
                 pub enum $enum_name {
                     $($enum_body)*
+                }
+
+                impl ValueTypeExt for $enum_name {
+                    const VALUE_TYPE: ValueType = ValueType::Enum(EnumType::$enum_name);
                 }
             )+
 

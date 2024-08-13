@@ -430,8 +430,9 @@ impl JsonFormData {
     pub fn set(&mut self, id: domain::InputValueId, value: Option<Value>) {
         use domain::{InputValueId as Id, Value as V};
 
-        debug_assert!(value.as_ref().map_or(true, |v| v.value_type()
-            == domain::value_spec(&id).value_type()));
+        debug_assert!(value
+            .as_ref()
+            .map_or(true, |v| v.value_type() == id.value_type()));
 
         match id {
             Id::ProjectName => {

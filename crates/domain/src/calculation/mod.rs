@@ -692,7 +692,7 @@ pub fn required_value(id: Id, map: &HashMap<Id, V>) -> Result<V, MissingValueErr
         .cloned()
         .or_else(|| spec.default_value().cloned())
         .ok_or(MissingValueError(id))?;
-    debug_assert_eq!(spec.value_type(), value.value_type());
+    debug_assert_eq!(id.value_type(), value.value_type());
     Ok(value)
 }
 
@@ -705,7 +705,7 @@ pub fn optional_value(id: Id, map: &HashMap<Id, V>) -> Option<V> {
         .or_else(|| spec.default_value().cloned());
     debug_assert!(value
         .as_ref()
-        .map(|v| spec.value_type() == v.value_type())
+        .map(|v| id.value_type() == v.value_type())
         .unwrap_or(true));
     value
 }
