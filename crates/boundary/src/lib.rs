@@ -30,29 +30,10 @@ mod conversion;
 
 pub const CURRENT_VERSION: u32 = 8;
 
-// TODO:
-// Restructure this to something like
-// struct EvalualtionData {
-//    inputs: Inputs,
-//    outputs: Option<Outputs>
-// }
-// struct Inputs {
-//   profile: FormData,
-//   sensitivity: FormData,
-//   recommendation: FormData,
-// }
-// struct Outputs {
-//   profile: EmissionsCalculationOutcome,
-//   sensitivity: EmissionsCalculationOutcome
-//   .. etc
-// }
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct CalculationOutcome {
-    // a.k.a "Model One"
-    pub profile: EvaluationData,
-
-    // a.k.a "Model Two"
-    pub sensitivity: EvaluationData,
+    pub input: FormData,
+    pub output: Option<domain::EmissionsCalculationOutcome>,
 
     // Used to create bar chart input
     pub sensitivity_n2o_calculations: Option<
@@ -65,13 +46,4 @@ pub struct CalculationOutcome {
     // Used to create bar chart input
     pub sensitivity_ch4_chp_calculations:
         Option<Vec<(domain::units::Ch4ChpEmissionFactorCalcMethod, Tons, Factor)>>,
-
-    // a.k.a "Model Three"
-    pub recommendation: EvaluationData,
-}
-
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
-pub struct EvaluationData {
-    pub input: FormData,
-    pub output: Option<domain::EmissionsCalculationOutcome>,
 }

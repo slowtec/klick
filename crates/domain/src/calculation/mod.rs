@@ -24,7 +24,6 @@ pub struct MissingValueError(Id);
 #[allow(clippy::too_many_lines)] // TODO
 pub fn calculate_emissions(
     input: &HashMap<Id, Value>,
-    calculation_methods: EmissionFactorCalculationMethods,
 ) -> Result<EmissionsCalculationOutcome, MissingValueError> {
     // -------    ------ //
     //  Unpack variables //
@@ -82,9 +81,8 @@ pub fn calculate_emissions(
         required_value(Id::SludgeTreatmentDisposal, &from)?.as_tons_unchecked();
     let transport_distance =
         required_value(Id::SludgeTreatmentTransportDistance, &from)?.as_kilometers_unchecked();
-    let digester_count: Option<u64> = optional_value(Id::SludgeTreatmentDigesterCount, &from)
-        .map(V::as_count_unchecked)
-        .map(Into::into);
+    let digester_count =
+        required_value(Id::SludgeTreatmentDigesterCount, &from)?.as_count_unchecked();
 
     let side_stream_treatment_total_nitrogen =
         required_value(Id::SideStreamTreatmentTotalNitrogen, &from)?.as_tons_unchecked();
@@ -138,19 +136,29 @@ pub fn calculate_emissions(
     let estimated_self_water_energy_usage =
         required_value(Id::ScenarioEstimatedSelfWaterEnergyUsage, &from)?.as_percent_unchecked();
 
-    // -------    ------ //
-    //  Default values   //
-    // -------    ------ //
+    let n2o_calculation_method = required_value(Id::SensitivityN2OCalculationMethod, from)?
+        .as_n2o_emission_factor_calc_method_unchecked();
+    let n2o_custom_factor =
+        optional_value(Id::SensitivityN2OCustomFactor, from).map(V::as_percent_unchecked);
 
-    let digester_count = digester_count.unwrap_or(0);
+    // FIXME:
+    // The default method does not produce the expected outcome.
+    // Also have a look at the  `calculation_method` function.
+    // It looks like `MicroGasTurbines` should be the default instead of `GasolineEngine`;
+    let ch4_chp_calculation_method = from
+        .get(&Id::SensitivityCH4ChpCalculationMethod)
+        .cloned()
+        .map(V::as_ch4_chp_emission_factor_calc_method_unchecked);
+    let ch4_chp_custom_factor =
+        optional_value(Id::SensitivityCH4ChpCustomFactor, from).map(V::as_percent_unchecked);
 
     // -------    ------ //
     //     Calculate     //
     // -------    ------ //
 
     let n2o_emission_factor = calculate_n2o_emission_factor(
-        calculation_methods.n2o,
-        calculation_methods.n2o_custom_factor,
+        n2o_calculation_method,
+        n2o_custom_factor,
         nitrogen_influent,
         nitrogen_effluent,
     );
@@ -194,7 +202,8 @@ pub fn calculate_emissions(
         wastewater,
     );
 
-    let with_digestion = sewage_gas_produced > Qubicmeters::new(0.001) && digester_count > 0;
+    let with_digestion =
+        sewage_gas_produced > Qubicmeters::new(0.001) && digester_count > Count::zero();
 
     let ch4_sludge_storage_containers = if with_digestion {
         ch4_slippage_sludge_storage * GWP_CH4
@@ -212,8 +221,8 @@ pub fn calculate_emissions(
 
     let (ch4_chp, ch4_emission_factor) = if with_digestion {
         calculate_ch4_chp(
-            calculation_methods.ch4,
-            calculation_methods.ch4_custom_factor,
+            ch4_chp_calculation_method,
+            ch4_chp_custom_factor,
             sewage_gas_produced,
             methane_fraction,
         )
@@ -372,6 +381,13 @@ pub fn calculate_emissions(
         ch4: ch4_emission_factor,
     };
 
+    let calculation_methods = EmissionFactorCalculationMethods {
+        n2o: n2o_calculation_method,
+        n2o_custom_factor: n2o_custom_factor.map(|v| v.convert_to::<Factor>()),
+        ch4: ch4_chp_calculation_method,
+        ch4_custom_factor: ch4_chp_custom_factor.map(|v| v.convert_to::<Factor>()),
+    };
+
     Ok(EmissionsCalculationOutcome {
         co2_equivalents,
         emission_factors,
@@ -381,12 +397,12 @@ pub fn calculate_emissions(
 
 #[must_use]
 pub fn calculate_ch4_slippage_sludge_bags(
-    digester_count: u64,
+    digester_count: Count,
     methane_fraction: Percent,
     sludge_bags_factor: Option<QubicmetersPerHour>,
 ) -> Tons {
     #[allow(clippy::cast_precision_loss)]
-    let count = Factor::new(digester_count as f64);
+    let count = Factor::new(u64::from(digester_count) as f64);
 
     let hours_per_year = Years::new(1.0).convert_to::<Hours>();
     let sludge_bags_factor = sludge_bags_factor.unwrap_or(EMISSION_FACTOR_SLUDGE_BAGS);
@@ -414,7 +430,7 @@ pub fn calculate_ch4_slippage_sludge_storage(
 #[must_use]
 pub fn calculate_n2o_emission_factor(
     calculation_method: N2oEmissionFactorCalcMethod,
-    custom_factor: Option<Factor>,
+    custom_factor: Option<Percent>,
     nitrogen_influent: MilligramsPerLiter,
     nitrogen_effluent: MilligramsPerLiter,
 ) -> Factor {
@@ -425,7 +441,7 @@ pub fn calculate_n2o_emission_factor(
         N2oEmissionFactorCalcMethod::Optimistic => EMISSION_FACTOR_N2O_OPTIMISTIC.into(),
         N2oEmissionFactorCalcMethod::Pesimistic => EMISSION_FACTOR_N2O_PESIMISTIC.into(),
         N2oEmissionFactorCalcMethod::Ipcc2019 => EMISSION_FACTOR_N2O_IPCC2019.into(),
-        N2oEmissionFactorCalcMethod::Custom => custom_factor.expect("custom N2O EF"),
+        N2oEmissionFactorCalcMethod::Custom => custom_factor.expect("custom N2O EF").into(),
     }
 }
 
@@ -556,56 +572,34 @@ pub fn calculate_oil_gas_savings(
 #[must_use]
 pub fn calculate_all_n2o_emission_factor_scenarios(
     values: &HashMap<Id, Value>,
-    custom_factor: Option<Factor>,
-    ch4_chp_calc_method: Option<Ch4ChpEmissionFactorCalcMethod>,
-    ch4_custom_factor: Option<Factor>,
 ) -> anyhow::Result<Vec<(N2oEmissionFactorCalcMethod, EmissionsCalculationOutcome)>> {
-    let ch4 = ch4_chp_calc_method;
+    let mut values = values.clone();
+    let id = Id::SensitivityN2OCalculationMethod;
 
-    let n2o_custom_factor = None;
+    //let ch4 = ch4_chp_calc_method;
 
     // TuWien2016
     let n2o = N2oEmissionFactorCalcMethod::TuWien2016;
-    let methods = EmissionFactorCalculationMethods {
-        n2o,
-        ch4,
-        n2o_custom_factor,
-        ch4_custom_factor,
-    };
-    let result = calculate_emissions(values, methods)?;
+    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate_emissions(&values)?;
     let tuwien2016_result = (n2o, result);
 
     // Optimistic
     let n2o = N2oEmissionFactorCalcMethod::Optimistic;
-    let methods = EmissionFactorCalculationMethods {
-        n2o,
-        ch4,
-        n2o_custom_factor,
-        ch4_custom_factor,
-    };
-    let result = calculate_emissions(values, methods)?;
+    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate_emissions(&values)?;
     let optimistc_result = (n2o, result);
 
     // Pesimistic
     let n2o = N2oEmissionFactorCalcMethod::Pesimistic;
-    let methods = EmissionFactorCalculationMethods {
-        n2o,
-        ch4,
-        n2o_custom_factor,
-        ch4_custom_factor,
-    };
-    let result = calculate_emissions(values, methods)?;
+    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate_emissions(&values)?;
     let pesimistic_result = (n2o, result);
 
     // Ipcc2019
     let n2o = N2oEmissionFactorCalcMethod::Ipcc2019;
-    let methods = EmissionFactorCalculationMethods {
-        n2o,
-        ch4,
-        n2o_custom_factor,
-        ch4_custom_factor,
-    };
-    let result = calculate_emissions(values, methods)?;
+    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate_emissions(&values)?;
     let ipcc2019_result = (n2o, result);
 
     let mut results = vec![
@@ -615,20 +609,14 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
         ipcc2019_result,
     ];
 
-    let Some(factor) = custom_factor else {
+    if values.get(&Id::SensitivityN2OCustomFactor).is_none() {
         return Ok(results);
     };
 
     // Custom
     let n2o = N2oEmissionFactorCalcMethod::Custom;
-    let n2o_custom_factor = Some(factor);
-    let methods = EmissionFactorCalculationMethods {
-        n2o,
-        n2o_custom_factor,
-        ch4,
-        ch4_custom_factor,
-    };
-    let result = calculate_emissions(values, methods)?;
+    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate_emissions(&values)?;
     let custom_result = (n2o, result);
     results.push(custom_result);
 
@@ -638,7 +626,7 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
 #[must_use]
 pub fn calculate_ch4_chp(
     calculation_method: Option<Ch4ChpEmissionFactorCalcMethod>,
-    custom_factor: Option<Factor>,
+    custom_factor: Option<Percent>,
     sewage_gas_produced: Qubicmeters,
     methane_fraction: Percent,
 ) -> (Tons, Factor) {
@@ -646,7 +634,9 @@ pub fn calculate_ch4_chp(
         Some(Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines) | None => Factor::new(0.01),
         Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
         Some(Ch4ChpEmissionFactorCalcMethod::JetEngine) => Factor::new(0.025),
-        Some(Ch4ChpEmissionFactorCalcMethod::Custom) => custom_factor.expect("custom CH4 EF"),
+        Some(Ch4ChpEmissionFactorCalcMethod::Custom) => {
+            custom_factor.expect("custom CH4 EF").into()
+        }
     };
 
     let volume = sewage_gas_produced * methane_fraction * ch4_emission_factor;

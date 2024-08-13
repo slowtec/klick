@@ -80,7 +80,7 @@ pub fn Tool(
     });
 
     // TODO: allow to export at any time
-    let show_csv_export = Signal::derive(move || outcome.with(|out| out.profile.output.is_some()));
+    let show_csv_export = Signal::derive(move || outcome.with(|out| out.output.is_some()));
 
     // -----   ----- //
     //    Actions    //

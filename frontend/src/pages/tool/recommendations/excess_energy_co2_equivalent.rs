@@ -20,7 +20,7 @@ pub fn options(
 
     let excess_energy_co2_equivalent = Signal::derive(move || {
         outcome.with(|out| {
-            out.recommendation.output.as_ref().map(|out| {
+            out.output.as_ref().map(|out| {
                 out.co2_equivalents
                     .get(&Out::ExcessEnergyCo2Equivalent)
                     .copied()
@@ -31,7 +31,7 @@ pub fn options(
 
     let electricity_mix_savings = Signal::derive(move || {
         outcome.with(|out| {
-            out.recommendation.output.as_ref().map(|out| {
+            out.output.as_ref().map(|out| {
                 // TOOD: move this to calculation module
                 let eq = &out.co2_equivalents;
                 (eq.get(&Out::TotalEmissions).copied().unwrap()
@@ -43,7 +43,7 @@ pub fn options(
 
     let electricity_mix = Signal::derive(move || {
         outcome.with(|out| {
-            out.recommendation.output.as_ref().map(|out| {
+            out.output.as_ref().map(|out| {
                 out.co2_equivalents
                     .get(&Out::ElectricityMix)
                     .copied()
@@ -102,7 +102,7 @@ pub fn options(
             </p>
           </Show>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-        { move || outcome.with(|out|out.recommendation.output.clone().map(|out|{
+        { move || outcome.with(|out|out.output.clone().map(|out|{
 
             let eq = out.co2_equivalents;
             let lang = Lng::De;

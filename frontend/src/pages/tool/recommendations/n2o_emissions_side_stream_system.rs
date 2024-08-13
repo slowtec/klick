@@ -30,7 +30,7 @@ pub fn options(
         </p>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
           { move || {
-              outcome.with(|out|out.recommendation.output.as_ref().map(|out|{
+              outcome.with(|out|out.output.as_ref().map(|out|{
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Prozesswasserbehandlung"</dt>

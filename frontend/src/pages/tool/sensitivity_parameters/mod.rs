@@ -31,13 +31,11 @@ pub fn SensitivityParameters(
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
             // TODO: avoid clones
-            out.profile
-                .output
+            out.output
                 .as_ref()
                 .map(|o| o.co2_equivalents.clone())
                 .and_then(|old| {
-                    out.sensitivity
-                        .output
+                    out.output
                         .as_ref()
                         .map(|o| (o.co2_equivalents.clone(), old))
                 })
@@ -55,7 +53,7 @@ pub fn SensitivityParameters(
     });
     view! {
       <Show
-        when = move || outcome.with(|out|out.sensitivity.output.is_some())
+        when = move || outcome.with(|out|out.output.is_some())
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
         <div class="my-4 ml-4">
@@ -98,7 +96,7 @@ pub fn SensitivityParameters(
         />
 
         <h4 class="my-8 text-lg font-bold">
-          { move || outcome.with(|out|out.sensitivity.output.as_ref().map(|out|{
+          { move || outcome.with(|out|out.output.as_ref().map(|out|{
                 klick_presenter::create_sankey_chart_header(
                   &form_data.with(Clone::clone), // TODO: avoid clone
                   out.emission_factors,
@@ -109,7 +107,7 @@ pub fn SensitivityParameters(
           }
         </h4>
 
-        { move || outcome.with(|out| out.sensitivity.output.as_ref().map(|outcome|{
+        { move || outcome.with(|out| out.output.as_ref().map(|outcome|{
             let data = (outcome.co2_equivalents.clone(), outcome.emission_factors);
             view!{ <Sankey data /> }
           }))

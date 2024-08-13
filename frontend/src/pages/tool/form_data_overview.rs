@@ -1,13 +1,18 @@
+use std::collections::HashMap;
+
 use leptos::*;
 
-use klick_boundary::EvaluationData;
+use klick_domain::{EmissionsCalculationOutcome, InputValueId as In, Value};
 use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, Formatting};
 
 #[component]
-pub fn FormDataOverview(evaluation_data: EvaluationData) -> impl IntoView {
+pub fn FormDataOverview(
+    input: HashMap<In, Value>,
+    output: Option<EmissionsCalculationOutcome>,
+) -> impl IntoView {
     let profile_table = {
-        let i = evaluation_data.input;
-        let o = evaluation_data.output;
+        let i = input;
+        let o = output;
         let table = {
             let mut profile = plant_profile_as_table(&i, Formatting::Text);
             let mut sensitivity = sensitivity_parameters_as_table(&i, Formatting::Text, o.as_ref());
@@ -41,8 +46,6 @@ pub fn FormDataOverview(evaluation_data: EvaluationData) -> impl IntoView {
             })
             .collect::<Vec<_>>()
     };
-
-    // FIXME: Add sensitivity parameters
 
     view! {
       <ul class="grid grid-cols-3">

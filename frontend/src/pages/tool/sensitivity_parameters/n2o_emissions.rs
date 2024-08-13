@@ -166,7 +166,7 @@ pub fn N2OEmissionsSensitivity(
           <div class="border-t pt-3 mt-4 border-gray-900/10">
             { move ||
               outcome.with(|outcome|
-                outcome.sensitivity.output.as_ref().map(|out|{
+                outcome.output.as_ref().map(|out|{
                   let show_side_stream_controls_class = if show_side_stream_controls.get() { String::new() } else { "hidden".to_string() };
                   view! {
                     <dl class="mx-3 my-2 grid grid-cols-2 text-sm">

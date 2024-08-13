@@ -155,7 +155,7 @@ pub fn CH4EmissionsCHP(
             <div class="border-t pt-3 mt-4 border-gray-900/10">
               { move ||
                 outcome.with(|outcome|
-                  outcome.sensitivity.output.as_ref().map(|out|{
+                  outcome.output.as_ref().map(|out|{
                     view! {
                       <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                         <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>

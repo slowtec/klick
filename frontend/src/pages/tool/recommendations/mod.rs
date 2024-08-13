@@ -30,13 +30,11 @@ pub fn Recommendations(
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
             // TODO: avoid clones
-            out.sensitivity
-                .output
+            out.output
                 .as_ref()
                 .map(|o| o.co2_equivalents.clone())
                 .and_then(|old| {
-                    out.recommendation
-                        .output
+                    out.output
                         .as_ref()
                         .map(|o| (o.co2_equivalents.clone(), old))
                 })
@@ -57,7 +55,8 @@ pub fn Recommendations(
         outcome.with(|out| {
             view! {
               <FormDataOverview
-                evaluation_data = out.sensitivity.clone()
+                input = out.input.clone()
+                output = out.output.clone()
               />
             }
         })
@@ -65,7 +64,7 @@ pub fn Recommendations(
 
     view! {
       <Show
-        when = move || outcome.with(|out|out.recommendation.output.is_some())
+        when = move || outcome.with(|out|out.output.is_some())
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
       <h4 class="my-8 text-lg font-bold">
@@ -105,7 +104,7 @@ pub fn Recommendations(
       }
 
       <h4 class="my-8 text-lg font-bold">
-        { move || outcome.with(|out|out.recommendation.output.as_ref().map(|out|{
+        { move || outcome.with(|out|out.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
                 &form_data.with(Clone::clone), // TODO: avoid clone
                 out.emission_factors,
@@ -116,7 +115,7 @@ pub fn Recommendations(
         }
       </h4>
 
-      { move || outcome.with(|out| out.recommendation.output.as_ref().map(|output|{
+      { move || outcome.with(|out| out.output.as_ref().map(|output|{
           let data = (output.co2_equivalents.clone(), output.emission_factors);
           view!{ <Sankey data /> }
         }))

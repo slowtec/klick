@@ -3,22 +3,28 @@ use std::collections::HashMap;
 use crate::{constants::*, units::*, InputValueId as Id, OutputValueId as Out, Value as V, *};
 
 fn ch4_combined_heat_and_power_plant_computation_helper(
-    scenario: EmissionFactorCalculationMethods,
-    profile: &HashMap<Id, Value>,
+    values: &HashMap<Id, Value>,
     ch4_chp_emission_factor: Option<Ch4ChpEmissionFactorCalcMethod>,
-) -> f64 {
-    let mut s2 = scenario;
-    s2.ch4 = ch4_chp_emission_factor;
+) -> Tons {
+    let mut values = values.clone();
+
+    if let Some(m) = ch4_chp_emission_factor {
+        values.insert(
+            Id::SensitivityCH4ChpCalculationMethod,
+            V::ch4_chp_emission_factor_calc_method(m),
+        );
+    } else {
+        values.remove(&Id::SensitivityCH4ChpCalculationMethod);
+    }
+
     let EmissionsCalculationOutcome {
         co2_equivalents, ..
-    } = calculate_emissions(&profile, s2).unwrap();
+    } = calculate_emissions(&values).unwrap();
 
-    f64::from(
-        co2_equivalents
-            .get(&Out::Ch4CombinedHeatAndPowerPlant)
-            .copied()
-            .unwrap(),
-    )
+    co2_equivalents
+        .get(&Out::Ch4CombinedHeatAndPowerPlant)
+        .copied()
+        .unwrap()
 }
 
 fn example_values() -> HashMap<Id, Value> {
@@ -227,12 +233,6 @@ fn create_test_results_on_changes_co2_equivalents(co2_equivalents: CO2Equivalent
 fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     let profile = example_values();
 
-    let scenario = EmissionFactorCalculationMethods {
-        n2o: N2oEmissionFactorCalcMethod::TuWien2016,
-        n2o_custom_factor: None, // Kein benutzerdefinierter Faktor
-        ch4: None,
-        ch4_custom_factor: None,
-    };
     let mut values = profile.clone();
     values.insert(
         Id::SensitivityN2OCalculationMethod,
@@ -243,7 +243,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         co2_equivalents: eq,
         emission_factors,
         ..
-    } = calculate_emissions(&values, scenario).unwrap();
+    } = calculate_emissions(&values).unwrap();
 
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
@@ -335,38 +335,36 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
             &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        78.47154
+        Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
             &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        130.785_900_000_000_03
+        Tons::new(130.785_900_000_000_03)
     );
 }
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_optimistic() {
-    let profile = example_values();
+    let mut values = example_values();
 
-    let scenario = EmissionFactorCalculationMethods {
-        n2o: N2oEmissionFactorCalcMethod::Optimistic,
-        n2o_custom_factor: None,
-        ch4: None,
-        ch4_custom_factor: None,
-    };
-
+    values.insert(
+        Id::SensitivityN2OCalculationMethod,
+        V::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::Optimistic),
+    );
+    assert!(values
+        .get(&Id::SensitivityCH4ChpCalculationMethod)
+        .is_none());
     let EmissionsCalculationOutcome {
         co2_equivalents,
         emission_factors,
         ..
-    } = calculate_emissions(&profile, scenario).unwrap();
+    } = calculate_emissions(&values).unwrap();
 
     let CO2Equivalents {
         n2o_plant,
@@ -449,19 +447,17 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
-            &profile,
+            &values,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        78.47154
+        Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
-            &profile,
+            &values,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        130.785_900_000_000_03
+        Tons::new(130.785_900_000_000_03)
     );
 }
 
@@ -469,18 +465,16 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 fn calculate_with_n2o_emission_factor_method_pesimistic() {
     let profile = example_values();
 
-    let scenario = EmissionFactorCalculationMethods {
-        n2o: N2oEmissionFactorCalcMethod::Pesimistic,
-        n2o_custom_factor: None,
-        ch4: None,
-        ch4_custom_factor: None,
-    };
-
+    let mut values = profile.clone();
+    values.insert(
+        Id::SensitivityN2OCalculationMethod,
+        V::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::Pesimistic),
+    );
     let EmissionsCalculationOutcome {
         co2_equivalents,
         emission_factors,
         ..
-    } = calculate_emissions(&profile, scenario).unwrap();
+    } = calculate_emissions(&values).unwrap();
 
     let CO2Equivalents {
         n2o_plant,
@@ -563,19 +557,17 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
             &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        78.47154
+        Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
             &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        130.785_900_000_000_03
+        Tons::new(130.785_900_000_000_03)
     );
 }
 
@@ -583,18 +575,16 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
 fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     let profile = example_values();
 
-    let scenario = EmissionFactorCalculationMethods {
-        n2o: N2oEmissionFactorCalcMethod::Ipcc2019,
-        n2o_custom_factor: None,
-        ch4: None,
-        ch4_custom_factor: None,
-    };
-
+    let mut values = profile.clone();
+    values.insert(
+        Id::SensitivityN2OCalculationMethod,
+        V::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::Ipcc2019),
+    );
     let EmissionsCalculationOutcome {
         co2_equivalents,
         emission_factors,
         ..
-    } = calculate_emissions(&profile, scenario).unwrap();
+    } = calculate_emissions(&values).unwrap();
 
     let CO2Equivalents {
         n2o_plant,
@@ -677,19 +667,17 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
             &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
         ),
-        78.47154
+        Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            scenario,
             &profile,
             Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
         ),
-        130.785_900_000_000_03
+        Tons::new(130.785_900_000_000_03)
     );
 }
 
@@ -697,18 +685,19 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
 fn calculate_with_n2o_emission_factor_method_custom_factor() {
     let profile = example_values();
 
-    let scenario = EmissionFactorCalculationMethods {
-        n2o: N2oEmissionFactorCalcMethod::Custom,
-        n2o_custom_factor: Some(Factor::new(1.0 / 100.0)),
-        ch4: None,
-        ch4_custom_factor: None,
-    };
+    let mut values = profile.clone();
+    values.insert(
+        Id::SensitivityN2OCalculationMethod,
+        V::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::Custom),
+    );
+    values.insert(Id::SensitivityN2OCustomFactor, V::percent(1.0));
+    values.remove(&Id::SensitivityCH4ChpCalculationMethod);
 
     let EmissionsCalculationOutcome {
         co2_equivalents: eq,
         emission_factors,
         ..
-    } = calculate_emissions(&profile, scenario).unwrap();
+    } = calculate_emissions(&values).unwrap();
 
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
@@ -799,7 +788,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
 #[test]
 fn calculate_ch4_slippage_sludge_bags_for_one_digester() {
     let expected = Tons::new(4.871_107_5);
-    let digester_count = 1;
+    let digester_count = Count::new(1);
     let methane_fraction = Percent::new(62.0);
     let sludge_bags_factor = Some(QubicmetersPerHour::new(1.25));
     let result =

@@ -45,7 +45,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     let mut recommendation_barchart_svg_file =
         tempfile::Builder::new().suffix(".svg").tempfile()?;
 
-    let plant_profile_sankey_svg_file_path = if let Some(output) = &outcome.profile.output {
+    let plant_profile_sankey_svg_file_path = if let Some(output) = &outcome.output {
         let sankey_chart = render_svg_sankey_chart(output.co2_equivalents.clone());
         profile_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(profile_sankey_svg_file.path().display().to_string())
@@ -53,7 +53,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         None
     };
 
-    let sensitivity_sankey_svg_file_path = if let Some(output) = &outcome.sensitivity.output {
+    let sensitivity_sankey_svg_file_path = if let Some(output) = &outcome.output {
         let sankey_chart = render_svg_sankey_chart(output.co2_equivalents.clone());
         sensitivity_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(sensitivity_sankey_svg_file.path().display().to_string())
@@ -61,7 +61,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         None
     };
 
-    let recommendation_sankey_svg_file_path = if let Some(output) = &outcome.recommendation.output {
+    let recommendation_sankey_svg_file_path = if let Some(output) = &outcome.output {
         let sankey_chart = render_svg_sankey_chart(output.co2_equivalents.clone());
         recommendation_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(recommendation_sankey_svg_file.path().display().to_string())
@@ -70,7 +70,6 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     };
 
     let selected_n2o_scenario = &outcome
-        .sensitivity
         .input
         .get(&Id::SensitivityN2OCalculationMethod)
         .cloned()
@@ -78,7 +77,6 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         .as_ref()
         .and_then(ToPrimitive::to_u64);
     let selected_ch4_chp_scenario = &outcome
-        .sensitivity
         .input
         .get(&Id::SensitivityCH4ChpCalculationMethod)
         .cloned()
@@ -108,13 +106,11 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     };
 
     let sensitivity_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
-        .profile
         .output
         .as_ref()
         .map(|o| o.co2_equivalents.clone())
         .and_then(|old| {
             outcome
-                .sensitivity
                 .output
                 .as_ref()
                 .map(|o| (o.co2_equivalents.clone(), old))
@@ -142,13 +138,11 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     };
 
     let recommendation_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
-        .sensitivity
         .output
         .as_ref()
         .map(|o| o.co2_equivalents.clone())
         .and_then(|old| {
             outcome
-                .recommendation
                 .output
                 .as_ref()
                 .map(|o| (o.co2_equivalents.clone(), old))
@@ -217,29 +211,27 @@ fn render_markdown_template(
     recommendation_barchart_svg_file_path: Option<String>,
 ) -> anyhow::Result<String> {
     let plant_profile_table_data =
-        presenter::plant_profile_as_table(&outcome.profile.input, Formatting::LaTeX);
+        presenter::plant_profile_as_table(&outcome.input, Formatting::LaTeX);
     let plant_profile_table = create_latex_table(&plant_profile_table_data)?;
 
     let sensitivity_table_data = presenter::sensitivity_parameters_as_table(
-        &outcome.sensitivity.input,
+        &outcome.input,
         Formatting::LaTeX,
-        outcome.sensitivity.output.as_ref(),
+        outcome.output.as_ref(),
     );
     let sensitivity_parameters_table = create_latex_table(&sensitivity_table_data)?;
 
     let plant_name = outcome
-        .profile
         .input
         .get(&Id::PlantName)
         .cloned()
         .map_or_else(|| "Klärwerk".to_string(), Value::as_text_unchecked);
 
     let plant_profile_sankey_header = outcome
-        .profile
         .output
         .map(|output| {
             presenter::create_sankey_chart_header(
-                &outcome.profile.input,
+                &outcome.input,
                 output.emission_factors,
                 output.calculation_methods,
                 Formatting::LaTeX,
