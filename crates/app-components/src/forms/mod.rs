@@ -50,7 +50,7 @@ impl Field {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Display)]
-#[display(fmt = "field-{_0}")]
+#[display("field-{_0}")]
 pub struct FieldId(usize);
 
 #[derive(Debug, Clone, Copy)]

@@ -10,7 +10,7 @@ publish = false
 [dependencies]
 klick-presenter = "=0.0.0"
 
-derive_more = "0.99.18"
+derive_more = { version = "1.0.0", features = ["display"] }
 leptos = { version = "0.6.13", features = ["csr"] }
 log = "0.4.22"
 thiserror = "1.0.63"

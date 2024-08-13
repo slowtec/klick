@@ -10,7 +10,7 @@ rust-version.workspace = true
 [dependencies]
 anyhow = "1.0.86"
 bs58 = "0.5.1"
-derive_more = "0.99.18"
+derive_more = { version = "1.0.0", features = ["from"] }
 mailparse = "0.15.0"
 num-derive = "0.4.2"
 num-traits = "0.2.19"

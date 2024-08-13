@@ -14,6 +14,6 @@ workspace = true
 klick-boundary = { version = "=0.0.0", features = ["extra-derive", "conversion"] }
 klick-domain = { path = "../domain" }
 
-derive_more = "0.99.18"
-serde = { version = "1.0.204", features = ["derive"] }
+derive_more = "1.0.0"
+serde = { version = "1.0.207", features = ["derive"] }
 strum = { version = "0.26.3", features = ["derive"] }
