@@ -1137,8 +1137,8 @@ values! {
             #[derive(Default, FromPrimitive, ToPrimitive)]
             Ch4ChpEmissionFactorCalcMethod {
                 #[default]
-                GasolineEngine,
                 MicroGasTurbines,
+                GasolineEngine,
                 JetEngine,
                 Custom,
             }
