@@ -5,10 +5,10 @@ use klick_boundary::FormData;
 use klick_domain::{units::*, value_spec, InputValueId as Id, Value, ValueSpec, ValueType};
 use klick_presenter::{metadata, Lng, Placeholder, ValueLabel};
 
-fn form_limits(spec: &ValueSpec) -> MinMax<f64> {
+fn form_limits(id: &Id) -> MinMax<f64> {
     MinMax {
-        min: spec.min(),
-        max: spec.max(),
+        min: id.min(),
+        max: id.max(),
     }
 }
 
@@ -42,8 +42,7 @@ pub fn create_field_type(
     id: Id,
     placeholder: Option<String>,
 ) -> FieldType {
-    let spec = value_spec(&id);
-    let limits = form_limits(&spec);
+    let limits = form_limits(&id);
     let value_type = id.value_type();
     match value_type {
         ValueType::Scalar(scalar) => match scalar {
