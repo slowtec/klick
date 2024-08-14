@@ -27,7 +27,7 @@ pub fn create_field(write: WriteSignal<FormData>, read: ReadSignal<FormData>, id
     Field {
         label: id.label(),
         description,
-        required: !spec.optional(), // TODO: check for default value if not optional
+        required: !id.is_optional(), // TODO: check for default value if not optional
         field_type,
     }
 }

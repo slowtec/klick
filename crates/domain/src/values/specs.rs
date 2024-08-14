@@ -11,7 +11,6 @@ pub fn value_spec(id: &Id) -> ValueSpec {
 
 #[derive(Debug)]
 pub struct ValueSpec {
-    optional: bool,
     min: Option<f64>, // TODO: use Scalar
     max: Option<f64>, // TODO: use Scalar
     default: Option<Value>,
@@ -21,17 +20,6 @@ impl ValueSpec {
     #[must_use]
     const fn new() -> Self {
         Self {
-            optional: false,
-            min: None,
-            max: None,
-            default: None,
-        }
-    }
-
-    #[must_use]
-    const fn new_optional() -> Self {
-        Self {
-            optional: true,
             min: None,
             max: None,
             default: None,
@@ -42,7 +30,6 @@ impl ValueSpec {
     const fn new_with_default(default_value: Value) -> Self {
         let default = Some(default_value);
         Self {
-            optional: true,
             min: None,
             max: None,
             default,
@@ -59,11 +46,6 @@ impl ValueSpec {
     const fn with_max(mut self, max: f64) -> Self {
         self.max = Some(max);
         self
-    }
-
-    #[must_use]
-    pub const fn optional(&self) -> bool {
-        self.optional
     }
 
     #[must_use]
@@ -87,8 +69,8 @@ fn specs() -> [(Id, ValueSpec); 48] {
     use ValueSpec as S;
 
     [
-        (Id::ProjectName, S::new_optional()),
-        (Id::PlantName, S::new_optional()),
+        (Id::ProjectName, S::new()),
+        (Id::PlantName, S::new()),
         (
             Id::PopulationEquivalent,
             S::new().with_min(0.0).with_max(5_000_000.0),
@@ -322,11 +304,10 @@ macro_rules! specs {
                     match self {
                         $(
                             Self::$variant => {
-                                // match stringify!($($optional)?) {
-                                //   "true" => true,
-                                //   _ => false,
-                                // }
-                                todo!("Don't use this yet!")
+                                match stringify!($($optional)?) {
+                                  "true" => true,
+                                  _ => false,
+                                }
                             },
                         )*
                     }
@@ -376,6 +357,7 @@ specs! {
         },
         InfluentTotalOrganicCarbohydrates = {
             unit = MilligramsPerLiter;
+            optional = true;
         },
 
         EffluentNitrogen = {
@@ -388,31 +370,38 @@ specs! {
 
         SewageGasProduced = {
             unit = Qubicmeters;
+            optional = true;
         },
         MethaneFraction = {
             unit = Percent;
+            optional = true;
         },
         GasSupply = {
             unit = Qubicmeters;
+            optional = true;
         },
         PurchaseOfBiogas = {
             unit = bool;
+            optional = true;
         },
         TotalPowerConsumption = {
             unit = Kilowatthours;
         },
         OnSitePowerGeneration = {
             unit = Kilowatthours;
+            optional = true;
         },
         EmissionFactorElectricityMix = {
             unit = GramsPerKilowatthour;
         },
         HeatingOil = {
             unit = Liters;
+            optional = true;
         },
 
         SideStreamTreatmentTotalNitrogen = {
             unit = Tons;
+            optional = true;
         },
 
         OperatingMaterialFeCl3 = {
@@ -420,9 +409,11 @@ specs! {
         },
         OperatingMaterialFeClSO4 = {
             unit = Tons;
+            optional = true;
         },
         OperatingMaterialCaOH2 = {
             unit = Tons;
+            optional = true;
         },
         OperatingMaterialSyntheticPolymers = {
             unit = Tons;
@@ -430,83 +421,106 @@ specs! {
 
         SensitivityN2OCalculationMethod = {
             unit = N2oEmissionFactorCalcMethod;
-
+            optional = true;
         },
         SensitivityN2OCustomFactor = {
             unit = Percent;
+            optional = true;
         },
         SensitivityN2OSideStreamFactor = {
             unit = Percent;
+            optional = true;
         },
         SensitivityCH4ChpCalculationMethod = {
             unit = Ch4ChpEmissionFactorCalcMethod;
+            optional = true;
         },
         SensitivityCH4ChpCustomFactor = {
             unit = Percent;
+            optional = true;
         },
         SensitivityCO2FossilCustomFactor = {
             unit = Percent;
+            optional = true;
         },
         SensitivitySludgeBagsCustomFactor = {
             unit = QubicmetersPerHour;
+            optional = true;
         },
         SensitivitySludgeStorageCustomFactor = {
             unit = Percent;
+            optional = true;
         },
         SludgeTreatmentBagsAreOpen = {
             unit = bool;
+            optional = true;
         },
         SludgeTreatmentStorageContainersAreOpen = {
             unit = bool;
+            optional = true;
         },
         SludgeTreatmentDisposal = {
             unit = Tons;
         },
         SludgeTreatmentTransportDistance = {
             unit = Kilometers;
+            optional = true;
         },
         SludgeTreatmentDigesterCount = {
             unit = Count;
+            optional = true;
         },
 
         ScenarioSludgeBagsAreOpen = {
             unit = bool;
+            optional = true;
         },
         ScenarioSludgeStorageContainersAreOpen = {
             unit = bool;
+            optional = true;
         },
         ScenarioN2OSideStreamFactor = {
-            unit = Percent;
+            unit = Factor; // TODO: should't this be Percent?
         },
         ScenarioN2OSideStreamCoverIsOpen = {
-            unit = bool;
+           unit = bool;
+            optional = true;
         },
         ScenarioProcessEnergySaving = {
             unit = Percent;
+            optional = true;
         },
         ScenarioFossilEnergySaving = {
             unit = Percent;
+            optional = true;
         },
         ScenarioDistrictHeating = {
             unit = Kilowatthours;
+            optional = true;
         },
         ScenarioPhotovoltaicEnergyExpansion = {
             unit = Kilowatthours;
+            optional = true;
         },
         ScenarioEstimatedSelfPhotovolaticUsage = {
             unit = Percent;
+            optional = true;
         },
         ScenarioWindEnergyExpansion = {
             unit = Kilowatthours;
+            optional = true;
         },
         ScenarioEstimatedSelfWindEnergyUsage = {
             unit = Percent;
+            optional = true;
         },
         ScenarioWaterEnergyExpansion = {
             unit = Kilowatthours;
+            optional = true;
         },
         ScenarioEstimatedSelfWaterEnergyUsage = {
             unit = Percent;
+            optional = true;
         },
     }
 }
