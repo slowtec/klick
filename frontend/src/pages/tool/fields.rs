@@ -3,7 +3,9 @@ use leptos::*;
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
 use klick_domain::{units::*, value_spec, InputValueId as Id, Value, ValueSpec, ValueType};
-use klick_presenter::{metadata, Lng, Placeholder, ValueLabel};
+use klick_presenter::{
+    metadata, InputValueFieldType, InputValueFieldTypeHint, Lng, Placeholder, ValueLabel,
+};
 
 fn form_limits(id: &Id) -> MinMax<f64> {
     MinMax {
@@ -44,6 +46,7 @@ pub fn create_field_type(
 ) -> FieldType {
     let limits = form_limits(&id);
     let value_type = id.value_type();
+
     match value_type {
         ValueType::Scalar(scalar) => match scalar {
             ScalarType::Float(float_type) => {
@@ -142,12 +145,21 @@ pub fn create_field_type(
                 read.with(|d| d.get(&id).cloned().map(Value::as_text_unchecked))
             });
             let max_len = limits.max.map(|max| max as usize);
-            FieldType::Text {
-                initial_value: None, // TODO
-                placeholder,
-                max_len,
-                on_change,
-                input,
+
+            match id.field_type_hint() {
+                Some(InputValueFieldType::TextArea) => {
+                    todo!()
+                }
+                None | Some(InputValueFieldType::TextInput) => {
+                    FieldType::Text {
+                        initial_value: None, // TODO
+                        placeholder,
+                        max_len,
+                        on_change,
+                        input,
+                    }
+                }
+                hint => panic!("Invalid field type hint {hint:?} for text value"),
             }
         }
         ValueType::Enum(_) => todo!(),

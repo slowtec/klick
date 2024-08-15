@@ -59,6 +59,7 @@ pub struct MinMax<T> {
     pub max: Option<T>,
 }
 
+// TODO: Rename to something like FieldRenderingData
 #[derive(Debug, Clone)]
 pub enum FieldType {
     Float {
