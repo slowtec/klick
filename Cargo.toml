@@ -15,7 +15,8 @@ members = [
   "crates/application",
   "crates/boundary",
   "crates/domain",
-  "crates/presenter"
+  "crates/presenter",
+  "crates/value-spec"
 ]
 exclude = ["frontend"]
 resolver = "2"
@@ -40,6 +41,7 @@ klick-db-sqlite      = { path = "crates/db-sqlite"      }
 klick-domain         = { path = "crates/domain"         }
 klick-pdf-export     = { path = "crates/pdf-export"     }
 klick-presenter      = { path = "crates/presenter"      }
+klick-value-spec     = { path = "crates/value-spec"     }
 
 [package]
 name = "klick"

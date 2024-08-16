@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
-use klick_domain::{units::*, value_spec, InputValueId as Id, Value, ValueSpec, ValueType};
+use klick_domain::{units::*, InputValueId as Id, Value, ValueType};
 use klick_presenter::{
     metadata, InputValueFieldType, InputValueFieldTypeHint, Lng, Placeholder, ValueLabel,
 };
@@ -15,12 +15,11 @@ fn form_limits(id: &Id) -> MinMax<f64> {
 }
 
 pub fn create_field(write: WriteSignal<FormData>, read: ReadSignal<FormData>, id: Id) -> Field {
-    let spec = value_spec(&id);
     let meta = metadata(&id);
     let lng = Lng::De; //TODO
     let placeholder = match meta.placeholder {
         Placeholder::Text(txt) => Some(txt.to_string()),
-        Placeholder::DefaultValue => format_default_value(&spec, lng),
+        Placeholder::DefaultValue => format_default_value(&id, lng),
         Placeholder::Label => Some(id.label().to_string()),
         Placeholder::None => None,
     };
@@ -34,8 +33,8 @@ pub fn create_field(write: WriteSignal<FormData>, read: ReadSignal<FormData>, id
     }
 }
 
-fn format_default_value(spec: &ValueSpec, lng: Lng) -> Option<String> {
-    spec.default_value().map(|v| lng.format_value(v))
+fn format_default_value(id: &Id, lng: Lng) -> Option<String> {
+    id.default_value().as_ref().map(|v| lng.format_value(v))
 }
 
 pub fn create_field_type(

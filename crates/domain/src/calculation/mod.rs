@@ -7,9 +7,8 @@ use thiserror::Error;
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
-    constants::*, units::*, value_spec, CalculatedEmissionFactors,
-    EmissionFactorCalculationMethods, EmissionsCalculationOutcome, InputValueId as Id,
-    OutputValueId as Out, Value as V,
+    constants::*, units::*, CalculatedEmissionFactors, EmissionFactorCalculationMethods,
+    EmissionsCalculationOutcome, InputValueId as Id, OutputValueId as Out, Value as V,
 };
 
 mod emission_groups;
@@ -686,11 +685,10 @@ pub fn calculate_all_ch4_chp_emission_factor_scenarios(
 
 // TODO: make this private
 pub fn required_value(id: Id, map: &HashMap<Id, V>) -> Result<V, MissingValueError> {
-    let spec = value_spec(&id);
     let value = map
         .get(&id)
         .cloned()
-        .or_else(|| spec.default_value().cloned())
+        .or_else(|| id.default_value())
         .ok_or(MissingValueError(id))?;
     debug_assert_eq!(id.value_type(), value.value_type());
     Ok(value)
@@ -698,11 +696,7 @@ pub fn required_value(id: Id, map: &HashMap<Id, V>) -> Result<V, MissingValueErr
 
 // TODO: make this private
 pub fn optional_value(id: Id, map: &HashMap<Id, V>) -> Option<V> {
-    let spec = value_spec(&id);
-    let value = map
-        .get(&id)
-        .cloned()
-        .or_else(|| spec.default_value().cloned());
+    let value = map.get(&id).cloned().or_else(|| id.default_value());
     debug_assert!(value
         .as_ref()
         .map(|v| id.value_type() == v.value_type())
