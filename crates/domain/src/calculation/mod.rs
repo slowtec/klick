@@ -7,8 +7,9 @@ use thiserror::Error;
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
-    constants::*, units::*, CalculatedEmissionFactors, EmissionFactorCalculationMethods,
-    EmissionsCalculationOutcome, InputValueId as Id, OutputValueId as Out, Value as V,
+    constants::*, extract_optional, extract_required, units::*, CalculatedEmissionFactors,
+    EmissionFactorCalculationMethods, EmissionsCalculationOutcome, InputValueId as Id,
+    OutputValueId as Out, Value as V,
 };
 
 mod emission_groups;
@@ -17,7 +18,7 @@ use self::emission_groups::calculate_emission_groups;
 
 #[derive(Debug, Error)]
 #[error("The required value ({0:?}) is missing")]
-pub struct MissingValueError(Id);
+pub struct MissingValueError(pub Id);
 
 #[must_use]
 #[allow(clippy::too_many_lines)] // TODO
@@ -30,74 +31,57 @@ pub fn calculate_emissions(
 
     let from = input; // FIXME
 
-    let population_equivalent =
-        required_value(Id::PopulationEquivalent, &from)?.as_count_unchecked();
-    let wastewater = required_value(Id::Wastewater, &from)?.as_qubicmeters_unchecked();
-
-    let influent_nitrogen =
-        required_value(Id::InfluentNitrogen, &from)?.as_milligrams_per_liter_unchecked();
-    let influent_chemical_oxygen_demand = required_value(Id::InfluentChemicalOxygenDemand, &from)?
-        .as_milligrams_per_liter_unchecked();
+    let population_equivalent = extract_required!(Id::PopulationEquivalent, &from)?;
+    let wastewater = extract_required!(Id::Wastewater, &from)?;
+    let influent_nitrogen = extract_required!(Id::InfluentNitrogen, &from)?;
+    let influent_chemical_oxygen_demand =
+        extract_required!(Id::InfluentChemicalOxygenDemand, &from)?;
     let influent_total_organic_carbohydrates =
-        required_value(Id::InfluentTotalOrganicCarbohydrates, &from)?
-            .as_milligrams_per_liter_unchecked();
+        extract_required!(Id::InfluentTotalOrganicCarbohydrates, &from)?;
 
     let chemical_oxygen_demand_influent = influent_chemical_oxygen_demand;
     let nitrogen_influent = influent_nitrogen;
     let total_organic_carbohydrates = influent_total_organic_carbohydrates;
 
-    let effluent_nitrogen =
-        required_value(Id::EffluentNitrogen, &from)?.as_milligrams_per_liter_unchecked();
-    let effluent_chemical_oxygen_demand = required_value(Id::EffluentChemicalOxygenDemand, &from)?
-        .as_milligrams_per_liter_unchecked();
+    let effluent_nitrogen = extract_required!(Id::EffluentNitrogen, &from)?;
+    let effluent_chemical_oxygen_demand =
+        extract_required!(Id::EffluentChemicalOxygenDemand, &from)?;
 
     let nitrogen_effluent = effluent_nitrogen;
     let chemical_oxygen_demand_effluent = effluent_chemical_oxygen_demand;
 
-    let sewage_gas_produced =
-        required_value(Id::SewageGasProduced, &from)?.as_qubicmeters_unchecked();
-    let methane_fraction = required_value(Id::MethaneFraction, &from)?.as_percent_unchecked();
-    let total_power_consumption =
-        required_value(Id::TotalPowerConsumption, &from)?.as_kilowatthours_unchecked();
-    let on_site_power_generation =
-        required_value(Id::OnSitePowerGeneration, &from)?.as_kilowatthours_unchecked();
-    let emission_factor_electricity_mix = required_value(Id::EmissionFactorElectricityMix, &from)?
-        .as_grams_per_kilowatthour_unchecked();
-    let heating_oil = required_value(Id::HeatingOil, &from)?.as_liters_unchecked();
-    let gas_supply = required_value(Id::GasSupply, &from)?.as_qubicmeters_unchecked();
-    let purchase_of_biogas = required_value(Id::PurchaseOfBiogas, &from)?.as_bool_unchecked();
+    let sewage_gas_produced = extract_required!(Id::SewageGasProduced, &from)?;
+    let methane_fraction = extract_required!(Id::MethaneFraction, &from)?;
+    let total_power_consumption = extract_required!(Id::TotalPowerConsumption, &from)?;
+    let on_site_power_generation = extract_required!(Id::OnSitePowerGeneration, &from)?;
+    let emission_factor_electricity_mix =
+        extract_required!(Id::EmissionFactorElectricityMix, &from)?;
+    let heating_oil = extract_required!(Id::HeatingOil, &from)?;
+    let gas_supply = extract_required!(Id::GasSupply, &from)?;
+    let purchase_of_biogas = extract_required!(Id::PurchaseOfBiogas, &from)?;
 
-    let sludge_bags_are_open =
-        required_value(Id::SludgeTreatmentBagsAreOpen, &from)?.as_bool_unchecked();
-    let sludge_bags_factor = optional_value(Id::SensitivitySludgeBagsCustomFactor, &from)
-        .map(V::as_qubicmeters_per_hour_unchecked);
+    let sludge_bags_are_open = extract_required!(Id::SludgeTreatmentBagsAreOpen, &from)?;
+    let sludge_bags_factor = extract_optional!(Id::SensitivitySludgeBagsCustomFactor, &from);
+
     let sludge_storage_containers_are_open =
-        required_value(Id::SludgeTreatmentStorageContainersAreOpen, &from)?.as_bool_unchecked();
+        extract_required!(Id::SludgeTreatmentStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_factor =
-        optional_value(Id::SensitivitySludgeStorageCustomFactor, &from)
-            .map(V::as_percent_unchecked);
-    let sewage_sludge_for_disposal =
-        required_value(Id::SludgeTreatmentDisposal, &from)?.as_tons_unchecked();
-    let transport_distance =
-        required_value(Id::SludgeTreatmentTransportDistance, &from)?.as_kilometers_unchecked();
-    let digester_count =
-        required_value(Id::SludgeTreatmentDigesterCount, &from)?.as_count_unchecked();
+        extract_optional!(Id::SensitivitySludgeStorageCustomFactor, &from);
+    let sewage_sludge_for_disposal = extract_required!(Id::SludgeTreatmentDisposal, &from)?;
+    let transport_distance = extract_required!(Id::SludgeTreatmentTransportDistance, &from)?;
+    let digester_count = extract_required!(Id::SludgeTreatmentDigesterCount, &from)?;
 
     let side_stream_treatment_total_nitrogen =
-        required_value(Id::SideStreamTreatmentTotalNitrogen, &from)?.as_tons_unchecked();
+        extract_required!(Id::SideStreamTreatmentTotalNitrogen, &from)?;
     let total_nitrogen = side_stream_treatment_total_nitrogen;
 
-    let side_stream_cover_is_open =
-        required_value(Id::ScenarioN2OSideStreamCoverIsOpen, &from)?.as_bool_unchecked();
+    let side_stream_cover_is_open = extract_required!(Id::ScenarioN2OSideStreamCoverIsOpen, &from)?;
 
-    let operating_material_fecl3 =
-        required_value(Id::OperatingMaterialFeCl3, &from)?.as_tons_unchecked();
-    let operating_material_feclso4 =
-        required_value(Id::OperatingMaterialFeClSO4, &from)?.as_tons_unchecked();
-    let operating_material_caoh2 =
-        required_value(Id::OperatingMaterialCaOH2, &from)?.as_tons_unchecked();
+    let operating_material_fecl3 = extract_required!(Id::OperatingMaterialFeCl3, &from)?;
+    let operating_material_feclso4 = extract_required!(Id::OperatingMaterialFeClSO4, &from)?;
+    let operating_material_caoh2 = extract_required!(Id::OperatingMaterialCaOH2, &from)?;
     let operating_material_synthetic_polymers =
-        required_value(Id::OperatingMaterialSyntheticPolymers, &from)?.as_tons_unchecked();
+        extract_required!(Id::OperatingMaterialSyntheticPolymers, &from)?;
 
     let fecl3 = operating_material_fecl3;
     let feclso4 = operating_material_feclso4;
@@ -105,40 +89,29 @@ pub fn calculate_emissions(
     let synthetic_polymers = operating_material_synthetic_polymers;
 
     let emission_factor_n2o_side_stream =
-        required_value(Id::SensitivityN2OSideStreamFactor, &from)?
-            .as_percent_unchecked()
-            .convert_to::<Factor>();
-    let emission_factor_co2_fossil = required_value(Id::SensitivityCO2FossilCustomFactor, &from)?
-        .as_percent_unchecked()
-        .convert_to::<Factor>();
+        extract_required!(Id::SensitivityN2OSideStreamFactor, &from)?.convert_to::<Factor>();
+    let emission_factor_co2_fossil =
+        extract_required!(Id::SensitivityCO2FossilCustomFactor, &from)?.convert_to::<Factor>();
 
     let n2o_side_stream = emission_factor_n2o_side_stream;
     let co2_fossil = emission_factor_co2_fossil;
 
-    let process_energy_savings =
-        required_value(Id::ScenarioProcessEnergySaving, &from)?.as_percent_unchecked();
-    let fossil_energy_savings =
-        required_value(Id::ScenarioFossilEnergySaving, &from)?.as_percent_unchecked();
-    let district_heating =
-        required_value(Id::ScenarioDistrictHeating, &from)?.as_kilowatthours_unchecked();
+    let process_energy_savings = extract_required!(Id::ScenarioProcessEnergySaving, &from)?;
+    let fossil_energy_savings = extract_required!(Id::ScenarioFossilEnergySaving, &from)?;
+    let district_heating = extract_required!(Id::ScenarioDistrictHeating, &from)?;
     let photovoltaic_energy_expansion =
-        required_value(Id::ScenarioPhotovoltaicEnergyExpansion, &from)?
-            .as_kilowatthours_unchecked();
+        extract_required!(Id::ScenarioPhotovoltaicEnergyExpansion, &from)?;
     let estimated_self_photovoltaic_usage =
-        required_value(Id::ScenarioEstimatedSelfPhotovolaticUsage, &from)?.as_percent_unchecked();
-    let wind_energy_expansion =
-        required_value(Id::ScenarioWindEnergyExpansion, &from)?.as_kilowatthours_unchecked();
+        extract_required!(Id::ScenarioEstimatedSelfPhotovolaticUsage, &from)?;
+    let wind_energy_expansion = extract_required!(Id::ScenarioWindEnergyExpansion, &from)?;
     let estimated_self_wind_energy_usage =
-        required_value(Id::ScenarioEstimatedSelfWindEnergyUsage, &from)?.as_percent_unchecked();
-    let water_energy_expansion =
-        required_value(Id::ScenarioWaterEnergyExpansion, &from)?.as_kilowatthours_unchecked();
+        extract_required!(Id::ScenarioEstimatedSelfWindEnergyUsage, &from)?;
+    let water_energy_expansion = extract_required!(Id::ScenarioWaterEnergyExpansion, &from)?;
     let estimated_self_water_energy_usage =
-        required_value(Id::ScenarioEstimatedSelfWaterEnergyUsage, &from)?.as_percent_unchecked();
+        extract_required!(Id::ScenarioEstimatedSelfWaterEnergyUsage, &from)?;
 
-    let n2o_calculation_method = required_value(Id::SensitivityN2OCalculationMethod, from)?
-        .as_n2o_emission_factor_calc_method_unchecked();
-    let n2o_custom_factor =
-        optional_value(Id::SensitivityN2OCustomFactor, from).map(V::as_percent_unchecked);
+    let n2o_calculation_method = extract_required!(Id::SensitivityN2OCalculationMethod, from)?;
+    let n2o_custom_factor = extract_optional!(Id::SensitivityN2OCustomFactor, from);
 
     // FIXME:
     // The default method does not produce the expected outcome.
@@ -148,8 +121,7 @@ pub fn calculate_emissions(
         .get(&Id::SensitivityCH4ChpCalculationMethod)
         .cloned()
         .map(V::as_ch4_chp_emission_factor_calc_method_unchecked);
-    let ch4_chp_custom_factor =
-        optional_value(Id::SensitivityCH4ChpCustomFactor, from).map(V::as_percent_unchecked);
+    let ch4_chp_custom_factor = extract_optional!(Id::SensitivityCH4ChpCustomFactor, from);
 
     // -------    ------ //
     //     Calculate     //
@@ -681,25 +653,4 @@ pub fn calculate_all_ch4_chp_emission_factor_scenarios(
     results.push((method, result, factor));
 
     results
-}
-
-// TODO: make this private
-pub fn required_value(id: Id, map: &HashMap<Id, V>) -> Result<V, MissingValueError> {
-    let value = map
-        .get(&id)
-        .cloned()
-        .or_else(|| id.default_value())
-        .ok_or(MissingValueError(id))?;
-    debug_assert_eq!(id.value_type(), value.value_type());
-    Ok(value)
-}
-
-// TODO: make this private
-pub fn optional_value(id: Id, map: &HashMap<Id, V>) -> Option<V> {
-    let value = map.get(&id).cloned().or_else(|| id.default_value());
-    debug_assert!(value
-        .as_ref()
-        .map(|v| id.value_type() == v.value_type())
-        .unwrap_or(true));
-    value
 }

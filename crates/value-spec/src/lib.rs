@@ -104,7 +104,12 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
 
         let snake_case_ident = to_snake_case(&variant_name.to_string());
 
-        let value_field = (variant_name, format_ident!("{}", snake_case_ident), unit);
+        let value_field = (
+            variant_name,
+            format_ident!("{}", snake_case_ident),
+            unit,
+            is_optional,
+        );
 
         (variant_name, optional, default, min, max, value_field)
     });
@@ -118,11 +123,49 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
         Vec<_>,
     ) = itertools::multiunzip(variant_quotes);
 
-    let value_types = value_fields.iter().map(|(variant, _, unit)| {
+    let value_types = value_fields.iter().map(|(variant, _, unit, _)| {
         quote! {
             Self::#variant => #unit::VALUE_TYPE
         }
     });
+
+    let required_extractors = value_fields.iter().map(|(variant, _, unit, _)| {
+        let getter_name =
+            format_ident!("as_{}_unchecked", to_snake_case(unit.to_string().as_str()));
+        quote! {
+            ($enum:ident ::#variant, $values:expr) => {
+                $values
+                    .get(&$enum::#variant)
+                    .cloned()
+                    .or_else(|| $enum::#variant.default_value())
+                    .ok_or(MissingValueError($enum::#variant))
+                    .map(|value|{
+                        debug_assert_eq!($enum::#variant.value_type(), value.value_type());
+                        value.#getter_name()
+                    })
+            };
+        }
+    });
+
+    let optional_extractors = value_fields
+        .iter()
+        .filter(|(_, _, _, is_optional)| *is_optional)
+        .map(|(variant, _, unit, _)| {
+            let getter_name =
+                format_ident!("as_{}_unchecked", to_snake_case(unit.to_string().as_str()));
+            quote! {
+                ($enum:ident ::#variant, $values:expr) => {
+                    $values
+                        .get(&$enum::#variant)
+                        .cloned()
+                        .or_else(|| $enum::#variant.default_value())
+                        .map(|value|{
+                            debug_assert_eq!($enum::#variant.value_type(), value.value_type());
+                            value.#getter_name()
+                        })
+                };
+            }
+        });
 
     let expanded = quote! {
 
@@ -167,6 +210,17 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
                 }
             }
         }
+
+        macro_rules! extract_required {
+            #(#required_extractors)*
+        }
+
+        macro_rules! extract_optional {
+            #(#optional_extractors)*
+        }
+
+        pub(crate) use extract_required;
+        pub(crate) use extract_optional;
     };
 
     TokenStream::from(expanded)
