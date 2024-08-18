@@ -83,156 +83,21 @@ fn create_test_results_on_changes_co2_equivalents_emission_factors(
 // a helper to update the tests
 // cargo test  -- --nocapture
 #[allow(dead_code)]
-fn create_test_results_on_changes_co2_equivalents(co2_equivalents: CO2Equivalents) {
-    let CO2Equivalents {
-        n2o_plant,
-        n2o_water,
-        n2o_emissions,
-        ch4_plant,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_water,
-        ch4_combined_heat_and_power_plant,
-        ch4_emissions,
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-        electricity_mix,
-        oil_emissions,
-        gas_emissions,
-        operating_materials,
-        sewage_sludge_transport,
-        total_emissions,
-        direct_emissions,
-        process_energy_savings,
-        photovoltaic_expansion_savings,
-        wind_expansion_savings,
-        water_expansion_savings,
-        district_heating_savings,
-        fossil_energy_savings,
-        indirect_emissions,
-        other_indirect_emissions,
-        excess_energy_co2_equivalent,
-        n2o_side_stream,
-        fossil_emissions,
-    } = co2_equivalents;
+fn create_test_results_on_changes_co2_equivalents(co2_equivalents: &HashMap<Out, Tons>) {
+    let values: Vec<_> = co2_equivalents.iter().collect();
 
-    println!(
-        "assert_eq!(f64::from(n2o_plant), {:?});",
-        f64::from(n2o_plant)
-    );
-    println!(
-        "assert_eq!(f64::from(n2o_water), {:?});",
-        f64::from(n2o_water)
-    );
-    println!(
-        "assert_eq!(f64::from(n2o_emissions), {:?});",
-        f64::from(n2o_emissions)
-    );
-    println!(
-        "assert_eq!(f64::from(ch4_plant), {:?});",
-        f64::from(ch4_plant)
-    );
-    println!(
-        "assert_eq!(f64::from(ch4_sludge_storage_containers), {:?});",
-        f64::from(ch4_sludge_storage_containers)
-    );
-    println!(
-        "assert_eq!(f64::from(ch4_sludge_bags), {:?});",
-        f64::from(ch4_sludge_bags)
-    );
-    println!(
-        "assert_eq!(f64::from(ch4_water), {:?});",
-        f64::from(ch4_water)
-    );
-    println!(
-        "assert_eq!(f64::from(ch4_combined_heat_and_power_plant), {:?});",
-        f64::from(ch4_combined_heat_and_power_plant)
-    );
-    println!(
-        "assert_eq!(f64::from(ch4_emissions), {:?});",
-        f64::from(ch4_emissions)
-    );
-    println!("assert_eq!(f64::from(fecl3), {:?});", f64::from(fecl3));
-    println!("assert_eq!(f64::from(feclso4), {:?});", f64::from(feclso4));
-    println!("assert_eq!(f64::from(caoh2), {:?});", f64::from(caoh2));
-    println!(
-        "assert_eq!(f64::from(synthetic_polymers), {:?});",
-        f64::from(synthetic_polymers)
-    );
-    println!(
-        "assert_eq!(f64::from(electricity_mix), {:?});",
-        f64::from(electricity_mix)
-    );
-    println!(
-        "assert_eq!(f64::from(oil_emissions), {:?});",
-        f64::from(oil_emissions)
-    );
-    println!(
-        "assert_eq!(f64::from(gas_emissions), {:?});",
-        f64::from(gas_emissions)
-    );
-    println!(
-        "assert_eq!(f64::from(operating_materials), {:?});",
-        f64::from(operating_materials)
-    );
-    println!(
-        "assert_eq!(f64::from(sewage_sludge_transport), {:?});",
-        f64::from(sewage_sludge_transport)
-    );
-    println!(
-        "assert_eq!(f64::from(total_emissions), {:?});",
-        f64::from(total_emissions)
-    );
-    println!(
-        "assert_eq!(f64::from(direct_emissions), {:?});",
-        f64::from(direct_emissions)
-    );
-    println!(
-        "assert_eq!(f64::from(process_energy_savings), {:?});",
-        f64::from(process_energy_savings)
-    );
-    println!(
-        "assert_eq!(f64::from(photovoltaic_expansion_savings), {:?});",
-        f64::from(photovoltaic_expansion_savings)
-    );
-    println!(
-        "assert_eq!(f64::from(wind_expansion_savings), {:?});",
-        f64::from(wind_expansion_savings)
-    );
-    println!(
-        "assert_eq!(f64::from(water_expansion_savings), {:?});",
-        f64::from(water_expansion_savings)
-    );
-    println!(
-        "assert_eq!(f64::from(district_heating_savings), {:?});",
-        f64::from(district_heating_savings)
-    );
-    println!(
-        "assert_eq!(f64::from(fossil_energy_savings), {:?});",
-        f64::from(fossil_energy_savings)
-    );
-    println!(
-        "assert_eq!(f64::from(indirect_emissions), {:?});",
-        f64::from(indirect_emissions)
-    );
-    println!(
-        "assert_eq!(f64::from(other_indirect_emissions), {:?});",
-        f64::from(other_indirect_emissions)
-    );
-    println!(
-        "assert_eq!(f64::from(excess_energy_co2_equivalent), {:?});",
-        f64::from(excess_energy_co2_equivalent)
-    );
-    println!(
-        "assert_eq!(f64::from(n2o_side_stream), {:?});",
-        f64::from(n2o_side_stream)
-    );
-    println!(
-        "assert_eq!(f64::from(fossil_emissions), {:?});",
-        f64::from(fossil_emissions)
-    );
+    // NOTE:
+    // You need to temp. add `#[derive(PartialOrd, Ord)]` to OutputValueId.
+    // in order to sort the values by ID:
+    //
+    // values.sort_by(|(a, _), (b, _)| a.cmp(b));
+
+    for (id, value) in values {
+        println!(
+            "assert_eq!(co2.get(&Out::{id:?}).copied().unwrap(),Tons::new({:?}));",
+            f64::from(*value)
+        );
+    }
 }
 
 #[test]
@@ -372,84 +237,134 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CO2Equivalents {
-        n2o_plant,
-        n2o_water,
-        n2o_emissions,
-        ch4_plant,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_water,
-        ch4_combined_heat_and_power_plant,
-        ch4_emissions,
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-        electricity_mix,
-        oil_emissions,
-        gas_emissions,
-        operating_materials,
-        sewage_sludge_transport,
-        total_emissions,
-        direct_emissions,
-        process_energy_savings,
-        photovoltaic_expansion_savings,
-        wind_expansion_savings,
-        water_expansion_savings,
-        district_heating_savings,
-        fossil_energy_savings,
-        indirect_emissions,
-        other_indirect_emissions,
-        excess_energy_co2_equivalent,
-        n2o_side_stream,
-        fossil_emissions,
-    } = co2_equivalents.try_into().unwrap();
-
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
     assert_eq!(f64::from(n2o), 0.003);
     assert_eq!(f64::from(ch4), 0.01);
 
-    // create_test_results_on_changes_co2_equivalents(co2_equivalents);
-    assert_eq!(f64::from(n2o_plant), 258.318_274_5);
-    assert_eq!(f64::from(n2o_water), 72.228_354_412_5);
-    assert_eq!(f64::from(n2o_emissions), 330.546_628_912_499_95);
-    assert_eq!(f64::from(ch4_plant), 0.0);
+    let co2 = co2_equivalents;
+
+    // create_test_results_on_changes_co2_equivalents(&co2);
     assert_eq!(
-        f64::from(ch4_sludge_storage_containers),
-        104.628_720_000_000_02
+        co2.get(&Out::N2oPlant).copied().unwrap(),
+        Tons::new(258.3182745)
     );
-    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
-    assert_eq!(f64::from(ch4_water), 25.386_755_94);
     assert_eq!(
-        f64::from(ch4_combined_heat_and_power_plant),
-        52.314_360_000_000_01
+        co2.get(&Out::N2oWater).copied().unwrap(),
+        Tons::new(72.2283544125)
     );
-    assert_eq!(f64::from(ch4_emissions), 318.720_845_940_000_06);
-    assert_eq!(f64::from(fecl3), 122.647_500_000_000_01);
-    assert_eq!(f64::from(feclso4), 0.0);
-    assert_eq!(f64::from(caoh2), 0.0);
-    assert_eq!(f64::from(synthetic_polymers), 26.400_000_000_000_002);
-    assert_eq!(f64::from(electricity_mix), 359.1);
-    assert_eq!(f64::from(oil_emissions), 0.0);
-    assert_eq!(f64::from(gas_emissions), 0.0);
-    assert_eq!(f64::from(operating_materials), 149.0475);
-    assert_eq!(f64::from(sewage_sludge_transport), 23.981_175);
-    assert_eq!(f64::from(total_emissions), 1_181.396_149_852_5);
-    assert_eq!(f64::from(direct_emissions), 649.267_474_852_500_1);
-    assert_eq!(f64::from(process_energy_savings), 0.0);
-    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
-    assert_eq!(f64::from(wind_expansion_savings), 0.0);
-    assert_eq!(f64::from(water_expansion_savings), 0.0);
-    assert_eq!(f64::from(district_heating_savings), 0.0);
-    assert_eq!(f64::from(fossil_energy_savings), 0.0);
-    assert_eq!(f64::from(indirect_emissions), 359.1);
-    assert_eq!(f64::from(other_indirect_emissions), 173.028_675_000_000_02);
-    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
-    assert_eq!(f64::from(n2o_side_stream), 0.0);
-    assert_eq!(f64::from(fossil_emissions), 0.0);
+    assert_eq!(
+        co2.get(&Out::N2oSideStream).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::N2oEmissions).copied().unwrap(),
+        Tons::new(330.54662891249995)
+    );
+    assert_eq!(co2.get(&Out::Ch4Plant).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(
+        co2.get(&Out::Ch4SludgeStorageContainers).copied().unwrap(),
+        Tons::new(104.62872000000002)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4SludgeBags).copied().unwrap(),
+        Tons::new(136.39101)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4Water).copied().unwrap(),
+        Tons::new(25.38675594)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4CombinedHeatAndPowerPlant)
+            .copied()
+            .unwrap(),
+        Tons::new(52.31436000000001)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4Emissions).copied().unwrap(),
+        Tons::new(318.72084594000006)
+    );
+    assert_eq!(
+        co2.get(&Out::FossilEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::Fecl3).copied().unwrap(),
+        Tons::new(122.64750000000001)
+    );
+    assert_eq!(co2.get(&Out::Feclso4).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(co2.get(&Out::Caoh2).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(
+        co2.get(&Out::SyntheticPolymers).copied().unwrap(),
+        Tons::new(26.400000000000002)
+    );
+    assert_eq!(
+        co2.get(&Out::ElectricityMix).copied().unwrap(),
+        Tons::new(359.1)
+    );
+    assert_eq!(
+        co2.get(&Out::OilEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::GasEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::OperatingMaterials).copied().unwrap(),
+        Tons::new(149.0475)
+    );
+    assert_eq!(
+        co2.get(&Out::SewageSludgeTransport).copied().unwrap(),
+        Tons::new(23.981175)
+    );
+    assert_eq!(
+        co2.get(&Out::TotalEmissions).copied().unwrap(),
+        Tons::new(1181.3961498525)
+    );
+    assert_eq!(
+        co2.get(&Out::DirectEmissions).copied().unwrap(),
+        Tons::new(649.2674748525001)
+    );
+    assert_eq!(
+        co2.get(&Out::ProcessEnergySavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::PhotovoltaicExpansionSavings)
+            .copied()
+            .unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::WindExpansionSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::WaterExpansionSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::DistrictHeatingSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::FossilEnergySavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::IndirectEmissions).copied().unwrap(),
+        Tons::new(359.1)
+    );
+    assert_eq!(
+        co2.get(&Out::OtherIndirectEmissions).copied().unwrap(),
+        Tons::new(173.02867500000002)
+    );
+    assert_eq!(
+        co2.get(&Out::ExcessEnergyCo2Equivalent).copied().unwrap(),
+        Tons::new(0.0)
+    );
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -482,84 +397,134 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CO2Equivalents {
-        n2o_plant,
-        n2o_water,
-        n2o_emissions,
-        ch4_plant,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_water,
-        ch4_combined_heat_and_power_plant,
-        ch4_emissions,
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-        electricity_mix,
-        oil_emissions,
-        gas_emissions,
-        operating_materials,
-        sewage_sludge_transport,
-        total_emissions,
-        direct_emissions,
-        process_energy_savings,
-        photovoltaic_expansion_savings,
-        wind_expansion_savings,
-        water_expansion_savings,
-        district_heating_savings,
-        fossil_energy_savings,
-        indirect_emissions,
-        other_indirect_emissions,
-        excess_energy_co2_equivalent,
-        n2o_side_stream,
-        fossil_emissions,
-    } = co2_equivalents.try_into().unwrap();
-
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
     assert_eq!(f64::from(n2o), 0.008);
     assert_eq!(f64::from(ch4), 0.01);
 
-    // create_test_results_on_changes_co2_equivalents(co2_equivalents);
-    assert_eq!(f64::from(n2o_plant), 688.848_732);
-    assert_eq!(f64::from(n2o_water), 72.228_354_412_5);
-    assert_eq!(f64::from(n2o_emissions), 761.077_086_412_500_1);
-    assert_eq!(f64::from(ch4_plant), 0.0);
+    let co2 = co2_equivalents;
+
+    create_test_results_on_changes_co2_equivalents(&co2);
     assert_eq!(
-        f64::from(ch4_sludge_storage_containers),
-        104.628_720_000_000_02
+        co2.get(&Out::N2oPlant).copied().unwrap(),
+        Tons::new(688.848732)
     );
-    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
-    assert_eq!(f64::from(ch4_water), 25.386_755_94);
     assert_eq!(
-        f64::from(ch4_combined_heat_and_power_plant),
-        52.314_360_000_000_01
+        co2.get(&Out::N2oWater).copied().unwrap(),
+        Tons::new(72.2283544125)
     );
-    assert_eq!(f64::from(ch4_emissions), 318.720_845_940_000_06);
-    assert_eq!(f64::from(fecl3), 122.647_500_000_000_01);
-    assert_eq!(f64::from(feclso4), 0.0);
-    assert_eq!(f64::from(caoh2), 0.0);
-    assert_eq!(f64::from(synthetic_polymers), 26.400_000_000_000_002);
-    assert_eq!(f64::from(electricity_mix), 359.1);
-    assert_eq!(f64::from(oil_emissions), 0.0);
-    assert_eq!(f64::from(gas_emissions), 0.0);
-    assert_eq!(f64::from(operating_materials), 149.0475);
-    assert_eq!(f64::from(sewage_sludge_transport), 23.981_175);
-    assert_eq!(f64::from(total_emissions), 1_611.926_607_352_5);
-    assert_eq!(f64::from(direct_emissions), 1_079.797_932_352_5);
-    assert_eq!(f64::from(process_energy_savings), 0.0);
-    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
-    assert_eq!(f64::from(wind_expansion_savings), 0.0);
-    assert_eq!(f64::from(water_expansion_savings), 0.0);
-    assert_eq!(f64::from(district_heating_savings), 0.0);
-    assert_eq!(f64::from(fossil_energy_savings), 0.0);
-    assert_eq!(f64::from(indirect_emissions), 359.1);
-    assert_eq!(f64::from(other_indirect_emissions), 173.028_675_000_000_02);
-    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
-    assert_eq!(f64::from(n2o_side_stream), 0.0);
-    assert_eq!(f64::from(fossil_emissions), 0.0);
+    assert_eq!(
+        co2.get(&Out::N2oSideStream).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::N2oEmissions).copied().unwrap(),
+        Tons::new(761.0770864125001)
+    );
+    assert_eq!(co2.get(&Out::Ch4Plant).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(
+        co2.get(&Out::Ch4SludgeStorageContainers).copied().unwrap(),
+        Tons::new(104.62872000000002)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4SludgeBags).copied().unwrap(),
+        Tons::new(136.39101)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4Water).copied().unwrap(),
+        Tons::new(25.38675594)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4CombinedHeatAndPowerPlant)
+            .copied()
+            .unwrap(),
+        Tons::new(52.31436000000001)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4Emissions).copied().unwrap(),
+        Tons::new(318.72084594000006)
+    );
+    assert_eq!(
+        co2.get(&Out::FossilEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::Fecl3).copied().unwrap(),
+        Tons::new(122.64750000000001)
+    );
+    assert_eq!(co2.get(&Out::Feclso4).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(co2.get(&Out::Caoh2).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(
+        co2.get(&Out::SyntheticPolymers).copied().unwrap(),
+        Tons::new(26.400000000000002)
+    );
+    assert_eq!(
+        co2.get(&Out::ElectricityMix).copied().unwrap(),
+        Tons::new(359.1)
+    );
+    assert_eq!(
+        co2.get(&Out::OilEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::GasEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::OperatingMaterials).copied().unwrap(),
+        Tons::new(149.0475)
+    );
+    assert_eq!(
+        co2.get(&Out::SewageSludgeTransport).copied().unwrap(),
+        Tons::new(23.981175)
+    );
+    assert_eq!(
+        co2.get(&Out::TotalEmissions).copied().unwrap(),
+        Tons::new(1611.9266073525)
+    );
+    assert_eq!(
+        co2.get(&Out::DirectEmissions).copied().unwrap(),
+        Tons::new(1079.7979323525)
+    );
+    assert_eq!(
+        co2.get(&Out::ProcessEnergySavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::PhotovoltaicExpansionSavings)
+            .copied()
+            .unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::WindExpansionSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::WaterExpansionSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::DistrictHeatingSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::FossilEnergySavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::IndirectEmissions).copied().unwrap(),
+        Tons::new(359.1)
+    );
+    assert_eq!(
+        co2.get(&Out::OtherIndirectEmissions).copied().unwrap(),
+        Tons::new(173.02867500000002)
+    );
+    assert_eq!(
+        co2.get(&Out::ExcessEnergyCo2Equivalent).copied().unwrap(),
+        Tons::new(0.0)
+    );
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
@@ -592,84 +557,138 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CO2Equivalents {
-        n2o_plant,
-        n2o_water,
-        n2o_emissions,
-        ch4_plant,
-        ch4_sludge_storage_containers,
-        ch4_sludge_bags,
-        ch4_water,
-        ch4_combined_heat_and_power_plant,
-        ch4_emissions,
-        fecl3,
-        feclso4,
-        caoh2,
-        synthetic_polymers,
-        electricity_mix,
-        oil_emissions,
-        gas_emissions,
-        operating_materials,
-        sewage_sludge_transport,
-        total_emissions,
-        direct_emissions,
-        process_energy_savings,
-        photovoltaic_expansion_savings,
-        wind_expansion_savings,
-        water_expansion_savings,
-        district_heating_savings,
-        fossil_energy_savings,
-        indirect_emissions,
-        other_indirect_emissions,
-        excess_energy_co2_equivalent,
-        n2o_side_stream,
-        fossil_emissions,
-    } = co2_equivalents.try_into().unwrap();
-
     let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
     assert_eq!(f64::from(n2o), 0.016);
     assert_eq!(f64::from(ch4), 0.01);
 
-    // create_test_results_on_changes_co2_equivalents(co2_equivalents);
-    assert_eq!(f64::from(n2o_plant), 1_377.697_464);
-    assert_eq!(f64::from(n2o_water), 72.228_354_412_5);
-    assert_eq!(f64::from(n2o_emissions), 1_449.925_818_412_500_1);
-    assert_eq!(f64::from(ch4_plant), 0.0);
+    let co2 = co2_equivalents;
+
+    // To genereate the tests:
+    // - uncomment the next line:
+    //   create_test_results_on_changes_co2_equivalents(&co2);
+    // - and run
+    //   cargo test --tests calculation::tests::calculate_with_n2o_emission_factor_method_ipcc2019 -- --nocapture
     assert_eq!(
-        f64::from(ch4_sludge_storage_containers),
-        104.628_720_000_000_02
+        co2.get(&Out::N2oPlant).copied().unwrap(),
+        Tons::new(1377.697464)
     );
-    assert_eq!(f64::from(ch4_sludge_bags), 136.39101);
-    assert_eq!(f64::from(ch4_water), 25.386_755_94);
     assert_eq!(
-        f64::from(ch4_combined_heat_and_power_plant),
-        52.314_360_000_000_01
+        co2.get(&Out::N2oWater).copied().unwrap(),
+        Tons::new(72.2283544125)
     );
-    assert_eq!(f64::from(ch4_emissions), 318.720_845_940_000_06);
-    assert_eq!(f64::from(fecl3), 122.647_500_000_000_01);
-    assert_eq!(f64::from(feclso4), 0.0);
-    assert_eq!(f64::from(caoh2), 0.0);
-    assert_eq!(f64::from(synthetic_polymers), 26.400_000_000_000_002);
-    assert_eq!(f64::from(electricity_mix), 359.1);
-    assert_eq!(f64::from(oil_emissions), 0.0);
-    assert_eq!(f64::from(gas_emissions), 0.0);
-    assert_eq!(f64::from(operating_materials), 149.0475);
-    assert_eq!(f64::from(sewage_sludge_transport), 23.981_175);
-    assert_eq!(f64::from(total_emissions), 2_300.775_339_352_500_4);
-    assert_eq!(f64::from(direct_emissions), 1_768.646_664_352_500_2);
-    assert_eq!(f64::from(process_energy_savings), 0.0);
-    assert_eq!(f64::from(photovoltaic_expansion_savings), 0.0);
-    assert_eq!(f64::from(wind_expansion_savings), 0.0);
-    assert_eq!(f64::from(water_expansion_savings), 0.0);
-    assert_eq!(f64::from(district_heating_savings), 0.0);
-    assert_eq!(f64::from(fossil_energy_savings), 0.0);
-    assert_eq!(f64::from(indirect_emissions), 359.1);
-    assert_eq!(f64::from(other_indirect_emissions), 173.028_675_000_000_02);
-    assert_eq!(f64::from(excess_energy_co2_equivalent), 0.0);
-    assert_eq!(f64::from(n2o_side_stream), 0.0);
-    assert_eq!(f64::from(fossil_emissions), 0.0);
+    assert_eq!(
+        co2.get(&Out::N2oSideStream).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::N2oEmissions).copied().unwrap(),
+        Tons::new(1449.9258184125001)
+    );
+    assert_eq!(co2.get(&Out::Ch4Plant).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(
+        co2.get(&Out::Ch4SludgeStorageContainers).copied().unwrap(),
+        Tons::new(104.62872000000002)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4SludgeBags).copied().unwrap(),
+        Tons::new(136.39101)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4Water).copied().unwrap(),
+        Tons::new(25.38675594)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4CombinedHeatAndPowerPlant)
+            .copied()
+            .unwrap(),
+        Tons::new(52.31436000000001)
+    );
+    assert_eq!(
+        co2.get(&Out::Ch4Emissions).copied().unwrap(),
+        Tons::new(318.72084594000006)
+    );
+    assert_eq!(
+        co2.get(&Out::FossilEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::Fecl3).copied().unwrap(),
+        Tons::new(122.64750000000001)
+    );
+    assert_eq!(co2.get(&Out::Feclso4).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(co2.get(&Out::Caoh2).copied().unwrap(), Tons::new(0.0));
+    assert_eq!(
+        co2.get(&Out::SyntheticPolymers).copied().unwrap(),
+        Tons::new(26.400000000000002)
+    );
+    assert_eq!(
+        co2.get(&Out::ElectricityMix).copied().unwrap(),
+        Tons::new(359.1)
+    );
+    assert_eq!(
+        co2.get(&Out::OilEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::GasEmissions).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::OperatingMaterials).copied().unwrap(),
+        Tons::new(149.0475)
+    );
+    assert_eq!(
+        co2.get(&Out::SewageSludgeTransport).copied().unwrap(),
+        Tons::new(23.981175)
+    );
+    assert_eq!(
+        co2.get(&Out::TotalEmissions).copied().unwrap(),
+        Tons::new(2300.7753393525004)
+    );
+    assert_eq!(
+        co2.get(&Out::DirectEmissions).copied().unwrap(),
+        Tons::new(1768.6466643525002)
+    );
+    assert_eq!(
+        co2.get(&Out::ProcessEnergySavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::PhotovoltaicExpansionSavings)
+            .copied()
+            .unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::WindExpansionSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::WaterExpansionSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::DistrictHeatingSavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::FossilEnergySavings).copied().unwrap(),
+        Tons::new(0.0)
+    );
+    assert_eq!(
+        co2.get(&Out::IndirectEmissions).copied().unwrap(),
+        Tons::new(359.1)
+    );
+    assert_eq!(
+        co2.get(&Out::OtherIndirectEmissions).copied().unwrap(),
+        Tons::new(173.02867500000002)
+    );
+    assert_eq!(
+        co2.get(&Out::ExcessEnergyCo2Equivalent).copied().unwrap(),
+        Tons::new(0.0)
+    );
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
