@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use klick_boundary::FormData;
 use klick_domain::{
-    self as domain,
     units::{Factor, Percent, RatioExt, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };
@@ -13,7 +12,7 @@ use crate::{Formatting, Lng};
 pub fn create_sankey_chart_header(
     data: &FormData,
     emission_factors: HashMap<Out, Factor>,
-    calculation_methods: domain::EmissionFactorCalculationMethods,
+    calculation_methods: HashMap<Out, Value>,
     formatting: Formatting,
 ) -> String {
     let population_equivalent = match &data
@@ -45,7 +44,14 @@ pub fn create_sankey_chart_header(
         3,
     );
 
-    let method = formatting.fmt_label(calculation_methods.n2o);
+    // TODO: use ID Out::N2oEmissionFactorCalcMethod
+    let method = formatting.fmt_label(
+        calculation_methods
+            .get(&Out::N2oEmissionFactorCalcMethod)
+            .cloned()
+            .unwrap()
+            .as_n2o_emission_factor_calc_method_unchecked(),
+    );
 
     let n2o_label = match formatting {
         Formatting::Text => "N₂O",

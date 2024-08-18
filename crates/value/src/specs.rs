@@ -387,6 +387,20 @@ spec! {
         },
         Ch4ChpCalculatedEmissionFactor {
           unit = Factor;
+        },
+        N2oEmissionFactorCalcMethod {
+          unit = N2oEmissionFactorCalcMethod;
+        },
+        Ch4ChpEmissionFactorCalcMethod {
+          unit = Ch4ChpEmissionFactorCalcMethod;
+        },
+        N2oEmissionCustomFactor {
+          unit = Factor;
+          optional;
+        },
+        Ch4ChpEmissionCustomFactor {
+          unit = Factor;
+          optional;
         }
     }
 }

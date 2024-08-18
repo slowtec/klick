@@ -12,7 +12,7 @@ use klick_value::{
 };
 
 #[allow(clippy::wildcard_imports)]
-use crate::{EmissionFactorCalculationMethods, EmissionsCalculationOutcome, Value as V};
+use crate::{EmissionsCalculationOutcome, Value as V};
 
 mod emission_groups;
 
@@ -326,12 +326,33 @@ pub fn calculate_emissions(
     .into_iter()
     .collect();
 
-    let calculation_methods = EmissionFactorCalculationMethods {
-        n2o: n2o_calculation_method,
-        n2o_custom_factor: n2o_custom_factor.map(|v| v.convert_to::<Factor>()),
-        ch4: ch4_chp_calculation_method,
-        ch4_custom_factor: ch4_chp_custom_factor.map(|v| v.convert_to::<Factor>()),
-    };
+    let calculation_methods = [
+        (
+            Out::N2oEmissionFactorCalcMethod,
+            Some(Value::n2o_emission_factor_calc_method(
+                n2o_calculation_method,
+            )),
+        ),
+        (
+            Out::Ch4ChpEmissionFactorCalcMethod,
+            ch4_chp_calculation_method.map(Value::ch4_chp_emission_factor_calc_method),
+        ),
+        (
+            Out::N2oEmissionCustomFactor,
+            n2o_custom_factor
+                .map(|v| v.convert_to::<Factor>())
+                .map(Into::into),
+        ),
+        (
+            Out::Ch4ChpEmissionCustomFactor,
+            ch4_chp_custom_factor
+                .map(|v| v.convert_to::<Factor>())
+                .map(Into::into),
+        ),
+    ]
+    .into_iter()
+    .filter_map(|(id, value)| value.map(|v| (id, v)))
+    .collect();
 
     Ok(EmissionsCalculationOutcome {
         co2_equivalents,

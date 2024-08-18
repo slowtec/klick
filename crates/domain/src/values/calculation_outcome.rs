@@ -2,13 +2,11 @@ use std::collections::HashMap;
 
 use klick_value::{specs::OutputValueId, units::*};
 
-use crate::EmissionFactorCalculationMethods;
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct EmissionsCalculationOutcome {
     pub co2_equivalents: HashMap<OutputValueId, Tons>,
     pub emission_factors: HashMap<OutputValueId, Factor>,
-    pub calculation_methods: EmissionFactorCalculationMethods,
+    pub calculation_methods: HashMap<OutputValueId, Value>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

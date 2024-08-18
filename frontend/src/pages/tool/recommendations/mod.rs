@@ -108,7 +108,7 @@ pub fn Recommendations(
               klick_presenter::create_sankey_chart_header(
                 &form_data.with(Clone::clone), // TODO: avoid clone
                 out.emission_factors.clone(),
-                out.calculation_methods,
+                out.calculation_methods.clone(),
                 klick_presenter::Formatting::Text
               )
             }))

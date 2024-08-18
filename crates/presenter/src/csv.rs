@@ -2,10 +2,8 @@ use std::collections::HashMap;
 
 use klick_boundary::CalculationOutcome;
 use klick_domain::{
-    units::{
-        Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Percent, RatioExt,
-    },
-    EmissionFactorCalculationMethods, OutputValueId as Out,
+    units::{Factor, Percent, RatioExt},
+    OutputValueId as Out,
 };
 
 use crate::{
@@ -64,28 +62,6 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
 }
 
 #[must_use]
-pub fn emission_factor_calculation_methods_to_csv(
-    methods: EmissionFactorCalculationMethods,
-) -> String {
-    [
-        [
-            "emission_factor_calculation_methods.n2o",
-            n2o_emission_factor_calc_method_to_csv_name(&methods.n2o),
-        ]
-        .join(","),
-        [
-            "emission_factor_calculation_methods.ch4",
-            match &methods.ch4 {
-                Some(ch4) => ch4_chp_emission_factor_calc_method_to_csv_name(ch4),
-                None => "Nicht festgelegt",
-            },
-        ]
-        .join(","),
-    ]
-    .join("\n")
-}
-
-#[must_use]
 pub fn emission_factors_to_csv(factors: &HashMap<Out, Factor>) -> String {
     [
         format!(
@@ -112,29 +88,4 @@ pub fn emission_factors_to_csv(factors: &HashMap<Out, Factor>) -> String {
         ),
     ]
     .join("")
-}
-
-// TODO: use ValueLabel & ValueId
-fn n2o_emission_factor_calc_method_to_csv_name(
-    method: &N2oEmissionFactorCalcMethod,
-) -> &'static str {
-    match method {
-        N2oEmissionFactorCalcMethod::TuWien2016 => "TU Wien 2016",
-        N2oEmissionFactorCalcMethod::Optimistic => "Optimistisch",
-        N2oEmissionFactorCalcMethod::Pesimistic => "Pessimistisch",
-        N2oEmissionFactorCalcMethod::Ipcc2019 => "PCC 2019",
-        N2oEmissionFactorCalcMethod::Custom => "Benutzerdefiniert",
-    }
-}
-
-// TODO: use ValueLabel & ValueId
-fn ch4_chp_emission_factor_calc_method_to_csv_name(
-    method: &Ch4ChpEmissionFactorCalcMethod,
-) -> &'static str {
-    match method {
-        Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines => "Mikrogasturbinen",
-        Ch4ChpEmissionFactorCalcMethod::GasolineEngine => "Ottomotor",
-        Ch4ChpEmissionFactorCalcMethod::JetEngine => "Zündstrahlmotor",
-        Ch4ChpEmissionFactorCalcMethod::Custom => "Benutzerdefiniert",
-    }
 }
