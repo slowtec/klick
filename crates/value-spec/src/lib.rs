@@ -167,7 +167,23 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
                         })
                 };
             }
-        });
+        })
+        .collect::<Vec<_>>();
+
+    let snake_case_ident = to_snake_case(ident.to_string().as_str());
+    let extract_required_macro_name = format_ident!("extract_required_with_{}", snake_case_ident);
+    let extract_optional_macro_name = format_ident!("extract_optional_with_{}", snake_case_ident);
+
+    let opt_macro = if optional_extractors.is_empty() {
+        quote! {}
+    } else {
+        quote! {
+            #[macro_export]
+            macro_rules! #extract_optional_macro_name {
+                #(#optional_extractors)*
+            }
+        }
+    };
 
     let expanded = quote! {
 
@@ -214,14 +230,11 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
         }
 
         #[macro_export]
-        macro_rules! extract_required {
+        macro_rules! #extract_required_macro_name {
             #(#required_extractors)*
         }
 
-        #[macro_export]
-        macro_rules! extract_optional {
-            #(#optional_extractors)*
-        }
+        #opt_macro
 
         #[derive(Debug)]
         pub struct #missing_error_ident(pub #ident);
@@ -233,9 +246,6 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
                 write!(fmt, "The required value ({:?}) is missing", self.0)
             }
         }
-
-        pub(crate) use extract_required;
-        pub(crate) use extract_optional;
     };
 
     TokenStream::from(expanded)

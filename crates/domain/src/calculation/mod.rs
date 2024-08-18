@@ -5,7 +5,8 @@ mod tests;
 
 use klick_value::{
     constants::*,
-    extract_optional, extract_required,
+    extract_optional_with_input_value_id as extract_optional,
+    extract_required_with_input_value_id as extract_required,
     specs::{InputValueId as Id, MissingInputValueIdError, OutputValueId as Out},
     units::*,
 };

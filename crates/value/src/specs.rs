@@ -287,37 +287,100 @@ spec! {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum OutputValueId {
-    N2oPlant,
-    N2oWater,
-    N2oSideStream,
-    N2oEmissions,
-    Ch4Plant,
-    Ch4SludgeStorageContainers,
-    Ch4SludgeBags,
-    Ch4Water,
-    Ch4CombinedHeatAndPowerPlant,
-    Ch4Emissions,
-    FossilEmissions,
-    Fecl3,
-    Feclso4,
-    Caoh2,
-    SyntheticPolymers,
-    ElectricityMix,
-    OilEmissions,
-    GasEmissions,
-    OperatingMaterials,
-    SewageSludgeTransport,
-    TotalEmissions,
-    DirectEmissions,
-    ProcessEnergySavings,
-    PhotovoltaicExpansionSavings,
-    WindExpansionSavings,
-    WaterExpansionSavings,
-    DistrictHeatingSavings,
-    FossilEnergySavings,
-    IndirectEmissions,
-    OtherIndirectEmissions,
-    ExcessEnergyCo2Equivalent,
+spec! {
+    Value : OutputValueId {
+        N2oPlant {
+          unit = Tons;
+        },
+        N2oWater {
+          unit = Tons;
+        },
+        N2oSideStream {
+          unit = Tons;
+        },
+        N2oEmissions {
+          unit = Tons;
+        },
+        Ch4Plant {
+          unit = Tons;
+        },
+        Ch4SludgeStorageContainers {
+          unit = Tons;
+        },
+        Ch4SludgeBags {
+          unit = Tons;
+        },
+        Ch4Water {
+          unit = Tons;
+        },
+        Ch4CombinedHeatAndPowerPlant {
+          unit = Tons;
+        },
+        Ch4Emissions {
+          unit = Tons;
+        },
+        FossilEmissions {
+          unit = Tons;
+        },
+        Fecl3 {
+          unit = Tons;
+        },
+        Feclso4 {
+          unit = Tons;
+        },
+        Caoh2 {
+          unit = Tons;
+        },
+        SyntheticPolymers {
+          unit = Tons;
+        },
+        ElectricityMix {
+          unit = Tons;
+        },
+        OilEmissions {
+          unit = Tons;
+        },
+        GasEmissions {
+          unit = Tons;
+        },
+        OperatingMaterials {
+          unit = Tons;
+        },
+        SewageSludgeTransport {
+          unit = Tons;
+        },
+        TotalEmissions {
+          unit = Tons;
+        },
+        DirectEmissions {
+          unit = Tons;
+        },
+        ProcessEnergySavings {
+          unit = Tons;
+        },
+        PhotovoltaicExpansionSavings {
+          unit = Tons;
+        },
+        WindExpansionSavings {
+          unit = Tons;
+        },
+        WaterExpansionSavings {
+          unit = Tons;
+        },
+        DistrictHeatingSavings {
+          unit = Tons;
+        },
+        FossilEnergySavings {
+          unit = Tons;
+        },
+        IndirectEmissions {
+          unit = Tons;
+        },
+        OtherIndirectEmissions {
+          unit = Tons;
+        },
+        ExcessEnergyCo2Equivalent {
+          unit = Tons;
+        },
+    }
 }
