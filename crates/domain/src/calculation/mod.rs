@@ -15,8 +15,7 @@ use klick_value::{
 use crate::{EmissionsCalculationOutcome, Value as V};
 
 mod emission_groups;
-
-use self::emission_groups::calculate_emission_groups;
+pub use self::emission_groups::*;
 
 #[must_use]
 #[allow(clippy::too_many_lines)] // TODO

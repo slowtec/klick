@@ -1,6 +1,6 @@
 use klick_domain as domain;
 
-use crate::InputValueId;
+use crate::{InputValueId, OutputValueId};
 
 // TODO: move to value_metadata
 
@@ -102,6 +102,38 @@ impl ValueLabel for domain::units::Ch4ChpEmissionFactorCalcMethod {
             Self::GasolineEngine => "Ottomotor",
             Self::JetEngine => "Zündstrahlmotor",
             Self::Custom => "Benutzerdefiniert",
+        }
+    }
+}
+
+impl ValueLabel for OutputValueId {
+    fn label(&self) -> &'static str {
+        match self {
+            Self::N2oPlant => "N₂O Anlage",
+            Self::N2oWater => "N₂O Gewässer",
+            Self::N2oSideStream => "N₂O Prozesswasserbehandlung",
+            Self::N2oEmissions => "Lachgasemissionen",
+            Self::Ch4Plant => "CH₄ Anlage",
+            Self::Ch4SludgeStorageContainers => "CH₄ Schlamm Lagerung",
+            Self::Ch4SludgeBags => "CH₄ Schlammtasche",
+            Self::Ch4Water => "CH₄ Gewässer",
+            Self::Ch4CombinedHeatAndPowerPlant => "CH₄ BHKW",
+            Self::Ch4Emissions => "Methanemissionen",
+            Self::FossilEmissions => "Fossile CO₂-Emissionen",
+            Self::Fecl3 => "Eisen(III)-chlorid-Lösung",
+            Self::Feclso4 => "Eisenchloridsulfat-Lösung",
+            Self::Caoh2 => "Kalkhydrat",
+            Self::SyntheticPolymers => "Synthetische Polymere",
+            Self::ElectricityMix => "Strommix",
+            Self::OilEmissions => "Heizöl",
+            Self::GasEmissions => "Gas",
+            Self::OperatingMaterials => "Betriebsstoffe",
+            Self::SewageSludgeTransport => "Klärschlamm Transport",
+            Self::TotalEmissions => "Gesamtemissionen",
+            Self::DirectEmissions => "Direkte Emissionen",
+            Self::IndirectEmissions => "Indirekte Emissionen",
+            Self::OtherIndirectEmissions => "Weitere Indirekte Emissionen",
+            _ => todo!(),
         }
     }
 }

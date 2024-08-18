@@ -2,11 +2,12 @@ use std::collections::HashMap;
 
 use klick_boundary::FormData;
 use klick_domain::{
+    self as domain,
     units::{Factor, Percent, RatioExt, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };
 
-use crate::{Formatting, Lng};
+use crate::{value_labels::ValueLabel, Formatting, Lng};
 
 #[must_use]
 pub fn create_sankey_chart_header(
@@ -44,7 +45,6 @@ pub fn create_sankey_chart_header(
         3,
     );
 
-    // TODO: use ID Out::N2oEmissionFactorCalcMethod
     let method = formatting.fmt_label(
         calculation_methods
             .get(&Out::N2oEmissionFactorCalcMethod)
@@ -76,125 +76,89 @@ pub fn create_sankey_chart_data(
     Vec<(usize, usize)>,
 ) {
     let node_labels = [
-        (Out::N2oPlant, "N₂O Anlage", "red", "#ffb2b2"),
-        (Out::N2oWater, "N₂O Gewässer", "red", "#ffb2b2"),
-        (
-            Out::N2oSideStream,
-            "N₂O Prozesswasserbehandlung",
-            "red",
-            "#ffb2b2",
-        ),
-        (Out::N2oEmissions, "Lachgasemissionen", "red", "#ffb2b2"),
-        (Out::Ch4Plant, "CH₄ Anlage", "red", "#ffb2b2"),
-        (
-            Out::Ch4SludgeStorageContainers,
-            "CH₄ Schlamm Lagerung",
-            "red",
-            "#ffb2b2",
-        ),
-        (Out::Ch4SludgeBags, "CH₄ Schlammtasche", "red", "#ffb2b2"),
-        (Out::Ch4Water, "CH₄ Gewässer", "red", "#ffb2b2"),
-        (
-            Out::Ch4CombinedHeatAndPowerPlant,
-            "CH₄ BHKW",
-            "red",
-            "#ffb2b2",
-        ),
-        (Out::Ch4Emissions, "Methanemissionen", "red", "#ffb2b2"),
-        (
-            Out::FossilEmissions,
-            "Fossile CO₂-Emissionen",
-            "red",
-            "#ffb2b2",
-        ),
-        (Out::Fecl3, "Eisen(III)-chlorid-Lösung", "yellow", "#fff5b2"),
-        (
-            Out::Feclso4,
-            "Eisenchloridsulfat-Lösung",
-            "yellow",
-            "#fff5b2",
-        ),
-        (Out::Caoh2, "Kalkhydrat", "yellow", "#fff5b2"),
-        (
-            Out::SyntheticPolymers,
-            "Synthetische Polymere",
-            "yellow",
-            "#fff5b2",
-        ),
-        (Out::ElectricityMix, "Strommix", "orange", "#ffe4b2"),
-        (Out::OilEmissions, "Heizöl", "orange", "#ffe4b2"),
-        (Out::GasEmissions, "Gas", "orange", "#ffe4b2"),
-        (
-            Out::OperatingMaterials,
-            "Betriebsstoffe",
-            "yellow",
-            "#fff5b2",
-        ),
-        (
-            Out::SewageSludgeTransport,
-            "Klärschlamm Transport",
-            "yellow",
-            "#fff5b2",
-        ),
-        (Out::TotalEmissions, "Gesamtemissionen", "black", "#000000"),
-        (Out::DirectEmissions, "Direkte Emissionen", "red", "#ffb2b2"),
-        (
-            Out::IndirectEmissions,
-            "Indirekte Emissionen",
-            "orange",
-            "#ffe4b2",
-        ),
-        (
-            Out::OtherIndirectEmissions,
-            "Weitere Indirekte Emissionen",
-            "yellow",
-            "#fff5b2",
-        ),
+        (Out::N2oPlant, "red", "#ffb2b2"),
+        (Out::N2oWater, "red", "#ffb2b2"),
+        (Out::N2oSideStream, "red", "#ffb2b2"),
+        (Out::N2oEmissions, "red", "#ffb2b2"),
+        (Out::Ch4Plant, "red", "#ffb2b2"),
+        (Out::Ch4SludgeStorageContainers, "red", "#ffb2b2"),
+        (Out::Ch4SludgeBags, "red", "#ffb2b2"),
+        (Out::Ch4Water, "red", "#ffb2b2"),
+        (Out::Ch4CombinedHeatAndPowerPlant, "red", "#ffb2b2"),
+        (Out::Ch4Emissions, "red", "#ffb2b2"),
+        (Out::FossilEmissions, "red", "#ffb2b2"),
+        (Out::Fecl3, "yellow", "#fff5b2"),
+        (Out::Feclso4, "yellow", "#fff5b2"),
+        (Out::Caoh2, "yellow", "#fff5b2"),
+        (Out::SyntheticPolymers, "yellow", "#fff5b2"),
+        (Out::ElectricityMix, "orange", "#ffe4b2"),
+        (Out::OilEmissions, "orange", "#ffe4b2"),
+        (Out::GasEmissions, "orange", "#ffe4b2"),
+        (Out::OperatingMaterials, "yellow", "#fff5b2"),
+        (Out::SewageSludgeTransport, "yellow", "#fff5b2"),
+        (Out::TotalEmissions, "black", "#000000"),
+        (Out::DirectEmissions, "red", "#ffb2b2"),
+        (Out::IndirectEmissions, "orange", "#ffe4b2"),
+        (Out::OtherIndirectEmissions, "yellow", "#fff5b2"),
     ];
 
     let nodes = node_labels
         .iter()
-        .map(|(id, label, color, color_lite)| {
+        .map(|(id, color, color_lite)| {
             (
                 f64::from(co2_equivalents.get(id).copied().unwrap_or_else(Tons::zero)),
-                *label,
+                id.label(),
                 *color,
                 *color_lite,
             )
         })
         .collect();
 
-    let edges = [
-        (Out::Ch4SludgeBags, Out::Ch4Emissions),
-        (Out::Ch4SludgeStorageContainers, Out::Ch4Emissions),
-        (Out::Ch4Plant, Out::Ch4Emissions),
-        (Out::Ch4Water, Out::Ch4Emissions),
-        (Out::Ch4CombinedHeatAndPowerPlant, Out::Ch4Emissions),
-        (Out::N2oPlant, Out::N2oEmissions),
-        (Out::N2oWater, Out::N2oEmissions),
-        (Out::N2oSideStream, Out::N2oEmissions),
-        (Out::N2oEmissions, Out::DirectEmissions),
-        (Out::Ch4Emissions, Out::DirectEmissions),
-        (Out::FossilEmissions, Out::DirectEmissions),
-        (Out::ElectricityMix, Out::IndirectEmissions),
-        (Out::OilEmissions, Out::IndirectEmissions),
-        (Out::GasEmissions, Out::IndirectEmissions),
-        (Out::OperatingMaterials, Out::OtherIndirectEmissions),
-        (Out::OtherIndirectEmissions, Out::TotalEmissions),
-        (Out::DirectEmissions, Out::TotalEmissions),
-        (Out::IndirectEmissions, Out::TotalEmissions),
-    ];
+    // FIXME:
+    // The edges defined in `domain::SANKEY_EDGES`
+    // should be the sames as defined here,
+    // the follwing fails:
+    //
+    //    assert_eq!(edges, domain::SANKEY_EDGES);
+    //
+    // let edges = &[
+    //    (Out::Ch4SludgeBags, Out::Ch4Emissions),
+    //    (Out::Ch4SludgeStorageContainers, Out::Ch4Emissions),
+    //    (Out::Ch4Plant, Out::Ch4Emissions),
+    //    (Out::Ch4Water, Out::Ch4Emissions),
+    //    (Out::Ch4CombinedHeatAndPowerPlant, Out::Ch4Emissions),
+    //    (Out::N2oPlant, Out::N2oEmissions),
+    //    (Out::N2oWater, Out::N2oEmissions),
+    //    (Out::N2oSideStream, Out::N2oEmissions),
+    //    (Out::N2oEmissions, Out::DirectEmissions),
+    //    (Out::Ch4Emissions, Out::DirectEmissions),
+    //    (Out::FossilEmissions, Out::DirectEmissions),
+    //    (Out::ElectricityMix, Out::IndirectEmissions),
+    //    (Out::OilEmissions, Out::IndirectEmissions),
+    //    (Out::GasEmissions, Out::IndirectEmissions),
+    //    (Out::OperatingMaterials, Out::OtherIndirectEmissions),
+    //    (Out::OtherIndirectEmissions, Out::TotalEmissions),
+    //    (Out::DirectEmissions, Out::TotalEmissions),
+    //    (Out::IndirectEmissions, Out::TotalEmissions),
+    //];
+
+    let edges = domain::SANKEY_EDGES.iter().filter(|(source, target)| {
+        let Some(source_value) = co2_equivalents.get(source) else {
+            return false;
+        };
+        let Some(target_value) = co2_equivalents.get(target) else {
+            return false;
+        };
+        *source_value != Tons::zero() && *target_value != Tons::zero()
+    });
 
     let mut connections: Vec<(usize, usize)> = Vec::new();
-    for (from, to) in edges.iter() {
+    for (from, to) in edges {
         let from_idx = node_labels
             .iter()
-            .position(|(id, _, _, _)| id == from)
+            .position(|(id, _, _)| id == from)
             .unwrap();
-        let to_idx = node_labels
-            .iter()
-            .position(|(id, _, _, _)| id == to)
-            .unwrap();
+        let to_idx = node_labels.iter().position(|(id, _, _)| id == to).unwrap();
         connections.push((from_idx, to_idx));
     }
 
