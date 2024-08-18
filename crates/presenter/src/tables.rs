@@ -134,11 +134,23 @@ pub fn sensitivity_parameters_as_table(
 ) -> Table {
     let lang = Lng::De;
 
-    let n2o_emission_factor: Option<Value> =
-        output.map(|output| output.emission_factors.n2o.convert_to::<Percent>().into());
+    let n2o_emission_factor: Option<Value> = output.map(|output| {
+        output
+            .emission_factors
+            .get(&Out::N2oCalculatedEmissionFactor)
+            .unwrap()
+            .convert_to::<Percent>()
+            .into()
+    });
 
-    let ch4_chp_emission_factor: Option<Value> =
-        output.map(|output| output.emission_factors.ch4.convert_to::<Percent>().into());
+    let ch4_chp_emission_factor: Option<Value> = output.map(|output| {
+        output
+            .emission_factors
+            .get(&Out::Ch4ChpCalculatedEmissionFactor)
+            .unwrap()
+            .convert_to::<Percent>()
+            .into()
+    });
 
     let sections = vec![
         (

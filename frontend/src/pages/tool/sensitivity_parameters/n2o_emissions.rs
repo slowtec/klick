@@ -83,7 +83,7 @@ pub fn N2OEmissionsSensitivity(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
                             label: Some(szenario.label()),
                             value: outcome.co2_equivalents.get(&Out::N2oPlant).copied().unwrap().into(),
-                            emission_factor: f64::from(outcome.emission_factors.n2o),
+                            emission_factor: f64::from(outcome.emission_factors.get(&Out::N2oCalculatedEmissionFactor).copied().unwrap()),
                         },
                     )
                     .collect();

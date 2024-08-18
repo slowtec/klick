@@ -382,5 +382,11 @@ spec! {
         ExcessEnergyCo2Equivalent {
           unit = Tons;
         },
+        N2oCalculatedEmissionFactor {
+          unit = Factor;
+        },
+        Ch4ChpCalculatedEmissionFactor {
+          unit = Factor;
+        }
     }
 }

@@ -99,7 +99,7 @@ pub fn SensitivityParameters(
           { move || outcome.with(|out|out.output.as_ref().map(|out|{
                 klick_presenter::create_sankey_chart_header(
                   &form_data.with(Clone::clone), // TODO: avoid clone
-                  out.emission_factors,
+                  out.emission_factors.clone(),
                   out.calculation_methods,
                   klick_presenter::Formatting::Text,
                 )
@@ -108,7 +108,7 @@ pub fn SensitivityParameters(
         </h4>
 
         { move || outcome.with(|out| out.output.as_ref().map(|outcome|{
-            let data = (outcome.co2_equivalents.clone(), outcome.emission_factors);
+            let data = (outcome.co2_equivalents.clone(), outcome.emission_factors.clone());
             view!{ <Sankey data /> }
           }))
         }

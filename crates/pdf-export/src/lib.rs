@@ -299,7 +299,11 @@ fn render_n2o_scenarios_svg_bar_chart(
                     .copied()
                     .unwrap()
                     .into(),
-                emission_factor: emission_factors.n2o.into(),
+                emission_factor: emission_factors
+                    .get(&Out::N2oCalculatedEmissionFactor)
+                    .copied()
+                    .unwrap()
+                    .into(),
             }
         })
         .collect();

@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+
 use klick_boundary::CalculationOutcome;
 use klick_domain::{
-    units::{Ch4ChpEmissionFactorCalcMethod, N2oEmissionFactorCalcMethod, Percent, RatioExt},
-    CalculatedEmissionFactors, EmissionFactorCalculationMethods,
+    units::{
+        Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Percent, RatioExt,
+    },
+    EmissionFactorCalculationMethods, OutputValueId as Out,
 };
 
 use crate::{
@@ -82,17 +86,29 @@ pub fn emission_factor_calculation_methods_to_csv(
 }
 
 #[must_use]
-pub fn emission_factors_to_csv(factors: &CalculatedEmissionFactors) -> String {
+pub fn emission_factors_to_csv(factors: &HashMap<Out, Factor>) -> String {
     [
         format!(
             "{}, {}\n",
             "emission_factors.n2o",
-            &f64::from(factors.n2o.convert_to::<Percent>()).to_string()
+            &f64::from(
+                factors
+                    .get(&Out::N2oCalculatedEmissionFactor)
+                    .unwrap()
+                    .convert_to::<Percent>()
+            )
+            .to_string()
         ),
         format!(
             "{}, {}\n",
             "emission_factors.ch4",
-            &f64::from(factors.ch4.convert_to::<Percent>()).to_string()
+            &f64::from(
+                factors
+                    .get(&Out::Ch4ChpCalculatedEmissionFactor)
+                    .unwrap()
+                    .convert_to::<Percent>()
+            )
+            .to_string()
         ),
     ]
     .join("")

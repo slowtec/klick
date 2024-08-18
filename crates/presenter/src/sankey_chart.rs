@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
-    units::{Percent, RatioExt, Tons},
+    units::{Factor, Percent, RatioExt, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };
 
@@ -12,7 +12,7 @@ use crate::{Formatting, Lng};
 #[must_use]
 pub fn create_sankey_chart_header(
     data: &FormData,
-    emission_factors: domain::CalculatedEmissionFactors,
+    emission_factors: HashMap<Out, Factor>,
     calculation_methods: domain::EmissionFactorCalculationMethods,
     formatting: Formatting,
 ) -> String {
@@ -36,7 +36,12 @@ pub fn create_sankey_chart_header(
     };
 
     let emission_factor = Lng::De.format_number_with_fixed_precision(
-        f64::from(emission_factors.n2o.convert_to::<Percent>()),
+        f64::from(
+            emission_factors
+                .get(&Out::N2oCalculatedEmissionFactor)
+                .unwrap()
+                .convert_to::<Percent>(),
+        ),
         3,
     );
 

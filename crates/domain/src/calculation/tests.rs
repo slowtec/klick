@@ -73,11 +73,14 @@ fn example_values() -> HashMap<Id, Value> {
 // cargo test  -- --nocapture
 #[allow(dead_code)]
 fn create_test_results_on_changes_co2_equivalents_emission_factors(
-    emission_factors: CalculatedEmissionFactors,
+    emission_factors: HashMap<Out, Factor>,
 ) {
-    let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
-    println!("assert_eq!(f64::from(n2o), {:?});", f64::from(n2o));
-    println!("assert_eq!(f64::from(ch4), {:?});", f64::from(ch4));
+    for (id, value) in emission_factors {
+        println!(
+            "assert_eq!(emission_factors.get(&Out::{id:?}).copied().unwrap(),Factor::new({:?}));",
+            f64::from(value)
+        );
+    }
 }
 
 // a helper to update the tests
@@ -116,10 +119,20 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
-
-    assert_eq!(n2o, Factor::new(0.0045049999999999995));
-    assert_eq!(ch4, Factor::new(0.01));
+    assert_eq!(
+        emission_factors
+            .get(&Out::N2oCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.0045049999999999995)
+    );
+    assert_eq!(
+        emission_factors
+            .get(&Out::Ch4ChpCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.01)
+    );
 
     assert_eq!(
         *eq.get(&Out::N2oPlant).unwrap(),
@@ -237,11 +250,21 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
-
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
-    assert_eq!(f64::from(n2o), 0.003);
-    assert_eq!(f64::from(ch4), 0.01);
+    assert_eq!(
+        emission_factors
+            .get(&Out::N2oCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.003)
+    );
+    assert_eq!(
+        emission_factors
+            .get(&Out::Ch4ChpCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.01)
+    );
 
     let co2 = co2_equivalents;
 
@@ -397,11 +420,23 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
+    // let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
 
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
-    assert_eq!(f64::from(n2o), 0.008);
-    assert_eq!(f64::from(ch4), 0.01);
+    assert_eq!(
+        emission_factors
+            .get(&Out::N2oCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.008)
+    );
+    assert_eq!(
+        emission_factors
+            .get(&Out::Ch4ChpCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.01)
+    );
 
     let co2 = co2_equivalents;
 
@@ -557,11 +592,21 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
-
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
-    assert_eq!(f64::from(n2o), 0.016);
-    assert_eq!(f64::from(ch4), 0.01);
+    assert_eq!(
+        emission_factors
+            .get(&Out::N2oCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.016)
+    );
+    assert_eq!(
+        emission_factors
+            .get(&Out::Ch4ChpCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.01)
+    );
 
     let co2 = co2_equivalents;
 
@@ -724,10 +769,20 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
         ..
     } = calculate_emissions(&values).unwrap();
 
-    let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
-
-    assert_eq!(n2o, Factor::new(0.01));
-    assert_eq!(ch4, Factor::new(0.01));
+    assert_eq!(
+        emission_factors
+            .get(&Out::N2oCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.01)
+    );
+    assert_eq!(
+        emission_factors
+            .get(&Out::Ch4ChpCalculatedEmissionFactor)
+            .copied()
+            .unwrap(),
+        Factor::new(0.01)
+    );
 
     assert_eq!(*eq.get(&Out::N2oPlant).unwrap(), Tons::new(861.060_915));
     assert_eq!(

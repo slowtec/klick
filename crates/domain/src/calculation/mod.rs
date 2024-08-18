@@ -12,10 +12,7 @@ use klick_value::{
 };
 
 #[allow(clippy::wildcard_imports)]
-use crate::{
-    CalculatedEmissionFactors, EmissionFactorCalculationMethods, EmissionsCalculationOutcome,
-    Value as V,
-};
+use crate::{EmissionFactorCalculationMethods, EmissionsCalculationOutcome, Value as V};
 
 mod emission_groups;
 
@@ -320,38 +317,14 @@ pub fn calculate_emissions(
     .into_iter()
     .collect();
 
-    let edges = [
-        (Out::Ch4SludgeBags, Out::Ch4Emissions),
-        (Out::Ch4SludgeStorageContainers, Out::Ch4Emissions),
-        (Out::Ch4Plant, Out::Ch4Emissions),
-        (Out::Ch4Water, Out::Ch4Emissions),
-        (Out::Ch4CombinedHeatAndPowerPlant, Out::Ch4Emissions),
-        (Out::N2oPlant, Out::N2oEmissions),
-        (Out::N2oWater, Out::N2oEmissions),
-        (Out::N2oSideStream, Out::N2oEmissions),
-        (Out::SyntheticPolymers, Out::OperatingMaterials),
-        (Out::Feclso4, Out::OperatingMaterials),
-        (Out::Caoh2, Out::OperatingMaterials),
-        (Out::Fecl3, Out::OperatingMaterials),
-        (Out::N2oEmissions, Out::DirectEmissions),
-        (Out::Ch4Emissions, Out::DirectEmissions),
-        (Out::FossilEmissions, Out::DirectEmissions),
-        (Out::ElectricityMix, Out::IndirectEmissions),
-        (Out::OilEmissions, Out::IndirectEmissions),
-        (Out::GasEmissions, Out::IndirectEmissions),
-        (Out::OperatingMaterials, Out::OtherIndirectEmissions),
-        (Out::SewageSludgeTransport, Out::OtherIndirectEmissions),
-        (Out::OtherIndirectEmissions, Out::TotalEmissions),
-        (Out::DirectEmissions, Out::TotalEmissions),
-        (Out::IndirectEmissions, Out::TotalEmissions),
-    ];
+    let co2_equivalents = calculate_emission_groups(co2_equivalents, emission_groups::SANKEY_EDGES);
 
-    let co2_equivalents = calculate_emission_groups(co2_equivalents, &edges);
-
-    let emission_factors = CalculatedEmissionFactors {
-        n2o: n2o_emission_factor,
-        ch4: ch4_emission_factor,
-    };
+    let emission_factors = [
+        (Out::N2oCalculatedEmissionFactor, n2o_emission_factor),
+        (Out::Ch4ChpCalculatedEmissionFactor, ch4_emission_factor),
+    ]
+    .into_iter()
+    .collect();
 
     let calculation_methods = EmissionFactorCalculationMethods {
         n2o: n2o_calculation_method,
