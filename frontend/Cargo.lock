@@ -856,7 +856,7 @@ dependencies = [
  "anyhow",
  "bs58",
  "derive_more",
- "klick-value-spec",
+ "klick-value",
  "mailparse",
  "num-derive",
  "num-traits",
@@ -909,6 +909,17 @@ dependencies = [
  "klick-domain",
  "serde",
  "strum",
+]
+
+[[package]]
+name = "klick-value"
+version = "0.0.0"
+dependencies = [
+ "derive_more",
+ "klick-value-spec",
+ "num-derive",
+ "num-traits",
+ "paste",
 ]
 
 [[package]]

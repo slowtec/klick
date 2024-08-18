@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
-use crate::{extract_optional, extract_required, units::*, InputValueId as Id, MissingValueError};
+use klick_value::{
+    extract_optional, extract_required,
+    specs::{InputValueId as Id, MissingInputValueIdError},
+    units::*,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CalculatedEmissionFactors {

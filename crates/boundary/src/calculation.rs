@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use klick_domain::{self as domain, InputValueId as Id, MissingValueError, Value as V};
+use klick_domain::{
+    self as domain, InputValueId as Id, MissingInputValueIdError as MissingValueError, Value as V,
+};
 
 use crate::{CalculationOutcome, FormData};
 

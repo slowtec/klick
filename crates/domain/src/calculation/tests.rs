@@ -1,6 +1,12 @@
 use std::collections::HashMap;
 
-use crate::{constants::*, units::*, InputValueId as Id, OutputValueId as Out, Value as V, *};
+use klick_value::{
+    constants::*,
+    specs::{InputValueId as Id, OutputValueId as Out},
+    units::{Value as V, *},
+};
+
+use crate::*;
 
 fn ch4_combined_heat_and_power_plant_computation_helper(
     values: &HashMap<Id, Value>,

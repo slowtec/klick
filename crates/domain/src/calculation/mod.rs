@@ -3,28 +3,28 @@ use std::collections::HashMap;
 #[cfg(test)]
 mod tests;
 
-use thiserror::Error;
+use klick_value::{
+    constants::*,
+    extract_optional, extract_required,
+    specs::{InputValueId as Id, MissingInputValueIdError, OutputValueId as Out},
+    units::*,
+};
 
 #[allow(clippy::wildcard_imports)]
 use crate::{
-    constants::*, extract_optional, extract_required, units::*, CalculatedEmissionFactors,
-    EmissionFactorCalculationMethods, EmissionsCalculationOutcome, InputValueId as Id,
-    OutputValueId as Out, Value as V,
+    CalculatedEmissionFactors, EmissionFactorCalculationMethods, EmissionsCalculationOutcome,
+    Value as V,
 };
 
 mod emission_groups;
 
 use self::emission_groups::calculate_emission_groups;
 
-#[derive(Debug, Error)]
-#[error("The required value ({0:?}) is missing")]
-pub struct MissingValueError(pub Id);
-
 #[must_use]
 #[allow(clippy::too_many_lines)] // TODO
 pub fn calculate_emissions(
     input: &HashMap<Id, Value>,
-) -> Result<EmissionsCalculationOutcome, MissingValueError> {
+) -> Result<EmissionsCalculationOutcome, MissingInputValueIdError> {
     // -------    ------ //
     //  Unpack variables //
     // -------    ------ //

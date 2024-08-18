@@ -14,6 +14,8 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
     let value_type = &input.value_type;
     let ident = &input.ident;
 
+    let missing_error_ident = format_ident!("Missing{}Error", ident);
+
     let variant_quotes = input.variants.iter().map(|variant| {
         let variant_name = &variant.name;
 
@@ -130,15 +132,15 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
     });
 
     let required_extractors = value_fields.iter().map(|(variant, _, unit, _)| {
-        let getter_name =
-            format_ident!("as_{}_unchecked", to_snake_case(unit.to_string().as_str()));
+        let snake_case_unit = to_snake_case(unit.to_string().as_str());
+        let getter_name = format_ident!("as_{}_unchecked", snake_case_unit);
         quote! {
             ($enum:ident ::#variant, $values:expr) => {
                 $values
                     .get(&$enum::#variant)
                     .cloned()
                     .or_else(|| $enum::#variant.default_value())
-                    .ok_or(MissingValueError($enum::#variant))
+                    .ok_or(#missing_error_ident($enum::#variant))
                     .map(|value|{
                         debug_assert_eq!($enum::#variant.value_type(), value.value_type());
                         value.#getter_name()
@@ -211,12 +213,25 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
             }
         }
 
+        #[macro_export]
         macro_rules! extract_required {
             #(#required_extractors)*
         }
 
+        #[macro_export]
         macro_rules! extract_optional {
             #(#optional_extractors)*
+        }
+
+        #[derive(Debug)]
+        pub struct #missing_error_ident(pub #ident);
+
+        impl std::error::Error for #missing_error_ident { }
+
+        impl std::fmt::Display for #missing_error_ident {
+            fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(fmt, "The required value ({:?}) is missing", self.0)
+            }
         }
 
         pub(crate) use extract_required;

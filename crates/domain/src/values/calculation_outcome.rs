@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use crate::{units::*, CalculatedEmissionFactors, EmissionFactorCalculationMethods, OutputValueId};
+use klick_value::{specs::OutputValueId, units::*};
+
+use crate::{CalculatedEmissionFactors, EmissionFactorCalculationMethods};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct EmissionsCalculationOutcome {

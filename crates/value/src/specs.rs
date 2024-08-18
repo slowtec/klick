@@ -286,3 +286,38 @@ spec! {
         },
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum OutputValueId {
+    N2oPlant,
+    N2oWater,
+    N2oSideStream,
+    N2oEmissions,
+    Ch4Plant,
+    Ch4SludgeStorageContainers,
+    Ch4SludgeBags,
+    Ch4Water,
+    Ch4CombinedHeatAndPowerPlant,
+    Ch4Emissions,
+    FossilEmissions,
+    Fecl3,
+    Feclso4,
+    Caoh2,
+    SyntheticPolymers,
+    ElectricityMix,
+    OilEmissions,
+    GasEmissions,
+    OperatingMaterials,
+    SewageSludgeTransport,
+    TotalEmissions,
+    DirectEmissions,
+    ProcessEnergySavings,
+    PhotovoltaicExpansionSavings,
+    WindExpansionSavings,
+    WaterExpansionSavings,
+    DistrictHeatingSavings,
+    FossilEnergySavings,
+    IndirectEmissions,
+    OtherIndirectEmissions,
+    ExcessEnergyCo2Equivalent,
+}

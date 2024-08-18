@@ -44,6 +44,7 @@ klick-app-charts     = { path = "../crates/app-charts"     }
 klick-boundary       = { path = "../crates/boundary"       }
 klick-domain         = { path = "../crates/domain"         }
 klick-presenter      = { path = "../crates/presenter"      }
+klick-value          = { path = "../crates/value"          }
 klick-value-spec     = { path = "../crates/value-spec"     }
 
 [profile.release]

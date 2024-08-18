@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{units::Tons, OutputValueId as Out};
+use klick_value::{specs::OutputValueId as Out, units::Tons};
 
 pub fn calculate_emission_groups(
     mut values: HashMap<Out, Tons>,
