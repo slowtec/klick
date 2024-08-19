@@ -12,6 +12,22 @@ pub use self::{
 
 pub use klick_value::{
     constants,
-    specs::{InputValueId, MissingInputValueIdError, OutputValueId},
+    specs::{InputValueId, MissingInputValueIdError, MissingOutputValueIdError, OutputValueId},
     units::{self, Value, ValueType},
 };
+
+pub mod input_value {
+    pub use klick_value::{
+        extract_optional_with_input_value_id as optional,
+        extract_required_with_input_value_id as required,
+        specs::{InputValueId, MissingInputValueIdError},
+    };
+}
+
+pub mod output_value {
+    pub use klick_value::{
+        extract_optional_with_output_value_id as optional,
+        extract_required_with_output_value_id as required,
+        specs::{MissingOutputValueIdError, OutputValueId},
+    };
+}

@@ -2,10 +2,7 @@ use std::collections::HashMap;
 
 use leptos::*;
 
-use klick_domain::{
-    units::{Factor, Tons},
-    OutputValueId as Out,
-};
+use klick_domain::{units::Tons, OutputValueId as Out};
 use klick_presenter as presenter;
 
 use klick_app_charts::{Color, SankeyChart, SankeyData};
@@ -45,8 +42,8 @@ where
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
-pub fn Sankey(data: (HashMap<Out, Tons>, HashMap<Out, Factor>)) -> impl IntoView {
-    let (co2_equivalents, _) = data;
+pub fn Sankey(data: HashMap<Out, Tons>) -> impl IntoView {
+    let co2_equivalents = data;
     let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
 
     let mut sankey = SankeyData::new();

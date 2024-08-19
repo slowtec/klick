@@ -5,8 +5,7 @@ use klick_value::{specs::OutputValueId, units::*};
 #[derive(Debug, Clone, PartialEq)]
 pub struct EmissionsCalculationOutcome {
     pub co2_equivalents: HashMap<OutputValueId, Tons>,
-    pub emission_factors: HashMap<OutputValueId, Factor>,
-    pub calculation_methods: HashMap<OutputValueId, Value>,
+    pub values: HashMap<OutputValueId, Value>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -5,7 +5,8 @@ use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
 use klick_boundary::{CalculationOutcome, FormData};
 use klick_domain::{
-    units::N2oEmissionFactorCalcMethod, InputValueId as Id, OutputValueId as Out, Value,
+    output_value::*, units::N2oEmissionFactorCalcMethod, InputValueId as Id, OutputValueId as Out,
+    Value,
 };
 use klick_presenter::ValueLabel;
 
@@ -83,7 +84,7 @@ pub fn N2OEmissionsSensitivity(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
                             label: Some(szenario.label()),
                             value: outcome.co2_equivalents.get(&Out::N2oPlant).copied().unwrap().into(),
-                            emission_factor: f64::from(outcome.emission_factors.get(&Out::N2oCalculatedEmissionFactor).copied().unwrap()),
+                            emission_factor: f64::from(required!(Out::N2oCalculatedEmissionFactor, outcome.values).unwrap()),
                         },
                     )
                     .collect();

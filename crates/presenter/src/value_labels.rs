@@ -113,9 +113,9 @@ impl ValueLabel for OutputValueId {
             Self::N2oWater => "N₂O Gewässer",
             Self::N2oSideStream => "N₂O Prozesswasserbehandlung",
             Self::N2oEmissions => "Lachgasemissionen",
-            Self::Ch4Plant => "CH₄ Anlage",
-            Self::Ch4SludgeStorageContainers => "CH₄ Schlamm Lagerung",
-            Self::Ch4SludgeBags => "CH₄ Schlammtasche",
+            Self::Ch4Plant => "CH₄ Anlage (unspez.)",
+            Self::Ch4SludgeStorageContainers => "CH₄ Schlupf Schlammlagerung",
+            Self::Ch4SludgeBags => "CH₄ Schlupf Schlammtasche",
             Self::Ch4Water => "CH₄ Gewässer",
             Self::Ch4CombinedHeatAndPowerPlant => "CH₄ BHKW",
             Self::Ch4Emissions => "Methanemissionen",
@@ -133,6 +133,14 @@ impl ValueLabel for OutputValueId {
             Self::DirectEmissions => "Direkte Emissionen",
             Self::IndirectEmissions => "Indirekte Emissionen",
             Self::OtherIndirectEmissions => "Weitere Indirekte Emissionen",
+            Self::ProcessEnergySavings => "Energieeinsparung bei Prozessen",
+            Self::PhotovoltaicExpansionSavings => "Einsparung durch Photovoltaik",
+            Self::WindExpansionSavings => "Einsparung durch Windkraft",
+            Self::WaterExpansionSavings => "Einsparung durch Wasserkraft",
+            Self::DistrictHeatingSavings => "Einsparung durch Abwärmenutzung",
+            Self::FossilEnergySavings => "Einsparung bei Fossilen Energiequellen",
+            Self::ExcessEnergyCo2Equivalent => "Energiebedingte Emissionen",
+
             _ => todo!(),
         }
     }

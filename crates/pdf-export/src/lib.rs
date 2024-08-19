@@ -13,6 +13,7 @@ use klick_app_charts as charts;
 use klick_boundary as boundary;
 use klick_domain::{
     self as domain,
+    output_value::*,
     units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
     EmissionsCalculationOutcome, InputValueId as Id, OutputValueId as Out, Value,
 };
@@ -230,12 +231,7 @@ fn render_markdown_template(
     let plant_profile_sankey_header = outcome
         .output
         .map(|output| {
-            presenter::create_sankey_chart_header(
-                &outcome.input,
-                output.emission_factors,
-                output.calculation_methods,
-                Formatting::LaTeX,
-            )
+            presenter::create_sankey_chart_header(&outcome.input, output.values, Formatting::LaTeX)
         })
         .unwrap_or_default();
 
@@ -289,8 +285,7 @@ fn render_n2o_scenarios_svg_bar_chart(
         .map(|(method, emissions_calculation_outcome)| {
             let EmissionsCalculationOutcome {
                 co2_equivalents,
-                emission_factors,
-                calculation_methods: _,
+                values,
             } = emissions_calculation_outcome;
             charts::BarChartRadioInputArguments {
                 label: Some(method.label()),
@@ -299,9 +294,8 @@ fn render_n2o_scenarios_svg_bar_chart(
                     .copied()
                     .unwrap()
                     .into(),
-                emission_factor: emission_factors
-                    .get(&Out::N2oCalculatedEmissionFactor)
-                    .copied()
+
+                emission_factor: required!(Out::N2oCalculatedEmissionFactor, values)
                     .unwrap()
                     .into(),
             }

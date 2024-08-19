@@ -10,18 +10,14 @@ use crate::*;
 
 fn ch4_combined_heat_and_power_plant_computation_helper(
     values: &HashMap<Id, Value>,
-    ch4_chp_emission_factor: Option<Ch4ChpEmissionFactorCalcMethod>,
+    ch4_chp_emission_factor: Ch4ChpEmissionFactorCalcMethod,
 ) -> Tons {
     let mut values = values.clone();
 
-    if let Some(m) = ch4_chp_emission_factor {
-        values.insert(
-            Id::SensitivityCH4ChpCalculationMethod,
-            V::ch4_chp_emission_factor_calc_method(m),
-        );
-    } else {
-        values.remove(&Id::SensitivityCH4ChpCalculationMethod);
-    }
+    values.insert(
+        Id::SensitivityCH4ChpCalculationMethod,
+        V::ch4_chp_emission_factor_calc_method(ch4_chp_emission_factor),
+    );
 
     let EmissionsCalculationOutcome {
         co2_equivalents, ..
@@ -115,23 +111,23 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
 
     let EmissionsCalculationOutcome {
         co2_equivalents: eq,
-        emission_factors,
+        values,
         ..
     } = calculate_emissions(&values).unwrap();
 
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::N2oCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.0045049999999999995)
+        Factor::new(0.0045049999999999995).into()
     );
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::Ch4ChpCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.01)
+        Factor::new(0.01).into()
     );
 
     assert_eq!(
@@ -220,14 +216,14 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             &profile,
-            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Ch4ChpEmissionFactorCalcMethod::GasolineEngine
         ),
         Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             &profile,
-            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
+            Ch4ChpEmissionFactorCalcMethod::JetEngine
         ),
         Tons::new(130.785_900_000_000_03)
     );
@@ -235,35 +231,35 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
 
 #[test]
 fn calculate_with_n2o_emission_factor_method_optimistic() {
-    let mut values = example_values();
+    let mut input_values = example_values();
 
-    values.insert(
+    input_values.insert(
         Id::SensitivityN2OCalculationMethod,
         V::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::Optimistic),
     );
-    assert!(values
+    assert!(input_values
         .get(&Id::SensitivityCH4ChpCalculationMethod)
         .is_none());
     let EmissionsCalculationOutcome {
         co2_equivalents,
-        emission_factors,
+        values,
         ..
-    } = calculate_emissions(&values).unwrap();
+    } = calculate_emissions(&input_values).unwrap();
 
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::N2oCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.003)
+        Factor::new(0.003).into()
     );
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::Ch4ChpCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.01)
+        Factor::new(0.01).into()
     );
 
     let co2 = co2_equivalents;
@@ -391,15 +387,15 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
 
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            &values,
-            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
+            &input_values,
+            Ch4ChpEmissionFactorCalcMethod::GasolineEngine
         ),
         Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
-            &values,
-            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
+            &input_values,
+            Ch4ChpEmissionFactorCalcMethod::JetEngine
         ),
         Tons::new(130.785_900_000_000_03)
     );
@@ -416,26 +412,24 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     );
     let EmissionsCalculationOutcome {
         co2_equivalents,
-        emission_factors,
+        values,
         ..
     } = calculate_emissions(&values).unwrap();
 
-    // let CalculatedEmissionFactors { n2o, ch4 } = emission_factors;
-
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::N2oCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.008)
+        Factor::new(0.008).into()
     );
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::Ch4ChpCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.01)
+        Factor::new(0.01).into()
     );
 
     let co2 = co2_equivalents;
@@ -564,14 +558,14 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             &profile,
-            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Ch4ChpEmissionFactorCalcMethod::GasolineEngine
         ),
         Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             &profile,
-            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
+            Ch4ChpEmissionFactorCalcMethod::JetEngine
         ),
         Tons::new(130.785_900_000_000_03)
     );
@@ -588,24 +582,24 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     );
     let EmissionsCalculationOutcome {
         co2_equivalents,
-        emission_factors,
+        values,
         ..
     } = calculate_emissions(&values).unwrap();
 
     // create_test_results_on_changes_co2_equivalents_emission_factors(emission_factors);
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::N2oCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.016)
+        Factor::new(0.016).into()
     );
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::Ch4ChpCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.01)
+        Factor::new(0.01).into()
     );
 
     let co2 = co2_equivalents;
@@ -738,14 +732,14 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             &profile,
-            Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine)
+            Ch4ChpEmissionFactorCalcMethod::GasolineEngine
         ),
         Tons::new(78.47154)
     );
     assert_eq!(
         ch4_combined_heat_and_power_plant_computation_helper(
             &profile,
-            Some(Ch4ChpEmissionFactorCalcMethod::JetEngine)
+            Ch4ChpEmissionFactorCalcMethod::JetEngine
         ),
         Tons::new(130.785_900_000_000_03)
     );
@@ -765,23 +759,23 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
 
     let EmissionsCalculationOutcome {
         co2_equivalents: eq,
-        emission_factors,
+        values,
         ..
     } = calculate_emissions(&values).unwrap();
 
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::N2oCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.01)
+        Factor::new(0.01).into()
     );
     assert_eq!(
-        emission_factors
+        values
             .get(&Out::Ch4ChpCalculatedEmissionFactor)
-            .copied()
+            .cloned()
             .unwrap(),
-        Factor::new(0.01)
+        Factor::new(0.01).into()
     );
 
     assert_eq!(*eq.get(&Out::N2oPlant).unwrap(), Tons::new(861.060_915));

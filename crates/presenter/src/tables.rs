@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
+    output_value::*,
     units::{Percent, RatioExt, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };
@@ -135,18 +136,14 @@ pub fn sensitivity_parameters_as_table(
     let lang = Lng::De;
 
     let n2o_emission_factor: Option<Value> = output.map(|output| {
-        output
-            .emission_factors
-            .get(&Out::N2oCalculatedEmissionFactor)
+        required!(Out::N2oCalculatedEmissionFactor, output.values)
             .unwrap()
             .convert_to::<Percent>()
             .into()
     });
 
     let ch4_chp_emission_factor: Option<Value> = output.map(|output| {
-        output
-            .emission_factors
-            .get(&Out::Ch4ChpCalculatedEmissionFactor)
+        required!(Out::Ch4ChpCalculatedEmissionFactor, output.values)
             .unwrap()
             .convert_to::<Percent>()
             .into()
@@ -227,61 +224,46 @@ pub fn co2_equivalents_as_table(eq: &HashMap<Out, Tons>, _unit: Formatting) -> T
     // TODO: use as parameger
     let lang = Lng::De;
 
-    // TODO:
-    // - value IDs labels
-    // - use unit parameter
     let emission_data = [
-        (Out::N2oPlant, "N₂O Anlage"),
-        (Out::N2oWater, "N₂O Gewässer"),
-        (Out::N2oSideStream, "N₂O Prozesswasserbehandlung"),
-        (Out::N2oEmissions, "Lachgasemissionen"),
-        (Out::Ch4Plant, "CH₄ Anlage (unspez.)"),
-        (
-            Out::Ch4SludgeStorageContainers,
-            "CH₄ Schlupf Schlammlagerung",
-        ),
-        (Out::Ch4SludgeBags, "CH₄ Schlupf Schlammtasche"),
-        (Out::Ch4Water, "CH₄ Gewässer"),
-        (Out::Ch4CombinedHeatAndPowerPlant, "CH₄ BHKW"),
-        (Out::Ch4Emissions, "Methanemissionen"),
-        (Out::FossilEmissions, "Fossile CO₂-Emissionen"),
-        (Out::Fecl3, "Eisen(III)-chlorid-Lösung"),
-        (Out::Feclso4, "Eisenchloridsulfat-Lösung"),
-        (Out::Caoh2, "Kalkhydrat"),
-        (Out::SyntheticPolymers, "Synthetische Polymere"),
-        (Out::ElectricityMix, "Strommix"),
-        (Out::OilEmissions, "Heizöl"),
-        (Out::GasEmissions, "Gas"),
-        (Out::OperatingMaterials, "Betriebsstoffe"),
-        (Out::SewageSludgeTransport, "Klärschlamm Transport"),
-        (Out::TotalEmissions, "Emission"),
-        (Out::DirectEmissions, "Direkte Emissionen"),
-        (Out::ProcessEnergySavings, "Energieeinsparung bei Prozessen"),
-        (
-            Out::PhotovoltaicExpansionSavings,
-            "Einsparung durch Photovoltaik",
-        ),
-        (Out::WindExpansionSavings, "Einsparung durch Windkraft"),
-        (Out::WaterExpansionSavings, "Einsparung durch Wasserkraft"),
-        (
-            Out::DistrictHeatingSavings,
-            "Einsparung durch Abwärmenutzung",
-        ),
-        (
-            Out::FossilEnergySavings,
-            "Einsparung bei Fossilen Energiequellen",
-        ),
-        (Out::IndirectEmissions, "Indirekte Emissionen"),
-        (Out::OtherIndirectEmissions, "Weitere Indirekte Emissionen"),
-        (Out::ExcessEnergyCo2Equivalent, "Energiebedingte Emissionen"),
+        Out::N2oPlant,
+        Out::N2oWater,
+        Out::N2oSideStream,
+        Out::N2oEmissions,
+        Out::Ch4Plant,
+        Out::Ch4SludgeStorageContainers,
+        Out::Ch4SludgeBags,
+        Out::Ch4Water,
+        Out::Ch4CombinedHeatAndPowerPlant,
+        Out::Ch4Emissions,
+        Out::FossilEmissions,
+        Out::Fecl3,
+        Out::Feclso4,
+        Out::Caoh2,
+        Out::SyntheticPolymers,
+        Out::ElectricityMix,
+        Out::OilEmissions,
+        Out::GasEmissions,
+        Out::OperatingMaterials,
+        Out::SewageSludgeTransport,
+        Out::TotalEmissions,
+        Out::DirectEmissions,
+        Out::ProcessEnergySavings,
+        Out::PhotovoltaicExpansionSavings,
+        Out::WindExpansionSavings,
+        Out::WaterExpansionSavings,
+        Out::DistrictHeatingSavings,
+        Out::FossilEnergySavings,
+        Out::IndirectEmissions,
+        Out::OtherIndirectEmissions,
+        Out::ExcessEnergyCo2Equivalent,
     ];
 
     let rows: Vec<_> = emission_data
         .into_iter()
-        .map(|(id, label)| {
+        .map(|id| {
             let value = eq.get(&id).copied().unwrap_or_else(Tons::zero); // TODO: log warning if value is None
             let formatted_value = lang.format_number(f64::from(value));
-            (label, Some(formatted_value), Some("t"))
+            (id.label(), Some(formatted_value), Some("t"))
         })
         .collect();
 

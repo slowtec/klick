@@ -107,8 +107,7 @@ pub fn Recommendations(
         { move || outcome.with(|out|out.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
                 &form_data.with(Clone::clone), // TODO: avoid clone
-                out.emission_factors.clone(),
-                out.calculation_methods.clone(),
+                out.values.clone(),
                 klick_presenter::Formatting::Text
               )
             }))
@@ -116,7 +115,7 @@ pub fn Recommendations(
       </h4>
 
       { move || outcome.with(|out| out.output.as_ref().map(|output|{
-          let data = (output.co2_equivalents.clone(), output.emission_factors.clone());
+          let data = output.co2_equivalents.clone();
           view!{ <Sankey data /> }
         }))
       }

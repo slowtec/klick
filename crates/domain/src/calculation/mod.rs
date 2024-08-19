@@ -281,7 +281,7 @@ pub fn calculate_emissions(
     //   Pack variables  //
     // -------    ------ //
 
-    let co2_equivalents = [
+    let values = [
         (Out::N2oPlant, n2o_plant),
         (Out::N2oWater, n2o_water),
         (Out::N2oSideStream, n2o_side_stream),
@@ -312,18 +312,17 @@ pub fn calculate_emissions(
         (Out::DistrictHeatingSavings, district_heating_savings),
         (Out::FossilEnergySavings, fossil_energy_savings_emissions),
         (Out::ExcessEnergyCo2Equivalent, excess_energy_co2_equivalent),
-    ]
-    .into_iter()
-    .collect();
+    ];
 
-    let co2_equivalents = calculate_emission_groups(co2_equivalents, emission_groups::SANKEY_EDGES);
+    let co2_equivalents =
+        calculate_emission_groups(values.into_iter().collect(), emission_groups::SANKEY_EDGES);
 
     let emission_factors = [
         (Out::N2oCalculatedEmissionFactor, n2o_emission_factor),
         (Out::Ch4ChpCalculatedEmissionFactor, ch4_emission_factor),
     ]
     .into_iter()
-    .collect();
+    .map(|(id, v)| (id, Value::from(v)));
 
     let calculation_methods = [
         (
@@ -350,13 +349,18 @@ pub fn calculate_emissions(
         ),
     ]
     .into_iter()
-    .filter_map(|(id, value)| value.map(|v| (id, v)))
-    .collect();
+    .filter_map(|(id, value)| value.map(|v| (id, v)));
+
+    let values = values
+        .into_iter()
+        .map(|(id, v)| (id, Value::from(v)))
+        .chain(emission_factors)
+        .chain(calculation_methods)
+        .collect();
 
     Ok(EmissionsCalculationOutcome {
         co2_equivalents,
-        emission_factors,
-        calculation_methods,
+        values,
     })
 }
 
