@@ -44,7 +44,31 @@ where
 #[component]
 pub fn Sankey(data: HashMap<Out, Tons>) -> impl IntoView {
     let co2_equivalents = data;
-    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
+
+    // NOTE:
+    // This is an example of how to tweak the sankey chart:
+    //
+    // let tweak_nodes = [
+    //    ("Custom node A".to_string(), (Tons::new(100.0), "pink", "red")),
+    //    ("Custom node B".to_string(), (Tons::new(100.0), "pink", "red")),
+    //    ("Custom node C".to_string(), (Tons::new(200.0), "pink", "red"))
+
+    // ].into_iter().collect();
+
+    // let tweak_edges = [
+    //     ("Custom node A".to_string().into(), "Custom node C".to_string().into()),
+    //     ("Custom node B".to_string().into(), "Custom node C".to_string().into()),
+    //     ("Custom node C".to_string().into(), Out::TotalEmissions.into()),
+    // ];
+    //
+    // let tweaks = Some(presenter::SankeyTweaks {
+    //     nodes: tweak_nodes,
+    //     edges: tweak_edges.to_vec(),
+    // });
+
+    let tweaks = None;
+
+    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents, tweaks);
 
     let mut sankey = SankeyData::new();
     let node_count = nodes.len();

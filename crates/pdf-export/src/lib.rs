@@ -336,7 +336,8 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
 }
 
 fn render_svg_sankey_chart(co2_equivalents: HashMap<Out, Tons>) -> String {
-    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
+    let tweaks = None; // TODO: render custom values
+    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents, tweaks);
 
     let mut sankey = charts::SankeyData::new();
     let node_count = nodes.len();

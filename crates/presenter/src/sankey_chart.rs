@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use derive_more::From;
+
 use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
@@ -61,13 +63,25 @@ pub fn create_sankey_chart_header(
     )
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct SankeyTweaks {
+    pub nodes: HashMap<String, (Tons, &'static str, &'static str)>,
+    pub edges: Vec<(SankeyTweakId, SankeyTweakId)>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, From)]
+pub enum SankeyTweakId {
+    Custom(String),
+    Out(Out),
+}
+
+type Nodes = Vec<(f64, String, &'static str, &'static str)>;
+
 #[must_use]
 pub fn create_sankey_chart_data(
     co2_equivalents: HashMap<Out, Tons>,
-) -> (
-    Vec<(f64, &'static str, &'static str, &'static str)>,
-    Vec<(usize, usize)>,
-) {
+    custom: Option<SankeyTweaks>,
+) -> (Nodes, Vec<(usize, usize)>) {
     let node_labels = [
         (Out::N2oPlant, "red", "#ffb2b2"),
         (Out::N2oWater, "red", "#ffb2b2"),
@@ -95,17 +109,20 @@ pub fn create_sankey_chart_data(
         (Out::OtherIndirectEmissions, "yellow", "#fff5b2"),
     ];
 
-    let nodes = node_labels
+    let mut nodes = node_labels
         .iter()
         .map(|(id, color, color_lite)| {
             (
-                f64::from(co2_equivalents.get(id).copied().unwrap_or_else(Tons::zero)),
-                id.label(),
-                *color,
-                *color_lite,
+                SankeyTweakId::from(*id),
+                (
+                    f64::from(co2_equivalents.get(id).copied().unwrap_or_else(Tons::zero)),
+                    id.label().to_string(),
+                    *color,
+                    *color_lite,
+                ),
             )
         })
-        .collect();
+        .collect::<Vec<_>>();
 
     // FIXME:
     // The edges defined in `domain::SANKEY_EDGES`
@@ -135,25 +152,63 @@ pub fn create_sankey_chart_data(
     //    (Out::IndirectEmissions, Out::TotalEmissions),
     //];
 
-    let edges = domain::SANKEY_EDGES.iter().filter(|(source, target)| {
-        let Some(source_value) = co2_equivalents.get(source) else {
-            return false;
-        };
-        let Some(target_value) = co2_equivalents.get(target) else {
-            return false;
-        };
-        *source_value != Tons::zero() && *target_value != Tons::zero()
-    });
+    let mut edges = domain::SANKEY_EDGES
+        .iter()
+        .filter(|(source, target)| {
+            let Some(source_value) = co2_equivalents.get(source) else {
+                return false;
+            };
+            let Some(target_value) = co2_equivalents.get(target) else {
+                return false;
+            };
+            *source_value != Tons::zero() && *target_value != Tons::zero()
+        })
+        .map(|(source, target)| (SankeyTweakId::from(*source), SankeyTweakId::from(*target)))
+        .collect::<Vec<_>>();
+
+    if let Some(tweaks) = custom {
+        for (id, (value, color, color_lite)) in tweaks.nodes {
+            nodes.push((
+                SankeyTweakId::from(id.clone()),
+                (f64::from(value), id, color, color_lite),
+            ));
+        }
+
+        edges.extend(tweaks.edges.clone());
+
+        let tweak_edges = tweaks
+            .edges
+            .into_iter()
+            .map(|(s, t)| (s.into(), t.into()))
+            .collect::<Vec<(SankeyTweakId, SankeyTweakId)>>();
+
+        let values: HashMap<_, Tons> = nodes
+            .iter()
+            .map(|(id, (v, _, _, _))| (id.clone(), Tons::new(*v)))
+            .collect();
+        let tweaked_values = domain::calculate_emission_groups(values, &tweak_edges);
+
+        for (node_id, value) in tweaked_values {
+            let Some((_, (node, _, _, _))) = nodes.iter_mut().find(|(id, _)| *id == node_id) else {
+                continue;
+            };
+            // NOTE:
+            // We assume that all custom nodes already have their calculed
+            // value, so we just tweak the `Out` values.
+            if matches!(node_id, SankeyTweakId::Out(_)) {
+                *node = f64::from(value);
+            }
+        }
+    }
 
     let mut connections: Vec<(usize, usize)> = Vec::new();
+
     for (from, to) in edges {
-        let from_idx = node_labels
-            .iter()
-            .position(|(id, _, _)| id == from)
-            .unwrap();
-        let to_idx = node_labels.iter().position(|(id, _, _)| id == to).unwrap();
+        let from_idx = nodes.iter().position(|(id, _)| *id == from).unwrap();
+        let to_idx = nodes.iter().position(|(id, _)| *id == to).unwrap();
         connections.push((from_idx, to_idx));
     }
 
+    let nodes = nodes.into_iter().map(|(_, node)| node).collect();
     (nodes, connections)
 }

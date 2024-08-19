@@ -1,5 +1,6 @@
 use std::{
     collections::{HashMap, HashSet},
+    hash::Hash,
     iter,
 };
 
@@ -48,15 +49,18 @@ pub fn extract_emission_groups(
         .collect()
 }
 
-pub fn calculate_emission_groups(
-    mut values: HashMap<Out, Tons>,
-    edges: &[(Out, Out)],
-) -> HashMap<Out, Tons> {
-    for &(source, target) in edges {
+pub fn calculate_emission_groups<ID>(
+    mut values: HashMap<ID, Tons>,
+    edges: &[(ID, ID)],
+) -> HashMap<ID, Tons>
+where
+    ID: Eq + Hash + Clone,
+{
+    for (source, target) in edges {
         let Some(source_value) = values.get(&source).copied() else {
             continue;
         };
-        let target_value = values.entry(target).or_insert(Tons::zero());
+        let target_value = values.entry(target.clone()).or_insert(Tons::zero());
         *target_value += source_value;
     }
     values
