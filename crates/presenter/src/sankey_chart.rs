@@ -10,7 +10,7 @@ use klick_domain::{
     InputValueId as Id, OutputValueId as Out, Value,
 };
 
-use crate::{value_labels::ValueLabel, Formatting, Lng};
+use crate::{Formatting, Lng, ValueColor, ValueLabel};
 
 #[must_use]
 pub fn create_sankey_chart_header(
@@ -82,43 +82,43 @@ pub fn create_sankey_chart_data(
     co2_equivalents: HashMap<Out, Tons>,
     custom: Option<SankeyTweaks>,
 ) -> (Nodes, Vec<(usize, usize)>) {
-    let node_labels = [
-        (Out::N2oPlant, "red", "#ffb2b2"),
-        (Out::N2oWater, "red", "#ffb2b2"),
-        (Out::N2oSideStream, "red", "#ffb2b2"),
-        (Out::N2oEmissions, "red", "#ffb2b2"),
-        (Out::Ch4Plant, "red", "#ffb2b2"),
-        (Out::Ch4SludgeStorageContainers, "red", "#ffb2b2"),
-        (Out::Ch4SludgeBags, "red", "#ffb2b2"),
-        (Out::Ch4Water, "red", "#ffb2b2"),
-        (Out::Ch4CombinedHeatAndPowerPlant, "red", "#ffb2b2"),
-        (Out::Ch4Emissions, "red", "#ffb2b2"),
-        (Out::FossilEmissions, "red", "#ffb2b2"),
-        (Out::Fecl3, "yellow", "#fff5b2"),
-        (Out::Feclso4, "yellow", "#fff5b2"),
-        (Out::Caoh2, "yellow", "#fff5b2"),
-        (Out::SyntheticPolymers, "yellow", "#fff5b2"),
-        (Out::ElectricityMix, "orange", "#ffe4b2"),
-        (Out::OilEmissions, "orange", "#ffe4b2"),
-        (Out::GasEmissions, "orange", "#ffe4b2"),
-        (Out::OperatingMaterials, "yellow", "#fff5b2"),
-        (Out::SewageSludgeTransport, "yellow", "#fff5b2"),
-        (Out::TotalEmissions, "black", "#000000"),
-        (Out::DirectEmissions, "red", "#ffb2b2"),
-        (Out::IndirectEmissions, "orange", "#ffe4b2"),
-        (Out::OtherIndirectEmissions, "yellow", "#fff5b2"),
+    let node_ids = [
+        Out::N2oPlant,
+        Out::N2oWater,
+        Out::N2oSideStream,
+        Out::N2oEmissions,
+        Out::Ch4Plant,
+        Out::Ch4SludgeStorageContainers,
+        Out::Ch4SludgeBags,
+        Out::Ch4Water,
+        Out::Ch4CombinedHeatAndPowerPlant,
+        Out::Ch4Emissions,
+        Out::FossilEmissions,
+        Out::Fecl3,
+        Out::Feclso4,
+        Out::Caoh2,
+        Out::SyntheticPolymers,
+        Out::ElectricityMix,
+        Out::OilEmissions,
+        Out::GasEmissions,
+        Out::OperatingMaterials,
+        Out::SewageSludgeTransport,
+        Out::TotalEmissions,
+        Out::DirectEmissions,
+        Out::IndirectEmissions,
+        Out::OtherIndirectEmissions,
     ];
 
-    let mut nodes = node_labels
+    let mut nodes = node_ids
         .iter()
-        .map(|(id, color, color_lite)| {
+        .map(|id| {
             (
                 SankeyTweakId::from(*id),
                 (
                     f64::from(co2_equivalents.get(id).copied().unwrap_or_else(Tons::zero)),
                     id.label().to_string(),
-                    *color,
-                    *color_lite,
+                    id.color(),
+                    id.color_light(),
                 ),
             )
         })
