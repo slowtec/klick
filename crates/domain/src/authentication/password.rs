@@ -1,6 +1,5 @@
 use std::{fmt, str::FromStr};
 
-use pwhash::bcrypt;
 use thiserror::Error;
 
 pub struct Password(String);
@@ -46,7 +45,8 @@ impl Password {
         debug_assert!(validate(&self.0, Self::MIN_LEN, Self::MAX_LEN).is_ok());
         // Hashing with bcrypt only fails if the system number generator is
         // not available. A failure is never caused by the input.
-        let hash = bcrypt::hash(&self.0).expect("bcrypt hash should never fail");
+        let hash =
+            bcrypt::hash(&self.0, bcrypt::DEFAULT_COST).expect("bcrypt hash should never fail");
         HashedPassword::from_hash(hash)
     }
 }
@@ -68,7 +68,11 @@ impl HashedPassword {
 
     #[must_use]
     pub fn verify(&self, password: &Password) -> bool {
-        pwhash::bcrypt::verify(&password.0, &self.0)
+        bcrypt::verify(&password.0, &self.0)
+            .map_err(|err| {
+                log::warn!("Unable to verify password: {err}");
+            })
+            .unwrap_or(false)
     }
 
     #[must_use]
