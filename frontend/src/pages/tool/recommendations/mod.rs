@@ -32,12 +32,8 @@ pub fn Recommendations(
             // TODO: avoid clones
             out.output
                 .as_ref()
-                .map(|o| o.co2_equivalents.clone())
-                .and_then(|old| {
-                    out.output
-                        .as_ref()
-                        .map(|o| (o.co2_equivalents.clone(), old))
-                })
+                .map(|o| o.clone())
+                .and_then(|old| out.output.as_ref().map(|o| (o.clone(), old)))
                 .map(|(new, old)| {
                     klick_presenter::recommendation_diff_bar_chart(old, new)
                         .into_iter()
@@ -53,11 +49,9 @@ pub fn Recommendations(
 
     let form_data_overview = move || {
         outcome.with(|out| {
+            let input = out.input.clone();
             view! {
-              <FormDataOverview
-                input = out.input.clone()
-                output = out.output.clone()
-              />
+              <FormDataOverview input />
             }
         })
     };
@@ -104,10 +98,10 @@ pub fn Recommendations(
       }
 
       <h4 class="my-8 text-lg font-bold">
-        { move || outcome.with(|out|out.output.as_ref().map(|out|{
+        { move || outcome.with(|outcome|outcome.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
-                &form_data.with(Clone::clone), // TODO: avoid clone
-                out.values.clone(),
+                &outcome.input,
+                out.clone(),
                 klick_presenter::Formatting::Text
               )
             }))
@@ -115,7 +109,7 @@ pub fn Recommendations(
       </h4>
 
       { move || outcome.with(|out| out.output.as_ref().map(|output|{
-          let data = output.co2_equivalents.clone();
+          let data = output.clone();
           view!{ <Sankey data /> }
         }))
       }

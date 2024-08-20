@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::{units::*, InputValueId as Id, OutputValueId as Out};
+use klick_domain::{output_value::required, units::*, InputValueId as Id, OutputValueId as Out};
 use klick_presenter::*;
 
 use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
@@ -20,12 +20,9 @@ pub fn options(
 
     let excess_energy_co2_equivalent = Signal::derive(move || {
         outcome.with(|out| {
-            out.output.as_ref().map(|out| {
-                out.co2_equivalents
-                    .get(&Out::ExcessEnergyCo2Equivalent)
-                    .copied()
-                    .unwrap()
-            })
+            out.output
+                .as_ref()
+                .map(|out| required!(Out::ExcessEnergyCo2Equivalent, out).unwrap())
         })
     });
 
@@ -33,9 +30,9 @@ pub fn options(
         outcome.with(|out| {
             out.output.as_ref().map(|out| {
                 // TOOD: move this to calculation module
-                let eq = &out.co2_equivalents;
-                (eq.get(&Out::TotalEmissions).copied().unwrap()
-                    - eq.get(&Out::ExcessEnergyCo2Equivalent).copied().unwrap())
+                let eq = &out;
+                (required!(Out::TotalEmissions, eq).unwrap()
+                    - required!(Out::ExcessEnergyCo2Equivalent, eq).unwrap())
                     * Factor::new(-1.0)
             })
         })
@@ -43,12 +40,9 @@ pub fn options(
 
     let electricity_mix = Signal::derive(move || {
         outcome.with(|out| {
-            out.output.as_ref().map(|out| {
-                out.co2_equivalents
-                    .get(&Out::ElectricityMix)
-                    .copied()
-                    .unwrap()
-            })
+            out.output
+                .as_ref()
+                .map(|out| required!(Out::ElectricityMix, out).unwrap())
         })
     });
 
@@ -104,7 +98,7 @@ pub fn options(
         <div class="border-t pt-3 mt-4 border-gray-900/10">
         { move || outcome.with(|out|out.output.clone().map(|out|{
 
-            let eq = out.co2_equivalents;
+            let eq = out;
             let lang = Lng::De;
 
             let list = [
@@ -117,7 +111,7 @@ pub fn options(
             ]
             .into_iter()
             .filter_map(|(id, label)| {
-                let value = eq.get(&id).copied().unwrap();
+                let value = eq.get(&id.into()).cloned().and_then(Value::as_tons).unwrap();
                 if value > Tons::zero() {
                    Some((label, value))
                 } else {

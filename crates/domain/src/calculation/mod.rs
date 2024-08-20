@@ -7,78 +7,179 @@ use klick_value::{
     constants::*,
     extract_optional_with_input_value_id as extract_optional,
     extract_required_with_input_value_id as extract_required,
-    specs::{InputValueId as Id, MissingInputValueIdError, OutputValueId as Out},
+    specs::{InputValueId as In, OutputValueId as Out},
     units::*,
 };
 
 #[allow(clippy::wildcard_imports)]
-use crate::{EmissionsCalculationOutcome, Value as V};
+use crate::{EmissionsCalculationOutcome, Id, Value as V};
 
 mod emission_groups;
 pub use self::emission_groups::*;
 
 #[must_use]
-#[allow(clippy::too_many_lines)] // TODO
+#[deprecated]
 pub fn calculate_emissions(
-    input: &HashMap<Id, Value>,
-) -> Result<EmissionsCalculationOutcome, MissingInputValueIdError> {
+    input_values: &HashMap<In, Value>,
+) -> anyhow::Result<EmissionsCalculationOutcome> {
+    let (emissions, factors, methods) = emissions_factors_and_methods(&input_values)?;
+
+    let co2_equivalents = calculate_emission_groups(
+        emissions.clone().into_iter().collect(),
+        emission_groups::SANKEY_EDGES,
+    );
+
+    let values = emissions
+        .into_iter()
+        .map(|(id, v)| (id, Value::from(v)))
+        .chain(
+            factors
+                .into_iter()
+                .map(|(id, v)| (id.into(), Value::from(v))),
+        )
+        .chain(methods.into_iter().map(|(id, v)| (id.into(), v)))
+        .collect();
+
+    Ok(EmissionsCalculationOutcome {
+        co2_equivalents,
+        values,
+    })
+}
+
+#[must_use]
+pub fn calculate(
+    values: &HashMap<Id, Value>,
+    custom_edges: Option<&[(Id, Id)]>,
+) -> anyhow::Result<HashMap<Id, Value>> {
+    let input_values = extract_input_values(values).collect();
+    let custom_values = extract_custom_emission_values(values);
+    let (emissions, factors, methods) = emissions_factors_and_methods(&input_values)?;
+
+    let all_emission_values = emissions
+        .into_iter()
+        .map(|(id, value)| (id.into(), value))
+        .chain(custom_values)
+        .collect();
+
+    let graph = emission_graph(custom_edges);
+
+    let co2_equivalents = calculate_emission_groups(all_emission_values, &graph);
+
+    let values = co2_equivalents
+        .into_iter()
+        .map(|(id, v)| (id, Value::from(v)))
+        .chain(
+            factors
+                .into_iter()
+                .map(|(id, v)| (id.into(), Value::from(v))),
+        )
+        .chain(methods.into_iter().map(|(id, v)| (id.into(), v)))
+        .collect();
+
+    Ok(values)
+}
+
+fn emission_graph(custom_edges: Option<&[(Id, Id)]>) -> Vec<(Id, Id)> {
+    let mut edges = emission_groups::SANKEY_EDGES
+        .into_iter()
+        .map(|(from, to)| (Id::from(*from), Id::from(*to)))
+        .collect::<Vec<_>>();
+    if let Some(custom_edges) = custom_edges {
+        edges.extend(
+            custom_edges
+                .into_iter()
+                .map(|(from, to)| (from.clone(), to.clone())),
+        );
+    }
+    edges
+}
+
+pub fn extract_input_values<T>(values: &HashMap<Id, T>) -> impl Iterator<Item = (In, T)> + '_
+where
+    T: Clone,
+{
+    values.iter().filter_map(|(id, value)| {
+        let Id::In(id) = id else { return None };
+        Some((*id, value.clone())) // TODO: avoid clone
+    })
+}
+
+fn extract_custom_emission_values(
+    values: &HashMap<Id, Value>,
+) -> impl Iterator<Item = (Id, Tons)> + '_ {
+    values
+        .iter()
+        .filter(|(id, _)| id.is_custom())
+        .filter_map(|(id, value)| {
+            // Currently we assume all custom emisson values are of type `Tons`.
+            value
+                .clone() // TODO: avoid clone
+                .as_tons()
+                .map(|v| (id.clone(), v)) // TODO: avoid clone
+        })
+}
+
+#[must_use]
+fn emissions_factors_and_methods(
+    input: &HashMap<In, Value>,
+) -> anyhow::Result<(Vec<(Out, Tons)>, Vec<(Out, Factor)>, Vec<(Out, Value)>)> {
     // -------    ------ //
     //  Unpack variables //
     // -------    ------ //
 
     let from = input; // FIXME
 
-    let population_equivalent = extract_required!(Id::PopulationEquivalent, &from)?;
-    let wastewater = extract_required!(Id::Wastewater, &from)?;
-    let influent_nitrogen = extract_required!(Id::InfluentNitrogen, &from)?;
+    let population_equivalent = extract_required!(In::PopulationEquivalent, &from)?;
+    let wastewater = extract_required!(In::Wastewater, &from)?;
+    let influent_nitrogen = extract_required!(In::InfluentNitrogen, &from)?;
     let influent_chemical_oxygen_demand =
-        extract_required!(Id::InfluentChemicalOxygenDemand, &from)?;
+        extract_required!(In::InfluentChemicalOxygenDemand, &from)?;
     let influent_total_organic_carbohydrates =
-        extract_required!(Id::InfluentTotalOrganicCarbohydrates, &from)?;
+        extract_required!(In::InfluentTotalOrganicCarbohydrates, &from)?;
 
     let chemical_oxygen_demand_influent = influent_chemical_oxygen_demand;
     let nitrogen_influent = influent_nitrogen;
     let total_organic_carbohydrates = influent_total_organic_carbohydrates;
 
-    let effluent_nitrogen = extract_required!(Id::EffluentNitrogen, &from)?;
+    let effluent_nitrogen = extract_required!(In::EffluentNitrogen, &from)?;
     let effluent_chemical_oxygen_demand =
-        extract_required!(Id::EffluentChemicalOxygenDemand, &from)?;
+        extract_required!(In::EffluentChemicalOxygenDemand, &from)?;
 
     let nitrogen_effluent = effluent_nitrogen;
     let chemical_oxygen_demand_effluent = effluent_chemical_oxygen_demand;
 
-    let sewage_gas_produced = extract_required!(Id::SewageGasProduced, &from)?;
-    let methane_fraction = extract_required!(Id::MethaneFraction, &from)?;
-    let total_power_consumption = extract_required!(Id::TotalPowerConsumption, &from)?;
-    let on_site_power_generation = extract_required!(Id::OnSitePowerGeneration, &from)?;
+    let sewage_gas_produced = extract_required!(In::SewageGasProduced, &from)?;
+    let methane_fraction = extract_required!(In::MethaneFraction, &from)?;
+    let total_power_consumption = extract_required!(In::TotalPowerConsumption, &from)?;
+    let on_site_power_generation = extract_required!(In::OnSitePowerGeneration, &from)?;
     let emission_factor_electricity_mix =
-        extract_required!(Id::EmissionFactorElectricityMix, &from)?;
-    let heating_oil = extract_required!(Id::HeatingOil, &from)?;
-    let gas_supply = extract_required!(Id::GasSupply, &from)?;
-    let purchase_of_biogas = extract_required!(Id::PurchaseOfBiogas, &from)?;
+        extract_required!(In::EmissionFactorElectricityMix, &from)?;
+    let heating_oil = extract_required!(In::HeatingOil, &from)?;
+    let gas_supply = extract_required!(In::GasSupply, &from)?;
+    let purchase_of_biogas = extract_required!(In::PurchaseOfBiogas, &from)?;
 
-    let sludge_bags_are_open = extract_required!(Id::SludgeTreatmentBagsAreOpen, &from)?;
-    let sludge_bags_factor = extract_optional!(Id::SensitivitySludgeBagsCustomFactor, &from);
+    let sludge_bags_are_open = extract_required!(In::SludgeTreatmentBagsAreOpen, &from)?;
+    let sludge_bags_factor = extract_optional!(In::SensitivitySludgeBagsCustomFactor, &from);
 
     let sludge_storage_containers_are_open =
-        extract_required!(Id::SludgeTreatmentStorageContainersAreOpen, &from)?;
+        extract_required!(In::SludgeTreatmentStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_factor =
-        extract_optional!(Id::SensitivitySludgeStorageCustomFactor, &from);
-    let sewage_sludge_for_disposal = extract_required!(Id::SludgeTreatmentDisposal, &from)?;
-    let transport_distance = extract_required!(Id::SludgeTreatmentTransportDistance, &from)?;
-    let digester_count = extract_required!(Id::SludgeTreatmentDigesterCount, &from)?;
+        extract_optional!(In::SensitivitySludgeStorageCustomFactor, &from);
+    let sewage_sludge_for_disposal = extract_required!(In::SludgeTreatmentDisposal, &from)?;
+    let transport_distance = extract_required!(In::SludgeTreatmentTransportDistance, &from)?;
+    let digester_count = extract_required!(In::SludgeTreatmentDigesterCount, &from)?;
 
     let side_stream_treatment_total_nitrogen =
-        extract_required!(Id::SideStreamTreatmentTotalNitrogen, &from)?;
+        extract_required!(In::SideStreamTreatmentTotalNitrogen, &from)?;
     let total_nitrogen = side_stream_treatment_total_nitrogen;
 
-    let side_stream_cover_is_open = extract_required!(Id::ScenarioN2OSideStreamCoverIsOpen, &from)?;
+    let side_stream_cover_is_open = extract_required!(In::ScenarioN2OSideStreamCoverIsOpen, &from)?;
 
-    let operating_material_fecl3 = extract_required!(Id::OperatingMaterialFeCl3, &from)?;
-    let operating_material_feclso4 = extract_required!(Id::OperatingMaterialFeClSO4, &from)?;
-    let operating_material_caoh2 = extract_required!(Id::OperatingMaterialCaOH2, &from)?;
+    let operating_material_fecl3 = extract_required!(In::OperatingMaterialFeCl3, &from)?;
+    let operating_material_feclso4 = extract_required!(In::OperatingMaterialFeClSO4, &from)?;
+    let operating_material_caoh2 = extract_required!(In::OperatingMaterialCaOH2, &from)?;
     let operating_material_synthetic_polymers =
-        extract_required!(Id::OperatingMaterialSyntheticPolymers, &from)?;
+        extract_required!(In::OperatingMaterialSyntheticPolymers, &from)?;
 
     let fecl3 = operating_material_fecl3;
     let feclso4 = operating_material_feclso4;
@@ -86,39 +187,39 @@ pub fn calculate_emissions(
     let synthetic_polymers = operating_material_synthetic_polymers;
 
     let emission_factor_n2o_side_stream =
-        extract_required!(Id::SensitivityN2OSideStreamFactor, &from)?.convert_to::<Factor>();
+        extract_required!(In::SensitivityN2OSideStreamFactor, &from)?.convert_to::<Factor>();
     let emission_factor_co2_fossil =
-        extract_required!(Id::SensitivityCO2FossilCustomFactor, &from)?.convert_to::<Factor>();
+        extract_required!(In::SensitivityCO2FossilCustomFactor, &from)?.convert_to::<Factor>();
 
     let n2o_side_stream = emission_factor_n2o_side_stream;
     let co2_fossil = emission_factor_co2_fossil;
 
-    let process_energy_savings = extract_required!(Id::ScenarioProcessEnergySaving, &from)?;
-    let fossil_energy_savings = extract_required!(Id::ScenarioFossilEnergySaving, &from)?;
-    let district_heating = extract_required!(Id::ScenarioDistrictHeating, &from)?;
+    let process_energy_savings = extract_required!(In::ScenarioProcessEnergySaving, &from)?;
+    let fossil_energy_savings = extract_required!(In::ScenarioFossilEnergySaving, &from)?;
+    let district_heating = extract_required!(In::ScenarioDistrictHeating, &from)?;
     let photovoltaic_energy_expansion =
-        extract_required!(Id::ScenarioPhotovoltaicEnergyExpansion, &from)?;
+        extract_required!(In::ScenarioPhotovoltaicEnergyExpansion, &from)?;
     let estimated_self_photovoltaic_usage =
-        extract_required!(Id::ScenarioEstimatedSelfPhotovolaticUsage, &from)?;
-    let wind_energy_expansion = extract_required!(Id::ScenarioWindEnergyExpansion, &from)?;
+        extract_required!(In::ScenarioEstimatedSelfPhotovolaticUsage, &from)?;
+    let wind_energy_expansion = extract_required!(In::ScenarioWindEnergyExpansion, &from)?;
     let estimated_self_wind_energy_usage =
-        extract_required!(Id::ScenarioEstimatedSelfWindEnergyUsage, &from)?;
-    let water_energy_expansion = extract_required!(Id::ScenarioWaterEnergyExpansion, &from)?;
+        extract_required!(In::ScenarioEstimatedSelfWindEnergyUsage, &from)?;
+    let water_energy_expansion = extract_required!(In::ScenarioWaterEnergyExpansion, &from)?;
     let estimated_self_water_energy_usage =
-        extract_required!(Id::ScenarioEstimatedSelfWaterEnergyUsage, &from)?;
+        extract_required!(In::ScenarioEstimatedSelfWaterEnergyUsage, &from)?;
 
-    let n2o_calculation_method = extract_required!(Id::SensitivityN2OCalculationMethod, from)?;
-    let n2o_custom_factor = extract_optional!(Id::SensitivityN2OCustomFactor, from);
+    let n2o_calculation_method = extract_required!(In::SensitivityN2OCalculationMethod, from)?;
+    let n2o_custom_factor = extract_optional!(In::SensitivityN2OCustomFactor, from);
 
     // FIXME:
     // The default method does not produce the expected outcome.
     // Also have a look at the  `calculation_method` function.
     // It looks like `MicroGasTurbines` should be the default instead of `GasolineEngine`;
     let ch4_chp_calculation_method = from
-        .get(&Id::SensitivityCH4ChpCalculationMethod)
+        .get(&In::SensitivityCH4ChpCalculationMethod)
         .cloned()
         .map(V::as_ch4_chp_emission_factor_calc_method_unchecked);
-    let ch4_chp_custom_factor = extract_optional!(Id::SensitivityCH4ChpCustomFactor, from);
+    let ch4_chp_custom_factor = extract_optional!(In::SensitivityCH4ChpCustomFactor, from);
 
     // -------    ------ //
     //     Calculate     //
@@ -314,15 +415,10 @@ pub fn calculate_emissions(
         (Out::ExcessEnergyCo2Equivalent, excess_energy_co2_equivalent),
     ];
 
-    let co2_equivalents =
-        calculate_emission_groups(values.into_iter().collect(), emission_groups::SANKEY_EDGES);
-
     let emission_factors = [
         (Out::N2oCalculatedEmissionFactor, n2o_emission_factor),
         (Out::Ch4ChpCalculatedEmissionFactor, ch4_emission_factor),
-    ]
-    .into_iter()
-    .map(|(id, v)| (id, Value::from(v)));
+    ];
 
     let calculation_methods = [
         (
@@ -349,19 +445,14 @@ pub fn calculate_emissions(
         ),
     ]
     .into_iter()
-    .filter_map(|(id, value)| value.map(|v| (id, v)));
+    .filter_map(|(id, value)| value.map(|v| (id, v)))
+    .collect();
 
-    let values = values
-        .into_iter()
-        .map(|(id, v)| (id, Value::from(v)))
-        .chain(emission_factors)
-        .chain(calculation_methods)
-        .collect();
-
-    Ok(EmissionsCalculationOutcome {
-        co2_equivalents,
-        values,
-    })
+    Ok((
+        values.to_vec(),
+        emission_factors.to_vec(),
+        calculation_methods,
+    ))
 }
 
 #[must_use]
@@ -541,34 +632,33 @@ pub fn calculate_oil_gas_savings(
 #[must_use]
 pub fn calculate_all_n2o_emission_factor_scenarios(
     values: &HashMap<Id, Value>,
-) -> anyhow::Result<Vec<(N2oEmissionFactorCalcMethod, EmissionsCalculationOutcome)>> {
+    custom_edges: Option<&[(Id, Id)]>,
+) -> anyhow::Result<Vec<(N2oEmissionFactorCalcMethod, HashMap<Id, Value>)>> {
     let mut values = values.clone();
-    let id = Id::SensitivityN2OCalculationMethod;
-
-    //let ch4 = ch4_chp_calc_method;
+    let id = In::SensitivityN2OCalculationMethod;
 
     // TuWien2016
     let n2o = N2oEmissionFactorCalcMethod::TuWien2016;
-    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate_emissions(&values)?;
+    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate(&values, custom_edges)?;
     let tuwien2016_result = (n2o, result);
 
     // Optimistic
     let n2o = N2oEmissionFactorCalcMethod::Optimistic;
-    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate_emissions(&values)?;
+    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate(&values, custom_edges)?;
     let optimistc_result = (n2o, result);
 
     // Pesimistic
     let n2o = N2oEmissionFactorCalcMethod::Pesimistic;
-    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate_emissions(&values)?;
+    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate(&values, custom_edges)?;
     let pesimistic_result = (n2o, result);
 
     // Ipcc2019
     let n2o = N2oEmissionFactorCalcMethod::Ipcc2019;
-    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate_emissions(&values)?;
+    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate(&values, custom_edges)?;
     let ipcc2019_result = (n2o, result);
 
     let mut results = vec![
@@ -578,14 +668,14 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
         ipcc2019_result,
     ];
 
-    if values.get(&Id::SensitivityN2OCustomFactor).is_none() {
+    if values.get(&In::SensitivityN2OCustomFactor.into()).is_none() {
         return Ok(results);
     };
 
     // Custom
     let n2o = N2oEmissionFactorCalcMethod::Custom;
-    values.insert(id, V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate_emissions(&values)?;
+    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
+    let result = calculate(&values, custom_edges)?;
     let custom_result = (n2o, result);
     results.push(custom_result);
 

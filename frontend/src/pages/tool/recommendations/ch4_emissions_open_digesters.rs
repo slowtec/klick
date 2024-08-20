@@ -2,7 +2,7 @@ use leptos::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::{InputValueId as Id, OutputValueId as Out, Value};
+use klick_domain::{output_value::required, InputValueId as Id, OutputValueId as Out, Value};
 
 use crate::pages::tool::{CalculationOutcome, Card};
 
@@ -89,17 +89,17 @@ pub fn options(
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_bags_controls_class}") }>"CH₄ Schlupf Schlammtaschen"</dt>
                     <dd class={ format!("text-lg py-1 px-3 {show_sludge_bags_controls_class}") }>
-                      { format!("{:.1}", f64::from(out.co2_equivalents.get(&Out::Ch4SludgeBags).copied().unwrap())).replace('.',",") }
+                      { format!("{:.1}", f64::from(required!(Out::Ch4SludgeBags, out).unwrap())).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                     <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_storage_containers_controls_class}") }>"CH₄ Schlupf Schlammlagerung"</dt>
                     <dd class={ format!("text-lg py-1 px-3 {show_sludge_storage_containers_controls_class}") }>
-                      { format!("{:.1}", f64::from(out.co2_equivalents.get(&Out::Ch4SludgeStorageContainers).copied().unwrap())).replace('.',",") }
+                      { format!("{:.1}", f64::from(required!(Out::Ch4SludgeStorageContainers, out).unwrap())).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                     <dd class="text-lg py-1 px-3">
-                      { format!("{:.1}", f64::from(out.co2_equivalents.get(&Out::TotalEmissions).copied().unwrap())).replace('.',",") }
+                      { format!("{:.1}", f64::from(required!(Out::TotalEmissions, out).unwrap())).replace('.',",") }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
                   </dl>

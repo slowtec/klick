@@ -14,8 +14,6 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
     let value_type = &input.value_type;
     let ident = &input.ident;
 
-    let missing_error_ident = format_ident!("Missing{}Error", ident);
-
     let variant_quotes = input.variants.iter().map(|variant| {
         let variant_name = &variant.name;
 
@@ -137,10 +135,10 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
         quote! {
             ($enum:ident ::#variant, $values:expr) => {
                 $values
-                    .get(&$enum::#variant)
+                    .get(&$enum::#variant.into())
                     .cloned()
                     .or_else(|| $enum::#variant.default_value())
-                    .ok_or(#missing_error_ident($enum::#variant))
+                    .ok_or(anyhow::anyhow!("required value ({:?}) is missing", $enum::#variant))
                     .map(|value|{
                         debug_assert_eq!($enum::#variant.value_type(), value.value_type());
                         value.#getter_name()
@@ -158,7 +156,7 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
             quote! {
                 ($enum:ident ::#variant, $values:expr) => {
                     $values
-                        .get(&$enum::#variant)
+                        .get(&$enum::#variant.into())
                         .cloned()
                         .or_else(|| $enum::#variant.default_value())
                         .map(|value|{
@@ -235,17 +233,6 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
         }
 
         #opt_macro
-
-        #[derive(Debug)]
-        pub struct #missing_error_ident(pub #ident);
-
-        impl std::error::Error for #missing_error_ident { }
-
-        impl std::fmt::Display for #missing_error_ident {
-            fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                write!(fmt, "The required value ({:?}) is missing", self.0)
-            }
-        }
     };
 
     TokenStream::from(expanded)

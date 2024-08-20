@@ -99,6 +99,12 @@ macro_rules! float {
                     );
                 }
 
+                impl Default for $unit {
+                  fn default() -> Self {
+                      Self::zero()
+                  }
+                }
+
                 impl $unit {
                     #[must_use]
                     pub const fn new(value: $base_type) -> Self {

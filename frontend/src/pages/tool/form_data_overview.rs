@@ -2,20 +2,15 @@ use std::collections::HashMap;
 
 use leptos::*;
 
-use klick_domain::{EmissionsCalculationOutcome, InputValueId as In, Value};
+use klick_domain::{Id, Value};
 use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, Formatting};
 
 #[component]
-pub fn FormDataOverview(
-    input: HashMap<In, Value>,
-    output: Option<EmissionsCalculationOutcome>,
-) -> impl IntoView {
+pub fn FormDataOverview(input: HashMap<Id, Value>) -> impl IntoView {
     let profile_table = {
-        let i = input;
-        let o = output;
         let table = {
-            let mut profile = plant_profile_as_table(&i, Formatting::Text);
-            let mut sensitivity = sensitivity_parameters_as_table(&i, Formatting::Text, o.as_ref());
+            let mut profile = plant_profile_as_table(&input, Formatting::Text);
+            let mut sensitivity = sensitivity_parameters_as_table(&input, Formatting::Text);
             profile.sections.append(&mut sensitivity.sections);
             profile
         };

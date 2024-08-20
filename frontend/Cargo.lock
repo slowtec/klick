@@ -890,6 +890,7 @@ dependencies = [
 name = "klick-presenter"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "derive_more",
  "klick-boundary",
  "klick-domain",

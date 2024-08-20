@@ -15,7 +15,7 @@ use klick_domain::{
     self as domain,
     output_value::*,
     units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
-    EmissionsCalculationOutcome, InputValueId as Id, OutputValueId as Out, Value,
+    EmissionsCalculationOutcome, Id, InputValueId as In, OutputValueId as Out, Value,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
 
@@ -33,9 +33,9 @@ pub static TEMPLATES: LazyLock<Tera> = LazyLock::new(|| {
     tera
 });
 
-pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
+pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> {
     let date = current_date_as_string()?;
-    let outcome = boundary::calculate(form_data);
+    let outcome = boundary::calculate(form_data, None);
 
     let mut n2o_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
     let mut ch4_chp_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
@@ -47,7 +47,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
         tempfile::Builder::new().suffix(".svg").tempfile()?;
 
     let plant_profile_sankey_svg_file_path = if let Some(output) = &outcome.output {
-        let sankey_chart = render_svg_sankey_chart(output.co2_equivalents.clone());
+        let sankey_chart = render_svg_sankey_chart(output.clone());
         profile_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(profile_sankey_svg_file.path().display().to_string())
     } else {
@@ -55,7 +55,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     };
 
     let sensitivity_sankey_svg_file_path = if let Some(output) = &outcome.output {
-        let sankey_chart = render_svg_sankey_chart(output.co2_equivalents.clone());
+        let sankey_chart = render_svg_sankey_chart(output.clone());
         sensitivity_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(sensitivity_sankey_svg_file.path().display().to_string())
     } else {
@@ -63,7 +63,7 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     };
 
     let recommendation_sankey_svg_file_path = if let Some(output) = &outcome.output {
-        let sankey_chart = render_svg_sankey_chart(output.co2_equivalents.clone());
+        let sankey_chart = render_svg_sankey_chart(output.clone());
         recommendation_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(recommendation_sankey_svg_file.path().display().to_string())
     } else {
@@ -72,14 +72,14 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
 
     let selected_n2o_scenario = &outcome
         .input
-        .get(&Id::SensitivityN2OCalculationMethod)
+        .get(&In::SensitivityN2OCalculationMethod.into())
         .cloned()
         .map(Value::as_n2o_emission_factor_calc_method_unchecked)
         .as_ref()
         .and_then(ToPrimitive::to_u64);
     let selected_ch4_chp_scenario = &outcome
         .input
-        .get(&Id::SensitivityCH4ChpCalculationMethod)
+        .get(&In::SensitivityCH4ChpCalculationMethod.into())
         .cloned()
         .map(Value::as_ch4_chp_emission_factor_calc_method_unchecked)
         .as_ref()
@@ -109,13 +109,8 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     let sensitivity_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
         .output
         .as_ref()
-        .map(|o| o.co2_equivalents.clone())
-        .and_then(|old| {
-            outcome
-                .output
-                .as_ref()
-                .map(|o| (o.co2_equivalents.clone(), old))
-        })
+        .map(|o| o.clone())
+        .and_then(|old| outcome.output.as_ref().map(|o| (o.clone(), old)))
         .map(|(new, old)| {
             presenter::sensitivity_diff_bar_chart(old, new)
                 .into_iter()
@@ -141,13 +136,8 @@ pub fn export_to_pdf(form_data: boundary::FormData) -> anyhow::Result<Vec<u8>> {
     let recommendation_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
         .output
         .as_ref()
-        .map(|o| o.co2_equivalents.clone())
-        .and_then(|old| {
-            outcome
-                .output
-                .as_ref()
-                .map(|o| (o.co2_equivalents.clone(), old))
-        })
+        .map(|o| o.clone())
+        .and_then(|old| outcome.output.as_ref().map(|o| (o.clone(), old)))
         .map(|(new, old)| {
             presenter::recommendation_diff_bar_chart(old, new)
                 .into_iter()
@@ -215,23 +205,20 @@ fn render_markdown_template(
         presenter::plant_profile_as_table(&outcome.input, Formatting::LaTeX);
     let plant_profile_table = create_latex_table(&plant_profile_table_data)?;
 
-    let sensitivity_table_data = presenter::sensitivity_parameters_as_table(
-        &outcome.input,
-        Formatting::LaTeX,
-        outcome.output.as_ref(),
-    );
+    let sensitivity_table_data =
+        presenter::sensitivity_parameters_as_table(&outcome.input, Formatting::LaTeX);
     let sensitivity_parameters_table = create_latex_table(&sensitivity_table_data)?;
 
     let plant_name = outcome
         .input
-        .get(&Id::PlantName)
+        .get(&In::PlantName.into())
         .cloned()
         .map_or_else(|| "Klärwerk".to_string(), Value::as_text_unchecked);
 
     let plant_profile_sankey_header = outcome
         .output
         .map(|output| {
-            presenter::create_sankey_chart_header(&outcome.input, output.values, Formatting::LaTeX)
+            presenter::create_sankey_chart_header(&outcome.input, output, Formatting::LaTeX)
         })
         .unwrap_or_default();
 
@@ -277,28 +264,17 @@ const BAR_CHART_WIDTH: f64 = 1100.0;
 const BAR_CHART_HEIGHT: f64 = 300.0;
 
 fn render_n2o_scenarios_svg_bar_chart(
-    n2o_scenarios: Vec<(N2oEmissionFactorCalcMethod, EmissionsCalculationOutcome)>,
+    n2o_scenarios: Vec<(N2oEmissionFactorCalcMethod, HashMap<Id, Value>)>,
     selected: Option<u64>,
 ) -> String {
     let data = n2o_scenarios
         .into_iter()
-        .map(|(method, emissions_calculation_outcome)| {
-            let EmissionsCalculationOutcome {
-                co2_equivalents,
-                values,
-            } = emissions_calculation_outcome;
-            charts::BarChartRadioInputArguments {
-                label: Some(method.label()),
-                value: co2_equivalents
-                    .get(&Out::TotalEmissions)
-                    .copied()
-                    .unwrap()
-                    .into(),
-
-                emission_factor: required!(Out::N2oCalculatedEmissionFactor, values)
-                    .unwrap()
-                    .into(),
-            }
+        .map(|(method, values)| charts::BarChartRadioInputArguments {
+            label: Some(method.label()),
+            value: required!(Out::TotalEmissions, values).unwrap().into(),
+            emission_factor: required!(Out::N2oCalculatedEmissionFactor, values)
+                .unwrap()
+                .into(),
         })
         .collect();
     let emission_factor_label = Some("N₂O EF");
@@ -335,9 +311,8 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
     )
 }
 
-fn render_svg_sankey_chart(co2_equivalents: HashMap<Out, Tons>) -> String {
-    let tweaks = None; // TODO: render custom values
-    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents, tweaks);
+fn render_svg_sankey_chart(co2_equivalents: HashMap<Id, Value>) -> String {
+    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
 
     let mut sankey = charts::SankeyData::new();
     let node_count = nodes.len();

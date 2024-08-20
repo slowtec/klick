@@ -2,24 +2,23 @@ use std::collections::HashMap;
 
 use derive_more::From;
 
-use klick_boundary::FormData;
 use klick_domain::{
     self as domain,
     output_value::*,
     units::{Percent, RatioExt, Tons},
-    InputValueId as Id, OutputValueId as Out, Value,
+    Id, InputValueId as In, OutputValueId as Out, Value,
 };
 
 use crate::{Formatting, Lng, ValueColor, ValueLabel};
 
 #[must_use]
 pub fn create_sankey_chart_header(
-    data: &FormData,
-    values: HashMap<Out, Value>,
+    data: &HashMap<Id, Value>,
+    values: HashMap<Id, Value>,
     formatting: Formatting,
 ) -> String {
     let population_equivalent = match &data
-        .get(&Id::PopulationEquivalent)
+        .get(&In::PopulationEquivalent.into())
         .cloned()
         .map(Value::as_count_unchecked)
         .map(u64::from)
@@ -29,7 +28,7 @@ pub fn create_sankey_chart_header(
     };
 
     let plant_name = match &data
-        .get(&Id::PlantName)
+        .get(&In::PlantName.into())
         .cloned()
         .map(Value::as_text_unchecked)
     {
@@ -63,24 +62,11 @@ pub fn create_sankey_chart_header(
     )
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct SankeyTweaks {
-    pub nodes: HashMap<String, (Tons, &'static str, &'static str)>,
-    pub edges: Vec<(SankeyTweakId, SankeyTweakId)>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, From)]
-pub enum SankeyTweakId {
-    Custom(String),
-    Out(Out),
-}
-
 type Nodes = Vec<(f64, String, &'static str, &'static str)>;
 
 #[must_use]
 pub fn create_sankey_chart_data(
-    co2_equivalents: HashMap<Out, Tons>,
-    custom: Option<SankeyTweaks>,
+    co2_equivalents: HashMap<Id, Value>,
 ) -> (Nodes, Vec<(usize, usize)>) {
     let node_ids = [
         Out::N2oPlant,
@@ -109,13 +95,18 @@ pub fn create_sankey_chart_data(
         Out::OtherIndirectEmissions,
     ];
 
-    let mut nodes = node_ids
+    let nodes = node_ids
         .iter()
         .map(|id| {
+            let value = co2_equivalents
+                .get(&(*id).into())
+                .cloned()
+                .and_then(Value::as_tons)
+                .unwrap_or_else(Tons::zero);
             (
-                SankeyTweakId::from(*id),
+                id,
                 (
-                    f64::from(co2_equivalents.get(id).copied().unwrap_or_else(Tons::zero)),
+                    f64::from(value),
                     id.label().to_string(),
                     id.color(),
                     id.color_light(),
@@ -152,54 +143,18 @@ pub fn create_sankey_chart_data(
     //    (Out::IndirectEmissions, Out::TotalEmissions),
     //];
 
-    let mut edges = domain::SANKEY_EDGES
+    let edges = domain::SANKEY_EDGES
         .iter()
         .filter(|(source, target)| {
-            let Some(source_value) = co2_equivalents.get(source) else {
+            let Some(source_value) = co2_equivalents.get(&(*source).into()) else {
                 return false;
             };
-            let Some(target_value) = co2_equivalents.get(target) else {
+            let Some(target_value) = co2_equivalents.get(&(*target).into()) else {
                 return false;
             };
-            *source_value != Tons::zero() && *target_value != Tons::zero()
+            *source_value != Tons::zero().into() && *target_value != Tons::zero().into()
         })
-        .map(|(source, target)| (SankeyTweakId::from(*source), SankeyTweakId::from(*target)))
         .collect::<Vec<_>>();
-
-    if let Some(tweaks) = custom {
-        for (id, (value, color, color_lite)) in tweaks.nodes {
-            nodes.push((
-                SankeyTweakId::from(id.clone()),
-                (f64::from(value), id, color, color_lite),
-            ));
-        }
-
-        edges.extend(tweaks.edges.clone());
-
-        let tweak_edges = tweaks
-            .edges
-            .into_iter()
-            .map(|(s, t)| (s.into(), t.into()))
-            .collect::<Vec<(SankeyTweakId, SankeyTweakId)>>();
-
-        let values: HashMap<_, Tons> = nodes
-            .iter()
-            .map(|(id, (v, _, _, _))| (id.clone(), Tons::new(*v)))
-            .collect();
-        let tweaked_values = domain::calculate_emission_groups(values, &tweak_edges);
-
-        for (node_id, value) in tweaked_values {
-            let Some((_, (node, _, _, _))) = nodes.iter_mut().find(|(id, _)| *id == node_id) else {
-                continue;
-            };
-            // NOTE:
-            // We assume that all custom nodes already have their calculed
-            // value, so we just tweak the `Out` values.
-            if matches!(node_id, SankeyTweakId::Out(_)) {
-                *node = f64::from(value);
-            }
-        }
-    }
 
     let mut connections: Vec<(usize, usize)> = Vec::new();
 

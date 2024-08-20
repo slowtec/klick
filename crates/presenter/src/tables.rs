@@ -1,13 +1,8 @@
-use serde::Serialize;
 use std::collections::HashMap;
 
-use klick_boundary::FormData;
-use klick_domain::{
-    self as domain,
-    output_value::*,
-    units::{Percent, RatioExt, Tons},
-    InputValueId as Id, OutputValueId as Out, Value,
-};
+use serde::Serialize;
+
+use klick_domain::{Id, InputValueId as In, OutputValueId as Out, Value};
 
 use crate::{Lng, ValueLabel, ValueUnit};
 
@@ -51,61 +46,61 @@ pub struct TableSection {
 }
 
 #[must_use]
-pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table {
+pub fn plant_profile_as_table(data: &HashMap<Id, Value>, formatting: Formatting) -> Table {
     // TODO: use as parameter
     let lang = Lng::De;
 
     let sections = [
         (
             "Angaben zur Kläranlage",
-            vec![Id::PlantName, Id::PopulationEquivalent, Id::Wastewater],
+            vec![In::PlantName, In::PopulationEquivalent, In::Wastewater],
         ),
         (
             "Zulauf-Parameter (Jahresmittelwerte)",
             vec![
-                Id::InfluentNitrogen,
-                Id::InfluentChemicalOxygenDemand,
-                Id::InfluentTotalOrganicCarbohydrates,
+                In::InfluentNitrogen,
+                In::InfluentChemicalOxygenDemand,
+                In::InfluentTotalOrganicCarbohydrates,
             ],
         ),
         (
             "Ablauf-Parameter (Jahresmittelwerte)",
-            vec![Id::EffluentNitrogen, Id::EffluentChemicalOxygenDemand],
+            vec![In::EffluentNitrogen, In::EffluentChemicalOxygenDemand],
         ),
         (
             "Energiebedarf",
             vec![
-                Id::TotalPowerConsumption,
-                Id::OnSitePowerGeneration,
-                Id::EmissionFactorElectricityMix,
-                Id::GasSupply,
-                Id::PurchaseOfBiogas,
-                Id::HeatingOil,
-                Id::SewageGasProduced,
-                Id::MethaneFraction,
+                In::TotalPowerConsumption,
+                In::OnSitePowerGeneration,
+                In::EmissionFactorElectricityMix,
+                In::GasSupply,
+                In::PurchaseOfBiogas,
+                In::HeatingOil,
+                In::SewageGasProduced,
+                In::MethaneFraction,
             ],
         ),
         (
             "Klärschlammbehandlung",
             vec![
-                Id::SludgeTreatmentDigesterCount,
-                Id::SludgeTreatmentDisposal,
-                Id::SludgeTreatmentTransportDistance,
-                Id::SludgeTreatmentBagsAreOpen,
-                Id::SludgeTreatmentStorageContainersAreOpen,
+                In::SludgeTreatmentDigesterCount,
+                In::SludgeTreatmentDisposal,
+                In::SludgeTreatmentTransportDistance,
+                In::SludgeTreatmentBagsAreOpen,
+                In::SludgeTreatmentStorageContainersAreOpen,
             ],
         ),
         (
             "Prozesswasserbehandlung",
-            vec![Id::SideStreamTreatmentTotalNitrogen],
+            vec![In::SideStreamTreatmentTotalNitrogen],
         ),
         (
             "Eingesetzte Betriebsstoffe",
             vec![
-                Id::OperatingMaterialFeCl3,
-                Id::OperatingMaterialFeClSO4,
-                Id::OperatingMaterialCaOH2,
-                Id::OperatingMaterialSyntheticPolymers,
+                In::OperatingMaterialFeCl3,
+                In::OperatingMaterialFeClSO4,
+                In::OperatingMaterialCaOH2,
+                In::OperatingMaterialSyntheticPolymers,
             ],
         ),
     ]
@@ -117,7 +112,7 @@ pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table 
             .map(|id| {
                 (
                     formatting.fmt_label(id),
-                    data.get(&id).as_ref().map(|v| lang.format_value(v)),
+                    data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
                     formatting.fmt(id),
                 )
             })
@@ -128,66 +123,30 @@ pub fn plant_profile_as_table(data: &FormData, formatting: Formatting) -> Table 
 }
 
 #[must_use]
-pub fn sensitivity_parameters_as_table(
-    data: &FormData,
-    formatting: Formatting,
-    output: Option<&domain::EmissionsCalculationOutcome>,
-) -> Table {
+pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Formatting) -> Table {
     let lang = Lng::De;
-
-    let n2o_emission_factor: Option<Value> = output.map(|output| {
-        required!(Out::N2oCalculatedEmissionFactor, output.values)
-            .unwrap()
-            .convert_to::<Percent>()
-            .into()
-    });
-
-    let ch4_chp_emission_factor: Option<Value> = output.map(|output| {
-        required!(Out::Ch4ChpCalculatedEmissionFactor, output.values)
-            .unwrap()
-            .convert_to::<Percent>()
-            .into()
-    });
 
     let sections = vec![
         (
             "Lachgasemissionen",
             vec![
-                (
-                    Id::SensitivityN2OCalculationMethod,
-                    data.get(&Id::SensitivityN2OCalculationMethod),
-                ),
-                (Id::SensitivityN2OCustomFactor, n2o_emission_factor.as_ref()),
-                (
-                    Id::SensitivityN2OSideStreamFactor,
-                    data.get(&Id::SensitivityN2OCustomFactor),
-                ),
+                In::SensitivityN2OCalculationMethod,
+                In::SensitivityN2OCustomFactor,
+                In::SensitivityN2OSideStreamFactor,
             ],
         ),
         (
             "Methanemissionen aus Blockheizkraftwerken (BHKW)",
             vec![
-                (
-                    Id::SensitivityCH4ChpCalculationMethod,
-                    data.get(&Id::SensitivityCH4ChpCalculationMethod),
-                ),
-                (
-                    Id::SensitivityCH4ChpCustomFactor,
-                    ch4_chp_emission_factor.as_ref(),
-                ),
+                In::SensitivityCH4ChpCalculationMethod,
+                In::SensitivityCH4ChpCustomFactor,
             ],
         ),
         (
             "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung",
             vec![
-                (
-                    Id::SensitivitySludgeBagsCustomFactor,
-                    data.get(&Id::SensitivitySludgeBagsCustomFactor),
-                ),
-                (
-                    Id::SensitivitySludgeStorageCustomFactor,
-                    data.get(&Id::SensitivitySludgeStorageCustomFactor),
-                ),
+                In::SensitivitySludgeBagsCustomFactor,
+                In::SensitivitySludgeStorageCustomFactor,
             ],
         ),
         (
@@ -195,10 +154,7 @@ pub fn sensitivity_parameters_as_table(
                 Formatting::Text => "Fossile CO₂-Emissionen aus Abwasser",
                 Formatting::LaTeX => "Fossile $CO_2$-Emissionen aus Abwasser",
             },
-            vec![(
-                Id::SensitivityCO2FossilCustomFactor,
-                data.get(&Id::SensitivityCO2FossilCustomFactor),
-            )],
+            vec![In::SensitivityCO2FossilCustomFactor],
         ),
     ]
     .into_iter()
@@ -206,10 +162,10 @@ pub fn sensitivity_parameters_as_table(
         title: title.to_string(),
         rows: sections
             .into_iter()
-            .map(|(id, value)| {
+            .map(|id| {
                 (
                     formatting.fmt_label(id),
-                    value.as_ref().map(|v| lang.format_value(v)),
+                    data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
                     formatting.fmt(id),
                 )
             })
@@ -220,7 +176,7 @@ pub fn sensitivity_parameters_as_table(
 }
 
 #[must_use]
-pub fn co2_equivalents_as_table(eq: &HashMap<Out, Tons>, _unit: Formatting) -> Table {
+pub fn co2_equivalents_as_table(values: &HashMap<Id, Value>, _unit: Formatting) -> Table {
     // TODO: use as parameger
     let lang = Lng::De;
 
@@ -258,10 +214,17 @@ pub fn co2_equivalents_as_table(eq: &HashMap<Out, Tons>, _unit: Formatting) -> T
         Out::ExcessEnergyCo2Equivalent,
     ];
 
+    // TODO: insert missing values with `Tons::zero()`
+
     let rows: Vec<_> = emission_data
         .into_iter()
-        .map(|id| {
-            let value = eq.get(&id).copied().unwrap_or_else(Tons::zero); // TODO: log warning if value is None
+        .filter_map(|id| {
+            values
+                .get(&id.into())
+                .and_then(|value| value.clone().as_tons())
+                .map(|tons| (id, tons))
+        })
+        .map(|(id, value)| {
             let formatted_value = lang.format_number(f64::from(value));
             (id.label(), Some(formatted_value), Some("t"))
         })

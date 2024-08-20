@@ -66,17 +66,17 @@ pub fn DataCollection(
         </Show>
         { list_of_missing_fields }
         <h4 class="my-8 text-lg font-bold">
-        { move || outcome.with(|out|out.output.as_ref().map(|out|{
+        { move || outcome.with(|outcome|outcome.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
-                &form_data.with(Clone::clone), // TODO: avoid clone
-                out.values.clone(),
+                &outcome.input,
+                out.clone(),
                 klick_presenter::Formatting::Text,
               )
             }))
         }
         </h4>
         { move || outcome.with(|outcome|outcome.output.clone()).map(|outcome|{
-            let data = outcome.co2_equivalents;
+            let data = outcome;
             view!{ <Sankey data /> }
           })
         }

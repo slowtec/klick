@@ -1,36 +1,36 @@
 use std::collections::HashMap;
 
 use klick_domain::{
-    self as domain, InputValueId as Id, MissingInputValueIdError as MissingValueError, Value as V,
+    self as domain,
+    input_value::{optional, required},
+    Id, InputValueId as In,
 };
 
-use crate::{CalculationOutcome, FormData};
+use crate::CalculationOutcome;
 
 // TODO:
 // Handle these calculations as usecases in the domain or application layer.
 #[must_use]
-pub fn calculate(input: FormData) -> CalculationOutcome {
+pub fn calculate(
+    input: &HashMap<Id, domain::Value>,
+    custom_edges: Option<&[(Id, Id)]>,
+) -> CalculationOutcome {
     log::debug!("Calculate");
 
-    let output = domain::calculate_emissions(&input)
+    let output = domain::calculate(input, custom_edges)
         .map_err(|err| log::warn!("{err}"))
         .ok();
 
     log::debug!("Calculate all N2O emission factor scenarios");
     let sensitivity_n2o_calculations =
-        domain::calculate_all_n2o_emission_factor_scenarios(&input).ok();
+        domain::calculate_all_n2o_emission_factor_scenarios(&input, None).ok();
 
     let sensitivity_ch4_chp_calculations = {
         log::debug!("Calculate all CH4 CHP emission factor scenarios");
 
-        let sewage_gas_produced = required_value(Id::SewageGasProduced, &input)
-            .unwrap()
-            .as_qubicmeters_unchecked();
-        let methane_fraction = required_value(Id::MethaneFraction, &input)
-            .unwrap()
-            .as_percent_unchecked();
-        let custom_ch4_chp_emission_factor =
-            optional_value(Id::SensitivityCH4ChpCustomFactor, &input).map(V::as_percent_unchecked);
+        let sewage_gas_produced = required!(In::SewageGasProduced, &input).unwrap();
+        let methane_fraction = required!(In::MethaneFraction, &input).unwrap();
+        let custom_ch4_chp_emission_factor = optional!(In::SensitivityCH4ChpCustomFactor, &input);
 
         Some(domain::calculate_all_ch4_chp_emission_factor_scenarios(
             sewage_gas_produced,
@@ -40,30 +40,9 @@ pub fn calculate(input: FormData) -> CalculationOutcome {
     };
 
     CalculationOutcome {
-        input,
+        input: input.clone(),
         output,
         sensitivity_n2o_calculations,
         sensitivity_ch4_chp_calculations,
     }
-}
-
-// TODO: use macro
-fn required_value(id: Id, map: &HashMap<Id, V>) -> Result<V, MissingValueError> {
-    let value = map
-        .get(&id)
-        .cloned()
-        .or_else(|| id.default_value())
-        .ok_or(MissingValueError(id))?;
-    debug_assert_eq!(id.value_type(), value.value_type());
-    Ok(value)
-}
-
-// TODO: use macro
-fn optional_value(id: Id, map: &HashMap<Id, V>) -> Option<V> {
-    let value = map.get(&id).cloned().or_else(|| id.default_value());
-    debug_assert!(value
-        .as_ref()
-        .map(|v| id.value_type() == v.value_type())
-        .unwrap_or(true));
-    value
 }

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use klick_domain::{
     self as domain,
     units::{Factor, Tons},
@@ -30,18 +32,16 @@ mod conversion;
 
 pub const CURRENT_VERSION: u32 = 8;
 
+type Values = HashMap<domain::Id, domain::Value>;
+
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct CalculationOutcome {
-    pub input: FormData,
-    pub output: Option<domain::EmissionsCalculationOutcome>,
+    pub input: Values,
+    pub output: Option<Values>,
 
     // Used to create bar chart input
-    pub sensitivity_n2o_calculations: Option<
-        Vec<(
-            domain::units::N2oEmissionFactorCalcMethod,
-            domain::EmissionsCalculationOutcome,
-        )>,
-    >,
+    pub sensitivity_n2o_calculations:
+        Option<Vec<(domain::units::N2oEmissionFactorCalcMethod, Values)>>,
 
     // Used to create bar chart input
     pub sensitivity_ch4_chp_calculations:

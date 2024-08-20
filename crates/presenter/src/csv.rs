@@ -16,13 +16,12 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
 
     let mut plant_profile_table = plant_profile_as_table(&out.input, unit);
 
-    let sensitivity_parameters_table =
-        sensitivity_parameters_as_table(&out.input, unit, out.output.as_ref());
+    let sensitivity_parameters_table = sensitivity_parameters_as_table(&out.input, unit);
 
     let co2_equivalents_table = out
         .output
         .as_ref()
-        .map(|out| co2_equivalents_as_table(&out.co2_equivalents, unit))
+        .map(|out| co2_equivalents_as_table(&out, unit))
         .unwrap_or_default();
 
     plant_profile_table

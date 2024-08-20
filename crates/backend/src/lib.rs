@@ -23,6 +23,7 @@ use klick_application::{usecases, AccountRepo as _, ProjectRepo};
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
 use klick_domain::{
+    self as domain,
     authentication::{Account, EmailAddress, EmailNonce, Password},
     ProjectId,
 };
@@ -366,8 +367,13 @@ async fn get_download(
                 boundary::Project::Saved(p) => p.data,
                 boundary::Project::Unsaved(d) => d,
             };
-            // FIXME: check if pdf was alread made
-            let bytes = export_to_pdf(project_data.into())?;
+            // FIXME: check if pdf was already made
+            let values: HashMap<domain::InputValueId, domain::Value> = project_data.into();
+            let values = values
+                .into_iter()
+                .map(|(id, value)| (id.into(), value))
+                .collect();
+            let bytes = export_to_pdf(&values)?;
             let headers = [
                 (header::CONTENT_TYPE, "application/pdf"),
                 (

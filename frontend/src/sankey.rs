@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use leptos::*;
 
-use klick_domain::{units::Tons, OutputValueId as Out};
+use klick_domain::{Id, Value};
 use klick_presenter as presenter;
 
 use klick_app_charts::{Color, SankeyChart, SankeyData};
@@ -42,33 +42,10 @@ where
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
-pub fn Sankey(data: HashMap<Out, Tons>) -> impl IntoView {
+pub fn Sankey(data: HashMap<Id, Value>) -> impl IntoView {
     let co2_equivalents = data;
 
-    // NOTE:
-    // This is an example of how to tweak the sankey chart:
-    //
-    // let tweak_nodes = [
-    //    ("Custom node A".to_string(), (Tons::new(100.0), "pink", "red")),
-    //    ("Custom node B".to_string(), (Tons::new(100.0), "pink", "red")),
-    //    ("Custom node C".to_string(), (Tons::new(200.0), "pink", "red"))
-
-    // ].into_iter().collect();
-
-    // let tweak_edges = [
-    //     ("Custom node A".to_string().into(), "Custom node C".to_string().into()),
-    //     ("Custom node B".to_string().into(), "Custom node C".to_string().into()),
-    //     ("Custom node C".to_string().into(), Out::TotalEmissions.into()),
-    // ];
-    //
-    // let tweaks = Some(presenter::SankeyTweaks {
-    //     nodes: tweak_nodes,
-    //     edges: tweak_edges.to_vec(),
-    // });
-
-    let tweaks = None;
-
-    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents, tweaks);
+    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
 
     let mut sankey = SankeyData::new();
     let node_count = nodes.len();

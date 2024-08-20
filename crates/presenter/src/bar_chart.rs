@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use klick_domain::{
     units::{Percent, RatioExt, Tons},
-    OutputValueId as Out,
+    Id, OutputValueId as Out, Value,
 };
 
 #[must_use]
 pub fn recommendation_diff_bar_chart(
-    old: HashMap<Out, Tons>,
-    new: HashMap<Out, Tons>,
+    old: HashMap<Id, Value>,
+    new: HashMap<Id, Value>,
 ) -> Vec<(&'static str, f64, Option<f64>)> {
     let data_labels = [
         (Out::Ch4SludgeBags, "CH₄ Schlupf Schlammtasche"),
@@ -29,8 +29,8 @@ pub fn recommendation_diff_bar_chart(
 
 #[must_use]
 pub fn sensitivity_diff_bar_chart(
-    old: HashMap<Out, Tons>,
-    new: HashMap<Out, Tons>,
+    old: HashMap<Id, Value>,
+    new: HashMap<Id, Value>,
 ) -> Vec<(&'static str, f64, Option<f64>)> {
     let data_labels = [
         (Out::N2oPlant, "N₂O Anlage"),
@@ -47,20 +47,21 @@ pub fn sensitivity_diff_bar_chart(
 
 #[must_use]
 fn diff_bar_chart(
-    old: HashMap<Out, Tons>,
-    new: HashMap<Out, Tons>,
+    old: HashMap<Id, Value>,
+    new: HashMap<Id, Value>,
     data_labels: &[(Out, &'static str)],
 ) -> Vec<(&'static str, f64, Option<f64>)> {
     let diff = calculate_difference(&new, &old);
     let total_emissions = new
-        .get(&Out::TotalEmissions)
-        .copied()
+        .get(&Out::TotalEmissions.into())
+        .cloned()
+        .and_then(Value::as_tons)
         .unwrap_or_else(Tons::zero);
 
     data_labels
         .iter()
         .map(|(id, label)| {
-            let value = diff.get(id).copied().unwrap_or_else(Tons::zero);
+            let value = diff.get(&(*id).into()).copied().unwrap_or_else(Tons::zero);
             let percentage = if total_emissions != Tons::zero() {
                 Some((value / total_emissions).convert_to::<Percent>())
             } else {
@@ -71,13 +72,19 @@ fn diff_bar_chart(
         .collect()
 }
 
-fn calculate_difference(new: &HashMap<Out, Tons>, old: &HashMap<Out, Tons>) -> HashMap<Out, Tons> {
+fn calculate_difference(new: &HashMap<Id, Value>, old: &HashMap<Id, Value>) -> HashMap<Id, Tons> {
     let mut diff = HashMap::new();
 
     for key in new.keys() {
-        let new_val = new.get(key).copied().unwrap();
-        let old_val = old.get(key).copied().unwrap_or_else(Tons::zero);
-        diff.insert(*key, new_val - old_val);
+        let Some(new_val) = new.get(key).cloned().and_then(Value::as_tons) else {
+            continue;
+        };
+        let old_val = old
+            .get(key)
+            .cloned()
+            .and_then(Value::as_tons)
+            .unwrap_or_else(Tons::zero);
+        diff.insert(key.clone(), new_val - old_val);
     }
     diff
 }

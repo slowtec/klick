@@ -2,6 +2,7 @@ use std::{
     collections::{HashMap, HashSet},
     hash::Hash,
     iter,
+    ops::AddAssign,
 };
 
 use klick_value::{
@@ -35,32 +36,43 @@ pub const SANKEY_EDGES: &[(Out, Out)] = &[
     (Out::IndirectEmissions, Out::TotalEmissions),
 ];
 
-pub fn extract_emission_groups(
-    values: &HashMap<Out, Value>,
-    edges: &[(Out, Out)],
-) -> HashMap<Out, Tons> {
-    edges
-        .iter()
-        .flat_map(|&(source, target)| iter::once(source).chain(iter::once(target)))
-        .collect::<HashSet<_>>()
+pub fn extract_emission_groups<ID>(
+    values: &HashMap<ID, Value>,
+    edges: &[(ID, ID)],
+) -> HashMap<ID, Tons>
+where
+    ID: Eq + Hash + Clone,
+{
+    emission_group_ids(edges)
         .into_iter()
         .filter_map(|id| values.get(&id).cloned().map(|v| (id, v)))
         .filter_map(|(id, v)| v.as_tons().map(|v| (id, v)))
         .collect()
 }
 
-pub fn calculate_emission_groups<ID>(
-    mut values: HashMap<ID, Tons>,
-    edges: &[(ID, ID)],
-) -> HashMap<ID, Tons>
+pub fn emission_group_ids<ID>(edges: &[(ID, ID)]) -> HashSet<ID>
 where
     ID: Eq + Hash + Clone,
 {
+    edges
+        .iter()
+        .flat_map(|(source, target)| iter::once(source.clone()).chain(iter::once(target.clone())))
+        .collect()
+}
+
+pub fn calculate_emission_groups<ID, T>(
+    mut values: HashMap<ID, T>,
+    edges: &[(ID, ID)],
+) -> HashMap<ID, T>
+where
+    ID: Eq + Hash + Clone,
+    T: Default + AddAssign + Clone,
+{
     for (source, target) in edges {
-        let Some(source_value) = values.get(&source).copied() else {
+        let Some(source_value) = values.get(&source).cloned() else {
             continue;
         };
-        let target_value = values.entry(target.clone()).or_insert(Tons::zero());
+        let target_value = values.entry(target.clone()).or_insert(Default::default());
         *target_value += source_value;
     }
     values

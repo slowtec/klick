@@ -83,8 +83,8 @@ pub fn N2OEmissionsSensitivity(
                     .map(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
                             label: Some(szenario.label()),
-                            value: outcome.co2_equivalents.get(&Out::N2oPlant).copied().unwrap().into(),
-                            emission_factor: f64::from(required!(Out::N2oCalculatedEmissionFactor, outcome.values).unwrap()),
+                            value: required!(Out::N2oPlant, outcome).unwrap().into(),
+                            emission_factor: f64::from(required!(Out::N2oCalculatedEmissionFactor, outcome).unwrap()),
                         },
                     )
                     .collect();
@@ -173,17 +173,17 @@ pub fn N2OEmissionsSensitivity(
                     <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                       <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Anlage"</dt>
                       <dd class="text-lg py-1 px-3">
-                        { format!("{:.1}", f64::from(*out.co2_equivalents.get(&Out::N2oPlant).unwrap())).replace('.',",") }
+                        { format!("{:.1}", f64::from(required!(Out::N2oPlant, out).unwrap())).replace('.',",") }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                       </dd>
                       <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_side_stream_controls_class}") }>"N₂O Prozesswasserbehandlung"</dt>
                       <dd class={ format!("text-lg py-1 px-3 {show_side_stream_controls_class}") }>
-                        { format!("{:.1}", f64::from(*out.co2_equivalents.get(&Out::N2oSideStream).unwrap())).replace('.',",") }
+                        { format!("{:.1}", f64::from(required!(Out::N2oSideStream, out).unwrap())).replace('.',",") }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                       </dd>
                       <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                       <dd class="text-lg py-1 px-3">
-                        { format!("{:.1}", f64::from(*out.co2_equivalents.get(&Out::TotalEmissions).unwrap())).replace('.',",") }
+                        { format!("{:.1}", f64::from(required!(Out::TotalEmissions, out).unwrap())).replace('.',",") }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                       </dd>
                     </dl>

@@ -6,7 +6,7 @@ use klick_boundary::{
     calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, Data, FormData,
     JsonFormData, Project, ProjectId, SavedProject,
 };
-use klick_domain::{InputValueId as Id, Value};
+use klick_domain::{Id, InputValueId as In, Value};
 use klick_presenter as presenter;
 
 use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
@@ -68,11 +68,19 @@ pub fn Tool(
     let is_logged_in = Signal::derive(move || api.get().is_some());
     let save_result_message = RwSignal::new(None);
 
-    let outcome = create_memo(move |_| calculate(form_data.get()));
+    let outcome = create_memo(move |_| {
+        let values = form_data
+            .get()
+            .into_iter()
+            .map(|(id, value)| (Id::from(id), value))
+            .collect();
+        let custom_edges = None;
+        calculate(&values, custom_edges)
+    });
 
     let show_side_stream_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.get(&Id::SideStreamTreatmentTotalNitrogen)
+            d.get(&In::SideStreamTreatmentTotalNitrogen)
                 .cloned()
                 .map(Value::as_tons_unchecked)
                 .is_some_and(|v| f64::from(v) > 0.0)
@@ -145,12 +153,12 @@ pub fn Tool(
                     Project::Saved(mut p) => {
                         let mut data = FormData::from(p.data);
                         let name = data
-                            .get(&Id::ProjectName)
+                            .get(&In::ProjectName)
                             .cloned()
                             .map(Value::as_text_unchecked);
                         if name.is_none() || name.as_deref() == Some("") {
                             data.insert(
-                                Id::ProjectName,
+                                In::ProjectName,
                                 Value::text(DEFAULT_UNNAMED_PROJECT_TITLE),
                             );
                         }
@@ -169,11 +177,11 @@ pub fn Tool(
                     Project::Unsaved(p) => {
                         let mut p = FormData::from(p);
                         let name = p
-                            .get(&Id::ProjectName)
+                            .get(&In::ProjectName)
                             .cloned()
                             .map(Value::as_text_unchecked);
                         if name.is_none() || name.as_deref() == Some("") {
-                            p.insert(Id::ProjectName, Value::text(DEFAULT_UNNAMED_PROJECT_TITLE));
+                            p.insert(In::ProjectName, Value::text(DEFAULT_UNNAMED_PROJECT_TITLE));
                         }
                         api.create_project(&p)
                             .await
