@@ -22,8 +22,17 @@ pub fn calculate(
         .ok();
 
     log::debug!("Calculate all N2O emission factor scenarios");
+    let maybe_graph = output.clone().map(|(_, graph)| graph).clone();
+
     let sensitivity_n2o_calculations =
-        domain::calculate_all_n2o_emission_factor_scenarios(&input, None).ok();
+        domain::calculate_all_n2o_emission_factor_scenarios(&input, maybe_graph.as_deref())
+            .ok()
+            .map(|results| {
+                results
+                    .into_iter()
+                    .map(|(method, (values, _))| (method, values))
+                    .collect()
+            });
 
     let sensitivity_ch4_chp_calculations = {
         log::debug!("Calculate all CH4 CHP emission factor scenarios");
@@ -31,17 +40,18 @@ pub fn calculate(
         let sewage_gas_produced = required!(In::SewageGasProduced, &input).unwrap();
         let methane_fraction = required!(In::MethaneFraction, &input).unwrap();
         let custom_ch4_chp_emission_factor = optional!(In::SensitivityCH4ChpCustomFactor, &input);
-
-        Some(domain::calculate_all_ch4_chp_emission_factor_scenarios(
+        let results = domain::calculate_all_ch4_chp_emission_factor_scenarios(
             sewage_gas_produced,
             methane_fraction,
             custom_ch4_chp_emission_factor,
-        ))
+        );
+        Some(results)
     };
 
     CalculationOutcome {
         input: input.clone(),
-        output,
+        output: output.as_ref().map(|(values, _)| values.clone()),
+        graph: output.as_ref().map(|(_, graph)| graph.clone()),
         sensitivity_n2o_calculations,
         sensitivity_ch4_chp_calculations,
     }

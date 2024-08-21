@@ -42,10 +42,10 @@ where
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
-pub fn Sankey(data: HashMap<Id, Value>) -> impl IntoView {
+pub fn Sankey(data: HashMap<Id, Value>, graph: Vec<(Id, Id)>) -> impl IntoView {
     let co2_equivalents = data;
 
-    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
+    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents, &graph);
 
     let mut sankey = SankeyData::new();
     let node_count = nodes.len();

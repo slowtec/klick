@@ -50,7 +50,7 @@ pub fn calculate_emissions(
 pub fn calculate(
     values: &HashMap<Id, Value>,
     custom_edges: Option<&[(Id, Id)]>,
-) -> anyhow::Result<HashMap<Id, Value>> {
+) -> anyhow::Result<(HashMap<Id, Value>, Vec<(Id, Id)>)> {
     let input_values = extract_input_values(values).collect();
     let custom_values = extract_custom_emission_values(values);
     let (emissions, factors, methods) = emissions_factors_and_methods(&input_values)?;
@@ -76,7 +76,7 @@ pub fn calculate(
         .chain(methods.into_iter().map(|(id, v)| (id.into(), v)))
         .collect();
 
-    Ok(values)
+    Ok((values, graph))
 }
 
 fn emission_graph(custom_edges: Option<&[(Id, Id)]>) -> Vec<(Id, Id)> {
@@ -633,7 +633,12 @@ pub fn calculate_oil_gas_savings(
 pub fn calculate_all_n2o_emission_factor_scenarios(
     values: &HashMap<Id, Value>,
     custom_edges: Option<&[(Id, Id)]>,
-) -> anyhow::Result<Vec<(N2oEmissionFactorCalcMethod, HashMap<Id, Value>)>> {
+) -> anyhow::Result<
+    Vec<(
+        N2oEmissionFactorCalcMethod,
+        (HashMap<Id, Value>, Vec<(Id, Id)>),
+    )>,
+> {
     let mut values = values.clone();
     let id = In::SensitivityN2OCalculationMethod;
 

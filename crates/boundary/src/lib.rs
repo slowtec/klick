@@ -33,11 +33,13 @@ mod conversion;
 pub const CURRENT_VERSION: u32 = 8;
 
 type Values = HashMap<domain::Id, domain::Value>;
+type Graph = Vec<(domain::Id, domain::Id)>;
 
 #[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
 pub struct CalculationOutcome {
     pub input: Values,
     pub output: Option<Values>,
+    pub graph: Option<Graph>,
 
     // Used to create bar chart input
     pub sensitivity_n2o_calculations:

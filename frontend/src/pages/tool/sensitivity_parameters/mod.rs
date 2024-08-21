@@ -102,9 +102,8 @@ pub fn SensitivityParameters(
           }
         </h4>
 
-        { move || outcome.with(|out| out.output.as_ref().map(|outcome|{
-            let data = outcome.clone();
-            view!{ <Sankey data /> }
+        { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
+            view!{ <Sankey data graph /> }
           }))
         }
 

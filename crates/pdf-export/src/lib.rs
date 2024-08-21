@@ -46,7 +46,9 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
     let mut recommendation_barchart_svg_file =
         tempfile::Builder::new().suffix(".svg").tempfile()?;
 
-    let plant_profile_sankey_svg_file_path = if let Some(output) = &outcome.output {
+    let sankey_data = outcome.output.clone().zip(outcome.graph.clone());
+
+    let plant_profile_sankey_svg_file_path = if let Some(output) = &sankey_data {
         let sankey_chart = render_svg_sankey_chart(output.clone());
         profile_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(profile_sankey_svg_file.path().display().to_string())
@@ -54,7 +56,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
         None
     };
 
-    let sensitivity_sankey_svg_file_path = if let Some(output) = &outcome.output {
+    let sensitivity_sankey_svg_file_path = if let Some(output) = &sankey_data {
         let sankey_chart = render_svg_sankey_chart(output.clone());
         sensitivity_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(sensitivity_sankey_svg_file.path().display().to_string())
@@ -62,7 +64,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
         None
     };
 
-    let recommendation_sankey_svg_file_path = if let Some(output) = &outcome.output {
+    let recommendation_sankey_svg_file_path = if let Some(output) = &sankey_data {
         let sankey_chart = render_svg_sankey_chart(output.clone());
         recommendation_sankey_svg_file.write_all(sankey_chart.as_bytes())?;
         Some(recommendation_sankey_svg_file.path().display().to_string())
@@ -311,8 +313,10 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
     )
 }
 
-fn render_svg_sankey_chart(co2_equivalents: HashMap<Id, Value>) -> String {
-    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents);
+fn render_svg_sankey_chart(
+    (co2_equivalents, graph): (HashMap<Id, Value>, Vec<(Id, Id)>),
+) -> String {
+    let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents, &graph);
 
     let mut sankey = charts::SankeyData::new();
     let node_count = nodes.len();

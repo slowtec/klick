@@ -108,9 +108,8 @@ pub fn Recommendations(
         }
       </h4>
 
-      { move || outcome.with(|out| out.output.as_ref().map(|output|{
-          let data = output.clone();
-          view!{ <Sankey data /> }
+      { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
+          view!{ <Sankey data graph /> }
         }))
       }
       <div

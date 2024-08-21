@@ -75,10 +75,9 @@ pub fn DataCollection(
             }))
         }
         </h4>
-        { move || outcome.with(|outcome|outcome.output.clone()).map(|outcome|{
-            let data = outcome;
-            view!{ <Sankey data /> }
-          })
+        { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
+            view!{ <Sankey data graph /> }
+          }))
         }
         <Show when = move || outcome.with(|outcome|outcome.output.is_some())>
           <button

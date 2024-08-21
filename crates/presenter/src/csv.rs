@@ -20,7 +20,8 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
 
     let co2_equivalents_table = out
         .output
-        .as_ref()
+        .clone()
+        .zip(out.graph.clone())
         .map(|out| co2_equivalents_as_table(&out, unit))
         .unwrap_or_default();
 
@@ -42,13 +43,13 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
                 .map(|(name, value, unit)| {
                     [
                         name,
-                        &value
+                        value
                             .map(|v|
                               // NOTE: this is required because 
                               // German values can contain ','
                               format!("\"{v}\""))
                             .unwrap_or_default(),
-                        unit.unwrap_or_default(),
+                        unit.unwrap_or_default().to_string(),
                     ]
                     .join(",")
                 })

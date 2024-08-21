@@ -68,14 +68,75 @@ pub fn Tool(
     let is_logged_in = Signal::derive(move || api.get().is_some());
     let save_result_message = RwSignal::new(None);
 
+    // TODO:
+    //
+    // Use these signals ....
+    let custom_edges = RwSignal::new(vec![]);
+    let custom_values = RwSignal::<Vec<(String, Value)>>::new(vec![]);
+    // ... like this:
+    //
+    //      custom_values.update(|v|{
+    //          v.insert("a".to_string(), Value::tons(100.0));
+    //          v.insert("b".to_string(), Value::tons(100.0));
+    //      });
+    //      custom_edges.set(vec![
+    //          ("a".to_string().into(), "c".to_string().into()),
+    //          ("b".to_string().into(), "c".to_string().into()),
+    //          ("c".to_string().into(), domain::OutputValueId::TotalEmissions.into())
+    //      ]);
+    //
+    // This might be happen in an effect like this:
+    //
+    //
+    //     let my_parser = |_txt| {
+    //         // fake parse ...
+    //         let nodes = vec![
+    //             ("a".to_string(), Value::tons(100.0)),
+    //             ("b".to_string(), Value::tons(100.0)),
+    //         ];
+    //         let edges = vec![
+    //             ("a".to_string().into(), "c".to_string().into()),
+    //             ("b".to_string().into(), "c".to_string().into()),
+    //             (
+    //                 "c".to_string().into(),
+    //                 domain::OutputValueId::TotalEmissions.into(),
+    //             ),
+    //         ];
+    //         (nodes, edges)
+    //     };
+
+    //     create_effect(move |_| {
+    //         let Some(text) =
+    //             form_data.with(|data| data.get(&In::ProjectName).cloned().map(Value::as_text))
+    //         else {
+    //             return;
+    //         };
+    //         let (nodes, edges) = my_parser(text);
+    //         custom_values.set(nodes);
+    //         custom_edges.set(edges);
+    //     });
+
     let outcome = create_memo(move |_| {
+        let custom_values = custom_values
+            .get()
+            .into_iter()
+            .map(|(id, value)| (Id::from(id), value));
+
         let values = form_data
             .get()
             .into_iter()
             .map(|(id, value)| (Id::from(id), value))
+            .chain(custom_values)
             .collect();
-        let custom_edges = None;
-        calculate(&values, custom_edges)
+        let custom_edges = custom_edges.get();
+        calculate(
+            &values,
+            if custom_edges.is_empty() {
+                None
+            } else {
+                Some(&custom_edges)
+            },
+        )
     });
 
     let show_side_stream_controls = Signal::derive(move || {

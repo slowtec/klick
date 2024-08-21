@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::Serialize;
 
-use klick_domain::{Id, InputValueId as In, OutputValueId as Out, Value};
+use klick_domain::{self as domain, Id, InputValueId as In, Value};
 
 use crate::{Lng, ValueLabel, ValueUnit};
 
@@ -42,7 +42,7 @@ pub struct Table {
 #[derive(Serialize)]
 pub struct TableSection {
     pub title: String,
-    pub rows: Vec<(&'static str, Option<String>, Option<&'static str>)>,
+    pub rows: Vec<(String, Option<String>, Option<&'static str>)>,
 }
 
 #[must_use]
@@ -111,7 +111,7 @@ pub fn plant_profile_as_table(data: &HashMap<Id, Value>, formatting: Formatting)
             .into_iter()
             .map(|id| {
                 (
-                    formatting.fmt_label(id),
+                    formatting.fmt_label(id).to_string(),
                     data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
                     formatting.fmt(id),
                 )
@@ -164,7 +164,7 @@ pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Fo
             .into_iter()
             .map(|id| {
                 (
-                    formatting.fmt_label(id),
+                    formatting.fmt_label(id).to_string(),
                     data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
                     formatting.fmt(id),
                 )
@@ -176,57 +176,33 @@ pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Fo
 }
 
 #[must_use]
-pub fn co2_equivalents_as_table(values: &HashMap<Id, Value>, _unit: Formatting) -> Table {
+pub fn co2_equivalents_as_table(
+    (values, graph): &(HashMap<Id, Value>, Vec<(Id, Id)>),
+    _unit: Formatting,
+) -> Table {
     // TODO: use as parameger
     let lang = Lng::De;
 
-    let emission_data = [
-        Out::N2oPlant,
-        Out::N2oWater,
-        Out::N2oSideStream,
-        Out::N2oEmissions,
-        Out::Ch4Plant,
-        Out::Ch4SludgeStorageContainers,
-        Out::Ch4SludgeBags,
-        Out::Ch4Water,
-        Out::Ch4CombinedHeatAndPowerPlant,
-        Out::Ch4Emissions,
-        Out::FossilEmissions,
-        Out::Fecl3,
-        Out::Feclso4,
-        Out::Caoh2,
-        Out::SyntheticPolymers,
-        Out::ElectricityMix,
-        Out::OilEmissions,
-        Out::GasEmissions,
-        Out::OperatingMaterials,
-        Out::SewageSludgeTransport,
-        Out::TotalEmissions,
-        Out::DirectEmissions,
-        Out::ProcessEnergySavings,
-        Out::PhotovoltaicExpansionSavings,
-        Out::WindExpansionSavings,
-        Out::WaterExpansionSavings,
-        Out::DistrictHeatingSavings,
-        Out::FossilEnergySavings,
-        Out::IndirectEmissions,
-        Out::OtherIndirectEmissions,
-        Out::ExcessEnergyCo2Equivalent,
-    ];
+    let ids = domain::emission_group_ids(graph);
 
     // TODO: insert missing values with `Tons::zero()`
 
-    let rows: Vec<_> = emission_data
+    let rows: Vec<_> = ids
         .into_iter()
         .filter_map(|id| {
             values
-                .get(&id.into())
+                .get(&id)
                 .and_then(|value| value.clone().as_tons())
                 .map(|tons| (id, tons))
         })
         .map(|(id, value)| {
+            let label = match id {
+                Id::Custom(id) => id.clone(),
+                Id::Out(id) => id.label().to_string(),
+                Id::In(id) => id.label().to_string(),
+            };
             let formatted_value = lang.format_number(f64::from(value));
-            (id.label(), Some(formatted_value), Some("t"))
+            (label, Some(formatted_value), Some("t"))
         })
         .collect();
 
