@@ -1,6 +1,5 @@
 use leptos::*;
-
-pub const FOOTER_MD: &str = include_str!("../content/de/footer.md");
+use leptos_fluent::*;
 
 use klick_app_components::{
     icons,
@@ -9,8 +8,12 @@ use klick_app_components::{
 
 use crate::{Markdown, Page, CHANGELOG_URL, VERSION};
 
+pub const FOOTER_MD_DE: &str = include_str!("../content/de/footer.md");
+pub const FOOTER_MD_EN: &str = include_str!("../content/en/footer.md");
+
 #[component]
 pub fn Footer() -> impl IntoView {
+    let lang = expect_i18n().language;
     view! {
       <footer class="bg-gray-100">
         <div class="mx-auto max-w-7xl overflow-hidden px-6 pt-16 sm:pt-20 lg:px-8">
@@ -22,7 +25,12 @@ pub fn Footer() -> impl IntoView {
                 aria-label="Logo des Bundesministeriums für Wirtschaft und Klimaschutz (BMWK) sowie der Nationalen Klimaschutzinitiative (NKI). Über dem BMWK-Logo steht die Beschreibung: gefördert durch und unter dem BMWK-Logo steht dazugehörig: aufgrund eines Beschlusses des Deutschen Bundestages">
                 <img src="logo_BMWK_NKI.svg" />
               </div>
-              <Markdown content = FOOTER_MD />
+              { move ||
+                  match lang.get().id.language.as_str() {
+                    "en" => view! { <Markdown content = FOOTER_MD_EN /> }.into_view(),
+                    _    => view! { <Markdown content = FOOTER_MD_DE /> }.into_view()
+                  }
+              }
             </div>
           </div>
           <div>
@@ -50,14 +58,14 @@ pub fn Footer() -> impl IntoView {
             aria-label="Footer"
           >
             <div class="grid gap-3 items-center justify-center justify-items-center md:grid-cols-8 xl:col-span-6">
-              <FooterLink link = LinkType::Page(Page::Home) label ="KlicK" />
-              <FooterLink link = LinkType::Page(Page::Tool) label ="Tool" />
-              <FooterLink link = LinkType::External(WIKI_URL) label ="Wiki" />
-              <FooterLink link = LinkType::External(FAQ_DE) label ="FAQs" />
-              <FooterLink link = LinkType::External(DATENSCHUTZ) label ="Datenschutz" />
-              <FooterLink link = LinkType::External(ACCESSIBILITY) label ="Barrierefreiheit" />
-              <FooterLink link = LinkType::Page(Page::OpenSource) label ="Open Source" />
-              <FooterLink link = LinkType::Page(Page::Imprint) label ="Impressum" />
+              <FooterLink link = LinkType::Page(Page::Home) label = move_tr!("klick") />
+              <FooterLink link = LinkType::Page(Page::Tool) label = move_tr!("tool") />
+              <FooterLink link = LinkType::External(WIKI_URL) label = move_tr!("wiki") />
+              <FooterLink link = LinkType::External(FAQ_DE) label = move_tr!("faqs") />
+              <FooterLink link = LinkType::External(DATENSCHUTZ) label = move_tr!("data-privacy") />
+              <FooterLink link = LinkType::External(ACCESSIBILITY) label = move_tr!("accessibility") />
+              <FooterLink link = LinkType::Page(Page::OpenSource) label = move_tr!("open-source") />
+              <FooterLink link = LinkType::Page(Page::Imprint) label = move_tr!("imprint") />
             </div>
             <div class="my-3 grid gap-3 justify-center justify-items-center xl:grid-cols-2 xl:col-span-4">
               <div class="my-3">
@@ -66,7 +74,7 @@ pub fn Footer() -> impl IntoView {
                 </a>
               </div>
               <div class="flex items-center">
-                <span class="text-white mr-3">"Folgen Sie uns auf LinkedIn"</span>
+                <span class="text-white mr-3">{ move_tr!("follow-us-on-linkedin") }</span>
                 <a class="inline-block" href={ LINKEDIN }>
                   <icons::LinkedIn />
                 </a>
@@ -79,17 +87,18 @@ pub fn Footer() -> impl IntoView {
 }
 
 #[component]
-fn FooterLink(link: LinkType, label: &'static str) -> impl IntoView {
+fn FooterLink(link: LinkType, label: Signal<String>) -> impl IntoView {
+    let href = match link {
+        LinkType::Page(page) => page.path(),
+        LinkType::External(url) => url,
+    };
+
     view! {
-      <div class="">
+      <div>
         <a
-          href = {
-            match link {
-              LinkType::Page(page) => page.path(),
-              LinkType::External(url) => url
-            }
-          }
-          class = "text-sm leading-6 text-white hover:text-gray-200">
+          href = href
+          class = "text-sm leading-6 text-white hover:text-gray-200"
+        >
           { label }
         </a>
       </div>
