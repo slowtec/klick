@@ -5,3 +5,51 @@
 .bg-red-100 {
     background-color: rgb(254 226 226);
 }
+
+.fi-circle {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 24px !important;
+  border-radius: 100%;
+  border: none;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .06);
+  background: white;
+}
+
+/*
+This is an manual extract of
+https://github.com/lipis/flag-icons/blob/v6.6.6/css/flag-icons.css
+*/
+
+.fib {
+  background-size: contain;
+  background-position: 50%;
+  background-repeat: no-repeat;
+}
+.fi {
+  background-size: contain;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  position: relative;
+  display: inline-block;
+  width: 1.33333333em;
+  line-height: 1em;
+}
+.fi:before {
+  content: '\00a0';
+}
+.fi.fis {
+  width: 1em;
+}
+.fi-de {
+  background-image: url(/flags/4x3/de.svg);
+}
+.fi-de.fis {
+  background-image: url(/flags/1x1/de.svg);
+}
+.fi-gb {
+  background-image: url(/flags/4x3/gb.svg);
+}
+.fi-gb.fis {
+  background-image: url(/flags/1x1/gb.svg);
+}

@@ -1,5 +1,7 @@
+use fluent_templates::static_loader;
 use gloo_storage::{LocalStorage, Storage};
 use leptos::*;
+use leptos_fluent::leptos_fluent;
 use leptos_hotkeys::{provide_hotkeys_context, scopes, use_hotkeys};
 use leptos_meta::provide_meta_context;
 use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
@@ -7,9 +9,17 @@ use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
 use klick_app_api as api;
 use klick_boundary::{self as boundary, json_api::UserInfo};
 
+static_loader! {
+    static TRANSLATIONS = {
+        locales: "./locales",
+        fallback_language: "de",
+    };
+}
+
 mod credentials;
 mod footer;
 mod forms;
+mod i18n;
 mod nav;
 mod pages;
 mod sankey;
@@ -43,6 +53,17 @@ const SECTION_ID_TOOL_HOME: &str = "tool-home";
 #[must_use]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+
+    leptos_fluent! {{
+        locales: "./locales",
+        translations: [TRANSLATIONS],
+        #[cfg(debug_assertions)]
+        check_translations: "./src/**/*.rs",
+        sync_html_tag_lang: true,
+        sync_html_tag_dir: true,
+        set_language_to_localstorage: true,
+        initial_language_from_navigator: true,
+    }};
 
     // -- hotkeys -- //
 
@@ -128,6 +149,14 @@ pub fn App() -> impl IntoView {
             log::debug!("API is no longer authorized: delete token from LocalStorage");
             LocalStorage::delete(API_TOKEN_STORAGE_KEY);
         }
+    });
+
+    let i18n = leptos_fluent::i18n();
+    let lang = i18n.language;
+
+    Effect::new(move |_| {
+        let current_lang = lang.get();
+        log::info!("Language changed to {}", current_lang.name);
     });
 
     view! {

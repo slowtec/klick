@@ -20,10 +20,13 @@ anyhow = "1.0.86"
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
 derive_more = "1.0.0"
+fluent-templates = { version = "0.10.1",  features = ["macros", "walkdir"] }
 gloo-file = { version = "0.3.0", features = ["futures"] }
 gloo-storage = "0.3.0"
 js-sys = "0.3.70"
 leptos = { version = "0.6.13", features = ["csr"] }
+leptos-fluent = { version = "0.1.19", default-features = false }
+leptos_hotkeys = "0.2.2"
 leptos_meta = { version = "0.6.13", features = ["csr"] }
 leptos_router = { version = "0.6.13", features = ["csr"] }
 log = "0.4.22"
@@ -34,7 +37,6 @@ serde = { version = "1.0.207", features = ["derive"] }
 strum = "0.26.3"
 thiserror = "1.0.63"
 time = { version = "0.3.36", features = ["macros", "formatting"] }
-leptos_hotkeys = "0.2.2"
 
 [patch.crates-io]
 # Local paths to library crates in workspace

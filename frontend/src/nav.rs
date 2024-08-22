@@ -1,8 +1,10 @@
 use leptos::*;
+use leptos_fluent::*;
 use leptos_router::*;
 
-use crate::Page;
 use klick_boundary::json_api::UserInfo;
+
+use crate::{i18n::LanguageSelector, Page};
 
 #[component]
 pub fn Nav(
@@ -22,37 +24,38 @@ pub fn Nav(
                 <img class="h-16 w-auto" src="logo-utbw-solo.svg" alt="Das Logo der Umwelttechnik Baden-Württemberg ist eine Adaption der (kleinen) Landesdienstflagge Baden-Württembergs. Sie zeigt die drei stilisierten Löwen des Bundeslandes und einen diagonalen Streifen in der goldgelben Flaggen-Farbe welcher hinter den Löwen und dem nebenstehenden Schriftzug “UMWELT TECHNIK BW” verläuft." />
               </div>
               <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <NavLink page=Page::Home current_page label="KlicK" />
-                <NavLink page=Page::Tool current_page label="Tool" />
-                <NavLink page=Page::Projects current_page label="Projekte" />
-                <NavLink page=Page::Faq  current_page label="FAQs" />
+                <NavLink page=Page::Home current_page label=move_tr!("klick") />
+                <NavLink page=Page::Tool current_page label=move_tr!("tool") />
+                <NavLink page=Page::Projects current_page label=move_tr!("projects") />
+                <NavLink page=Page::Faq  current_page label=move_tr!("faqs") />
               </div>
             </div>
 
             <div class="hidden sm:ml-6 sm:flex sm:items-center">
-            { move || if let Some(user_info) = user_info.get() {
-                view! {
-                  <UserMenu user_info on_logout />
-                }.into_view()
-              } else {
-                view! {
-                  <div>
-                    <a
-                      class = "text-gray-500 hover:text-gray-700 mx-2 px-1 pt-1 text-sm font-medium"
-                      href = Page::Login.path()
-                    >
-                      "Login"
-                    </a>
-                    <a
-                      class = "text-gray-500 hover:text-gray-700 mx-2 px-1 pt-1 text-sm font-medium"
-                      href = Page::Register.path()
-                    >
-                      "Registrieren"
-                    </a>
-                  </div>
-                }.into_view()
+              { move || if let Some(user_info) = user_info.get() {
+                  view! {
+                    <UserMenu user_info on_logout />
+                  }.into_view()
+                } else {
+                  view! {
+                    <div>
+                      <a
+                        class = "text-gray-500 hover:text-gray-700 mx-2 px-1 pt-1 text-sm font-medium"
+                        href = Page::Login.path()
+                      >
+                        "Login"
+                      </a>
+                      <a
+                        class = "text-gray-500 hover:text-gray-700 mx-2 px-1 pt-1 text-sm font-medium"
+                        href = Page::Register.path()
+                      >
+                      { move_tr!("sign-up") }
+                      </a>
+                    </div>
+                  }.into_view()
+                }
               }
-            }
+              <LanguageSelector/ >
             </div>
 
             <div class="-mr-2 flex items-center sm:hidden">
@@ -97,10 +100,10 @@ pub fn Nav(
         // Mobile menu
         <div class= move || if mobile_menu_is_open.get() { "sm:hidden" } else { "hidden" } >
           <div class="space-y-1 pb-3 pt-2">
-            <MobileNavLink page=Page::Home current_page label="KlicK" />
-            <MobileNavLink page=Page::Tool current_page label="Tool" />
-            <MobileNavLink page=Page::Projects current_page label="Projekte" />
-            <MobileNavLink page=Page::Faq  current_page label="FAQs" />
+            <MobileNavLink page=Page::Home current_page label=move_tr!("klick") />
+            <MobileNavLink page=Page::Tool current_page label=move_tr!("tool") />
+            <MobileNavLink page=Page::Projects current_page label=move_tr!("projects") />
+            <MobileNavLink page=Page::Faq  current_page label=move_tr!("faqs") />
           </div>
           { move ||
             if let Some(user_info) = user_info.get() {
@@ -109,6 +112,9 @@ pub fn Nav(
               view! { <PublicMobileUserMenu /> }.into_view()
             }
           }
+          <div class="space-y-1 pb-3 pt-2">
+            // TODO: add mobile ready language selector
+          </div>
         </div>
       </nav>
     }
@@ -163,7 +169,7 @@ fn UserMenu(user_info: UserInfo, #[prop(into)] on_logout: Callback<()>) -> impl 
                id="user-menu-item-2"
                on:click = move |_| on_logout.call(())
              >
-               "Logout"
+              { move_tr!("logout") }
              </a>
            </div>
          </Show>
@@ -196,13 +202,13 @@ fn MobileUserMenu(user_info: UserInfo, #[prop(into)] on_logout: Callback<()>) ->
             class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
             on:click = move |_| on_logout.call(())
           >
-            "Logout"
+           { move_tr!("logout") }
           </a>
           <A
             href=Page::Projects.path()
             class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
           >
-            "Projekte"
+           { move_tr!("projects") }
           </A>
         </div>
       </div>
@@ -222,7 +228,7 @@ fn PublicMobileUserMenu() -> impl IntoView {
 }
 
 #[component]
-fn NavLink(page: Page, current_page: Signal<Page>, label: &'static str) -> impl IntoView {
+fn NavLink(page: Page, current_page: Signal<Page>, label: Signal<String>) -> impl IntoView {
     const CLASS_CURRENT : &str = "border-highlight text-gray-900 inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium";
     const CLASS_INACTIVE : &str = "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium";
 
@@ -238,7 +244,7 @@ fn NavLink(page: Page, current_page: Signal<Page>, label: &'static str) -> impl 
 }
 
 #[component]
-fn MobileNavLink(page: Page, current_page: Signal<Page>, label: &'static str) -> impl IntoView {
+fn MobileNavLink(page: Page, current_page: Signal<Page>, label: Signal<String>) -> impl IntoView {
     const CLASS_CURRENT: &str = "block border-l-4 border-highlight bg-indigo-50 py-2 pl-3 pr-4 text-base font-medium text-indigo-700";
     const CLASS_INACTIVE: &str = "block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700";
 
