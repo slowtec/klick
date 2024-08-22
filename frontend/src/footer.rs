@@ -1,6 +1,6 @@
 use leptos::*;
 
-pub const FOOTER_MD: &str = include_str!("../content/footer.md");
+pub const FOOTER_MD: &str = include_str!("../content/de/footer.md");
 
 use klick_app_components::{
     icons,

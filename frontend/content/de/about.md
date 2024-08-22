@@ -1,4 +1,4 @@
-# Webtool - Klimabilanz für Kläranlagen mit einem Klick
+# Webtool - Klimabilanz für Kläranlagen mit einem KlicK
 
 ![Foto (Außenaufnahme) eiens Teils der biologischen Reinigungsstufe einer Modell-Kläranlage. Ein Steg führt über das Reinigungsbecken, auf dem Steg steht eine Gruppe von Personen die an einer Fachexkursion teilnehmen. Das Becken durchfließt (braunes) Abwasser. An der Abwasseroberfläche treibt eine gelbe Messhaube die dort verschnürt ist. Die Messhaube dient der Echtzeitmessung von (unsichtbaren) Treibhausgasen die aus dem Becken austreten können.](klaeranlage.jpg)
 
@@ -21,5 +21,3 @@ dort finden Sie u.a. nützliche Informationen zu Berechnungsgrundlagen und Liter
 Wir freuen uns, wenn Ihnen das Tool gefällt und auf ihr Feedback.
 
 Viele gute Erkenntnisse **für unser Klima und unsere Umwelt** wünscht das KlicK-Team.
-
-<a class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm no-underline" href="/tool">Zum Tool</a>

@@ -1,7 +1,7 @@
 use fluent_templates::static_loader;
 use gloo_storage::{LocalStorage, Storage};
 use leptos::*;
-use leptos_fluent::leptos_fluent;
+use leptos_fluent::*;
 use leptos_hotkeys::{provide_hotkeys_context, scopes, use_hotkeys};
 use leptos_meta::provide_meta_context;
 use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
@@ -34,9 +34,12 @@ use self::{
 };
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const IMPRINT_MD: &str = include_str!("../content/imprint.md");
-const ABOUT_MD: &str = include_str!("../content/about.md");
-const OPEN_SOURCE_MD: &str = include_str!("../content/open-source.md");
+
+const IMPRINT_MD: &str = include_str!("../content/de/imprint.md");
+const ABOUT_MD_DE: &str = include_str!("../content/de/about.md");
+const ABOUT_MD_EN: &str = include_str!("../content/en/about.md");
+const OPEN_SOURCE_MD: &str = include_str!("../content/de/open-source.md");
+
 const CHANGELOG_URL: &str = concat!(
     "https://codeberg.org/slowtec/klick/src/tag/v",
     env!("CARGO_PKG_VERSION"),
@@ -174,7 +177,20 @@ pub fn App() -> impl IntoView {
                 set_current_page.update(|p|*p = Page::Home);
                 view! {
                   <Main>
-                    <Markdown content = ABOUT_MD />
+                    { move ||
+                        match lang.get().id.language.as_str() {
+                          "en" => view! { <Markdown content = ABOUT_MD_EN /> }.into_view(),
+                          _    => view! { <Markdown content = ABOUT_MD_DE /> }.into_view()
+                        }
+                    }
+                    <p class="my-4">
+                      <a
+                        class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm no-underline"
+                        href="/tool"
+                      >
+                        { move_tr!("to-the-tool") }
+                      </a>
+                    </p>
                   </Main>
                 }
               }
@@ -333,7 +349,6 @@ fn Main(children: Children) -> impl IntoView {
 #[component]
 fn Markdown(content: &'static str) -> impl IntoView {
     use pulldown_cmark::{html, Options, Parser};
-
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
     let parser = Parser::new_ext(content, options);
