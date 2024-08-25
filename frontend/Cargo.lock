@@ -1063,6 +1063,7 @@ dependencies = [
  "derive_more",
  "fluent-templates",
  "gloo-file",
+ "gloo-net 0.6.0",
  "gloo-storage",
  "js-sys",
  "klick-app-api",
@@ -1085,6 +1086,7 @@ dependencies = [
  "thiserror",
  "time",
  "toml",
+ "walkdir",
 ]
 
 [[package]]

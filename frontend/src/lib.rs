@@ -1,4 +1,5 @@
 use fluent_templates::static_loader;
+use gloo_net::http::Request;
 use gloo_storage::{LocalStorage, Storage};
 use leptos::*;
 use leptos_fluent::*;
@@ -8,6 +9,7 @@ use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
 
 use klick_app_api as api;
 use klick_boundary::{self as boundary, json_api::UserInfo};
+use klick_presenter::Lng;
 
 static_loader! {
     static TRANSLATIONS = {
@@ -34,11 +36,6 @@ use self::{
 };
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-
-const IMPRINT_MD: &str = include_str!("../content/de/imprint.md");
-const ABOUT_MD_DE: &str = include_str!("../content/de/about.md");
-const ABOUT_MD_EN: &str = include_str!("../content/en/about.md");
-const OPEN_SOURCE_MD: &str = include_str!("../content/de/open-source.md");
 
 const CHANGELOG_URL: &str = concat!(
     "https://codeberg.org/slowtec/klick/src/tag/v",
@@ -89,6 +86,13 @@ pub fn App() -> impl IntoView {
     let user_info = RwSignal::new(None::<UserInfo>);
     let logged_in = Signal::derive(move || user_info.get().is_some());
     let current_project = RwSignal::new(None::<boundary::Project>);
+
+    // TODO: avoid mixing lang and lng
+    let lang = leptos_fluent::i18n().language;
+    let lng = Signal::derive(move || match lang.get().id.language.as_str() {
+        "en" => Lng::En,
+        _ => Lng::De,
+    });
 
     // -- actions -- //
 
@@ -154,9 +158,6 @@ pub fn App() -> impl IntoView {
         }
     });
 
-    let i18n = leptos_fluent::i18n();
-    let lang = i18n.language;
-
     Effect::new(move |_| {
         let current_lang = lang.get();
         log::info!("Language changed to {}", current_lang.name);
@@ -177,12 +178,10 @@ pub fn App() -> impl IntoView {
                 set_current_page.update(|p|*p = Page::Home);
                 view! {
                   <Main>
-                    { move ||
-                        match lang.get().id.language.as_str() {
-                          "en" => view! { <Markdown content = ABOUT_MD_EN /> }.into_view(),
-                          _    => view! { <Markdown content = ABOUT_MD_DE /> }.into_view()
-                        }
-                    }
+                    <ContentLoader
+                      file = "about.html"
+                      lng = lng
+                    />
                     <p class="my-4">
                       <a
                         class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm no-underline"
@@ -250,7 +249,10 @@ pub fn App() -> impl IntoView {
                 set_current_page.update(|p|*p = Page::OpenSource);
                 view! {
                   <Main>
-                    <Markdown content = OPEN_SOURCE_MD />
+                    <ContentLoader
+                      file = "open-source.html"
+                      lng = lng
+                    />
                   </Main>
                 }
               }
@@ -261,7 +263,7 @@ pub fn App() -> impl IntoView {
                 set_current_page.update(|p|*p = Page::Imprint);
                 view! {
                   <Main>
-                    <Markdown content = IMPRINT_MD />
+                    <ContentLoader lng file = "imprint.html" />
                   </Main>
                 }
               }
@@ -326,7 +328,7 @@ pub fn App() -> impl IntoView {
             />
           </Routes>
         </Router>
-        <Footer />
+        <Footer lng />
       </div>
     }
 }
@@ -347,15 +349,49 @@ fn Main(children: Children) -> impl IntoView {
 }
 
 #[component]
-fn Markdown(content: &'static str) -> impl IntoView {
-    use pulldown_cmark::{html, Options, Parser};
-    let mut options = Options::empty();
-    options.insert(Options::ENABLE_STRIKETHROUGH);
-    let parser = Parser::new_ext(content, options);
-    let mut html_output = String::new();
-    html::push_html(&mut html_output, parser);
+fn ContentLoader(lng: Signal<Lng>, file: &'static str) -> impl IntoView {
+    let url = Signal::derive(move || format!("content/{}/{file}", lng.get().alpha_2()));
+    view! { <HtmlLoader url = url /> }
+}
+
+#[component]
+pub fn HtmlLoader(url: Signal<String>) -> impl IntoView {
+    let html_content = create_resource(
+        move || url.get(),
+        |url| async move {
+            fetch_html(&url)
+                .await
+                .map_err(|err| format!("unable to loat {url}: {err}"))
+        },
+    );
 
     view! {
-      <div class="prose" inner_html = html_output></div>
+      <Suspense
+        fallback= move || view!{ <p>"Loading..."</p> }
+      >
+        {
+          match html_content.get() {
+              Some(Ok(content)) => {
+                view! { <div class="prose" inner_html = content></div> }.into_view()
+
+              }
+              Some(Err(_)) | None => {
+                view! { <div>"Failed to load content."</div> }.into_view()
+              }
+          }
+        }
+      </Suspense>
     }
+}
+
+const ABOUT_DE_HTML: &str = include_str!("../target/content/de/about.html");
+
+async fn fetch_html(url: &str) -> anyhow::Result<String, gloo_net::Error> {
+    // Make the German main page immediately available .
+    if url == "content/de/about.html" {
+        return Ok(ABOUT_DE_HTML.to_string());
+    };
+    let response = Request::get(url).send().await?;
+    let html = response.text().await?;
+    Ok(html)
 }

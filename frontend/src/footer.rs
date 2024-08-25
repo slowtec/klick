@@ -5,15 +5,12 @@ use klick_app_components::{
     icons,
     links::{ACCESSIBILITY, DATENSCHUTZ, FAQ_DE, LINKEDIN, WIKI_URL},
 };
+use klick_presenter::Lng;
 
-use crate::{Markdown, Page, CHANGELOG_URL, VERSION};
-
-pub const FOOTER_MD_DE: &str = include_str!("../content/de/footer.md");
-pub const FOOTER_MD_EN: &str = include_str!("../content/en/footer.md");
+use crate::{ContentLoader, Page, CHANGELOG_URL, VERSION};
 
 #[component]
-pub fn Footer() -> impl IntoView {
-    let lang = expect_i18n().language;
+pub fn Footer(lng: Signal<Lng>) -> impl IntoView {
     view! {
       <footer class="bg-gray-100">
         <div class="mx-auto max-w-7xl overflow-hidden px-6 pt-16 sm:pt-20 lg:px-8">
@@ -25,12 +22,10 @@ pub fn Footer() -> impl IntoView {
                 aria-label="Logo des Bundesministeriums für Wirtschaft und Klimaschutz (BMWK) sowie der Nationalen Klimaschutzinitiative (NKI). Über dem BMWK-Logo steht die Beschreibung: gefördert durch und unter dem BMWK-Logo steht dazugehörig: aufgrund eines Beschlusses des Deutschen Bundestages">
                 <img src="logo_BMWK_NKI.svg" />
               </div>
-              { move ||
-                  match lang.get().id.language.as_str() {
-                    "en" => view! { <Markdown content = FOOTER_MD_EN /> }.into_view(),
-                    _    => view! { <Markdown content = FOOTER_MD_DE /> }.into_view()
-                  }
-              }
+              <ContentLoader
+                file = "footer.html"
+                lng = lng
+              />
             </div>
           </div>
           <div>

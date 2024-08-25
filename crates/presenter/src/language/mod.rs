@@ -8,13 +8,22 @@ use crate::value_labels::ValueLabel;
 #[cfg(test)]
 mod tests;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Lng {
     En,
     De,
 }
 
 impl Lng {
+    /// ISO 639-1 code
+    #[must_use]
+    pub const fn alpha_2(&self) -> &str {
+        match self {
+            Self::En => "en",
+            Self::De => "de",
+        }
+    }
+
     #[must_use]
     const fn thousands_separator(&self) -> &str {
         match self {
