@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 use leptos_router::*;
 
 use klick_boundary::json_api::{self, Credentials};
@@ -62,32 +63,34 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
                   <div class="lg:w-6/12 px-4 md:px-0">
                     <div class="md:p-12 md:mx-6">
                       <CredentialsForm
-                          title = "Registrierung"
-                          description = "Bitte geben Sie die gewünschten Anmeldeinformationen ein"
-                          action_label="Registrieren"
+                          title = move_tr!("sign-up")
+                          description = move_tr!("enter-login-information")
+                          action_label= move_tr!("sign-up")
                           initial_credentials = Credentials::default()
                           action=register_action
                           error = register_error.into()
                           disabled = { disabled }
                       />
                       <div class="flex items-center justify-between pb-6">
-                        <p class="mb-0 mr-2 text-gray-600">"Sie haben bereits ein Konto?"</p>
+                        <p class="mb-0 mr-2 text-gray-600">
+                          { move_tr!("already-have-an-account") }
+                        </p>
                         <A
                           href=Page::Login.path()
                           class="inline-block px-6 py-2 border-2 font-medium text-xs leading-tight uppercase rounded hover:bg-opacity-25 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
                         >
-                          "Login"
+                          { move_tr!("log-in") }
                         </A>
                       </div>
                     </div>
                   </div>
                   <InfoBox
                     success
-                    info_title = "Was bietet Ihnen ein Benutzer*innenkonto?"
-                    info_description = "Mit einem Konto können Sie Ihre Daten online verwalten."
-                    success_title = "Erfolgreich registriert"
+                    info_title = move_tr!("user-account-offer-question")
+                    info_description = move_tr!("user-account-benefits")
+                    success_title = move_tr!("successfully-signed-up")
                     // TODO: pass children like <p>
-                    success_description = "Herzlichen Glückwunsch! Sie haben Ihr Konto erfolgreich registriert. Überprüfen Sie nun Ihren E-Mail-Posteingang und bestätigen Sie die Gültigkeit Ihrer E-Mail-Adresse."
+                    success_description = move_tr!("sign-up-success-message")
                   />
                 </div>
               </div>
@@ -101,10 +104,10 @@ pub fn Register(api: UnauthorizedApi) -> impl IntoView {
 #[component]
 pub fn InfoBox(
     success: Signal<bool>,
-    info_title: &'static str,
-    info_description: &'static str,
-    success_title: &'static str,
-    success_description: &'static str,
+    info_title: Signal<String>,
+    info_description: Signal<String>,
+    success_title: Signal<String>,
+    success_description: Signal<String>,
 ) -> impl IntoView {
     view! {
       <div

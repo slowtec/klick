@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use crate::{
     api::{self, UnauthorizedApi},
@@ -53,10 +54,14 @@ pub fn ResetPasswordRequest(api: UnauthorizedApi) -> impl IntoView {
                   <div class="lg:w-6/12 px-4 md:px-0">
                     <div class="md:p-12 md:mx-6">
                       <div class="text-center">
-                        <h4 class="text-xl font-semibold mt-1 mb-12 pb-1">"Passwort zurücksetzen"</h4>
+                        <h4 class="text-xl font-semibold mt-1 mb-12 pb-1">
+                          { move_tr!("reset-password") }
+                        </h4>
                       </div>
                       <form>
-                        <p class="mb-4 text-gray-600">"Bitte geben Sie Ihre E-Mail-Adresse ein, um Ihr Passwort zurückzusetzen"</p>
+                        <p class="mb-4 text-gray-600">
+                          { move_tr!("reset-password-promt") }
+                        </p>
                         { move || request_error.get().map(|err| view!{
                           <p class="mb-4 text-red-700">{ err }</p>
                         })}
@@ -64,7 +69,7 @@ pub fn ResetPasswordRequest(api: UnauthorizedApi) -> impl IntoView {
                           <input
                             type="email"
                             class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:outline-none"
-                            placeholder="E-Mail Adresse"
+                            placeholder=move_tr!("email-address")
                             prop:disabled= input_is_disabled
                             on:keyup = move |ev: ev::KeyboardEvent| {
                                 let val = event_target_value(&ev);
@@ -81,7 +86,7 @@ pub fn ResetPasswordRequest(api: UnauthorizedApi) -> impl IntoView {
                               reset_password_action.dispatch(());
                             }
                           >
-                            "Passwort zurücksetzen"
+                            { move_tr!("reset-password") }
                           </button>
                         </div>
                       </form>
@@ -89,10 +94,10 @@ pub fn ResetPasswordRequest(api: UnauthorizedApi) -> impl IntoView {
                   </div>
                   <InfoBox
                     success
-                    info_title = "Wie funktioniert es?"
-                    info_description = "Sie erhalten eine E-Mail mit einem Link, über den Sie Ihr neues Passwort festlegen können."
-                    success_title = "E-mail zum Zurücksetzen des Passworts versandt."
-                    success_description = "Prüfen Sie nun Ihren E-Mail-Posteingang und öffnen Sie die entsprechende E-Mail. Klicken Sie dann auf den darin enthaltenen Link, um Ihr neues Passwort einzugeben."
+                    info_title = move_tr!("how-does-it-work")
+                    info_description = move_tr!("reset-password-description")
+                    success_title = move_tr!("email-sent-to-reset-password")
+                    success_description = move_tr!("reset-request-success-message")
                   />
                 </div>
               </div>

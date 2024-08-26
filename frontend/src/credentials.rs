@@ -1,4 +1,5 @@
 use leptos::{ev, *};
+use leptos_fluent::*;
 
 use klick_boundary::json_api;
 
@@ -12,9 +13,9 @@ pub const DISABLED_BUTTON_CLASS: &str = "inline-block px-6 py-2.5 font-medium te
 #[component]
 
 pub fn CredentialsForm(
-    title: &'static str,
-    description: &'static str,
-    action_label: &'static str,
+    title: Signal<String>,
+    description: Signal<String>,
+    action_label: Signal<String>,
     initial_credentials: json_api::Credentials,
     action: Action<(String, String), ()>,
     error: Signal<Option<String>>,
@@ -44,7 +45,7 @@ pub fn CredentialsForm(
                   type="email"
                   class=move || if disabled.get() { DISABLED_INPUT_CLASS } else { DEFAULT_INPUT_CLASS }
                   required
-                  placeholder="E-Mail Adresse"
+                  placeholder=move_tr!("email-address")
                   prop:disabled=move || disabled.get()
                   on:keyup=move |ev: ev::KeyboardEvent| {
                       let val = event_target_value(&ev);
@@ -61,7 +62,7 @@ pub fn CredentialsForm(
                   type="password"
                   class=move || if disabled.get() { DISABLED_INPUT_CLASS } else { DEFAULT_INPUT_CLASS }
                   required
-                  placeholder="Passwort"
+                  placeholder=move_tr!("password")
                   prop:disabled=move || disabled.get()
                   on:keyup=move |ev: ev::KeyboardEvent| {
                       if &*ev.key() == "Enter" {

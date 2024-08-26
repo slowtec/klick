@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 use leptos_router::*;
 
 use klick_boundary::json_api::{self, Credentials};
@@ -43,20 +44,20 @@ pub fn Login(
                         api::Error::Fetch(js_err) => {
                             log::error!("{js_err:?}");
                             show_resent_confirmation_button.set(false);
-                            "Ein Kommunikationsfehler ist aufgetreten".to_string()
+                            tr!("communication-error")
                         }
                         api::Error::Api(err) => match err.details {
                             Some(json_api::login::Error::Credentials) => {
                                 show_resent_confirmation_button.set(false);
-                                "Email-Addresse oder Passwort ungültig".to_string()
+                                tr!("email-or-password-invalid")
                             }
                             Some(json_api::login::Error::EmailNotConfirmed) => {
                                 show_resent_confirmation_button.set(true);
-                                "Sie haben Ihre Email-Addresse noch nicht bestätigt".to_string()
+                                tr!("email-not-confirmed")
                             }
                             None => {
                                 show_resent_confirmation_button.set(false);
-                                "Tut uns leid, irgend etwas ist schief gelaufen".to_string()
+                                tr!("something-went-wrong")
                             }
                         },
                     };
@@ -93,9 +94,9 @@ pub fn Login(
                   <div class="px-4 md:px-0 mx-auto">
                     <div class="md:p-12 md:mx-6">
                       <CredentialsForm
-                          title = "Login"
-                          description="Bitte loggen Sie sich in Ihr Konto ein"
-                          action_label = "Log in"
+                          title = move_tr!("log-in")
+                          description = move_tr!("log-in-to-your-account")
+                          action_label = move_tr!("log-in")
                           initial_credentials = Credentials::default()
                           action = login_action
                           error = login_error.into()
@@ -106,7 +107,7 @@ pub fn Login(
                           <button
                             on:click = move |_| resend_confirmation_mail.dispatch(())
                             class="bg-red-200 text-xs px-6 py-2.5 rounded cursor-pointer">
-                            "Email zur Bestätigung erneut senden"
+                            { move_tr!("resend-email-for-confirmation") }
                           </button>
                         </div>
                       </Show>
@@ -114,16 +115,18 @@ pub fn Login(
                         <A
                           href=Page::ResetPasswordRequest.path()
                           class="text-gray-500".to_string()>
-                          "Passwort vergessen?"
+                          { move_tr!("forgot-your-password") }
                         </A>
                       </div>
                       <div class="flex items-center justify-between pb-6">
-                        <p class="mb-0 mr-2 text-gray-600">"Sie haben noch kein Konto?"</p>
+                        <p class="mb-0 mr-2 text-gray-600">
+                          { move_tr!("dont-have-an-account-yet") }
+                        </p>
                         <A
                           href=Page::Register.path()
                           class="inline-block px-6 py-2 border-2 font-medium text-xs leading-tight uppercase rounded hover:bg-opacity-25 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
                         >
-                          "Registrieren"
+                          { move_tr!("sign-up") }
                         </A>
                       </div>
                     </div>
