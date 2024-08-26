@@ -216,7 +216,7 @@ pub fn Chart<F>(
 where
     F: Fn(f64) -> String,
 {
-    let margin_x = width * 0.08;
+    let margin_x = width * 0.1;
     let margin_y = height * 0.05;
 
     view! {
