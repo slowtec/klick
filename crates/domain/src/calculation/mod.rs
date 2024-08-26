@@ -11,40 +11,10 @@ use klick_value::{
     units::*,
 };
 
-#[allow(clippy::wildcard_imports)]
-use crate::{EmissionsCalculationOutcome, Id, Value as V};
+use crate::{Id, Value as V};
 
 mod emission_groups;
 pub use self::emission_groups::*;
-
-#[must_use]
-#[deprecated]
-pub fn calculate_emissions(
-    input_values: &HashMap<In, Value>,
-) -> anyhow::Result<EmissionsCalculationOutcome> {
-    let (emissions, factors, methods) = emissions_factors_and_methods(&input_values)?;
-
-    let co2_equivalents = calculate_emission_groups(
-        emissions.clone().into_iter().collect(),
-        emission_groups::SANKEY_EDGES,
-    );
-
-    let values = emissions
-        .into_iter()
-        .map(|(id, v)| (id, Value::from(v)))
-        .chain(
-            factors
-                .into_iter()
-                .map(|(id, v)| (id.into(), Value::from(v))),
-        )
-        .chain(methods.into_iter().map(|(id, v)| (id.into(), v)))
-        .collect();
-
-    Ok(EmissionsCalculationOutcome {
-        co2_equivalents,
-        values,
-    })
-}
 
 #[must_use]
 pub fn calculate(

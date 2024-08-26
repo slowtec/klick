@@ -15,7 +15,7 @@ use klick_domain::{
     self as domain,
     output_value::*,
     units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
-    EmissionsCalculationOutcome, Id, InputValueId as In, OutputValueId as Out, Value,
+    Id, InputValueId as In, OutputValueId as Out, Value,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
 
