@@ -38,6 +38,7 @@ pub enum Id {
 }
 
 impl Id {
+    #[must_use]
     pub const fn is_custom(&self) -> bool {
         matches!(self, Self::Custom(_))
     }

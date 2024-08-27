@@ -320,8 +320,8 @@ impl Parse for Variant {
 
 fn to_snake_case(s: &str) -> String {
     let mut snake_case = String::new();
-    let mut chars = s.chars().peekable();
-    while let Some(c) = chars.next() {
+    let chars = s.chars().peekable();
+    for c in chars {
         if c.is_uppercase() {
             if !snake_case.is_empty() {
                 snake_case.push('_');

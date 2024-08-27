@@ -123,7 +123,7 @@ macro_rules! float {
 
                     #[must_use]
                     pub fn round(&self, precision: usize) -> Self {
-                        let scaling_factor = 10_f64.powi(precision as i32);
+                        let scaling_factor = 10_f64.powi(i32::try_from(precision).unwrap());
                         Self((self.0 * scaling_factor).round() / scaling_factor)
                     }
                 }

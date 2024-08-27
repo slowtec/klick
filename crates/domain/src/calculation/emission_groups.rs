@@ -1,6 +1,6 @@
 use std::{
     collections::{HashMap, HashSet},
-    hash::Hash,
+    hash::{BuildHasher, Hash},
     iter,
     ops::AddAssign,
 };
@@ -36,12 +36,13 @@ pub const SANKEY_EDGES: &[(Out, Out)] = &[
     (Out::IndirectEmissions, Out::TotalEmissions),
 ];
 
-pub fn extract_emission_groups<ID>(
-    values: &HashMap<ID, Value>,
+pub fn extract_emission_groups<ID, S>(
+    values: &HashMap<ID, Value, S>,
     edges: &[(ID, ID)],
 ) -> HashMap<ID, Tons>
 where
     ID: Eq + Hash + Clone,
+    S: BuildHasher,
 {
     emission_group_ids(edges)
         .into_iter()
@@ -69,10 +70,10 @@ where
     T: Default + AddAssign + Clone,
 {
     for (source, target) in edges {
-        let Some(source_value) = values.get(&source).cloned() else {
+        let Some(source_value) = values.get(source).cloned() else {
             continue;
         };
-        let target_value = values.entry(target.clone()).or_insert(Default::default());
+        let target_value = values.entry(target.clone()).or_default();
         *target_value += source_value;
     }
     values

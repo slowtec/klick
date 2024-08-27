@@ -132,7 +132,7 @@ spec! {
         SensitivityN2OCalculationMethod {
             unit = N2oEmissionFactorCalcMethod;
             optional;
-            default = Default::default();
+            default = N2oEmissionFactorCalcMethod::default();
         },
         SensitivityN2OCustomFactor {
             unit = Percent;
@@ -152,7 +152,7 @@ spec! {
         SensitivityCH4ChpCalculationMethod {
             unit = Ch4ChpEmissionFactorCalcMethod;
             optional;
-            default = Default::default();
+            default = Ch4ChpEmissionFactorCalcMethod::default();
         },
         SensitivityCH4ChpCustomFactor {
             unit = Percent;
