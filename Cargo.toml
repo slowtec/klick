@@ -5,6 +5,8 @@ members = [
   "crates/app-charts",
   "crates/app-charts/examples/*",
   "crates/app-components",
+  "crates/leptos-codemirror",
+  "crates/leptos-codemirror/examples/*",
 
   # backend crates
   "crates/backend",
@@ -44,6 +46,8 @@ klick-pdf-export     = { path = "crates/pdf-export"     }
 klick-presenter      = { path = "crates/presenter"      }
 klick-value          = { path = "crates/value"          }
 klick-value-spec     = { path = "crates/value-spec"     }
+
+leptos-codemirror = { path = "crates/leptos-codemirror" }
 
 [package]
 name = "klick"

@@ -1,0 +1,16 @@
+[package]
+name = "leptos-codemirror"
+authors.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+
+[dependencies]
+codemirror = "0.2.0"
+leptos = { version = "0.6.14", features = ["csr"] }
+log = "0.4.22"
+
+[lints]
+workspace = true
