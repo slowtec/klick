@@ -2,6 +2,7 @@ use leptos::*;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
+use klick_presenter::Lng;
 
 use crate::{
     pages::tool::{CalculationOutcome, DataCollectionEnforcementHelper, PageSection},
@@ -28,6 +29,8 @@ pub fn SensitivityParameters(
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = Lng::De; //FIXME
+
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
             // TODO: avoid clones
@@ -36,7 +39,7 @@ pub fn SensitivityParameters(
                 .map(|o| o.clone())
                 .and_then(|old| out.output.as_ref().map(|o| (o.clone(), old)))
                 .map(|(new, old)| {
-                    klick_presenter::sensitivity_diff_bar_chart(old, new)
+                    klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
                         .into_iter()
                         .map(|(label, value, percentage)| BarChartArguments {
                             label,
@@ -97,6 +100,7 @@ pub fn SensitivityParameters(
                   &outcome.input,
                   out.clone(),
                   klick_presenter::Formatting::Text,
+                  lang,
                 )
               }))
           }

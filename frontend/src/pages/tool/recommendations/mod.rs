@@ -2,6 +2,7 @@ use leptos::*;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
+use klick_presenter::Lng;
 
 use crate::{
     pages::tool::{
@@ -27,6 +28,8 @@ pub fn Recommendations(
     current_section: RwSignal<PageSection>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = Lng::De; //FIXME
+
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
             // TODO: avoid clones
@@ -35,7 +38,7 @@ pub fn Recommendations(
                 .map(|o| o.clone())
                 .and_then(|old| out.output.as_ref().map(|o| (o.clone(), old)))
                 .map(|(new, old)| {
-                    klick_presenter::recommendation_diff_bar_chart(old, new)
+                    klick_presenter::recommendation_diff_bar_chart(old, new, lang)
                         .into_iter()
                         .map(|(label, value, percentage)| BarChartArguments {
                             label,
@@ -102,7 +105,8 @@ pub fn Recommendations(
               klick_presenter::create_sankey_chart_header(
                 &outcome.input,
                 out.clone(),
-                klick_presenter::Formatting::Text
+                klick_presenter::Formatting::Text,
+                lang,
               )
             }))
         }

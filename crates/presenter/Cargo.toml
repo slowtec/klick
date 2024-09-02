@@ -18,3 +18,4 @@ anyhow = "1.0.86"
 derive_more = "1.0.0"
 serde = { version = "1.0.207", features = ["derive"] }
 strum = { version = "0.26.3", features = ["derive"] }
+fluent-templates = "0.10.1"

@@ -5,52 +5,54 @@ use klick_domain::{
     Id, OutputValueId as Out, Value,
 };
 
+use crate::{Lng, ValueLabel};
+
 #[must_use]
 pub fn recommendation_diff_bar_chart(
     old: HashMap<Id, Value>,
     new: HashMap<Id, Value>,
-) -> Vec<(&'static str, f64, Option<f64>)> {
+    lng: Lng,
+) -> Vec<(String, f64, Option<f64>)> {
     let data_labels = [
-        (Out::Ch4SludgeBags, "CH₄ Schlupf Schlammtasche"),
-        (
-            Out::Ch4SludgeStorageContainers,
-            "CH₄ Schlupf Schlammlagerung",
-        ),
-        (Out::Ch4Plant, "CH₄ Anlage (unspez.)"),
-        (Out::N2oSideStream, "N₂O Prozesswasserbehandlung"),
-        (Out::FossilEnergySavings, "Fossile Energiequellen"),
-        (Out::ProcessEnergySavings, "Prozesse"),
-        (Out::PhotovoltaicExpansionSavings, "Erneurbare Energien"),
-        (Out::DistrictHeatingSavings, "Abwärme"),
-        (Out::TotalEmissions, "Emissionen"),
+        Out::Ch4SludgeBags,
+        Out::Ch4SludgeStorageContainers,
+        Out::Ch4Plant,
+        Out::N2oSideStream,
+        Out::FossilEnergySavings,
+        Out::ProcessEnergySavings,
+        Out::PhotovoltaicExpansionSavings,
+        Out::DistrictHeatingSavings,
+        Out::TotalEmissions,
     ];
-    diff_bar_chart(old, new, &data_labels)
+    diff_bar_chart(old, new, &data_labels, lng)
 }
 
 #[must_use]
 pub fn sensitivity_diff_bar_chart(
     old: HashMap<Id, Value>,
     new: HashMap<Id, Value>,
-) -> Vec<(&'static str, f64, Option<f64>)> {
+    lng: Lng,
+) -> Vec<(String, f64, Option<f64>)> {
     let data_labels = [
-        (Out::N2oPlant, "N₂O Anlage"),
-        (Out::Ch4SludgeBags, "CH₄ Schlammtasche"),
-        (Out::Ch4SludgeStorageContainers, "CH₄ Schlammlagerung"),
-        (Out::Ch4Plant, "CH₄ Anlage (unspez.)"),
-        (Out::Ch4CombinedHeatAndPowerPlant, "CH₄ BHKW"),
-        (Out::FossilEmissions, "Fossiles CO₂"),
-        (Out::N2oSideStream, "N₂O Prozesswasser"),
-        (Out::TotalEmissions, "Emissionen"),
+        Out::N2oPlant,
+        Out::Ch4SludgeBags,
+        Out::Ch4SludgeStorageContainers,
+        Out::Ch4Plant,
+        Out::Ch4CombinedHeatAndPowerPlant,
+        Out::FossilEmissions,
+        Out::N2oSideStream,
+        Out::TotalEmissions,
     ];
-    diff_bar_chart(old, new, &data_labels)
+    diff_bar_chart(old, new, &data_labels, lng)
 }
 
 #[must_use]
 fn diff_bar_chart(
     old: HashMap<Id, Value>,
     new: HashMap<Id, Value>,
-    data_labels: &[(Out, &'static str)],
-) -> Vec<(&'static str, f64, Option<f64>)> {
+    data_labels: &[Out],
+    lng: Lng,
+) -> Vec<(String, f64, Option<f64>)> {
     let diff = calculate_difference(&new, &old);
     let total_emissions = new
         .get(&Out::TotalEmissions.into())
@@ -60,14 +62,14 @@ fn diff_bar_chart(
 
     data_labels
         .iter()
-        .map(|(id, label)| {
+        .map(|id| {
             let value = diff.get(&(*id).into()).copied().unwrap_or_else(Tons::zero);
             let percentage = if total_emissions != Tons::zero() {
                 Some((value / total_emissions).convert_to::<Percent>())
             } else {
                 None
             };
-            (*label, value.into(), percentage.map(Into::into))
+            (id.label(lng), value.into(), percentage.map(Into::into))
         })
         .collect()
 }

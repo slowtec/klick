@@ -8,7 +8,7 @@ use klick_domain::{
     output_value::*, units::N2oEmissionFactorCalcMethod, InputValueId as Id, OutputValueId as Out,
     Value,
 };
-use klick_presenter::ValueLabel;
+use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{fields::create_field, Card};
 
@@ -20,6 +20,8 @@ pub fn N2OEmissionsSensitivity(
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = Lng::De; //FIXME
+
     // -----   ----- //
     //    Signals    //
     // -----   ----- //
@@ -82,7 +84,7 @@ pub fn N2OEmissionsSensitivity(
                     .iter()
                     .map(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
-                            label: Some(szenario.label()),
+                            label: Some(szenario.label(lang)),
                             value: required!(Out::N2oPlant, outcome).unwrap().into(),
                             emission_factor: f64::from(required!(Out::N2oCalculatedEmissionFactor, outcome).unwrap()),
                         },
@@ -129,7 +131,7 @@ pub fn N2OEmissionsSensitivity(
           { bar_chart_view }
 
           <p>
-            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(ValueLabel::label) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
+            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(|id|id.label(lang)) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
              Durch Anklicken kann ein anderes Szenario ausgewählt werden."
           </p>
 

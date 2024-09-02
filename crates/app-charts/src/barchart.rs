@@ -2,7 +2,7 @@ use leptos::*;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct BarChartArguments {
-    pub label: &'static str,
+    pub label: String,
     pub value: f64,
     pub percentage: Option<f64>,
 }
@@ -80,7 +80,7 @@ fn Bars(
       <For
         each = move || {
           data.iter().enumerate().map(|(i,v)|
-            (i, v.label, v.value, v.percentage)
+            (i, v.label.clone(), v.value, v.percentage)
           ).collect::<Vec<_>>()
         }
         key=|(i,_,_,_)| *i
@@ -118,7 +118,7 @@ enum LabelPosition {
 #[component]
 #[allow(clippy::cast_precision_loss)]
 fn Bar(
-    label: &'static str,
+    label: String,
     value: f64,
     percentage: Option<f64>,
     dx: f64,

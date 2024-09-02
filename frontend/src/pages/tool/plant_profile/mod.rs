@@ -6,6 +6,7 @@ use klick_app_components::forms::render_field_sets;
 use klick_boundary::FormData;
 
 use crate::{
+    current_lang,
     forms::ListOfMissingFields,
     pages::tool::{CalculationOutcome, PageSection},
     sankey::Sankey,
@@ -22,6 +23,8 @@ pub fn DataCollection(
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = current_lang();
+
     // -----   ----- //
     //     Form      //
     // -----   ----- //
@@ -43,15 +46,13 @@ pub fn DataCollection(
         let missing_fields = fields
             .iter()
             .map(|id| {
-                let label = labels[id];
+                let label = labels[id].clone();
                 (*id, label)
             })
             .collect::<Vec<_>>();
 
         Some(view! {
-          <ListOfMissingFields
-              missing_fields
-          />
+          <ListOfMissingFields missing_fields />
         })
     };
 
@@ -71,6 +72,7 @@ pub fn DataCollection(
                 &outcome.input,
                 out.clone(),
                 klick_presenter::Formatting::Text,
+                lang.get(),
               )
             }))
         }

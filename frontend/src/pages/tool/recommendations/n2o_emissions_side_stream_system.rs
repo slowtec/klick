@@ -3,9 +3,11 @@ use leptos::*;
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{output_value::required, InputValueId as Id, OutputValueId as Out, Value};
-use klick_presenter::*;
 
-use crate::pages::tool::{CalculationOutcome, Card};
+use crate::{
+    label_signal,
+    pages::tool::{CalculationOutcome, Card},
+};
 
 pub fn options(
     form_data: RwSignal<FormData>,
@@ -57,7 +59,7 @@ pub fn options(
 fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let id = Id::ScenarioN2OSideStreamCoverIsOpen;
     let custom_factor_field = Field {
-        label: id.label(),
+        label: label_signal(id),
         description: None,
         required: false,
         field_type: FieldType::Bool {

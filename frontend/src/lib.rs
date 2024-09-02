@@ -9,7 +9,7 @@ use leptos_router::{use_navigate, NavigateOptions, Route, Router, Routes};
 
 use klick_app_api as api;
 use klick_boundary::{self as boundary, json_api::UserInfo};
-use klick_presenter::Lng;
+use klick_presenter::{Lng, ValueLabel};
 
 static_loader! {
     static TRANSLATIONS = {
@@ -47,6 +47,23 @@ const DEFAULT_API_URL: &str = "/api";
 const API_TOKEN_STORAGE_KEY: &str = "api-token";
 
 const SECTION_ID_TOOL_HOME: &str = "tool-home";
+
+pub fn current_lang() -> Signal<Lng> {
+    // TODO: avoid mixing lang and lng
+    let lang = leptos_fluent::i18n().language;
+    Signal::derive(move || Lng::try_from_id(&lang.get().id).unwrap())
+}
+
+pub fn label_signal<ID>(id: ID) -> Signal<String>
+where
+    ID: ValueLabel + 'static,
+{
+    let lang = leptos_fluent::i18n().language;
+    Signal::derive(move || {
+        let lng = Lng::try_from_id(&lang.get().id).unwrap();
+        id.label(lng)
+    })
+}
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -89,10 +106,7 @@ pub fn App() -> impl IntoView {
 
     // TODO: avoid mixing lang and lng
     let lang = leptos_fluent::i18n().language;
-    let lng = Signal::derive(move || match lang.get().id.language.as_str() {
-        "en" => Lng::En,
-        _ => Lng::De,
-    });
+    let lng = current_lang();
 
     // -- actions -- //
 

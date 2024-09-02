@@ -9,7 +9,7 @@ use klick_domain::{
     units::{Ch4ChpEmissionFactorCalcMethod, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };
-use klick_presenter::ValueLabel;
+use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
@@ -23,6 +23,8 @@ pub fn CH4EmissionsCHP(
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = Lng::De; //FIXME
+
     // -----   ----- //
     //    Signals    //
     // -----   ----- //
@@ -83,7 +85,7 @@ pub fn CH4EmissionsCHP(
                     .iter()
                     .map(|(szenario, value, factor)| {
                         klick_app_charts::BarChartRadioInputArguments {
-                            label: Some(szenario.label()),
+                            label: Some(szenario.label(lang)),
                             value: (*value).into(),
                             emission_factor: f64::from(*factor),
                         }
@@ -134,7 +136,7 @@ pub fn CH4EmissionsCHP(
 
             <p>
             "Es ist das Szenario \"" { move ||
-                selected_scenario.get().as_ref().map(ValueLabel::label)
+                selected_scenario.get().as_ref().map(|id|id.label(lang))
             }
             "\" ausgewählt in t CO₂ Äquivalente/Jahr.
             Durch Anklicken kann ein anderes Szenario ausgewählt werden."

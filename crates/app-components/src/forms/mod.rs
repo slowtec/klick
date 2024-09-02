@@ -17,8 +17,7 @@ fn unique_id() -> usize {
 }
 
 #[must_use]
-pub fn dom_node_id() -> FieldId // String
-{
+pub fn dom_node_id() -> FieldId {
     // DOM element IDs needs to be locally unique
     // within the HTML document.
     let id = unique_id();
@@ -33,7 +32,7 @@ pub struct FieldSet {
 
 #[derive(Debug, Clone)]
 pub struct Field {
-    pub label: &'static str,
+    pub label: Signal<String>,
     pub description: Option<&'static str>,
     pub required: bool,
     pub field_type: FieldType,
@@ -64,7 +63,7 @@ pub struct MinMax<T> {
 pub enum FieldType {
     Float {
         initial_value: Option<f64>,
-        placeholder: Option<String>,
+        placeholder: Option<Signal<String>>,
         limits: MinMax<f64>,
         unit: &'static str, // TODO: use presenter::ValueUnit trait
         on_change: Callback<Option<f64>, ()>,
@@ -72,7 +71,7 @@ pub enum FieldType {
     },
     UnsignedInteger {
         initial_value: Option<u64>,
-        placeholder: Option<String>,
+        placeholder: Option<Signal<String>>,
         limits: MinMax<u64>,
         unit: &'static str, // TODO: use presenter::ValueUnit trait
         on_change: Callback<Option<u64>, ()>,
@@ -80,7 +79,7 @@ pub enum FieldType {
     },
     Text {
         initial_value: Option<String>,
-        placeholder: Option<String>,
+        placeholder: Option<Signal<String>>,
         max_len: Option<usize>,
         on_change: Callback<Option<String>, ()>,
         input: Signal<Option<String>>,

@@ -3,9 +3,9 @@ use leptos::*;
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
 use klick_domain::{units::*, InputValueId as Id, Value, ValueType};
-use klick_presenter::{
-    metadata, InputValueFieldType, InputValueFieldTypeHint, Lng, Placeholder, ValueLabel,
-};
+use klick_presenter::{metadata, InputValueFieldType, InputValueFieldTypeHint, Placeholder};
+
+use crate::{current_lang, label_signal};
 
 fn form_limits(id: &Id) -> MinMax<f64> {
     MinMax {
@@ -16,32 +16,35 @@ fn form_limits(id: &Id) -> MinMax<f64> {
 
 pub fn create_field(write: WriteSignal<FormData>, read: ReadSignal<FormData>, id: Id) -> Field {
     let meta = metadata(&id);
-    let lng = Lng::De; //TODO
-    let placeholder = match meta.placeholder {
-        Placeholder::Text(txt) => Some(txt.to_string()),
-        Placeholder::DefaultValue => format_default_value(&id, lng),
-        Placeholder::Label => Some(id.label().to_string()),
+    let placeholder: Option<Signal<String>> = match meta.placeholder {
+        Placeholder::Text(txt) => Some(RwSignal::new(txt.to_string()).into()),
+        Placeholder::DefaultValue => format_default_value(id),
+        Placeholder::Label => Some(label_signal(id)),
         Placeholder::None => None,
     };
     let field_type = create_field_type(write, read, id, placeholder);
     let description = Some(meta.description);
     Field {
-        label: id.label(),
+        label: label_signal(id),
         description,
         required: !id.is_optional(), // TODO: check for default value if not optional
         field_type,
     }
 }
 
-fn format_default_value(id: &Id, lng: Lng) -> Option<String> {
-    id.default_value().as_ref().map(|v| lng.format_value(v))
+fn format_default_value(id: Id) -> Option<Signal<String>> {
+    let default_value = id.default_value()?;
+    Some(Signal::derive(move || {
+        let lng = current_lang().get();
+        lng.format_value(&default_value)
+    }))
 }
 
 pub fn create_field_type(
     write: WriteSignal<FormData>,
     read: ReadSignal<FormData>,
     id: Id,
-    placeholder: Option<String>,
+    placeholder: Option<Signal<String>>,
 ) -> FieldType {
     let limits = form_limits(&id);
     let value_type = id.value_type();

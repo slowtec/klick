@@ -16,6 +16,7 @@ pub fn create_sankey_chart_header(
     data: &HashMap<Id, Value>,
     values: HashMap<Id, Value>,
     formatting: Formatting,
+    lang: Lng,
 ) -> String {
     let population_equivalent = match &data
         .get(&In::PopulationEquivalent.into())
@@ -36,7 +37,7 @@ pub fn create_sankey_chart_header(
         None => String::new(),
     };
 
-    let emission_factor = Lng::De.format_number_with_fixed_precision(
+    let emission_factor = lang.format_number_with_fixed_precision(
         f64::from(
             required!(Out::N2oCalculatedEmissionFactor, values)
                 .unwrap()
@@ -45,7 +46,10 @@ pub fn create_sankey_chart_header(
         3,
     );
 
-    let method = formatting.fmt_label(required!(Out::N2oEmissionFactorCalcMethod, values).unwrap());
+    let method = formatting.fmt_label(
+        required!(Out::N2oEmissionFactorCalcMethod, values).unwrap(),
+        lang,
+    );
 
     let n2o_label = match formatting {
         Formatting::Text => "N₂O",
@@ -68,6 +72,7 @@ type Nodes = Vec<(f64, String, &'static str, &'static str)>;
 pub fn create_sankey_chart_data(
     co2_equivalents: HashMap<Id, Value>,
     graph: &[(Id, Id)],
+    lang: Lng,
 ) -> (Nodes, Vec<(usize, usize)>) {
     let node_ids = domain::emission_group_ids(graph);
 
@@ -82,7 +87,7 @@ pub fn create_sankey_chart_data(
 
             let (label, color, color_light) = match id {
                 Id::Custom(id) => (id.clone(), "black", "gray"),
-                Id::Out(id) => (id.label().to_string(), id.color(), id.color_light()),
+                Id::Out(id) => (id.label(lang).to_string(), id.color(), id.color_light()),
                 Id::In(_) => {
                     return None;
                 }

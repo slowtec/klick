@@ -7,7 +7,7 @@ use klick_boundary::{FormData, ProjectId};
 use klick_domain::{InputValueId as Id, Value};
 use klick_presenter::Lng;
 
-use crate::api::AuthorizedApi;
+use crate::{api::AuthorizedApi, label_signal};
 
 use super::{DISABLED_BUTTON_CLASS, ENABLED_BUTTON_CLASS};
 
@@ -23,12 +23,12 @@ pub fn NewProject(
     });
 
     let field = Field {
-        label: "Projektname",
+        label: label_signal(Id::ProjectName),
         description: None,
         required: true,
         field_type: FieldType::Text {
             initial_value: None,
-            placeholder: Some("Projektname".to_string()),
+            placeholder: Some(RwSignal::new("Projektname".to_string()).into()),
             max_len: None,
             on_change,
             input: Signal::derive(move || None),

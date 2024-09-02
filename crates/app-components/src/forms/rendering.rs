@@ -13,7 +13,7 @@ use crate::icons;
 use super::{Field, FieldId, FieldSet, FieldType, MinMax};
 
 type MissingFields = HashSet<FieldId>;
-type Labels = HashMap<FieldId, &'static str>;
+type Labels = HashMap<FieldId, Signal<String>>;
 
 #[must_use]
 pub fn render_field_sets(
@@ -30,7 +30,7 @@ pub fn render_field_sets(
 
         for field in set.fields {
             let id = crate::forms::dom_node_id();
-            labels.insert(id, field.label);
+            labels.insert(id, field.label.clone());
             let view = render_field(
                 field,
                 id,
@@ -226,7 +226,7 @@ pub fn render_field(
 }
 
 fn create_tooltip(
-    label: &'static str,
+    label: Signal<String>,
     description: Option<&'static str>, // TODO: pass description as Markdown instead of raw HTML
     required: bool,
     accessibility_always_show_option: Option<RwSignal<bool>>,
@@ -253,7 +253,7 @@ fn create_tooltip(
     };
 
     if always_show_accessibility {
-        view! {
+        return view! {
           <div>
             <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
               { required_hint }
@@ -263,45 +263,45 @@ fn create_tooltip(
             { required_msg }
           </div>
         }
-        .into_view()
-    } else {
-        view! {
-          <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
-            <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
-              { required_hint }
-              { label }
-            </label>
-            <div class="flex-col md:flex-row flex items-center md:justify-center">
-              <a
-                tabindex="-1"
-                role="link"
-                aria-label="tooltip 1"
-                class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
-                on:focus = move |_| {
-                    show_tooltip.set(true);
-                }
-                on:blur = move |_| {
-                    show_tooltip.set(false);
-                }
-              >
-                <div class="cursor-pointer">
-                  <icons::InformationCircle />
-                </div>
-                <div
-                  role="tooltip"
-                  class="z-20 -mt-20 w-64 absolute transition duration-150 ease-in-out left-0 ml-8 shadow-lg bg-white p-4 rounded"
-                  style:display= move || if show_tooltip.get() { "block" } else { "none" }
-                >
-                  <TriangleIcon />
-                  <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
-                  <p class="text-xs leading-4 text-gray-600 pb-3" inner_html=description />
-                  { required_msg }
-                </div>
-              </a>
-            </div>
-          </div>
-        }.into_view()
+        .into_view();
     }
+
+    view! {
+      <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
+        <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
+          { required_hint }
+          { label.clone() }
+        </label>
+        <div class="flex-col md:flex-row flex items-center md:justify-center">
+          <a
+            tabindex="-1"
+            role="link"
+            aria-label="tooltip 1"
+            class="focus:outline-none focus:ring-gray-300 rounded-full focus:ring-offset-2 focus:ring-2 focus:bg-gray-200 relative mt-20 md:mt-0"
+            on:focus = move |_| {
+                show_tooltip.set(true);
+            }
+            on:blur = move |_| {
+                show_tooltip.set(false);
+            }
+          >
+            <div class="cursor-pointer">
+              <icons::InformationCircle />
+            </div>
+            <div
+              role="tooltip"
+              class="z-20 -mt-20 w-64 absolute transition duration-150 ease-in-out left-0 ml-8 shadow-lg bg-white p-4 rounded"
+              style:display= move || if show_tooltip.get() { "block" } else { "none" }
+            >
+              <TriangleIcon />
+              <p class="text-sm font-bold text-gray-800 pb-1">{ label }</p>
+              <p class="text-xs leading-4 text-gray-600 pb-3" inner_html=description />
+              { required_msg }
+            </div>
+          </a>
+        </div>
+      </div>
+    }.into_view()
 }
 
 #[component]
@@ -331,9 +331,9 @@ fn TriangleIcon() -> impl IntoView {
 
 #[component]
 fn TextInput(
-    label: &'static str,
+    label: Signal<String>,
     id: FieldId,
-    placeholder: String,
+    placeholder: Signal<String>,
     max_len: Option<usize>,
     description: Option<&'static str>,
     required: bool,
@@ -343,7 +343,7 @@ fn TextInput(
 ) -> impl IntoView {
     view! {
       <div id={ format!("focus-{id}") }>
-        { move || create_tooltip(label, description, required, accessibility_always_show_option, id) }
+        { move || create_tooltip(label.clone(), description, required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm group">
           <input
             type = "text"
@@ -369,9 +369,9 @@ fn TextInput(
 
 #[component]
 fn FloatInput(
-    label: &'static str,
+    label: Signal<String>,
     unit: &'static str,
-    placeholder: String,
+    placeholder: Signal<String>,
     id: FieldId,
     description: Option<&'static str>,
     limits: MinMax<f64>,
@@ -403,9 +403,9 @@ fn FloatInput(
 
 #[component]
 fn UnsignedIntegerInput(
-    label: &'static str,
+    label: Signal<String>,
     unit: &'static str,
-    placeholder: String,
+    placeholder: Signal<String>,
     id: FieldId,
     description: Option<&'static str>,
     limits: MinMax<u64>,
@@ -436,9 +436,9 @@ fn UnsignedIntegerInput(
 }
 
 fn number_input_field<F, N>(
-    label: &'static str,
+    label: Signal<String>,
     unit: &'static str,
-    placeholder: String,
+    placeholder: Signal<String>,
     id: FieldId,
     description: Option<&'static str>,
     limits: MinMax<N>,
@@ -511,7 +511,7 @@ where
 
     view! {
       <div>
-        { move || create_tooltip(label, description, required, accessibility_always_show_option, id) }
+        { move || create_tooltip(label.clone(), description, required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             id = id.to_string()
@@ -612,7 +612,7 @@ fn check_min_max<T: PartialOrd>(v: T, limits: MinMax<T>) -> Result<(), NumberEva
 
 #[component]
 fn BoolInput(
-    label: &'static str,
+    label: Signal<String>,
     id: FieldId,
     input_value: Signal<bool>,
     description: Option<&'static str>,

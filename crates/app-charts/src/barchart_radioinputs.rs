@@ -4,7 +4,7 @@ use klick_presenter::Lng;
 
 #[derive(Debug, Clone)]
 pub struct BarChartRadioInputArguments {
-    pub label: Option<&'static str>,
+    pub label: Option<String>,
     pub value: f64,
     pub emission_factor: f64,
 }
@@ -87,7 +87,7 @@ fn Bars(
       <For
         each = move || {
           data.iter().enumerate().map(|(i,v)|
-            (i, v.label, v.value, v.emission_factor * 100.0)
+            (i, v.label.clone(), v.value, v.emission_factor * 100.0)
           ).collect::<Vec<_>>()
         }
         key=|(i,_,_,_)| *i
@@ -135,7 +135,7 @@ fn Bars(
 #[component]
 #[allow(clippy::cast_precision_loss)]
 fn Bar(
-    label: Option<&'static str>,
+    label: Option<String>,
     co2_value: f64,
     emission_factor: f64,
     dx: f64,
@@ -226,7 +226,7 @@ fn Bar(
           </text>
           // label, i.e.: TUWien2016, Optimistisch, IPCC 2019, Pessimistisch, ...
           {
-            label.and_then(|_| {
+            label.clone().and_then(|label| {
               view! {
                 <text
                   x = { bar_width/2.0 }

@@ -4,7 +4,7 @@ use leptos::*;
 use klick_app_components::forms::*;
 
 #[component]
-pub fn ListOfMissingFields(missing_fields: Vec<(FieldId, &'static str)>) -> impl IntoView {
+pub fn ListOfMissingFields(missing_fields: Vec<(FieldId, Signal<String>)>) -> impl IntoView {
     view! {
       <ul class="ml-5 my-4 list-disc list-inside">
         <For

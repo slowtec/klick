@@ -23,13 +23,13 @@ impl Formatting {
             Self::LaTeX => v.unit_as_latex(),
         }
     }
-    pub fn fmt_label<L>(&self, id: L) -> &'static str
+    pub fn fmt_label<L>(&self, id: L, lang: Lng) -> String
     where
         L: ValueLabel,
     {
         match self {
-            Self::Text => id.label(),
-            Self::LaTeX => id.label_latex(),
+            Self::Text => id.label(lang),
+            Self::LaTeX => id.label_latex(lang),
         }
     }
 }
@@ -111,7 +111,7 @@ pub fn plant_profile_as_table(data: &HashMap<Id, Value>, formatting: Formatting)
             .into_iter()
             .map(|id| {
                 (
-                    formatting.fmt_label(id).to_string(),
+                    formatting.fmt_label(id, lang).to_string(),
                     data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
                     formatting.fmt(id),
                 )
@@ -164,7 +164,7 @@ pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Fo
             .into_iter()
             .map(|id| {
                 (
-                    formatting.fmt_label(id).to_string(),
+                    formatting.fmt_label(id, lang).to_string(),
                     data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
                     formatting.fmt(id),
                 )
@@ -198,8 +198,8 @@ pub fn co2_equivalents_as_table(
         .map(|(id, value)| {
             let label = match id {
                 Id::Custom(id) => id.clone(),
-                Id::Out(id) => id.label().to_string(),
-                Id::In(id) => id.label().to_string(),
+                Id::Out(id) => id.label(lang).to_string(),
+                Id::In(id) => id.label(lang).to_string(),
             };
             let formatted_value = lang.format_number(f64::from(value));
             (label, Some(formatted_value), Some("t"))

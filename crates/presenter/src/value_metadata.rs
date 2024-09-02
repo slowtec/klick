@@ -9,6 +9,9 @@ pub fn metadata(id: &Id) -> FieldMetaData {
         .unwrap()
 }
 
+// FIXME:
+// Add multilang support
+#[derive(Debug)]
 pub enum Placeholder {
     /// Use the label of the value
     Label,
@@ -64,7 +67,7 @@ fn metadata_de() -> [(Id, FieldMetaData); 42] {
         (
             Id::PlantName,
             M {
-                placeholder: P::text("Name der Kläranlage"),
+                placeholder: P::Label,
                 description: "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
             }
         ),

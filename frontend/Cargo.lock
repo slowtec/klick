@@ -1095,6 +1095,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "derive_more",
+ "fluent-templates",
  "klick-boundary",
  "klick-domain",
  "serde",

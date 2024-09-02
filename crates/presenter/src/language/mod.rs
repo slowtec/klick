@@ -1,3 +1,5 @@
+use fluent_templates::{langid, LanguageIdentifier};
+
 use klick_domain::{
     units::{Enum, Int, Scalar},
     Value,
@@ -8,6 +10,9 @@ use crate::value_labels::ValueLabel;
 #[cfg(test)]
 mod tests;
 
+const GERMAN: LanguageIdentifier = langid!("de");
+const ENGLISH: LanguageIdentifier = langid!("en");
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Lng {
     En,
@@ -15,6 +20,21 @@ pub enum Lng {
 }
 
 impl Lng {
+    pub fn try_from_id(id: &LanguageIdentifier) -> Option<Self> {
+        match *id {
+            GERMAN => Some(Self::De),
+            ENGLISH => Some(Self::En),
+            _ => None,
+        }
+    }
+
+    pub const fn id(&self) -> LanguageIdentifier {
+        match self {
+            Self::En => ENGLISH,
+            Self::De => GERMAN,
+        }
+    }
+
     /// ISO 639-1 code
     #[must_use]
     pub const fn alpha_2(&self) -> &str {
@@ -97,8 +117,8 @@ impl Lng {
             },
             Value::Text(txt) => txt.clone(),
             Value::Enum(v) => match v {
-                Enum::N2oEmissionFactorCalcMethod(v) => v.label().to_string(),
-                Enum::Ch4ChpEmissionFactorCalcMethod(v) => v.label().to_string(),
+                Enum::N2oEmissionFactorCalcMethod(v) => v.label(*self).to_string(),
+                Enum::Ch4ChpEmissionFactorCalcMethod(v) => v.label(*self).to_string(),
             },
         }
     }

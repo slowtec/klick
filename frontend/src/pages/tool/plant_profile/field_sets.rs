@@ -70,7 +70,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
         fields: vec![
             create_field(write, read, Id::SludgeTreatmentDigesterCount),
             Field {
-                label: "Schlammtaschen sind geschlossen", // TODO: Invert label of Id::SludgeTreatmentBagsAreOpen.label(),
+                label: RwSignal::new("Schlammtaschen sind geschlossen".to_string()).into(), // TODO: Invert label of Id::SludgeTreatmentBagsAreOpen.label(),
                 description: Some(
                     "Falls die Schlammtaschen des Faulturms / der Faultürme Ihrer Kläranlage geschlossen sind und nicht zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.",
                 ),
@@ -90,7 +90,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
                 },
             },
             Field {
-                label: "Schlammlagerung ist geschlossen", // TODO: Invert label of Id::SludgeTreatmentStorageContainersAreOpen.label(),
+                label: RwSignal::new("Schlammlagerung ist geschlossen".to_string()).into(), // TODO: Invert label of Id::SludgeTreatmentStorageContainersAreOpen.label(),
                 description: Some(
                     "Falls die Schlammstapelbehälter Ihrer Kläranlage dicht abgedeckt sind, dann dieses Feld bitte anklicken.",
                 ),
