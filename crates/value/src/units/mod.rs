@@ -6,6 +6,7 @@ use std::{
 use derive_more::From;
 use num_derive::{FromPrimitive, ToPrimitive};
 use paste::paste;
+use strum::AsRefStr;
 
 mod conversion;
 
@@ -1131,7 +1132,7 @@ values! {
             Count, u64;
         }
         enums {
-            #[derive(Default, FromPrimitive, ToPrimitive)]
+            #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr)]
             N2oEmissionFactorCalcMethod {
               #[default]
               TuWien2016,
@@ -1140,7 +1141,7 @@ values! {
               Ipcc2019,
               Custom,
             }
-            #[derive(Default, FromPrimitive, ToPrimitive)]
+            #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr)]
             Ch4ChpEmissionFactorCalcMethod {
                 #[default]
                 MicroGasTurbines,
