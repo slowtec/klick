@@ -121,7 +121,7 @@ pub fn options(
             .map(|(label, value)| view! {
                 <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ label }</dt>
                 <dd class="text-lg py-1 px-3">
-                    { lang.format_value(&Value::from(value)) }
+                    { lang.format_number_with_fixed_precision(value, 2) }
                     <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                 </dd>
             })
