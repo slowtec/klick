@@ -116,7 +116,7 @@ pub fn options(
 fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let id = Id::ScenarioSludgeBagsAreOpen;
     let custom_factor_field1 = Field {
-        label: RwSignal::new("Sließen der Schlammtaschen".to_string()).into(),
+        label: RwSignal::new("Schließen der Schlammtaschen".to_string()).into(),
         description: None,
         required: false,
         field_type: FieldType::Bool {
@@ -146,7 +146,7 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
 fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
     let id = Id::ScenarioSludgeStorageContainersAreOpen;
     let custom_factor_field2 = Field {
-        label: RwSignal::new("Sließen der Schlammlagerung".to_string()).into(),
+        label: RwSignal::new("Schließen der Schlammlagerung".to_string()).into(),
         description: None,
         required: false,
         field_type: FieldType::Bool {
