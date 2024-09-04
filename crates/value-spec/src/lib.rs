@@ -6,6 +6,7 @@ use syn::{
     parse_macro_input,
     punctuated::Punctuated,
     Ident, Lit, Token,
+    Expr,
 };
 
 #[proc_macro]
@@ -252,7 +253,7 @@ struct Variant {
 enum Attr {
     Optional,
     Unit(Ident),
-    Default(syn::Expr),
+    Default(Expr),
     Min(Lit),
     Max(Lit),
 }
@@ -297,7 +298,7 @@ impl Parse for ValueSpecInput {
 
         let content;
         braced!(content in input);
-        let variants = content.parse_terminated(Variant::parse)?;
+        let variants = content.parse_terminated(Variant::parse, Token![,])?;
 
         Ok(Self {
             value_type,
@@ -312,7 +313,7 @@ impl Parse for Variant {
         let name: Ident = input.parse()?;
         let content;
         braced!(content in input);
-        let attrs: Punctuated<Attr, Token![;]> = content.parse_terminated(Attr::parse)?;
+        let attrs = content.parse_terminated(Attr::parse, Token![;])?;
         let attrs = attrs.into_iter().collect();
         Ok(Self { name, attrs })
     }
@@ -322,14 +323,14 @@ fn to_snake_case(s: &str) -> String {
     let mut snake_case = String::new();
     let chars = s.chars().peekable();
     for c in chars {
-        if c.is_uppercase() {
-            if !snake_case.is_empty() {
-                snake_case.push('_');
-            }
-            snake_case.extend(c.to_lowercase());
-        } else {
+        if !c.is_uppercase() {
             snake_case.push(c);
+            continue;
         }
+        if !snake_case.is_empty() {
+            snake_case.push('_');
+        }
+        snake_case.extend(c.to_lowercase());
     }
     snake_case
 }
