@@ -16,7 +16,8 @@ const YELLOW_LIGHT: &str = "#fff5b2";
 const ORANGE: &str = "orange";
 const ORANGE_LIGHT: &str = "#ffe4b2";
 
-const BLACK: &str = "black";
+const GREY: &str = "grey";
+const GREY_LIGHT: &str = "lightgrey";
 
 impl ValueColor for OutputValueId {
     fn color(&self) -> &'static str {
@@ -47,7 +48,7 @@ impl ValueColor for OutputValueId {
             | Self::GasEmissions
             | Self::IndirectEmissions => ORANGE,
 
-            Self::TotalEmissions => BLACK,
+            Self::TotalEmissions => GREY,
 
             _ => todo!(),
         }
@@ -80,6 +81,8 @@ impl ValueColor for OutputValueId {
             | Self::OilEmissions
             | Self::GasEmissions
             | Self::IndirectEmissions => ORANGE_LIGHT,
+
+            Self::TotalEmissions => GREY_LIGHT,
 
             _ => self.color(),
         }

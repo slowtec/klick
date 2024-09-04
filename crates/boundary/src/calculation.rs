@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use klick_domain::{
     self as domain,
     input_value::{optional, required},
-    Id, InputValueId as In,
+    units::Tons,
+    Id, InputValueId as In, OutputValueId as Out, Value,
 };
 
 use crate::CalculationOutcome;
@@ -14,12 +15,33 @@ use crate::CalculationOutcome;
 pub fn calculate(
     input: &HashMap<Id, domain::Value>,
     custom_edges: Option<&[(Id, Id)]>,
+    custom_leafs: Vec<Id>,
 ) -> CalculationOutcome {
     log::debug!("Calculate");
 
-    let output = domain::calculate(input, custom_edges)
+    let mut output = domain::calculate(input, custom_edges)
         .map_err(|err| log::warn!("{err}"))
         .ok();
+
+    let custom_sum: Option<Tons> = output.clone().map(|(values, _)| {
+        values
+            .iter()
+            .filter_map(|(id, value)| {
+                if id.is_custom() && custom_leafs.iter().find(|&x| x == id).is_some() {
+                    let v = value.clone().as_tons().unwrap_or_else(|| Tons::new(0.0));
+                    Some(v)
+                } else {
+                    None
+                }
+            })
+            .fold(Tons::new(0.0), |acc, element| acc + element)
+    });
+
+    if let Some((values, _)) = &mut output {
+        if let Some(sum) = custom_sum {
+            values.insert(Id::Out(Out::AdditionalCustomEmissions), Value::from(sum));
+        }
+    }
 
     log::debug!("Calculate all N2O emission factor scenarios");
     let maybe_graph = output.clone().map(|(_, graph)| graph).clone();

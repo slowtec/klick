@@ -945,7 +945,6 @@ macro_rules! values {
                 pub const fn text() -> Self {
                     Self::Text
                 }
-
             }
 
             /// Elementary value that represents only a single data unit or value.

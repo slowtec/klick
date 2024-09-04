@@ -46,6 +46,7 @@ SensitivityCH4ChpCustomFactor = CHP CH₄-EF Custom
 SensitivityCO2FossilCustomFactor = CO₂-EF (fossil)
 SensitivitySludgeBagsCustomFactor = CH₄-EF Sludge Bags
 SensitivitySludgeStorageCustomFactor = CH₄-EF Sludge Storage
+AdditionalCustomEmissionsString = Additional Custom Emissionen
 
 TuWien2016 = TU Vienna 2016
 Optimistic = Optimistic

@@ -190,5 +190,6 @@ fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>)
     FieldSet {
         title: None,
         fields,
+        draw_border: false,
     }
 }

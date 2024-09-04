@@ -28,6 +28,7 @@ pub fn dom_node_id() -> FieldId {
 pub struct FieldSet {
     pub title: Option<&'static str>,
     pub fields: Vec<Field>,
+    pub draw_border: bool,
 }
 
 #[derive(Debug, Clone)]

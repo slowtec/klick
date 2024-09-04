@@ -36,7 +36,7 @@ pub static TEMPLATES: LazyLock<Tera> = LazyLock::new(|| {
 pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> {
     let lang = Lng::De; // FIXME
     let date = current_date_as_string()?;
-    let outcome = boundary::calculate(form_data, None);
+    let outcome = boundary::calculate(form_data, None, vec![]); // FIXME make this static, not another evaluation of all models
 
     let mut n2o_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
     let mut ch4_chp_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use gloo_file::{Blob, File, ObjectUrl};
 use leptos::*;
 
@@ -6,15 +8,20 @@ use klick_boundary::{
     calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, Data, FormData,
     JsonFormData, Project, ProjectId, SavedProject,
 };
-use klick_domain::{Id, InputValueId as In, Value};
+use klick_domain::{get_all_internal_nodes, Id, InputValueId as In, Value};
 use klick_presenter as presenter;
 
-use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
+use crate::{
+    api::AuthorizedApi,
+    pages::tool::parser::{self as custom_emission_parser, CustomEmission},
+    SECTION_ID_TOOL_HOME,
+};
 
 mod breadcrumbs;
 mod example_data;
 mod fields;
 mod form_data_overview;
+mod parser;
 mod plant_profile;
 mod project_menu;
 mod recommendations;
@@ -68,53 +75,90 @@ pub fn Tool(
     let is_logged_in = Signal::derive(move || api.get().is_some());
     let save_result_message = RwSignal::new(None);
 
-    // TODO:
-    //
-    // Use these signals ....
+    let custom_emissions_message = RwSignal::new(String::new());
     let custom_edges = RwSignal::new(vec![]);
-    let custom_values = RwSignal::<Vec<(String, Value)>>::new(vec![]);
-    // ... like this:
-    //
-    //      custom_values.update(|v|{
-    //          v.insert("a".to_string(), Value::tons(100.0));
-    //          v.insert("b".to_string(), Value::tons(100.0));
-    //      });
-    //      custom_edges.set(vec![
-    //          ("a".to_string().into(), "c".to_string().into()),
-    //          ("b".to_string().into(), "c".to_string().into()),
-    //          ("c".to_string().into(), domain::OutputValueId::TotalEmissions.into())
-    //      ]);
-    //
-    // This might be happen in an effect like this:
-    //
-    //
-    //     let my_parser = |_txt| {
-    //         // fake parse ...
-    //         let nodes = vec![
-    //             ("a".to_string(), Value::tons(100.0)),
-    //             ("b".to_string(), Value::tons(100.0)),
-    //         ];
-    //         let edges = vec![
-    //             ("a".to_string().into(), "c".to_string().into()),
-    //             ("b".to_string().into(), "c".to_string().into()),
-    //             (
-    //                 "c".to_string().into(),
-    //                 domain::OutputValueId::TotalEmissions.into(),
-    //             ),
-    //         ];
-    //         (nodes, edges)
-    //     };
+    let custom_values = RwSignal::<Vec<(Id, Value)>>::new(vec![]);
+    let custom_leafs = RwSignal::<Vec<Id>>::new(vec![]);
 
-    //     create_effect(move |_| {
-    //         let Some(text) =
-    //             form_data.with(|data| data.get(&In::ProjectName).cloned().map(Value::as_text))
-    //         else {
-    //             return;
-    //         };
-    //         let (nodes, edges) = my_parser(text);
-    //         custom_values.set(nodes);
-    //         custom_edges.set(edges);
-    //     });
+    let clear_custom_values_and_edges = move || {
+        custom_values.update(|values| values.clear());
+        custom_edges.update(|edges| edges.clear());
+    };
+
+    fn try_id_lookup(id: String) -> Id {
+        let id_lookup: HashMap<String, Id> = get_all_internal_nodes()
+            .iter()
+            .map(|&id| (format!("{:?}", id), id.into()))
+            .collect::<HashMap<_, _>>();
+        if let Some(r) = id_lookup.get(&id.to_string()) {
+            r.clone()
+        } else {
+            id.to_string().into()
+        }
+    }
+
+    create_effect(move |_| {
+        let additional_custom_emissions_string = form_data.with(|values| {
+            values
+                .get(&In::AdditionalCustomEmissions)
+                .cloned()
+                .map(Value::as_text_unchecked)
+        });
+
+        let Some(input) = additional_custom_emissions_string else {
+            custom_emissions_message.set("".to_string());
+            clear_custom_values_and_edges();
+            return;
+        };
+        let res = custom_emission_parser::parse_emission(
+            input.as_str(),
+            custom_emission_parser::NumberFormat::DE,
+        );
+        let Ok(r) = res.map_err(|err| {
+            custom_emissions_message.set(err.to_string());
+            clear_custom_values_and_edges();
+        }) else {
+            return;
+        };
+
+        let mut custom_edges_vec: Vec<(Id, Id)> = vec![];
+        let mut custom_values_vec: Vec<(Id, Value)> = vec![];
+        let mut custom_leafs_vec: Vec<Id> = vec![];
+
+        r.iter().for_each(|e: &CustomEmission| match &e {
+            CustomEmission::EdgeDefined(edge) => {
+                custom_edges_vec.push((
+                    edge.source.to_string().into(),
+                    try_id_lookup(edge.target.to_string()),
+                ));
+                custom_leafs_vec.push(edge.source.to_string().into());
+                custom_values_vec.push((edge.source.to_string().into(), Value::tons(edge.value)));
+            }
+            CustomEmission::EdgeUndefined(edge) => {
+                custom_edges_vec.push((
+                    edge.source.clone().into(),
+                    try_id_lookup(edge.target.to_string()),
+                ));
+            }
+        });
+        let all_internal_nodes_names: Vec<String> = get_all_internal_nodes()
+            .iter()
+            .map(|x| format!("{:?}", x).to_string())
+            .collect();
+
+        match custom_emission_parser::check_graph(r, all_internal_nodes_names) {
+            Ok(_) => {
+                custom_emissions_message.set("".to_string());
+                custom_values.set(custom_values_vec);
+                custom_edges.set(custom_edges_vec);
+                custom_leafs.set(custom_leafs_vec);
+            }
+            Err(e) => {
+                custom_emissions_message.set(e.to_string());
+                clear_custom_values_and_edges();
+            }
+        }
+    });
 
     let outcome = create_memo(move |_| {
         let custom_values = custom_values
@@ -128,15 +172,16 @@ pub fn Tool(
             .map(|(id, value)| (Id::from(id), value))
             .chain(custom_values)
             .collect();
-        let custom_edges = custom_edges.get();
-        calculate(
-            &values,
-            if custom_edges.is_empty() {
-                None
-            } else {
-                Some(&custom_edges)
-            },
-        )
+
+        let edges = custom_edges.get();
+        let leafs = custom_leafs.get();
+        let custom_edges = if edges.is_empty() {
+            None
+        } else {
+            Some(&*edges)
+        };
+
+        calculate(&values, custom_edges, leafs)
     });
 
     let show_side_stream_controls = Signal::derive(move || {
@@ -362,6 +407,7 @@ pub fn Tool(
               outcome = outcome.into()
               show_side_stream_controls
               accessibility_always_show_option
+              custom_emissions_message
             />
         }
         .into_view(),

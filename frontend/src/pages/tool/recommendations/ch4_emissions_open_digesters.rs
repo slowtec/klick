@@ -140,6 +140,8 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
     FieldSet {
         title: None,
         fields,
+
+        draw_border: false,
     }
 }
 
@@ -170,5 +172,7 @@ fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
     FieldSet {
         title: None,
         fields,
+
+        draw_border: false,
     }
 }

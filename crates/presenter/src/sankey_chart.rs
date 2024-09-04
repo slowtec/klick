@@ -68,6 +68,19 @@ pub fn create_sankey_chart_header(
 
 type Nodes = Vec<(f64, String, &'static str, &'static str)>;
 
+fn resolve_color(graph: &[(Id, Id)], pos: &Id) -> Option<(&'static str, &'static str)> {
+    let is_in_graph = graph.iter().any(|(s, t)| s == pos || t == pos);
+    if !is_in_graph {
+        return None;
+    }
+    let parent: &Id = graph.iter().find(|(s, _)| s == pos).map(|(_, t)| t)?;
+    match parent {
+        Id::Out(out_id) => Some((out_id.color(), out_id.color_light())),
+        x @ Id::Custom(_) => resolve_color(graph, x),
+        _ => None,
+    }
+}
+
 #[must_use]
 pub fn create_sankey_chart_data(
     co2_equivalents: HashMap<Id, Value>,
@@ -86,7 +99,9 @@ pub fn create_sankey_chart_data(
                 .unwrap_or_else(Tons::zero);
 
             let (label, color, color_light) = match id {
-                Id::Custom(id) => (id.clone(), "black", "gray"),
+                x @ Id::Custom(label) => resolve_color(graph, &x)
+                    .map(|(color, color_light)| (label.clone(), color, color_light))
+                    .unwrap_or_else(|| (label.clone(), "black", "grey")),
                 Id::Out(id) => (id.label(lang).to_string(), id.color(), id.color_light()),
                 Id::In(_) => {
                     return None;

@@ -10,6 +10,7 @@ use crate::pages::tool::fields::create_field;
 pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     let read = form_data.read_only();
     let write = form_data.write_only();
+    let draw_border = true;
 
     let field_set_project_name = FieldSet {
         title: None,
@@ -17,6 +18,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             .into_iter()
             .map(|id| create_field(write, read, id))
             .collect(),
+        draw_border,
     };
 
     let field_set_basics = {
@@ -25,7 +27,11 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             .into_iter()
             .map(|id| create_field(write, read, id))
             .collect();
-        FieldSet { title, fields }
+        FieldSet {
+            title,
+            fields,
+            draw_border,
+        }
     };
 
     [
@@ -41,13 +47,15 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             .into_iter()
             .map(|id| create_field(write, read, id))
             .collect(),
-      },
+            draw_border
+        },
     FieldSet {
         title: Some("Ablauf-Parameter (Jahresmittelwerte)"),
         fields: [ Id::EffluentChemicalOxygenDemand, Id::EffluentNitrogen]
             .into_iter()
             .map(|id| create_field(write, read, id))
             .collect(),
+        draw_border
     },
     FieldSet {
         title: Some("Energiebedarf"),
@@ -64,7 +72,8 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             .into_iter()
             .map(|id| create_field(write, read, id))
             .collect(),
-    },
+            draw_border,
+        },
     FieldSet {
         title: Some("Klärschlammbehandlung"),
         fields: vec![
@@ -112,10 +121,12 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             create_field(write, read, Id::SludgeTreatmentDisposal),
             create_field(write, read, Id::SludgeTreatmentTransportDistance),
         ],
+        draw_border,
     },
     FieldSet {
         title: Some("Prozesswasserbehandlung"),
-        fields: vec![create_field(write, read, Id::SideStreamTreatmentTotalNitrogen)]
+        fields: vec![create_field(write, read, Id::SideStreamTreatmentTotalNitrogen)],
+        draw_border,
     },
     FieldSet {
         title: Some("Eingesetzte Betriebsstoffe"),
@@ -128,6 +139,7 @@ pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
             .into_iter()
             .map(|id| create_field(write, read, id))
             .collect(),
-    },
+            draw_border
+        },
   ].to_vec()
 }

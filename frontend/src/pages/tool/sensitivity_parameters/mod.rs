@@ -9,6 +9,7 @@ use crate::{
     sankey::Sankey,
 };
 
+mod additional_custom_emissions;
 mod ch4_emissions_chp;
 mod ch4_emissions_open_digesters;
 mod ch4_emissions_open_sludge_storage;
@@ -16,8 +17,8 @@ mod fossil_co2_emissions;
 mod n2o_emissions;
 
 use self::{
-    ch4_emissions_chp::*, ch4_emissions_open_digesters::*, ch4_emissions_open_sludge_storage::*,
-    fossil_co2_emissions::*, n2o_emissions::*,
+    additional_custom_emissions::*, ch4_emissions_chp::*, ch4_emissions_open_digesters::*,
+    ch4_emissions_open_sludge_storage::*, fossil_co2_emissions::*, n2o_emissions::*,
 };
 
 #[allow(clippy::too_many_lines)] // TODO
@@ -28,6 +29,7 @@ pub fn SensitivityParameters(
     outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    custom_emissions_message: RwSignal<String>,
 ) -> impl IntoView {
     let lang = Lng::De; //FIXME
 
@@ -92,6 +94,13 @@ pub fn SensitivityParameters(
           input_data = form_data.read_only()
           outcome
           accessibility_always_show_option
+        />
+        <AdditionalCustomEmissions
+          form_data
+          input_data = form_data.read_only()
+          outcome
+          accessibility_always_show_option
+          custom_emissions_message
         />
 
         <h4 class="my-8 text-lg font-bold">

@@ -53,3 +53,18 @@ https://github.com/lipis/flag-icons/blob/v6.6.6/css/flag-icons.css
 .fi-gb.fis {
   background-image: url(/flags/1x1/gb.svg);
 }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.CodeMirror {
+  border: 1px solid #aaa;
+}

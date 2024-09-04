@@ -3,6 +3,8 @@ use std::{collections::HashMap, hash::BuildHasher};
 #[cfg(test)]
 mod tests;
 
+#[allow(clippy::wildcard_imports)]
+use crate::{Id, Value as V};
 use klick_value::{
     constants::*,
     extract_optional_with_input_value_id as optional,
@@ -10,8 +12,6 @@ use klick_value::{
     specs::{InputValueId as In, OutputValueId as Out},
     units::*,
 };
-
-use crate::{Id, Value as V};
 
 mod emission_groups;
 pub use self::emission_groups::*;
@@ -38,7 +38,7 @@ pub fn calculate(
 
     let co2_equivalents = calculate_emission_groups(all_emission_values, &graph);
 
-    let values = co2_equivalents
+    let co2_values = co2_equivalents
         .into_iter()
         .map(|(id, v)| (id, Value::from(v)))
         .chain(
@@ -49,7 +49,33 @@ pub fn calculate(
         .chain(methods.into_iter().map(|(id, v)| (id.into(), v)))
         .collect();
 
-    Ok((values, graph))
+    Ok((co2_values, graph))
+}
+
+/// calculate_emission_groups assumes leaft to root node ordering for building the sums
+/// this also removes edges which don't end up in `target`, which is usually `Out::TotalEmissions`
+pub fn sort_and_filter_nodes(edges: Vec<(Id, Id)>, target: Id) -> Vec<(Id, Id)> {
+    let mut targets: Vec<Id> = vec![target];
+    let mut ret: Vec<(Id, Id)> = vec![];
+    let mut next_edges: Vec<(Id, Id)>;
+    loop {
+        next_edges = edges
+            .clone()
+            .into_iter()
+            .filter(|(_, target)| targets.iter().find(|&t| t == target).is_some())
+            .collect::<Vec<_>>();
+        let next_targets: Vec<Id> = next_edges
+            .iter()
+            .map(|(source, _)| source.clone())
+            .collect::<Vec<_>>();
+        ret.append(&mut next_edges);
+        if next_targets.len() == 0 {
+            break;
+        }
+        targets = next_targets;
+    }
+    ret.reverse();
+    ret
 }
 
 #[must_use]
@@ -65,7 +91,7 @@ fn emission_graph(custom_edges: Option<&[Edge]>) -> Edges {
                 .map(|(from, to)| (from.clone(), to.clone())),
         );
     }
-    edges
+    sort_and_filter_nodes(edges, Id::Out(Out::TotalEmissions))
 }
 
 pub fn extract_input_values<T, S>(values: &HashMap<Id, T, S>) -> impl Iterator<Item = (In, T)> + '_
@@ -352,7 +378,7 @@ fn emissions_factors_and_methods(
     //   Pack variables  //
     // -------    ------ //
 
-    let values = [
+    let values: [(Out, Tons); 24] = [
         (Out::N2oPlant, n2o_plant),
         (Out::N2oWater, n2o_water),
         (Out::N2oSideStream, n2o_side_stream),

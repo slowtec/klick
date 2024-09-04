@@ -48,7 +48,7 @@ impl Placeholder {
     }
 }
 
-fn metadata_de() -> [(Id, FieldMetaData); 42] {
+fn metadata_de() -> [(Id, FieldMetaData); 43] {
     use FieldMetaData as M;
     use Placeholder as P;
     [
@@ -357,6 +357,13 @@ fn metadata_de() -> [(Id, FieldMetaData); 42] {
             M {
                placeholder: P::text("Jahreseinsparung"),
                description: "Angabe der geschätzten Energieeinsparung bei Kläranlagen-Prozessen in Prozent (%).",
+            }
+        ),
+        (
+            Id::AdditionalCustomEmissions,
+            M {
+                placeholder: P::text(""),
+                description : "Mit diesem Formularfeld können dem Sankey-Diagramm weitere benutzerdefinierte Emissionen hinzugefügt werden."
             }
         ),
     ]

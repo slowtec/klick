@@ -284,6 +284,10 @@ spec! {
             max = 100.0;
             default = 100.0;
         },
+        AdditionalCustomEmissions {
+          unit = String;
+          optional;
+        }
     }
 }
 
@@ -400,6 +404,10 @@ spec! {
         },
         Ch4ChpEmissionCustomFactor {
           unit = Factor;
+          optional;
+        },
+        AdditionalCustomEmissions {
+          unit = Tons;
           optional;
         }
     }

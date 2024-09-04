@@ -42,7 +42,7 @@ pub fn render_field_sets(
         }
 
         let view = view! {
-          <fieldset class="border-b border-gray-900/10 pb-12 mb-6">
+          <fieldset class={ if set.draw_border { "border-b border-gray-900/10 pb-12 mb-6" } else {"mb-6"} }>
             {
               set.title.map(|title| view! {
                 <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">
@@ -50,9 +50,13 @@ pub fn render_field_sets(
                 </h3>
               })
             }
-            <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
-              { field_views }
-            </div>
+            {
+              view! {
+                <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
+                  { field_views }
+                </div>
+              }
+            }
           </fieldset>
         }
         .into_view();
@@ -75,7 +79,6 @@ pub fn render_field(
         required,
         ..
     } = field;
-
     match field.field_type {
         FieldType::Text {
             placeholder,

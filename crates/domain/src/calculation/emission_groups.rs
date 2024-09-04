@@ -10,6 +10,8 @@ use klick_value::{
     units::{Tons, Value},
 };
 
+use crate::OutputValueId;
+
 pub const SANKEY_EDGES: &[(Out, Out)] = &[
     (Out::Ch4SludgeBags, Out::Ch4Emissions),
     (Out::Ch4SludgeStorageContainers, Out::Ch4Emissions),
@@ -77,4 +79,12 @@ where
         *target_value += source_value;
     }
     values
+}
+
+pub fn get_all_internal_nodes() -> Vec<OutputValueId> {
+    let set: HashSet<_> = SANKEY_EDGES
+        .iter()
+        .map(|(_, target)| target.clone())
+        .collect();
+    set.iter().map(|target| target.clone()).collect()
 }

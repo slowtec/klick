@@ -46,6 +46,7 @@ SensitivityCH4ChpCustomFactor = BHKW CH₄-EF benutzerdefiniert
 SensitivityCO2FossilCustomFactor = CO₂-EF (fossil)
 SensitivitySludgeBagsCustomFactor = CH₄-EF Schlammtaschen
 SensitivitySludgeStorageCustomFactor = CH₄-EF Schlammlagerung
+AdditionalCustomEmissionsString = Weitere benutzerdefinierte Emissionen
 
 TuWien2016 = TU Wien 2016
 Optimistic = Optimistisch

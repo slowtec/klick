@@ -42,13 +42,30 @@ pub struct Table {
 #[derive(Serialize)]
 pub struct TableSection {
     pub title: String,
-    pub rows: Vec<(String, Option<String>, Option<&'static str>)>,
+    pub rows: Vec<(String, Option<String>, Option<String>)>,
 }
 
 #[must_use]
 pub fn plant_profile_as_table(data: &HashMap<Id, Value>, formatting: Formatting) -> Table {
     // TODO: use as parameter
     let lang = Lng::De;
+
+    let custom_emissions: Option<(&str, Vec<_>)> = if data.iter().any(|(id, _)| id.is_custom()) {
+        Some((
+            "Benutzerdefinierte Emissionen",
+            data.iter()
+                .filter_map(|(id, _)| {
+                    if id.is_custom() {
+                        Some(id.clone())
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<_>>(),
+        ))
+    } else {
+        None
+    };
 
     let sections = [
         (
@@ -105,20 +122,31 @@ pub fn plant_profile_as_table(data: &HashMap<Id, Value>, formatting: Formatting)
         ),
     ]
     .into_iter()
+    .map(|(title, ids)| (title, ids.into_iter().map(|id| Id::In(id)).collect()))
+    .chain(custom_emissions.into_iter())
     .map(|(title, ids)| TableSection {
         title: title.to_string(),
         rows: ids
             .into_iter()
             .map(|id| {
                 (
-                    formatting.fmt_label(id, lang).to_string(),
-                    data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
-                    formatting.fmt(id),
+                    match id {
+                        Id::Custom(ref id) => id.clone(),
+                        Id::In(id) => formatting.fmt_label(id, lang).to_string(),
+                        Id::Out(id) => formatting.fmt_label(id, lang).to_string(),
+                    },
+                    data.get(&id).as_ref().map(|v| lang.format_value(v)),
+                    match id {
+                        Id::Custom(_) => Some("t".to_string()), // FIXME @markus
+                        Id::In(id) => formatting.fmt(id).map(|id| id.to_string()),
+                        Id::Out(id) => formatting.fmt(id).map(|id| id.to_string()),
+                    },
                 )
             })
             .collect(),
     })
     .collect();
+
     Table { sections }
 }
 
@@ -166,7 +194,7 @@ pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Fo
                 (
                     formatting.fmt_label(id, lang).to_string(),
                     data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
-                    formatting.fmt(id),
+                    formatting.fmt(id).map(Into::into),
                 )
             })
             .collect(),
@@ -202,7 +230,7 @@ pub fn co2_equivalents_as_table(
                 Id::In(id) => id.label(lang).to_string(),
             };
             let formatted_value = lang.format_number(f64::from(value));
-            (label, Some(formatted_value), Some("t"))
+            (label, Some(formatted_value), Some("t".to_string()))
         })
         .collect();
 

@@ -15,9 +15,9 @@ fn MyCodemirror() -> impl IntoView {
     view! {
       <h1>"Codemirror Example"</h1>
       <CodeMirror
-        input = input.read_only()
+        input = input.into()
         on_change
-        errors = errors.read_only()
+        errors = errors.into()
       />
       <button
         on:click = move |_| {

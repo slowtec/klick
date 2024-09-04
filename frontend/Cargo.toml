@@ -13,6 +13,7 @@ klick-app-components = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
 klick-domain = { path = "../crates/domain" }
 klick-presenter = "=0.0.0"
+leptos-codemirror = "*"
 
 # External dependencies
 chrono = "0.4"
@@ -32,6 +33,7 @@ leptos_meta = { version = "0.6.13", features = ["csr"] }
 leptos_router = { version = "0.6.13", features = ["csr"] }
 log = "0.4.22"
 num-traits = "0.2.19"
+regex = "1.10.6"
 serde_json = "1.0.124"
 serde = { version = "1.0.207", features = ["derive"] }
 strum = "0.26.3"
@@ -48,6 +50,7 @@ klick-domain         = { path = "../crates/domain"         }
 klick-presenter      = { path = "../crates/presenter"      }
 klick-value          = { path = "../crates/value"          }
 klick-value-spec     = { path = "../crates/value-spec"     }
+leptos-codemirror    = { path = "../crates/leptos-codemirror" }
 
 [profile.release]
 lto = true

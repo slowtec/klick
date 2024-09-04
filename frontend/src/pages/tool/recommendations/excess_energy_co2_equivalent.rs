@@ -138,6 +138,8 @@ pub fn options(
 }
 
 fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> Vec<FieldSet> {
+    let draw_border = false;
+
     vec![
         FieldSet {
             title: Some("Prozesse und fossile Energieträger"),
@@ -145,6 +147,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 create_field(form_data, input_data, Id::ScenarioProcessEnergySaving),
                 create_field(form_data, input_data, Id::ScenarioFossilEnergySaving),
             ],
+            draw_border,
         },
         FieldSet {
             title: Some("Photovoltaik"),
@@ -160,6 +163,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     Id::ScenarioEstimatedSelfPhotovolaticUsage,
                 ),
             ],
+            draw_border,
         },
         FieldSet {
             title: Some("Windkraft"),
@@ -171,6 +175,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     Id::ScenarioEstimatedSelfWindEnergyUsage,
                 ),
             ],
+            draw_border,
         },
         FieldSet {
             title: Some("Wasserkraft"),
@@ -182,6 +187,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                     Id::ScenarioEstimatedSelfWaterEnergyUsage,
                 ),
             ],
+            draw_border,
         },
         FieldSet {
             title: Some("Abwärmenutzung"),
@@ -190,6 +196,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
                 input_data,
                 Id::ScenarioDistrictHeating,
             )],
+            draw_border,
         },
     ]
 }

@@ -682,6 +682,9 @@ impl JsonFormData {
                 self.optimization_scenario.energy_emissions.district_heating =
                     value.map(V::as_kilowatthours_unchecked).map(Into::into);
             }
+            Id::AdditionalCustomEmissions => {
+                // FIXME
+            }
         }
     }
 }

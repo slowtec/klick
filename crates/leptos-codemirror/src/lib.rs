@@ -17,12 +17,11 @@ pub struct ErrorMarker {
 #[component]
 #[must_use]
 pub fn CodeMirror(
-    input: ReadSignal<Option<String>>,
-    errors: ReadSignal<Vec<ErrorMarker>>,
-    on_change: Callback<Option<String>, ()>,
+    input: Signal<Option<String>>,
+    errors: Signal<Vec<ErrorMarker>>,
+    #[prop(into)] on_change: Callback<Option<String>, ()>,
 ) -> impl IntoView {
     let textarea_ref = NodeRef::<Textarea>::new();
-
     textarea_ref.on_load(move |el| {
         let _ = el.on_mount(move |el| {
             log::debug!("Initialize codemirror editor");
@@ -46,7 +45,9 @@ pub fn CodeMirror(
                             Some(v) => v,
                             None => "",
                         };
-                        editor.set_value(txt);
+                        if editor.value() != *x {
+                            editor.set_value(txt);
+                        }
                     });
                 }
             });

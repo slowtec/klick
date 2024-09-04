@@ -60,6 +60,8 @@ pub fn CH4EmissionsOpenDigesters(
     let field_set = FieldSet {
         title: None,
         fields: vec![custom_factor_field],
+
+        draw_border: false,
     };
 
     let (fields_view1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
@@ -70,6 +72,8 @@ pub fn CH4EmissionsOpenDigesters(
     let field_set = FieldSet {
         title: None,
         fields: vec![custom_factor_field2],
+
+        draw_border: false,
     };
 
     let (fields_view2, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);

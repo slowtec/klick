@@ -206,6 +206,7 @@ fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     vec![FieldSet {
         title: None,
         fields,
+        draw_border: false,
     }]
 }
 
@@ -216,5 +217,6 @@ fn side_stream_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     vec![FieldSet {
         title: None,
         fields,
+        draw_border: false,
     }]
 }

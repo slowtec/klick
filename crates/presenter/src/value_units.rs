@@ -1,3 +1,5 @@
+use klick_domain::OutputValueId;
+
 use crate::InputValueId;
 
 // TODO:
@@ -39,6 +41,8 @@ const TEXT_MILLIGRAMSPERLITER: &str = "mg/l";
 const TEXT_KILOWATTHOURS: &str = "kWh";
 const TEXT_GRAMSPERKILOWATTHOUR: &str = "g/kWh";
 const TEXT_QUBICMETERS_PER_HOUR: &str = "m³/h";
+
+impl ValueUnit for OutputValueId {}
 
 impl ValueUnit for InputValueId {
     fn unit_as_latex(&self) -> Option<&'static str> {
