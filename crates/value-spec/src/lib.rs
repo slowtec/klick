@@ -5,8 +5,7 @@ use syn::{
     parse::{Parse, ParseStream, Result as ParseResult},
     parse_macro_input,
     punctuated::Punctuated,
-    Ident, Lit, Token,
-    Expr,
+    Expr, Ident, Lit, Token,
 };
 
 #[proc_macro]
