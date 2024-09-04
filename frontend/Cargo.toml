@@ -11,9 +11,9 @@ klick-app-api = "=0.0.0"
 klick-app-charts = "=0.0.0"
 klick-app-components = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
+klick-codemirror = "=0.0.0"
 klick-domain = { path = "../crates/domain" }
 klick-presenter = "=0.0.0"
-leptos-codemirror = "*"
 
 # External dependencies
 chrono = "0.4"
@@ -46,11 +46,11 @@ klick-app-api        = { path = "../crates/app-api"        }
 klick-app-components = { path = "../crates/app-components" }
 klick-app-charts     = { path = "../crates/app-charts"     }
 klick-boundary       = { path = "../crates/boundary"       }
+klick-codemirror     = { path = "../crates/codemirror"     }
 klick-domain         = { path = "../crates/domain"         }
 klick-presenter      = { path = "../crates/presenter"      }
 klick-value          = { path = "../crates/value"          }
 klick-value-spec     = { path = "../crates/value-spec"     }
-leptos-codemirror    = { path = "../crates/leptos-codemirror" }
 
 [profile.release]
 lto = true

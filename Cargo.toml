@@ -5,8 +5,8 @@ members = [
   "crates/app-charts",
   "crates/app-charts/examples/*",
   "crates/app-components",
-  "crates/leptos-codemirror",
-  "crates/leptos-codemirror/examples/*",
+  "crates/codemirror",
+  "crates/codemirror/examples/*",
 
   # backend crates
   "crates/backend",
@@ -40,14 +40,13 @@ klick-app-components = { path = "crates/app-components" }
 klick-application    = { path = "crates/application"    }
 klick-backend        = { path = "crates/backend"        }
 klick-boundary       = { path = "crates/boundary"       }
+klick-codemirror     = { path = "crates/codemirror"     }
 klick-db-sqlite      = { path = "crates/db-sqlite"      }
 klick-domain         = { path = "crates/domain"         }
 klick-pdf-export     = { path = "crates/pdf-export"     }
 klick-presenter      = { path = "crates/presenter"      }
 klick-value          = { path = "crates/value"          }
 klick-value-spec     = { path = "crates/value-spec"     }
-
-leptos-codemirror = { path = "crates/leptos-codemirror" }
 
 [package]
 name = "klick"

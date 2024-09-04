@@ -1,8 +1,10 @@
 [package]
-name = "leptos-codemirror"
+name = "klick-codemirror"
+version = "0.0.0"
+publish = false
+
 authors.workspace = true
 license.workspace = true
-version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 description.workspace = true

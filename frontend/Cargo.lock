@@ -1061,6 +1061,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-codemirror"
+version = "0.0.0"
+dependencies = [
+ "codemirror",
+ "leptos",
+ "log",
+]
+
+[[package]]
 name = "klick-domain"
 version = "0.4.13"
 dependencies = [
@@ -1097,10 +1106,10 @@ dependencies = [
  "klick-app-charts",
  "klick-app-components",
  "klick-boundary",
+ "klick-codemirror",
  "klick-domain",
  "klick-presenter",
  "leptos",
- "leptos-codemirror",
  "leptos-fluent",
  "leptos_hotkeys",
  "leptos_meta",
@@ -1177,15 +1186,6 @@ dependencies = [
  "typed-builder-macro",
  "wasm-bindgen",
  "web-sys",
-]
-
-[[package]]
-name = "leptos-codemirror"
-version = "0.4.13"
-dependencies = [
- "codemirror",
- "leptos",
- "log",
 ]
 
 [[package]]

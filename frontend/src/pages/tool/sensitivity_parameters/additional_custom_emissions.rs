@@ -3,10 +3,10 @@ use leptos::*;
 use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 use klick_boundary::FormData;
+use klick_codemirror::CodeMirror;
 use klick_domain::{
     self as domain, output_value::required, InputValueId as Id, OutputValueId as Out, Value,
 };
-use leptos_codemirror::CodeMirror;
 
 #[component]
 pub fn AdditionalCustomEmissions(

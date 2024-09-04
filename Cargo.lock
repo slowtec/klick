@@ -1612,6 +1612,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-codemirror"
+version = "0.0.0"
+dependencies = [
+ "codemirror",
+ "leptos",
+ "log",
+]
+
+[[package]]
+name = "klick-codemirror-basic"
+version = "0.4.13"
+dependencies = [
+ "console_error_panic_hook",
+ "console_log",
+ "klick-codemirror",
+ "leptos",
+ "log",
+]
+
+[[package]]
 name = "klick-db-sqlite"
 version = "0.0.0"
 dependencies = [
@@ -1725,26 +1745,6 @@ dependencies = [
  "typed-builder-macro",
  "wasm-bindgen",
  "web-sys",
-]
-
-[[package]]
-name = "leptos-codemirror"
-version = "0.4.13"
-dependencies = [
- "codemirror",
- "leptos",
- "log",
-]
-
-[[package]]
-name = "leptos-codemirror-basic"
-version = "0.4.13"
-dependencies = [
- "console_error_panic_hook",
- "console_log",
- "leptos",
- "leptos-codemirror",
- "log",
 ]
 
 [[package]]

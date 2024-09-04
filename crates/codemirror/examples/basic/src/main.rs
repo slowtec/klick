@@ -1,6 +1,6 @@
 use leptos::*;
 
-use leptos_codemirror::{CodeMirror, ErrorMarker};
+use klick_codemirror::{CodeMirror, ErrorMarker};
 
 #[component]
 fn MyCodemirror() -> impl IntoView {
