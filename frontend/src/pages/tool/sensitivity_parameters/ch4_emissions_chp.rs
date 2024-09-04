@@ -19,7 +19,6 @@ use crate::pages::tool::{
 #[component]
 pub fn CH4EmissionsCHP(
     form_data: RwSignal<FormData>,
-    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -53,7 +52,7 @@ pub fn CH4EmissionsCHP(
     //    Fields     //
     // -----   ----- //
 
-    let field_set = field_set(form_data.write_only(), input_data);
+    let field_set = field_set(form_data.write_only(), form_data.read_only().into());
     let (chp_view, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
 
     // -----   ----- //

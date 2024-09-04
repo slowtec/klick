@@ -27,45 +27,46 @@ pub fn SensitivityParameters(
     form_data: RwSignal<FormData>,
     current_section: RwSignal<PageSection>,
     outcome: Signal<CalculationOutcome>,
+    profile_outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
     custom_emissions_message: RwSignal<String>,
 ) -> impl IntoView {
     let lang = crate::current_lang().get();
 
-    let barchart_arguments = create_memo(move |_| {
-        outcome.with(|out| {
-            // TODO: avoid clones
-            out.output
-                .as_ref()
-                .map(|o| o.clone())
-                .and_then(|old| out.output.as_ref().map(|o| (o.clone(), old)))
-                .map(|(new, old)| {
-                    klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
-                        .into_iter()
-                        .map(|(label, value, percentage)| BarChartArguments {
-                            label,
-                            value,
-                            percentage,
-                        })
-                        .collect::<Vec<_>>()
-                })
-        })
+    let old_output = Memo::new(move |_| profile_outcome.with(|out| out.output.clone()));
+    let new_output = Memo::new(move |_| outcome.with(|out| out.output.clone()));
+
+    let barchart_arguments = Memo::new(move |_| {
+        old_output
+            .get()
+            .and_then(|old| new_output.get().map(|new| (new, old)))
+            .map(|(new, old)| {
+                klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
+                    .into_iter()
+                    .map(|(label, value, percentage)| BarChartArguments {
+                        label,
+                        value,
+                        percentage,
+                    })
+                    .collect::<Vec<_>>()
+            })
     });
+
     view! {
       <Show
-        when = move || outcome.with(|out|out.output.is_some())
+        when = move || profile_outcome.with(|out|out.output.is_some())
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
         <div class="my-4 ml-4">
-        <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Sensitivität von Emissionsfaktoren"</h3>
-        <p class="my-2">
-          "Unter nachfolgenden „aufklappbaren“ Abschnitten haben Sie die Möglichkeit verschiedene Emissionsfaktoren (EF)
-          genauer zu definieren. Dabei können Sie berechnen, wie sich die jeweilige Anpassung der EF von
-          Anlagenkomponenten bzw. der Gesamtkläranlage auf die Klimabilanz auswirkt. Sie können die
-          Sensibilisierung/Verfeinerung auch überspringen und direkt zu den Handlungsempfehlungen übergehen
-          (in diesem Fall rechnet das KlicK-Tool auf Basis der genannten Standardfaktoren/-parameter)."
-        </p>
+          <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Sensitivität von Emissionsfaktoren"</h3>
+          <p class="my-2">
+            "Unter nachfolgenden „aufklappbaren“ Abschnitten haben Sie die Möglichkeit verschiedene Emissionsfaktoren (EF)
+            genauer zu definieren. Dabei können Sie berechnen, wie sich die jeweilige Anpassung der EF von
+            Anlagenkomponenten bzw. der Gesamtkläranlage auf die Klimabilanz auswirkt. Sie können die
+            Sensibilisierung/Verfeinerung auch überspringen und direkt zu den Handlungsempfehlungen übergehen
+            (in diesem Fall rechnet das KlicK-Tool auf Basis der genannten Standardfaktoren/-parameter)."
+          </p>
         </div>
         <N2OEmissionsSensitivity
           form_data
@@ -75,13 +76,11 @@ pub fn SensitivityParameters(
         />
         <CH4EmissionsCHP
           form_data
-          input_data = form_data.into()
           outcome
           accessibility_always_show_option
         />
         <CH4EmissionsOpenDigesters
           form_data
-          input_data = form_data.into()
           outcome
           accessibility_always_show_option
         />
@@ -91,13 +90,11 @@ pub fn SensitivityParameters(
         />
         <FossilCO2Emissions
           form_data
-          input_data = form_data.into()
           outcome
           accessibility_always_show_option
         />
         <AdditionalCustomEmissions
           form_data
-          input_data = form_data.into()
           outcome
           accessibility_always_show_option
           custom_emissions_message

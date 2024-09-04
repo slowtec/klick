@@ -12,7 +12,6 @@ use crate::pages::tool::{
 #[component]
 pub fn CH4EmissionsOpenDigesters(
     form_data: RwSignal<FormData>,
-    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -55,7 +54,7 @@ pub fn CH4EmissionsOpenDigesters(
 
     let id = Id::SensitivitySludgeBagsCustomFactor;
 
-    let custom_factor_field = create_field(form_data.write_only(), input_data, id);
+    let custom_factor_field = create_field(form_data.write_only(), form_data.into(), id);
 
     let field_set = FieldSet {
         title: None,
@@ -67,7 +66,7 @@ pub fn CH4EmissionsOpenDigesters(
     let (fields_view1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
 
     let id = Id::SensitivitySludgeStorageCustomFactor;
-    let custom_factor_field2 = create_field(form_data.write_only(), input_data, id);
+    let custom_factor_field2 = create_field(form_data.write_only(), form_data.into(), id);
 
     let field_set = FieldSet {
         title: None,

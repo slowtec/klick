@@ -8,7 +8,10 @@ use klick_boundary::{
     calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, Data, FormData,
     JsonFormData, Project, ProjectId, SavedProject,
 };
-use klick_domain::{get_all_internal_nodes, Id, InputValueId as In, Value};
+use klick_domain::{
+    get_all_internal_nodes, input_value::optional as optional_in, units::Tons, Id,
+    InputValueId as In, Value,
+};
 use klick_presenter as presenter;
 
 use crate::{
@@ -29,7 +32,7 @@ mod sensitivity_parameters;
 mod widgets;
 
 use self::{
-    breadcrumbs::Breadcrumbs, plant_profile::DataCollection, project_menu::ProjectMenu,
+    breadcrumbs::Breadcrumbs, plant_profile::PlantProfile, project_menu::ProjectMenu,
     recommendations::Recommendations, sensitivity_parameters::SensitivityParameters, widgets::*,
 };
 
@@ -71,8 +74,28 @@ pub fn Tool(
     //    Signals    //
     // -----   ----- //
 
-    let form_data = RwSignal::new(FormData::default());
-    let is_logged_in = Signal::derive(move || api.get().is_some());
+    let profile_form_data = RwSignal::new(FormData::default());
+    let sensitivity_form_data = RwSignal::new(FormData::default());
+    let recommendation_form_data = RwSignal::new(FormData::default());
+
+    let load_form_data = move |data: HashMap<_, _>| {
+        profile_form_data.set(data.clone());
+        sensitivity_form_data.set(data.clone());
+        recommendation_form_data.set(data);
+    };
+
+    let form_data: Memo<HashMap<In, Value>> = Memo::new(move |_| {
+        let profile = profile_form_data.get().clone();
+        let sensitivity = sensitivity_form_data.get().clone();
+        let recommendation = recommendation_form_data.get().clone();
+        profile
+            .into_iter()
+            .chain(sensitivity.into_iter())
+            .chain(recommendation.into_iter())
+            .collect()
+    });
+
+    let is_logged_in = Memo::new(move |_| api.get().is_some());
     let save_result_message = RwSignal::new(None);
 
     let custom_emissions_message = RwSignal::new(String::new());
@@ -97,78 +120,31 @@ pub fn Tool(
         }
     }
 
-    create_effect(move |_| {
-        let additional_custom_emissions_string = form_data.with(|values| {
-            values
-                .get(&In::AdditionalCustomEmissions)
-                .cloned()
-                .map(Value::as_text_unchecked)
-        });
-
-        let Some(input) = additional_custom_emissions_string else {
-            custom_emissions_message.set("".to_string());
-            clear_custom_values_and_edges();
-            return;
-        };
-        let res = custom_emission_parser::parse_emission(
-            input.as_str(),
-            custom_emission_parser::NumberFormat::DE,
-        );
-        let Ok(r) = res.map_err(|err| {
-            custom_emissions_message.set(err.to_string());
-            clear_custom_values_and_edges();
-        }) else {
-            return;
-        };
-
-        let mut custom_edges_vec: Vec<(Id, Id)> = vec![];
-        let mut custom_values_vec: Vec<(Id, Value)> = vec![];
-        let mut custom_leafs_vec: Vec<Id> = vec![];
-
-        r.iter().for_each(|e: &CustomEmission| match &e {
-            CustomEmission::EdgeDefined(edge) => {
-                custom_edges_vec.push((
-                    edge.source.to_string().into(),
-                    try_id_lookup(edge.target.to_string()),
-                ));
-                custom_leafs_vec.push(edge.source.to_string().into());
-                custom_values_vec.push((edge.source.to_string().into(), Value::tons(edge.value)));
-            }
-            CustomEmission::EdgeUndefined(edge) => {
-                custom_edges_vec.push((
-                    edge.source.clone().into(),
-                    try_id_lookup(edge.target.to_string()),
-                ));
-            }
-        });
-        let all_internal_nodes_names: Vec<String> = get_all_internal_nodes()
-            .iter()
-            .map(|x| format!("{:?}", x).to_string())
+    let profile_outcome = Memo::new(move |_| {
+        let values = profile_form_data
+            .get()
+            .into_iter()
+            .map(|(id, value)| (Id::from(id), value))
             .collect();
 
-        match custom_emission_parser::check_graph(r, all_internal_nodes_names) {
-            Ok(_) => {
-                custom_emissions_message.set("".to_string());
-                custom_values.set(custom_values_vec);
-                custom_edges.set(custom_edges_vec);
-                custom_leafs.set(custom_leafs_vec);
-            }
-            Err(e) => {
-                custom_emissions_message.set(e.to_string());
-                clear_custom_values_and_edges();
-            }
-        }
+        let custom_leafs = vec![];
+        let custom_edges = None;
+
+        calculate(&values, custom_edges, custom_leafs)
     });
 
-    let outcome = create_memo(move |_| {
+    let sensitivity_outcome = Memo::new(move |_| {
+        let profile = profile_form_data.get().clone();
+        let sensitivity = sensitivity_form_data.get().clone();
+
         let custom_values = custom_values
             .get()
             .into_iter()
             .map(|(id, value)| (Id::from(id), value));
 
-        let values = form_data
-            .get()
+        let values = profile
             .into_iter()
+            .chain(sensitivity.into_iter())
             .map(|(id, value)| (Id::from(id), value))
             .chain(custom_values)
             .collect();
@@ -184,17 +160,44 @@ pub fn Tool(
         calculate(&values, custom_edges, leafs)
     });
 
-    let show_side_stream_controls = Signal::derive(move || {
+    let recommendation_outcome = Memo::new(move |_| {
+        let profile = profile_form_data.get().clone();
+        let sensitivity = sensitivity_form_data.get().clone();
+        let recommendation = recommendation_form_data.get().clone();
+
+        let custom_values = custom_values
+            .get()
+            .into_iter()
+            .map(|(id, value)| (Id::from(id), value));
+
+        let values = profile
+            .into_iter()
+            .chain(sensitivity.into_iter())
+            .chain(recommendation.into_iter())
+            .map(|(id, value)| (Id::from(id), value))
+            .chain(custom_values)
+            .collect();
+
+        let edges = custom_edges.get();
+        let leafs = custom_leafs.get();
+        let custom_edges = if edges.is_empty() {
+            None
+        } else {
+            Some(&*edges)
+        };
+
+        calculate(&values, custom_edges, leafs)
+    });
+
+    let show_side_stream_controls = Memo::new(move |_| {
         form_data.with(|d| {
-            d.get(&In::SideStreamTreatmentTotalNitrogen)
-                .cloned()
-                .map(Value::as_tons_unchecked)
-                .is_some_and(|v| f64::from(v) > 0.0)
+            optional_in!(In::SideStreamTreatmentTotalNitrogen, d).is_some_and(|v| v > Tons::zero())
         })
     });
 
     // TODO: allow to export at any time
-    let show_csv_export = Signal::derive(move || outcome.with(|out| out.output.is_some()));
+    let show_csv_export =
+        Signal::derive(move || recommendation_outcome.with(|out| out.output.is_some()));
 
     // -----   ----- //
     //    Actions    //
@@ -222,7 +225,7 @@ pub fn Tool(
                     Project::Saved(d) => d.data,
                     Project::Unsaved(d) => d,
                 };
-                form_data.set(FormData::from(data));
+                load_form_data(FormData::from(data));
             }
         }
     });
@@ -312,14 +315,14 @@ pub fn Tool(
 
     let clear_form_data = {
         move |()| {
-            form_data.set(FormData::default());
+            load_form_data(FormData::default());
             current_project.set(None);
         }
     };
 
     let load_example_values = {
         move |()| {
-            form_data.set(example_data::example_form_data());
+            load_form_data(example_data::example_form_data());
         }
     };
 
@@ -364,7 +367,7 @@ pub fn Tool(
     let export_csv = {
         move |()| -> Option<ObjectUrl> {
             let lang = crate::current_lang().get();
-            let csv = presenter::calculation_outcome_as_csv(&outcome.get(), lang);
+            let csv = presenter::calculation_outcome_as_csv(&recommendation_outcome.get(), lang);
             let blob = Blob::new_with_options(csv.as_bytes(), Some("text/csv"));
             Some(ObjectUrl::from(blob))
         }
@@ -384,7 +387,71 @@ pub fn Tool(
         let Some(p) = current_project.get() else {
             return;
         };
-        form_data.set(p.form_data().clone().into());
+        let data = p.form_data().clone().into();
+        load_form_data(data);
+    });
+
+    create_effect(move |_| {
+        let additional_custom_emissions_string = form_data.with(|values| {
+            values
+                .get(&In::AdditionalCustomEmissions)
+                .cloned()
+                .map(Value::as_text_unchecked)
+        });
+
+        let Some(input) = additional_custom_emissions_string else {
+            custom_emissions_message.set("".to_string());
+            clear_custom_values_and_edges();
+            return;
+        };
+        let res = custom_emission_parser::parse_emission(
+            input.as_str(),
+            custom_emission_parser::NumberFormat::DE,
+        );
+        let Ok(r) = res.map_err(|err| {
+            custom_emissions_message.set(err.to_string());
+            clear_custom_values_and_edges();
+        }) else {
+            return;
+        };
+
+        let mut custom_edges_vec: Vec<(Id, Id)> = vec![];
+        let mut custom_values_vec: Vec<(Id, Value)> = vec![];
+        let mut custom_leafs_vec: Vec<Id> = vec![];
+
+        r.iter().for_each(|e: &CustomEmission| match &e {
+            CustomEmission::EdgeDefined(edge) => {
+                custom_edges_vec.push((
+                    edge.source.to_string().into(),
+                    try_id_lookup(edge.target.to_string()),
+                ));
+                custom_leafs_vec.push(edge.source.to_string().into());
+                custom_values_vec.push((edge.source.to_string().into(), Value::tons(edge.value)));
+            }
+            CustomEmission::EdgeUndefined(edge) => {
+                custom_edges_vec.push((
+                    edge.source.clone().into(),
+                    try_id_lookup(edge.target.to_string()),
+                ));
+            }
+        });
+        let all_internal_nodes_names: Vec<String> = get_all_internal_nodes()
+            .iter()
+            .map(|x| format!("{:?}", x).to_string())
+            .collect();
+
+        match custom_emission_parser::check_graph(r, all_internal_nodes_names) {
+            Ok(_) => {
+                custom_emissions_message.set("".to_string());
+                custom_values.set(custom_values_vec);
+                custom_edges.set(custom_edges_vec);
+                custom_leafs.set(custom_leafs_vec);
+            }
+            Err(e) => {
+                custom_emissions_message.set(e.to_string());
+                clear_custom_values_and_edges();
+            }
+        }
     });
 
     // -----   ----- //
@@ -393,20 +460,21 @@ pub fn Tool(
 
     let section_view = move || match current_section.get() {
         PageSection::DataCollection => view! {
-            <DataCollection
-              form_data
+            <PlantProfile
+              form_data = profile_form_data
               current_section
-              outcome = outcome.into()
+              outcome = profile_outcome.into()
               accessibility_always_show_option
             />
         }
         .into_view(),
         PageSection::Sensitivity => view! {
             <SensitivityParameters
-              form_data
+              form_data = sensitivity_form_data
               current_section
-              outcome = outcome.into()
-              show_side_stream_controls
+              outcome = sensitivity_outcome.into()
+              profile_outcome = profile_outcome.into()
+              show_side_stream_controls = show_side_stream_controls.into()
               accessibility_always_show_option
               custom_emissions_message
             />
@@ -414,9 +482,10 @@ pub fn Tool(
         .into_view(),
         PageSection::Recommendation => view! {
             <Recommendations
-              form_data
-              outcome = outcome.into()
-              show_side_stream_controls
+              form_data = recommendation_form_data
+              outcome = recommendation_outcome.into()
+              sensitivity_outcome = sensitivity_outcome.into()
+              show_side_stream_controls = show_side_stream_controls.into()
               current_section
               accessibility_always_show_option
             />
@@ -432,7 +501,7 @@ pub fn Tool(
             current = current_section
           />
           <ProjectMenu
-            logged_in = is_logged_in
+            logged_in = is_logged_in.into()
             clear = clear_form_data
             load = load_example_values
             save = save_project

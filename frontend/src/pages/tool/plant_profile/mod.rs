@@ -17,7 +17,7 @@ mod field_sets;
 pub use self::field_sets::field_sets;
 
 #[component]
-pub fn DataCollection(
+pub fn PlantProfile(
     form_data: RwSignal<FormData>,
     current_section: RwSignal<PageSection>,
     outcome: Signal<CalculationOutcome>,

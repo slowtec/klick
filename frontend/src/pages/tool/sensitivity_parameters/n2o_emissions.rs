@@ -5,7 +5,7 @@ use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
 use klick_boundary::{CalculationOutcome, FormData};
 use klick_domain::{
-    output_value::*, units::N2oEmissionFactorCalcMethod, InputValueId as Id, OutputValueId as Out,
+    output_value::*, units::N2oEmissionFactorCalcMethod, InputValueId as In, OutputValueId as Out,
     Value,
 };
 use klick_presenter::ValueLabel;
@@ -28,7 +28,7 @@ pub fn N2OEmissionsSensitivity(
 
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
-            d.get(&Id::SensitivityN2OCalculationMethod)
+            d.get(&In::SensitivityN2OCalculationMethod)
                 .cloned()
                 .map(Value::as_n2o_emission_factor_calc_method_unchecked)
         })
@@ -67,7 +67,7 @@ pub fn N2OEmissionsSensitivity(
         };
         form_data.update(|d| {
             d.insert(
-                Id::SensitivityN2OCalculationMethod,
+                In::SensitivityN2OCalculationMethod,
                 Value::n2o_emission_factor_calc_method(method),
             );
         });
@@ -201,7 +201,7 @@ pub fn N2OEmissionsSensitivity(
 }
 
 fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
-    let id = Id::SensitivityN2OCustomFactor;
+    let id = In::SensitivityN2OCustomFactor;
     let custom_factor_field = create_field(form_data.write_only(), form_data.into(), id);
     let fields = vec![custom_factor_field];
     vec![FieldSet {
@@ -212,7 +212,7 @@ fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
 }
 
 fn side_stream_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
-    let id = Id::SensitivityN2OSideStreamFactor;
+    let id = In::SensitivityN2OSideStreamFactor;
     let custom_factor_field = create_field(form_data.write_only(), form_data.into(), id);
     let fields = vec![custom_factor_field];
     vec![FieldSet {

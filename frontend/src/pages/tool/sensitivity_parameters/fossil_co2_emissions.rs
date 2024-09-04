@@ -11,11 +11,10 @@ use crate::pages::tool::{
 #[component]
 pub fn FossilCO2Emissions(
     form_data: RwSignal<FormData>,
-    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let field_set = field_set(form_data.write_only(), input_data);
+    let field_set = field_set(form_data.write_only(), form_data.into());
     let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
 
     view! {

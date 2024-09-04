@@ -11,7 +11,6 @@ use klick_domain::{
 #[component]
 pub fn AdditionalCustomEmissions(
     form_data: RwSignal<FormData>,
-    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
     custom_emissions_message: RwSignal<String>,
@@ -22,7 +21,7 @@ pub fn AdditionalCustomEmissions(
     let helper_node_names = get_all_internal_nodes_names();
 
     let input_signal: Signal<Option<String>> = Signal::derive(move || {
-        input_data.with(|d| {
+        form_data.with(|d| {
             d.get(&Id::AdditionalCustomEmissions)
                 .cloned()
                 .map(Value::as_text_unchecked)

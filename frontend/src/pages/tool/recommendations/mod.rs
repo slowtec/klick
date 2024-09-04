@@ -24,30 +24,30 @@ mod n2o_emissions_side_stream_system;
 pub fn Recommendations(
     form_data: RwSignal<FormData>,
     outcome: Signal<CalculationOutcome>,
+    sensitivity_outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     current_section: RwSignal<PageSection>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let lang = crate::current_lang().get();
 
-    let barchart_arguments = create_memo(move |_| {
-        outcome.with(|out| {
-            // TODO: avoid clones
-            out.output
-                .as_ref()
-                .map(|o| o.clone())
-                .and_then(|old| out.output.as_ref().map(|o| (o.clone(), old)))
-                .map(|(new, old)| {
-                    klick_presenter::recommendation_diff_bar_chart(old, new, lang)
-                        .into_iter()
-                        .map(|(label, value, percentage)| BarChartArguments {
-                            label,
-                            value,
-                            percentage,
-                        })
-                        .collect::<Vec<_>>()
-                })
-        })
+    let old_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
+    let new_output = Memo::new(move |_| outcome.with(|out| out.output.clone()));
+
+    let barchart_arguments = Memo::new(move |_| {
+        old_output
+            .get()
+            .and_then(|old| new_output.get().map(|new| (new, old)))
+            .map(|(new, old)| {
+                klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
+                    .into_iter()
+                    .map(|(label, value, percentage)| BarChartArguments {
+                        label,
+                        value,
+                        percentage,
+                    })
+                    .collect::<Vec<_>>()
+            })
     });
 
     let form_data_overview = move || {
