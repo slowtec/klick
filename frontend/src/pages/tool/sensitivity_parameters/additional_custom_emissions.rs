@@ -11,7 +11,7 @@ use klick_domain::{
 #[component]
 pub fn AdditionalCustomEmissions(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
+    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
     custom_emissions_message: RwSignal<String>,

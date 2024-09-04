@@ -19,7 +19,7 @@ use crate::pages::tool::{
 #[component]
 pub fn CH4EmissionsCHP(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
+    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -182,7 +182,7 @@ pub fn CH4EmissionsCHP(
     }
 }
 
-fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+fn field_set(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
     let custom_factor_field =
         create_field(form_data, input_data, Id::SensitivityCH4ChpCustomFactor);
     let fields = vec![custom_factor_field];

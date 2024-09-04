@@ -19,7 +19,7 @@ type Labels = HashMap<FieldId, Signal<String>>;
 pub fn render_field_sets(
     field_sets: Vec<FieldSet>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
-) -> (Vec<View>, ReadSignal<MissingFields>, Labels) {
+) -> (Vec<View>, Signal<MissingFields>, Labels) {
     let mut set_views = vec![];
     let mut labels = HashMap::new();
     let missing_fields = RwSignal::new(HashSet::new());
@@ -62,7 +62,7 @@ pub fn render_field_sets(
         .into_view();
         set_views.push(view);
     }
-    (set_views, missing_fields.read_only(), labels)
+    (set_views, missing_fields.into(), labels)
 }
 
 #[must_use]

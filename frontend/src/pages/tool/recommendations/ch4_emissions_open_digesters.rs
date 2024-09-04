@@ -9,7 +9,7 @@ use crate::pages::tool::{CalculationOutcome, Card};
 #[allow(clippy::too_many_lines)] // TODO
 pub fn options(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
+    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -112,7 +112,7 @@ pub fn options(
     }
 }
 
-fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+fn field_set1(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
     let id = Id::ScenarioSludgeBagsAreOpen;
     let custom_factor_field1 = Field {
         label: RwSignal::new("Schließen der Schlammtaschen".to_string()).into(),
@@ -144,7 +144,7 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>
     }
 }
 
-fn field_set2(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+fn field_set2(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
     let id = Id::ScenarioSludgeStorageContainersAreOpen;
     let custom_factor_field2 = Field {
         label: RwSignal::new("Schließen der Schlammlagerung".to_string()).into(),

@@ -12,7 +12,7 @@ use crate::pages::tool::{
 #[component]
 pub fn CH4EmissionsOpenDigesters(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
+    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {

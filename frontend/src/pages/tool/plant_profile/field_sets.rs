@@ -8,7 +8,7 @@ use crate::pages::tool::fields::create_field;
 
 #[allow(clippy::too_many_lines)]
 pub fn field_sets(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
-    let read = form_data.read_only();
+    let read = form_data.into();
     let write = form_data.write_only();
     let draw_border = true;
 

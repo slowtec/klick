@@ -74,13 +74,13 @@ pub fn SensitivityParameters(
         />
         <CH4EmissionsCHP
           form_data
-          input_data = form_data.read_only()
+          input_data = form_data.into()
           outcome
           accessibility_always_show_option
         />
         <CH4EmissionsOpenDigesters
           form_data
-          input_data = form_data.read_only()
+          input_data = form_data.into()
           outcome
           accessibility_always_show_option
         />
@@ -90,13 +90,13 @@ pub fn SensitivityParameters(
         />
         <FossilCO2Emissions
           form_data
-          input_data = form_data.read_only()
+          input_data = form_data.into()
           outcome
           accessibility_always_show_option
         />
         <AdditionalCustomEmissions
           form_data
-          input_data = form_data.read_only()
+          input_data = form_data.into()
           outcome
           accessibility_always_show_option
           custom_emissions_message

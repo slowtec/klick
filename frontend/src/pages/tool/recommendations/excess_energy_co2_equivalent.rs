@@ -9,7 +9,7 @@ use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
 #[allow(clippy::too_many_lines)] // TODO
 pub fn options(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
+    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -135,7 +135,7 @@ pub fn options(
     }
 }
 
-fn field_sets(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> Vec<FieldSet> {
+fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> Vec<FieldSet> {
     let draw_border = false;
 
     vec![

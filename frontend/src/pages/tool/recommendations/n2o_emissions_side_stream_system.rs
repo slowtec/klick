@@ -11,7 +11,7 @@ use crate::{
 
 pub fn options(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
+    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
@@ -56,7 +56,7 @@ pub fn options(
     }
 }
 
-fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+fn field_set(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
     let id = Id::ScenarioN2OSideStreamCoverIsOpen;
     let custom_factor_field = Field {
         label: label_signal(id),

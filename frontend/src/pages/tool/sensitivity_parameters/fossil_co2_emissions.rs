@@ -11,7 +11,7 @@ use crate::pages::tool::{
 #[component]
 pub fn FossilCO2Emissions(
     form_data: RwSignal<FormData>,
-    input_data: ReadSignal<FormData>,
+    input_data: Signal<FormData>,
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -81,7 +81,7 @@ pub fn FossilCO2Emissions(
     }
 }
 
-fn field_set(form_data: WriteSignal<FormData>, input_data: ReadSignal<FormData>) -> FieldSet {
+fn field_set(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
     let id = Id::SensitivityCO2FossilCustomFactor;
 
     let custom_factor_field = create_field(form_data, input_data, id);

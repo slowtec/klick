@@ -201,7 +201,7 @@ pub fn N2OEmissionsSensitivity(
 
 fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     let id = Id::SensitivityN2OCustomFactor;
-    let custom_factor_field = create_field(form_data.write_only(), form_data.read_only(), id);
+    let custom_factor_field = create_field(form_data.write_only(), form_data.into(), id);
     let fields = vec![custom_factor_field];
     vec![FieldSet {
         title: None,
@@ -212,7 +212,7 @@ fn n2o_custom_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
 
 fn side_stream_factor(form_data: RwSignal<FormData>) -> Vec<FieldSet> {
     let id = Id::SensitivityN2OSideStreamFactor;
-    let custom_factor_field = create_field(form_data.write_only(), form_data.read_only(), id);
+    let custom_factor_field = create_field(form_data.write_only(), form_data.into(), id);
     let fields = vec![custom_factor_field];
     vec![FieldSet {
         title: None,

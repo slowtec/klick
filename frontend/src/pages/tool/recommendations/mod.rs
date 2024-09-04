@@ -73,7 +73,7 @@ pub fn Recommendations(
       {
         n2o_emissions_side_stream_system::options(
           form_data,
-          form_data.read_only(),
+          form_data.into(),
           outcome,
           show_side_stream_controls,
           accessibility_always_show_option
@@ -84,7 +84,7 @@ pub fn Recommendations(
       ) }
       { ch4_emissions_open_digesters::options(
           form_data,
-          form_data.read_only(),
+          form_data.into(),
           outcome,
           accessibility_always_show_option,
       ) }
@@ -93,7 +93,7 @@ pub fn Recommendations(
       ) }
       { excess_energy_co2_equivalent::options(
           form_data,
-          form_data.read_only(),
+          form_data.into(),
           outcome,
           accessibility_always_show_option,
         )

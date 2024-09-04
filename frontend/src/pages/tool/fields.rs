@@ -14,7 +14,7 @@ fn form_limits(id: &Id) -> MinMax<f64> {
     }
 }
 
-pub fn create_field(write: WriteSignal<FormData>, read: ReadSignal<FormData>, id: Id) -> Field {
+pub fn create_field(write: WriteSignal<FormData>, read: Signal<FormData>, id: Id) -> Field {
     let meta = metadata(&id);
     let placeholder: Option<Signal<String>> = match meta.placeholder {
         Placeholder::Text(txt) => Some(RwSignal::new(txt.to_string()).into()),
@@ -42,7 +42,7 @@ fn format_default_value(id: Id) -> Option<Signal<String>> {
 
 pub fn create_field_type(
     write: WriteSignal<FormData>,
-    read: ReadSignal<FormData>,
+    read: Signal<FormData>,
     id: Id,
     placeholder: Option<Signal<String>>,
 ) -> FieldType {
