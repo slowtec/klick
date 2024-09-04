@@ -9,7 +9,7 @@ use klick_domain::{
     units::{Ch4ChpEmissionFactorCalcMethod, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };
-use klick_presenter::{Lng, ValueLabel};
+use klick_presenter::ValueLabel;
 
 use crate::pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
@@ -23,12 +23,11 @@ pub fn CH4EmissionsCHP(
     outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let lang = Lng::De; //FIXME
-
     // -----   ----- //
     //    Signals    //
     // -----   ----- //
 
+    let lang = crate::current_lang().get();
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
             d.get(&Id::SensitivityCH4ChpCalculationMethod)
@@ -163,12 +162,12 @@ pub fn CH4EmissionsCHP(
                       <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                         <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
                         <dd class="text-lg py-1 px-3">
-                          { format!("{:.1}", f64::from(required!(Out::Ch4CombinedHeatAndPowerPlant, out).unwrap())).replace('.',",") }
+                          { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::Ch4CombinedHeatAndPowerPlant, out).unwrap()), 2) }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                         </dd>
                         <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                         <dd class="text-lg py-1 px-3">
-                          { format!("{:.1}", f64::from(required!(Out::TotalEmissions, out).unwrap())).replace('.',",") }
+                          { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::TotalEmissions, out).unwrap()), 2) }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                         </dd>
                       </dl>

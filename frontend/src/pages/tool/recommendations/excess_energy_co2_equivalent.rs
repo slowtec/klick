@@ -3,7 +3,6 @@ use leptos::*;
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{output_value::required, units::*, InputValueId as Id, OutputValueId as Out};
-use klick_presenter::*;
 
 use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
 
@@ -57,7 +56,7 @@ pub fn options(
     //     View      //
     // -----   ----- //
 
-    let lng = Lng::De;
+    let lang = crate::current_lang().get();
 
     view! {
       <Card id="recommenation-excess-energy" title ="Energiebedingte Emissionen" bg_color="bg-yellow" accessibility_always_show_option>
@@ -76,7 +75,7 @@ pub fn options(
             " Ihre Kläranlage ist energieneutral. Die Kläranlage spart "
             {
               electricity_mix_savings.with(|d|
-                d.map(|v| lng.format_number_with_fixed_precision(f64::from(v), 0))
+                d.map(|v| lang.format_number_with_fixed_precision(f64::from(v), 0))
               )
             }
             " t CO2-Äq./a ein."
@@ -89,7 +88,7 @@ pub fn options(
             "Ihre Kläranlage benötigt weiterhin externen Strom (Versorger), wodurch "
             {
               electricity_mix.with(|d|
-                d.map(|v| lng.format_number_with_fixed_precision(f64::from(v), 0))
+                d.map(|v| lang.format_number_with_fixed_precision(f64::from(v), 0))
               )
             }
             " t CO₂-Äq./a energiebedingte Emissionen entstehen."
@@ -99,7 +98,6 @@ pub fn options(
         { move || outcome.with(|out|out.output.clone().map(|out|{
 
             let eq = out;
-            let lang = Lng::De;
 
             let list = [
               (Out::ProcessEnergySavings, "CO₂ Einsparung durch Energieeinsparung bei Prozessen"),
@@ -121,7 +119,7 @@ pub fn options(
             .map(|(label, value)| view! {
                 <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ label }</dt>
                 <dd class="text-lg py-1 px-3">
-                    { lang.format_number_with_fixed_precision(value, 2) }
+                    { crate::current_lang().get().format_number_with_fixed_precision(value, 2) }
                     <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                 </dd>
             })

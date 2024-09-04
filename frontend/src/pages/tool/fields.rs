@@ -35,8 +35,8 @@ pub fn create_field(write: WriteSignal<FormData>, read: ReadSignal<FormData>, id
 fn format_default_value(id: Id) -> Option<Signal<String>> {
     let default_value = id.default_value()?;
     Some(Signal::derive(move || {
-        let lng = current_lang().get();
-        lng.format_value(&default_value)
+        let lang = current_lang().get();
+        lang.format_value(&default_value)
     }))
 }
 

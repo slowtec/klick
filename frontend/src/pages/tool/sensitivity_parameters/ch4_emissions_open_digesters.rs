@@ -146,7 +146,7 @@ pub fn CH4EmissionsOpenDigesters(
                      </dt>
                      <dd class={ format!("text-lg py-1 px-3 {show_sludge_bags_controls_class}") }
                      >
-                       { format!("{:.1}", f64::from(required!(Out::Ch4SludgeBags, out).unwrap())).replace('.',",") }
+                       { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::Ch4SludgeBags, out).unwrap()), 2) }
                        <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                      </dd>
                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_storage_containers_controls_class}") }
@@ -154,12 +154,12 @@ pub fn CH4EmissionsOpenDigesters(
                         "CH₄ Schlupf Schlammlagerung"
                      </dt>
                      <dd class={ format!("text-lg py-1 px-3 {show_sludge_storage_containers_controls_class}") } >
-                       { format!("{:.1}", f64::from(required!(Out::Ch4SludgeStorageContainers, out).unwrap())).replace('.',",") }
+                       { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::Ch4SludgeStorageContainers, out).unwrap()), 2) }
                        <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                      </dd>
                      <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
                      <dd class="text-lg py-1 px-3">
-                       { format!("{:.1}", f64::from(required!(Out::TotalEmissions, out).unwrap())).replace('.',",") }
+                       { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::TotalEmissions, out).unwrap()), 2) }
                        <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                      </dd>
                    </dl>

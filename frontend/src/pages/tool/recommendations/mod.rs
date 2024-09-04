@@ -2,7 +2,6 @@ use leptos::*;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
-use klick_presenter::Lng;
 
 use crate::{
     pages::tool::{
@@ -28,7 +27,7 @@ pub fn Recommendations(
     current_section: RwSignal<PageSection>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let lang = Lng::De; //FIXME
+    let lang = crate::current_lang().get();
 
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {

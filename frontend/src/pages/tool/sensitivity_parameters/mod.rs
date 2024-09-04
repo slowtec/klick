@@ -2,7 +2,6 @@ use leptos::*;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
-use klick_presenter::Lng;
 
 use crate::{
     pages::tool::{CalculationOutcome, DataCollectionEnforcementHelper, PageSection},
@@ -31,7 +30,7 @@ pub fn SensitivityParameters(
     accessibility_always_show_option: Option<RwSignal<bool>>,
     custom_emissions_message: RwSignal<String>,
 ) -> impl IntoView {
-    let lang = Lng::De; //FIXME
+    let lang = crate::current_lang().get();
 
     let barchart_arguments = create_memo(move |_| {
         outcome.with(|out| {
