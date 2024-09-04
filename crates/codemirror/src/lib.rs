@@ -40,7 +40,7 @@ pub fn CodeMirror(
             Effect::new({
                 let editor = Rc::clone(&editor);
                 move |_| {
-                    input.with(|x| {
+                    input.try_with(|x| {
                         let txt = match x {
                             Some(v) => v,
                             None => "",
