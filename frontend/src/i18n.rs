@@ -1,5 +1,6 @@
 use leptos::*;
 use leptos_fluent::*;
+use leptos_hotkeys::use_hotkeys;
 
 #[component]
 pub fn LanguageSelector() -> impl IntoView {
@@ -10,6 +11,14 @@ pub fn LanguageSelector() -> impl IntoView {
     Effect::new(move |_| {
         _ = current_lang.get();
         change_language.set(false);
+    });
+
+    use_hotkeys!(("F2") => move |()| {
+      let current_lang = current_lang.get();
+      let current_index = i18n.languages.iter().position(|&r| r == current_lang).unwrap_or(0);
+      let next_index = (current_index + 1) % i18n.languages.len();
+      let next_lang = &i18n.languages[next_index];
+      next_lang.activate();
     });
 
     view! {
