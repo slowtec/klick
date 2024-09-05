@@ -665,9 +665,10 @@ pub fn calculate_all_n2o_emission_factor_scenarios(
         ipcc2019_result,
     ];
 
-    if !values.contains_key(&In::SensitivityN2OCustomFactor.into()) {
-        return Ok(results);
-    };
+    // #306 sync custom defined scenarios between N2O and CH4, "on" by default
+    // if !values.contains_key(&In::SensitivityN2OCustomFactor.into()) {
+    //     return Ok(results);
+    // };
 
     // Custom
     let n2o = N2oEmissionFactorCalcMethod::Custom;
