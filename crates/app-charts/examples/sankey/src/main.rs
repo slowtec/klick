@@ -131,7 +131,7 @@ fn MySankeyChart() -> impl IntoView {
     view! {
       <h1>"Sankey Chart Example"</h1>
       <SankeyChart
-        sankey = { sankey }
+        sankey_data = { sankey }
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.1}")
@@ -139,7 +139,7 @@ fn MySankeyChart() -> impl IntoView {
         aria_label = None
       />
       <SankeyChart
-        sankey = { other_sankey }
+        sankey_data = { other_sankey }
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.0}")
@@ -147,7 +147,7 @@ fn MySankeyChart() -> impl IntoView {
         aria_label = None
       />
       <SankeyChart
-        sankey = { short_sankey }
+        sankey_data = { short_sankey }
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.0}")
@@ -155,7 +155,7 @@ fn MySankeyChart() -> impl IntoView {
         aria_label = None
       />
       <SankeyChart
-        sankey = { short_sankey_w }
+        sankey_data = { short_sankey_w }
         width = 800.0
         height = 300.0
         number_format = |n| format!("{n:.0}")

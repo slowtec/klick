@@ -7,7 +7,8 @@ use klick_domain::{
 };
 
 use crate::{
-    co2_equivalents_as_table, plant_profile_as_table, sensitivity_parameters_as_table, Formatting, Lng,
+    co2_equivalents_as_table, plant_profile_as_table, sensitivity_parameters_as_table, Formatting,
+    Lng,
 };
 
 #[must_use]

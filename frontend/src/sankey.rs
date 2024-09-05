@@ -7,43 +7,13 @@ use klick_presenter as presenter;
 
 use klick_app_charts::{Color, SankeyChart, SankeyData};
 
-// FIXME: can we use Lng::format_number_with_thousands_seperator?
-#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-fn format_large_number<T>(number: T) -> String
-where
-    T: Into<f64>,
-{
-    // Convert the f64 to u64
-    let t = number.into().ceil();
-    let u = t as u64;
-
-    // Format the u64 as a string with a comma
-    let formatted_string = format!("{u:0}");
-
-    // Insert a comma at the appropriate position
-    let comma_separated_string = formatted_string
-        .chars()
-        .rev()
-        .enumerate()
-        .map(|(i, c)| {
-            if i > 0 && i % 3 == 0 {
-                format!(".{c}")
-            } else {
-                c.to_string()
-            }
-        })
-        .collect::<String>()
-        .chars()
-        .rev()
-        .collect::<String>();
-
-    comma_separated_string
-}
-
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
-pub fn Sankey(data: HashMap<Id, Value>, graph: Vec<(Id, Id)>, lang: presenter::Lng) -> impl IntoView {
-
+pub fn Sankey(
+    data: HashMap<Id, Value>,
+    graph: Vec<(Id, Id)>,
+    lang: presenter::Lng,
+) -> impl IntoView {
     let co2_equivalents = data;
 
     let (nodes, edges) = presenter::create_sankey_chart_data(co2_equivalents, &graph, lang);

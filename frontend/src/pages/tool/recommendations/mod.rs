@@ -4,11 +4,12 @@ use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
 
 use crate::{
+    current_lang,
     pages::tool::{
         form_data_overview::FormDataOverview, CalculationOutcome, DataCollectionEnforcementHelper,
-        PageSection, 
+        PageSection,
     },
-    sankey::Sankey, current_lang,
+    sankey::Sankey,
 };
 
 mod ch4_emissions_open_digesters;

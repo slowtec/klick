@@ -4,8 +4,9 @@ use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
 
 use crate::{
+    current_lang,
     pages::tool::{CalculationOutcome, DataCollectionEnforcementHelper, PageSection},
-    sankey::Sankey, current_lang,
+    sankey::Sankey,
 };
 
 mod additional_custom_emissions;

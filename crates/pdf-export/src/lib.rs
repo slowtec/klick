@@ -206,7 +206,7 @@ fn render_markdown_template(
     n2o_scenarios_svg_file_path: Option<String>,
     ch4_chp_scenarios_svg_file_path: Option<String>,
     recommendation_barchart_svg_file_path: Option<String>,
-    lang: Lng
+    lang: Lng,
 ) -> anyhow::Result<String> {
     let plant_profile_table_data =
         presenter::plant_profile_as_table(&outcome.input, Formatting::LaTeX, lang);
@@ -292,7 +292,7 @@ fn render_n2o_scenarios_svg_bar_chart(
         BAR_CHART_HEIGHT,
         selected,
         emission_factor_label,
-        lang
+        lang,
     )
 }
 
@@ -318,7 +318,7 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
         BAR_CHART_HEIGHT,
         selected,
         emission_factor_label,
-        lang
+        lang,
     )
 }
 
