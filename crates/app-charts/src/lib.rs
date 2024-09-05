@@ -9,5 +9,5 @@ pub mod ssr;
 pub use self::{
     barchart::{BarChart, BarChartArguments},
     barchart_radioinputs::{BarChartRadioInput, BarChartRadioInputArguments},
-    sankey::{Chart as SankeyChart, Color, Sankey as SankeyData},
+    sankey::{SankeyChart, Color, SankeyData},
 };

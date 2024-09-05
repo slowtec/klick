@@ -7,14 +7,14 @@ use klick_domain::{
 };
 
 use crate::{
-    co2_equivalents_as_table, plant_profile_as_table, sensitivity_parameters_as_table, Formatting,
+    co2_equivalents_as_table, plant_profile_as_table, sensitivity_parameters_as_table, Formatting, Lng,
 };
 
 #[must_use]
-pub fn calculation_outcome_as_csv(out: &CalculationOutcome) -> String {
+pub fn calculation_outcome_as_csv(out: &CalculationOutcome, lang: Lng) -> String {
     let unit = Formatting::Text;
 
-    let mut plant_profile_table = plant_profile_as_table(&out.input, unit);
+    let mut plant_profile_table = plant_profile_as_table(&out.input, unit, lang);
 
     let sensitivity_parameters_table = sensitivity_parameters_as_table(&out.input, unit);
 

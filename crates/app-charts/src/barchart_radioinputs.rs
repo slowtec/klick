@@ -18,6 +18,7 @@ pub fn BarChartRadioInput(
     selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
     aria_label: Option<String>,
+    lang: Lng,
     #[prop(into)] on_change: Callback<u64, ()>,
 ) -> impl IntoView {
     let margin = 10.0;
@@ -46,6 +47,7 @@ pub fn BarChartRadioInput(
             selected_bar
             emission_factor_label
             on_change
+            lang
           />
         </g>
       </svg>
@@ -75,6 +77,7 @@ fn Bars(
     selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
     on_change: Callback<u64, ()>,
+    lang: Lng,
 ) -> impl IntoView {
     let count: usize = data.len();
     let co2_value_max = data
@@ -124,6 +127,7 @@ fn Bars(
               height={ height }
               selected_bar
               emission_factor_label
+              lang
               on_change
             />
           }
@@ -147,6 +151,7 @@ fn Bar(
     i: usize,
     selected_bar: Signal<Option<u64>>,
     emission_factor_label: Option<&'static str>,
+    lang: Lng,
     on_change: Callback<u64, ()>,
     // TODO: add lng: Lng
 ) -> impl IntoView {
@@ -172,7 +177,7 @@ fn Bar(
         font_size.set(0.0);
     };
 
-    let co2_value_label = Lng::De.format_number_with_fixed_precision(co2_value, 0);
+    let co2_value_label = lang.format_number_with_fixed_precision(co2_value, 0);
     let gap = width * 0.01;
     let transparent_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
     let hovered_color = move || if hovered.get() { "grey" } else { "" };
@@ -244,8 +249,9 @@ fn Bar(
           // emission_factor
           {
             label.and_then(|_| {
-              let zz = emission_factor_label.unwrap_or("");
-              let ef_label = format!("{zz} = {emission_factor:.2} %").replace('.', ",");
+              let efl = emission_factor_label.unwrap_or("");
+              let ef = lang.format_number_with_fixed_precision(emission_factor, 2);
+              let ef_label = format!("{efl} = {ef} %");
               view! {
                 <text
                   x = { bar_width/2.0 }

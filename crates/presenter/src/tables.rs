@@ -46,10 +46,7 @@ pub struct TableSection {
 }
 
 #[must_use]
-pub fn plant_profile_as_table(data: &HashMap<Id, Value>, formatting: Formatting) -> Table {
-    // TODO: use as parameter
-    let lang = Lng::De;
-
+pub fn plant_profile_as_table(data: &HashMap<Id, Value>, formatting: Formatting, lang: Lng) -> Table {
     let custom_emissions: Option<(&str, Vec<_>)> = if data.iter().any(|(id, _)| id.is_custom()) {
         Some((
             "Benutzerdefinierte Emissionen",

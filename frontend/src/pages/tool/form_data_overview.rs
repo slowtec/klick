@@ -9,7 +9,7 @@ use klick_presenter::{plant_profile_as_table, sensitivity_parameters_as_table, F
 pub fn FormDataOverview(input: HashMap<Id, Value>) -> impl IntoView {
     let profile_table = {
         let table = {
-            let mut profile = plant_profile_as_table(&input, Formatting::Text);
+            let mut profile = plant_profile_as_table(&input, Formatting::Text, crate::current_lang().get());
             let mut sensitivity = sensitivity_parameters_as_table(&input, Formatting::Text);
             profile.sections.append(&mut sensitivity.sections);
             profile

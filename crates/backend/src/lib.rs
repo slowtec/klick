@@ -373,6 +373,7 @@ async fn get_download(
                 .into_iter()
                 .map(|(id, value)| (id.into(), value))
                 .collect();
+            // FIXME set lang from here
             let bytes = export_to_pdf(&values)?;
             let headers = [
                 (header::CONTENT_TYPE, "application/pdf"),

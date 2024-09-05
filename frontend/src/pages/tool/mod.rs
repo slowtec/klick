@@ -363,7 +363,8 @@ pub fn Tool(
 
     let export_csv = {
         move |()| -> Option<ObjectUrl> {
-            let csv = presenter::calculation_outcome_as_csv(&outcome.get());
+            let lang = crate::current_lang().get();
+            let csv = presenter::calculation_outcome_as_csv(&outcome.get(), lang);
             let blob = Blob::new_with_options(csv.as_bytes(), Some("text/csv"));
             Some(ObjectUrl::from(blob))
         }

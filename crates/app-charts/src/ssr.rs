@@ -6,6 +6,8 @@ use crate::{
     SankeyData,
 };
 
+use klick_presenter::Lng;
+
 const SVG_HEADER: &str = r#"<?xml version="1.0" encoding="UTF-8" standalone="no"?>"#;
 
 #[must_use]
@@ -15,6 +17,7 @@ pub fn bar_chart_radio_input(
     height: f64,
     selected: Option<u64>,
     emission_factor_label: Option<&'static str>,
+    lang: Lng,
 ) -> String {
     render_view_as_svg(move || {
         let selected_bar = RwSignal::new(selected);
@@ -27,6 +30,7 @@ pub fn bar_chart_radio_input(
             selected_bar = selected_bar.into()
             emission_factor_label
             aria_label = None
+            lang
             on_change = |_|{}
           />
         }
@@ -50,7 +54,7 @@ pub fn bar_chart(data: Vec<BarChartArguments>, width: f64, height: f64) -> Strin
 
 #[must_use]
 pub fn sankey_chart<F>(
-    sankey: SankeyData,
+    sankey_data: SankeyData,
     width: f64,
     height: f64,
     number_format: F,
@@ -63,7 +67,7 @@ where
     render_view_as_svg(move || {
         view! {
           <SankeyChart
-            sankey
+            sankey_data
             width
             height
             number_format

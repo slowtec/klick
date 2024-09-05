@@ -78,7 +78,8 @@ pub fn DataCollection(
         }
         </h4>
         { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
-            view!{ <Sankey data graph /> }
+            let lang = current_lang().get();
+            view!{ <Sankey data graph lang/> }
           }))
         }
         <Show when = move || outcome.with(|outcome|outcome.output.is_some())>

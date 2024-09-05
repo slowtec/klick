@@ -24,7 +24,7 @@ pub fn N2OEmissionsSensitivity(
     //    Signals    //
     // -----   ----- //
 
-    let lang = crate::current_lang().get();
+    let lang = crate::current_lang();
 
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
@@ -84,7 +84,7 @@ pub fn N2OEmissionsSensitivity(
                     .iter()
                     .map(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
-                            label: Some(szenario.label(lang)),
+                            label: Some(szenario.label(lang.get())),
                             value: required!(Out::N2oPlant, outcome).unwrap().into(),
                             emission_factor: f64::from(required!(Out::N2oCalculatedEmissionFactor, outcome).unwrap()),
                         },
@@ -98,6 +98,7 @@ pub fn N2OEmissionsSensitivity(
                     selected_bar = selected_scenario_index
                     emission_factor_label = Some("N₂O EF")
                     aria_label = Some("Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Lachgasemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.".to_string())
+                    lang = lang.get()
                     on_change = on_bar_chart_input_changed
                   />
                 }
@@ -131,7 +132,7 @@ pub fn N2OEmissionsSensitivity(
           { bar_chart_view }
 
           <p>
-            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(|id|id.label(lang)) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
+            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(|id|id.label(lang.get())) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
              Durch Anklicken kann ein anderes Szenario ausgewählt werden."
           </p>
 

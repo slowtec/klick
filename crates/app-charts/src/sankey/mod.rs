@@ -10,7 +10,7 @@ use leptos::*;
 mod tests;
 
 #[derive(Debug, Default, Clone)]
-pub struct Sankey {
+pub struct SankeyData {
     nodes: HashMap<NodeId, Node>,
     edges: HashSet<Edge>,
 }
@@ -72,7 +72,7 @@ struct Edge {
     target: NodeId,
 }
 
-impl Sankey {
+impl SankeyData {
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -139,7 +139,7 @@ impl Sankey {
 // From all root nodes, travel left until leaf found, if count < max_count,
 // fill with virtual nodes
 fn travel_and_expand(
-    s: &mut Sankey,
+    s: &mut SankeyData,
     deps: &HashMap<NodeId, Dependencies>,
     node: &NodeId,
     max_count: u64,
@@ -205,8 +205,8 @@ fn count_nodes(deps: &HashMap<NodeId, Dependencies>, node: &NodeId) -> u64 {
 }
 
 #[component]
-pub fn Chart<F>(
-    sankey: Sankey,
+pub fn SankeyChart<F>(
+    sankey_data: SankeyData,
     width: f64,
     height: f64,
     number_format: F,
@@ -230,7 +230,7 @@ where
         <g
           transform = format!("translate(0.0,{margin_y})")
         >
-          <InnerChart sankey
+          <InnerChart sankey_data
             width = width - margin_x * 2.0
             height = height - margin_y * 2.0
             number_format
@@ -243,7 +243,7 @@ where
 
 #[component]
 fn InnerChart<F>(
-    mut sankey: Sankey,
+    mut sankey_data: SankeyData,
     width: f64,
     height: f64,
     number_format: F,
@@ -254,22 +254,22 @@ where
 {
     let node_separation = height / 50.0;
     let node_width = width / 70.0; // TODO: make this configurable
-    sankey.insert_virtual_nodes();
-    let deps = dependencies(&sankey.edges);
-    let layers = layers(&deps, &sankey.nodes);
+    sankey_data.insert_virtual_nodes();
+    let deps = dependencies(&sankey_data.edges);
+    let layers = layers(&deps, &sankey_data.nodes);
     let layer_x_positions = layer_x_positions(layers.len(), width, node_width);
-    let scale = scale(&layers, &sankey.nodes, height, node_separation);
+    let scale = scale(&layers, &sankey_data.nodes, height, node_separation);
     let node_positions = node_positions(
         &layers,
         &layer_x_positions,
-        &sankey.nodes,
+        &sankey_data.nodes,
         &deps,
         scale,
         node_separation,
     );
     let edge_positions = edge_positions(
-        &sankey.edges,
-        &sankey.nodes,
+        &sankey_data.edges,
+        &sankey_data.nodes,
         &deps,
         &node_positions,
         &layers,
@@ -282,8 +282,8 @@ where
             let x = node_position.x;
             let y = node_position.y;
             let node_height = node_position.height;
-            let value = sankey.nodes[id].value;
-            let label = sankey.nodes[id].label.as_ref().map(|label| {
+            let value = sankey_data.nodes[id].value;
+            let label = sankey_data.nodes[id].label.as_ref().map(|label| {
                 view! {
                   <tspan>
                     { label } " " { number_format(value) }
@@ -291,7 +291,7 @@ where
                 }
             });
 
-            let fill: Color = sankey.nodes[id].color.unwrap_or(Color::new("magenta"));
+            let fill: Color = sankey_data.nodes[id].color.unwrap_or(Color::new("magenta"));
 
             view! {
               <rect

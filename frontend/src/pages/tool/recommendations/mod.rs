@@ -6,9 +6,9 @@ use klick_boundary::FormData;
 use crate::{
     pages::tool::{
         form_data_overview::FormDataOverview, CalculationOutcome, DataCollectionEnforcementHelper,
-        PageSection,
+        PageSection, 
     },
-    sankey::Sankey,
+    sankey::Sankey, current_lang,
 };
 
 mod ch4_emissions_open_digesters;
@@ -112,7 +112,8 @@ pub fn Recommendations(
       </h4>
 
       { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
-          view!{ <Sankey data graph /> }
+          let lang = current_lang().get();
+          view!{ <Sankey data graph lang/> }
         }))
       }
       <div

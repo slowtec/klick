@@ -34,7 +34,7 @@ pub static TEMPLATES: LazyLock<Tera> = LazyLock::new(|| {
 });
 
 pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> {
-    let lang = Lng::De; // FIXME
+    let lang = Lng::De;
     let date = current_date_as_string()?;
     let outcome = boundary::calculate(form_data, None, vec![]); // FIXME make this static, not another evaluation of all models
 
@@ -180,6 +180,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
         n2o_scenarios_svg_file_path,
         ch4_chp_scenarios_svg_file_path,
         recommendation_barchart_svg_file_path,
+        lang,
     )?;
 
     let bytes = render_pdf(markdown)?;
@@ -205,11 +206,10 @@ fn render_markdown_template(
     n2o_scenarios_svg_file_path: Option<String>,
     ch4_chp_scenarios_svg_file_path: Option<String>,
     recommendation_barchart_svg_file_path: Option<String>,
+    lang: Lng
 ) -> anyhow::Result<String> {
-    let lang = Lng::De; // FIXME
-
     let plant_profile_table_data =
-        presenter::plant_profile_as_table(&outcome.input, Formatting::LaTeX);
+        presenter::plant_profile_as_table(&outcome.input, Formatting::LaTeX, lang);
     let plant_profile_table = create_latex_table(&plant_profile_table_data)?;
 
     let sensitivity_table_data =
@@ -292,6 +292,7 @@ fn render_n2o_scenarios_svg_bar_chart(
         BAR_CHART_HEIGHT,
         selected,
         emission_factor_label,
+        lang
     )
 }
 
@@ -317,6 +318,7 @@ fn render_ch4_chp_scenarios_svg_bar_chart(
         BAR_CHART_HEIGHT,
         selected,
         emission_factor_label,
+        lang
     )
 }
 
