@@ -34,7 +34,7 @@ pub struct FieldSet {
 #[derive(Debug, Clone)]
 pub struct Field {
     pub label: Signal<String>,
-    pub description: Option<&'static str>,
+    pub description: Option<String>,
     pub required: bool,
     pub field_type: FieldType,
 }

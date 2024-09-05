@@ -1,3 +1,5 @@
+use fluent_templates::static_loader;
+
 mod bar_chart;
 mod csv;
 mod language;
@@ -15,3 +17,10 @@ pub use self::{
     bar_chart::*, csv::*, language::*, sankey_chart::*, tables::*, value_color::*,
     value_input_field::*, value_labels::*, value_metadata::*, value_units::*,
 };
+
+static_loader! {
+    static LOCALES = {
+        locales: "./locales",
+        fallback_language: "de",
+    };
+}

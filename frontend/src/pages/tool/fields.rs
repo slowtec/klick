@@ -3,7 +3,9 @@ use leptos::*;
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
 use klick_domain::{units::*, InputValueId as Id, Value, ValueType};
-use klick_presenter::{metadata, InputValueFieldType, InputValueFieldTypeHint, Placeholder};
+use klick_presenter::{
+    metadata_of, FieldMetaData, InputValueFieldType, InputValueFieldTypeHint, Placeholder,
+};
 
 use crate::{current_lang, label_signal};
 
@@ -15,15 +17,22 @@ fn form_limits(id: &Id) -> MinMax<f64> {
 }
 
 pub fn create_field(write: WriteSignal<FormData>, read: Signal<FormData>, id: Id) -> Field {
-    let meta = metadata(&id);
+    let meta = metadata_of(&id);
+    let lang = current_lang();
+
     let placeholder: Option<Signal<String>> = match meta.placeholder {
-        Placeholder::Text(txt) => Some(RwSignal::new(txt.to_string()).into()),
+        Placeholder::Text(key) => Some(Signal::derive(move || {
+            FieldMetaData::lookup(lang.get(), key)
+        })),
         Placeholder::DefaultValue => format_default_value(id),
         Placeholder::Label => Some(label_signal(id)),
         Placeholder::None => None,
     };
     let field_type = create_field_type(write, read, id, placeholder);
-    let description = Some(meta.description);
+
+    // FIXME: use signal here
+    let description = Some(FieldMetaData::lookup(lang.get(), meta.description));
+
     Field {
         label: label_signal(id),
         description,

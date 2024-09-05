@@ -1,16 +1,18 @@
+use fluent_templates::Loader;
+
 use klick_domain::InputValueId as Id;
 
+use crate::{Lng, LOCALES};
+
 #[must_use]
-pub fn metadata(id: &Id) -> FieldMetaData {
-    metadata_de()
+pub fn metadata_of(id: &Id) -> FieldMetaData {
+    metadata()
         .into_iter()
         .find(|(x, _)| x == id)
         .map(|(_, m)| m)
         .unwrap()
 }
 
-// FIXME:
-// Add multilang support
 #[derive(Debug)]
 pub enum Placeholder {
     /// Use the label of the value
@@ -48,323 +50,310 @@ impl Placeholder {
     }
 }
 
-fn metadata_de() -> [(Id, FieldMetaData); 43] {
+fn metadata() -> [(Id, FieldMetaData); 43] {
     use FieldMetaData as M;
     use Placeholder as P;
     [
         (
             Id::ProjectName,
             M {
-                placeholder: P::text("Projektname"),
-                description : "In diesem Feld können Sie einen Namen für Ihr Projekt hinterlegen. In der <b>angemeldeten</b> Version,
-                dient der Projektname der Speicherung Ihrer Eingaben/Ergebnisse unter dem Reiter „Projekte“.
-
-                Wenn Sie sich <b>nicht angemeldet</b> haben, wird der Projektname ausschließlich nur auf Ihrer Festplatte
-                gespeichert und in Ihrem lokalen Browser verarbeitet. Weitere Informationen zur Datenverarbeitung
-                finden Sie in den <b>FAQ</b>."
-            }
+                placeholder: P::text("project-name"),
+                description: "description-project-name",
+            },
         ),
         (
             Id::PlantName,
             M {
                 placeholder: P::Label,
-                description: "Die Angabe des Namens und/oder Orts sind freiwillig. Alternativ kann für das Feld ein Platzhalter eingetragen werden. Sämtliche Eintragungen können nur von Ihnen (nicht der UTBW) eingesehen oder gespeichert werden.",
-            }
+                description: "description-plant-name",
+            },
         ),
         (
             Id::PopulationEquivalent,
             M {
-                placeholder: P::text("Angeschlossene Einwohner"),
-                description: "Ausbaugröße Ihrer Kläranlage in Einwohnerwerten (EW) als Summe der angeschlossenen Einwohner (E) und der gewerblichen Einwohnergleichwerte (EGW).",
-
-            }
+                placeholder: P::text("connected-inhabitants"),
+                description: "description-connected-inhabitants",
+            },
         ),
         (
             Id::Wastewater,
             M {
-                placeholder: P::text("Abwassermenge"),
-                description: "Die jährliche (a) Abwassermenge in Kubikmeter (m³) im Zulauf Ihrer Kläranlage.",
-            }
+                placeholder: P::text("wastewater-quantity"),
+                description: "description-wastewater-quantity",
+            },
         ),
         (
             Id::InfluentChemicalOxygenDemand,
             M {
-                placeholder: P::text("CSB"),
-                description: "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
-            }
+                placeholder: P::text("cod"),
+                description: "description-cod",
+            },
         ),
         (
             Id::InfluentNitrogen,
             M {
-                placeholder: P::text("Gesamtstickstoff"),
-                description: "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-            }
+                placeholder: P::text("total-nitrogen"),
+                description: "description-total-nitrogen",
+            },
         ),
         (
             Id::InfluentTotalOrganicCarbohydrates,
             M {
-                placeholder: P::text("TOC"),
-                description: "Der Jahresmittelwert des Gesamten organischen Kohlenstoffs (Total Organic Carbon, TOC)
-                        des Abwassers im Zulauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).<br>
-                        Wenn Sie keinen Wert für den TOC haben dann dieses Feld bitte freilassen
-                        (Anm.: für die Berechnung der fossilen CO₂-Emissionen wird in diesem Fall der CSB verwendet).",
-            }
+                placeholder: P::text("toc"),
+                description: "description-toc",
+            },
         ),
         (
             Id::EffluentNitrogen,
             M {
-                placeholder: P::text("Gesamtstickstoff"),
-                description: "Der Gesamtstickstoff-Gehalt des Abwassers (TN) im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L) als Jahresmittelwert.",
-            }
+                placeholder: P::text("total-nitrogen"),
+                description: "description-total-nitrogen-effluent",
+            },
         ),
         (
             Id::EffluentChemicalOxygenDemand,
             M {
-                placeholder: P::text("CSB"),
-                description: "Der Jahresmittelwert des chemischen Sauerstoffbedarf (CSB) des Abwassers im Ablauf Ihrer Kläranlage in Milligramm (mg) pro Liter (L).",
-            }
+                placeholder: P::text("cod"),
+                description: "description-cod-effluent",
+            },
         ),
         (
             Id::TotalPowerConsumption,
             M {
-                placeholder: P::text("Gesamtstrombedarf"),
-                description: "Der Gesamt-Strombedarf Ihrer Kläranlage in Kilowattstunden (kWh) pro Jahr (a).",
-            }
+                placeholder: P::text("total-power-consumption"),
+                description: "description-total-power-consumption",
+            },
         ),
         (
             Id::OnSitePowerGeneration,
             M {
-                placeholder: P::text("Eigenstrom"),
-                description: "Anteil der Eigenstromerzeugung in Kilowattstunden (kWh) pro Jahr (a). Falls kein Eigenstrom erzeugt wird, dieses Feld bitte freilassen.",
-            }
+                placeholder: P::text("self-generated-power"),
+                description: "description-self-generated-power",
+            },
         ),
         (
             Id::EmissionFactorElectricityMix,
             M {
-                placeholder : P::text("485"),
-                description : "Angabe des Emissionsfaktors des von extern bezogenen Strommixes in Gramm (g) CO₂ pro Kilowattstunde (kWh). Falls dieser Wert nicht verfügbar ist, bitte den Referenzwert stehen lassen.",
-            }
+                placeholder: P::text("emission-factor-electricity-mix"),
+                description: "description-emission-factor-electricity-mix",
+            },
         ),
         (
             Id::GasSupply,
             M {
-                placeholder: P::text("Gasbezug"),
-                description: "Menge an Gas (Erdgas/Biogas) in Kubikmeter (m³) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Gas von extern bezogen wird, dieses Feld bitte freilassen.",
-            }
+                placeholder: P::text("gas-supply"),
+                description: "description-gas-supply",
+            },
         ),
         (
             Id::PurchaseOfBiogas,
             M {
-                placeholder: P::text("Biogas Bezug"),
-                description: "Falls Ihre Kläranlage Biogas von extern bezieht, dieses Feld bitte anklicken.",
-            }
+                placeholder: P::text("biogas-purchase"),
+                description: "description-biogas-purchase",
+            },
         ),
         (
             Id::HeatingOil,
             M {
-                placeholder: P::text("Heizölbezug"),
-                description: "Menge an Heizöl (z.B. für die Beheizung von Gebäuden) in Litern (L) pro Jahr (a) die von einem externen Versorger bezogen werden. Falls an Ihrer Kläranlage kein Heizöl von extern bezogen wird, dieses Feld bitte freilassen."
-            }
+                placeholder: P::text("heating-oil-purchase"),
+                description: "description-heating-oil-purchase",
+            },
         ),
         (
             Id::SewageGasProduced,
             M {
-                placeholder: P::text("Klärgas"),
-                description: "Das an Ihrer Kläranlage erzeugte Klärgas in Kubikmeter (m³) pro Jahr (a). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
-            }
+                placeholder: P::text("sewage-gas-produced"),
+                description: "description-sewage-gas-produced",
+            },
         ),
         (
             Id::MethaneFraction,
             M {
-                placeholder: P::text("62"),
-                description:"Der Methangehalt des an Ihrer Kläranlage erzeugten Klärgases in Prozent (%). Falls an Ihrer Kläranlage kein Klärgas erzeugt wird, dieses Feld bitte freilassen.",
-            }
+                placeholder: P::text("methane-percentage"),
+                description: "description-methane-percentage",
+            },
         ),
         (
             Id::SludgeTreatmentDigesterCount,
             M {
-                placeholder: P::text("Anzahl Faultürme"),
-                description: "Falls auf Ihrer Kläranlage eine Faulung vorhanden ist, dann geben Sie bitte die Anzahl der Faultürme ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein.",
-            }
+                placeholder: P::text("number-of-digesters"),
+                description: "description-number-of-digesters",
+            },
         ),
         (
             Id::SludgeTreatmentBagsAreOpen,
             M {
                 placeholder: P::none(),
-                description: "Falls die Schlammtaschen des Faulturms / der Faultürme Ihrer Kläranlage geschlossen sind und nicht zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.",
-            }
+                description: "description-sludge-treatment-bags-are-open",
+            },
         ),
         (
             Id::SludgeTreatmentStorageContainersAreOpen,
             M {
                 placeholder: P::none(),
-                description: "Falls die Schlammstapelbehälter Ihrer Kläranlage dicht abgedeckt sind, dann dieses Feld bitte anklicken.",
-            }
+                description: "description-sludge-treatment-storage-containers-are-open",
+            },
         ),
         (
             Id::SludgeTreatmentDisposal,
             M {
-                placeholder: P::text("Masse entwässert"),
-                description: "Angabe der Menge an Klärschlamm in Tonnen (t) die zur Entsorgung anfallen.",
-            }
+                placeholder: P::text("mass-dewatered"),
+                description: "description-mass-dewatered",
+            },
         ),
         (
             Id::SludgeTreatmentTransportDistance,
             M {
-                placeholder: P::text("Entfernung"),
-                description: "Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen.",
-            }
+                placeholder: P::text("distance"),
+                description: "description-distance",
+            },
         ),
         (
             Id::SideStreamTreatmentTotalNitrogen,
             M {
-                placeholder: P::text("Gesamtstickstoff"),
-                description: "Falls auf Ihrer Kläranlage eine Prozesswasserbehandlung vorhanden ist, dann geben Sie bitte deren jährliche Gesamtsticksoffmenge in Tonnen [t/a] ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein. ",
-            }
+                placeholder: P::text("total-nitrogen"),
+                description: "description-total-nitrogen-side-stream",
+            },
         ),
         (
             Id::OperatingMaterialFeCl3,
             M {
-               placeholder: P::text("Lösung"),
-               description: "Angabe der pro Jahr (a) eingesetzten Menge an Eisen(III)-chlorid (FeCl3) in Tonnen (t).",
-            }
+                placeholder: P::text("ferrous-chloride"),
+                description: "description-ferrous-chloride",
+            },
         ),
         (
             Id::OperatingMaterialFeClSO4,
             M {
-               placeholder: P::text("Lösung"),
-               description: "Angabe der pro Jahr (a) eingesetzten Menge an Eisenchloridsulfat (FeClSO4) in Tonnen (t).",
-            }
+                placeholder: P::text("ferrous-chloride-sulfate"),
+                description: "description-ferrous-chloride-sulfate",
+            },
         ),
         (
             Id::OperatingMaterialCaOH2,
             M {
-                placeholder: P::text("Branntkalk"),
-                description: "Angabe der pro Jahr (a) eingesetzten Menge an Kalkhydrat (Ca(OH)2) in Tonnen (t).",
-            }
+                placeholder: P::text("calcium-hydroxide"),
+                description: "description-calcium-hydroxide",
+            },
         ),
         (
             Id::OperatingMaterialSyntheticPolymers,
             M {
-                placeholder: P::text("Polymere"),
-                description: "Angabe der pro Jahr (a) eingesetzten Menge an synthetischen Polymeren in Tonnen (t).",
-            }
+                placeholder: P::text("synthetic-polymers"),
+                description: "description-synthetic-polymers",
+            },
         ),
         (
             Id::SensitivitySludgeBagsCustomFactor,
             M {
                 placeholder: P::default_value(),
-                description: "Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen.",
-            }
+                description: "description-sensitivity-sludge-bags-custom-factor",
+            },
         ),
         (
             Id::SensitivitySludgeStorageCustomFactor,
             M {
                 placeholder: P::default_value(),
-                description: "Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen.",
-            }
+                description: "description-sensitivity-sludge-storage-custom-factor",
+            },
         ),
         (
             Id::SensitivityCH4ChpCustomFactor,
             M {
                 placeholder: P::default_value(),
-                description: "Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen.",
-            }
+                description: "description-sensitivity-CH4-chp-custom-factor",
+            },
         ),
         (
             Id::SensitivityCO2FossilCustomFactor,
             M {
                 placeholder: P::default_value(),
-                description: "Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₂ eintragen.",
-            }
+                description: "description-sensitivity-CO2-fossil-custom-factor",
+            },
         ),
         (
             Id::SensitivityN2OCustomFactor,
             M {
                 placeholder: P::default_value(),
-                description: "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung
-                  oder einer Messkampagne) einen Wert für den EF N₂O eintragen.
-                  <br/>Weiter muss die Auswahlmöglichkeit (Benutzerdefiniert) manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.",
-            }
+                description: "description-sensitivity-N2O-custom-factor",
+            },
         ),
         (
             Id::SensitivityN2OSideStreamFactor,
             M {
                 placeholder: P::default_value(),
-                description: "Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder
-                    einer Messkampagne) einen Wert für den EF der Prozesswasserbehandlung eintragen.",
-            }
+                description: "description-sensitivity-N2O-side-stream-factor",
+            },
         ),
         (
             Id::ScenarioDistrictHeating,
             M {
-                placeholder: P::text("Jahresleistung"),
-                description: "Angabe der Abgabeleistung an Fern-/Nahwärme in Kilowattstunden (kWh) pro Jahr (a).",
-
-            }
+                placeholder: P::text("district-heating"),
+                description: "description-district-heating",
+            },
         ),
         (
             Id::ScenarioEstimatedSelfWaterEnergyUsage,
             M {
                 placeholder: P::default_value(),
-                description: "Geschätzte Eigennutzung der Wasserkraftleistung in Prozent (%).",
-            }
+                description: "description-scenario-estimated-self-water-energy-usage",
+            },
         ),
         (
             Id::ScenarioWaterEnergyExpansion,
             M {
-                placeholder: P::text("Jahresleistung"),
-                description: "Angabe des Zubaus an Wasserkraftleistung in Kilowattstunden (kWh) pro Jahr (a)."
-            }
+                placeholder: P::text("self-use-water-energy"),
+                description: "description-water-energy-expansion",
+            },
         ),
         (
             Id::ScenarioEstimatedSelfWindEnergyUsage,
             M {
                 placeholder: P::default_value(),
-                description: "Geschätzte Eigennutzung der Windkraftleistung in Prozent (%).",
-            }
+                description: "description-scenario-estimated-self-wind-energy-usage",
+            },
         ),
         (
             Id::ScenarioWindEnergyExpansion,
             M {
-                placeholder: P::text("Jahresleistung"),
-                description: "Angabe des Zubaus an Windkraftleistung in Kilowattstunden (kWh) pro Jahr (a).",
-            }
+                placeholder: P::text("self-use-wind-energy"),
+                description: "description-wind-energy-expansion",
+            },
         ),
         (
             Id::ScenarioEstimatedSelfPhotovolaticUsage,
             M {
                 placeholder: P::default_value(),
-                description: "Geschätzte Eigennutzung der Photovoltaikleistung in Prozent (%).",
-            }
+                description: "description-scenario-estimated-self-photovolatic-usage",
+            },
         ),
         (
-           Id::ScenarioPhotovoltaicEnergyExpansion,
+            Id::ScenarioPhotovoltaicEnergyExpansion,
             M {
-                    placeholder: P::text("Jahresleistung"),
-                    description: "Angabe des Zubaus an Photovoltaikleistung in Kilowattstunden (kWh) pro Jahr (a).",
-            }
+                placeholder: P::text("self-use-pv-energy"),
+                description: "description-photovoltaic-energy-expansion",
+            },
         ),
         (
             Id::ScenarioFossilEnergySaving,
             M {
-                    placeholder: P::text("Jahreseinsparung"),
-                    description: "Angabe der geschätzten Energieeinsparung bei fossilen Energieträgern (z.B. Heizöl/Erdgas) in Prozent (%).",
-            }
+                placeholder: P::text("fossil-energy-saving"),
+                description: "description-fossil-energy-saving",
+            },
         ),
         (
             Id::ScenarioProcessEnergySaving,
             M {
-               placeholder: P::text("Jahreseinsparung"),
-               description: "Angabe der geschätzten Energieeinsparung bei Kläranlagen-Prozessen in Prozent (%).",
-            }
+                placeholder: P::text("process-energy-saving"),
+                description: "description-process-energy-saving",
+            },
         ),
         (
             Id::AdditionalCustomEmissions,
             M {
-                placeholder: P::text(""),
-                description : "Mit diesem Formularfeld können dem Sankey-Diagramm weitere benutzerdefinierte Emissionen hinzugefügt werden."
-            }
+                placeholder: P::none(),
+                description: "description-additional-custom-emissions",
+            },
         ),
     ]
 }
@@ -372,4 +361,37 @@ fn metadata_de() -> [(Id, FieldMetaData); 43] {
 pub struct FieldMetaData {
     pub description: &'static str,
     pub placeholder: Placeholder,
+}
+
+impl FieldMetaData {
+    #[must_use]
+    pub fn lookup(lng: Lng, key: &'static str) -> String {
+        LOCALES.lookup(&lng.id(), key)
+    }
+}
+
+#[test]
+fn validate_fluent_file() {
+    use super::*;
+
+    for lang in [Lng::De.id(), Lng::En.id()] {
+        for (
+            _,
+            FieldMetaData {
+                placeholder,
+                description,
+            },
+        ) in metadata()
+        {
+            assert!(!LOCALES.lookup(&lang, description).is_empty());
+            match placeholder {
+                Placeholder::Text(key) => {
+                    assert!(!LOCALES.lookup(&lang, key).is_empty());
+                }
+                _ => {
+                    continue;
+                }
+            }
+        }
+    }
 }

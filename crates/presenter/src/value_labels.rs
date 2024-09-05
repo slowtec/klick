@@ -1,17 +1,10 @@
 // TODO: move to value_metadata
 
-use fluent_templates::{static_loader, Loader};
+use fluent_templates::Loader;
 
 use klick_domain as domain;
 
-use crate::{InputValueId, Lng, OutputValueId};
-
-static_loader! {
-    static LOCALES = {
-        locales: "./locales",
-        fallback_language: "de",
-    };
-}
+use crate::{InputValueId, Lng, OutputValueId, LOCALES};
 
 pub trait ValueLabel {
     fn label(&self, lng: Lng) -> String;

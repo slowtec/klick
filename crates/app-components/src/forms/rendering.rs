@@ -230,7 +230,7 @@ pub fn render_field(
 
 fn create_tooltip(
     label: Signal<String>,
-    description: Option<&'static str>, // TODO: pass description as Markdown instead of raw HTML
+    description: Option<String>, // TODO: pass description as Markdown instead of raw HTML
     required: bool,
     accessibility_always_show_option: Option<RwSignal<bool>>,
     id: FieldId,
@@ -338,7 +338,7 @@ fn TextInput(
     id: FieldId,
     placeholder: Signal<String>,
     max_len: Option<usize>,
-    description: Option<&'static str>,
+    description: Option<String>,
     required: bool,
     input_value: Signal<Option<String>>,
     #[prop(into)] on_change: Callback<Option<String>, ()>,
@@ -346,7 +346,7 @@ fn TextInput(
 ) -> impl IntoView {
     view! {
       <div id={ format!("focus-{id}") }>
-        { move || create_tooltip(label.clone(), description, required, accessibility_always_show_option, id) }
+        { move || create_tooltip(label.clone(), description.clone(), required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm group">
           <input
             type = "text"
@@ -376,7 +376,7 @@ fn FloatInput(
     unit: &'static str,
     placeholder: Signal<String>,
     id: FieldId,
-    description: Option<&'static str>,
+    description: Option<String>,
     limits: MinMax<f64>,
     required: bool,
     input_value: Signal<Option<f64>>,
@@ -410,7 +410,7 @@ fn UnsignedIntegerInput(
     unit: &'static str,
     placeholder: Signal<String>,
     id: FieldId,
-    description: Option<&'static str>,
+    description: Option<String>,
     limits: MinMax<u64>,
     required: bool,
     input_value: Signal<Option<u64>>,
@@ -443,7 +443,7 @@ fn number_input_field<F, N>(
     unit: &'static str,
     placeholder: Signal<String>,
     id: FieldId,
-    description: Option<&'static str>,
+    description: Option<String>,
     limits: MinMax<N>,
     required: bool,
     input_value: Signal<Option<N>>,
@@ -514,7 +514,7 @@ where
 
     view! {
       <div>
-        { move || create_tooltip(label.clone(), description, required, accessibility_always_show_option, id) }
+        { move || create_tooltip(label.clone(), description.clone(), required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             id = id.to_string()
@@ -618,7 +618,7 @@ fn BoolInput(
     label: Signal<String>,
     id: FieldId,
     input_value: Signal<bool>,
-    description: Option<&'static str>,
+    description: Option<String>,
     #[prop(into)] on_change: Callback<bool, ()>,
 ) -> impl IntoView {
     view! {
