@@ -15,8 +15,16 @@ where
     R: AccountRepo + AccountTokenRepo,
     N: NotificationGateway,
 {
-    if repo.find_account(&email_address)?.is_some() {
-        return Err(Error::AlreadyExists);
+    if let Some(AccountRecord { account, .. }) = repo.find_account(&email_address)? {
+        return if account.email_confirmed {
+            Err(Error::AlreadyExists)
+        } else {
+            Ok(usecases::send_confirmation_email(
+                repo,
+                notification_gateway,
+                email_address,
+            )?)
+        };
     };
     let created_at = OffsetDateTime::now_utc();
     let account = Account {
