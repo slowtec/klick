@@ -118,12 +118,6 @@ pub fn SensitivityParameters(
           }))
         }
 
-        <button
-          class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
-          on:click = move |_| { current_section.set(PageSection::Recommendation); }
-        >
-          "zur den Handlungsempfehlungen"
-        </button>
         <div
         class = move || {
           if barchart_arguments.with(|args|args.as_ref().map(|args|args.iter().any(|x| f64::abs(x.value) > 0.1))).unwrap_or(false) {
@@ -164,6 +158,12 @@ pub fn SensitivityParameters(
           }
         </div>
       </div>
+        <button
+        class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
+        on:click = move |_| { current_section.set(PageSection::Recommendation); }
+      >
+        "zur den Handlungsempfehlungen"
+      </button>
       </Show>
     }
 }
