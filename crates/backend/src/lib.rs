@@ -156,8 +156,8 @@ impl AppState {
         Self {
             db,
             base_url,
-            tokens: Default::default(),
-            downloads: Default::default(),
+            tokens: Arc::default(),
+            downloads: Arc::default(),
             notification_gw,
         }
     }
@@ -211,7 +211,7 @@ async fn account_info(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::UserInfo> {
-    let account = account_from_token(&state, auth)?;
+    let account = account_from_token(&state, &auth)?;
     let email = account.email_address.into_string();
     let user_info = json_api::UserInfo { email };
     Ok(Json(user_info))
@@ -279,7 +279,7 @@ async fn new_project(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
     Json(data): Json<boundary::JsonFormData>,
 ) -> Result<boundary::ProjectId> {
-    let account = account_from_token(&state, auth)?;
+    let account = account_from_token(&state, &auth)?;
     let id = usecases::create_new_project(&state.db, &account, data)?;
     let id = boundary::ProjectId::from(id);
     Ok(Json(id))
@@ -290,7 +290,7 @@ async fn update_project(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
     Json(updated): Json<boundary::SavedProject>,
 ) -> Result<()> {
-    let account = account_from_token(&state, auth)?;
+    let account = account_from_token(&state, &auth)?;
     let id = ProjectId::from_uuid(updated.id.0);
     usecases::update_project(&state.db, &account, &id, updated.data)?;
     Ok(Json(()))
@@ -301,7 +301,7 @@ async fn get_project(
     Path(uuid): Path<Uuid>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<boundary::SavedProject> {
-    account_from_token(&state, auth)?;
+    account_from_token(&state, &auth)?;
     let id = ProjectId::from_uuid(uuid);
     let project = usecases::read_project(&state.db, id)?;
     Ok(Json(project.into()))
@@ -325,7 +325,7 @@ async fn get_export(
     Query(params): Query<Export>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::DownloadRequestResponse> {
-    account_from_token(&state, auth)?;
+    account_from_token(&state, &auth)?;
     let id = ProjectId::from_uuid(uuid);
     log::debug!("Export project {id:?}");
     if state.db.find_project(&id)?.is_none() {
@@ -407,7 +407,7 @@ async fn get_all_projects(
     State(state): State<AppState>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<Vec<boundary::SavedProject>> {
-    let account = account_from_token(&state, auth)?;
+    let account = account_from_token(&state, &auth)?;
     let projects = usecases::read_all_projects(&state.db, &account)?
         .into_iter()
         .map(Into::into)
@@ -420,7 +420,7 @@ async fn delete_project(
     Path(uuid): Path<Uuid>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<()> {
-    account_from_token(&state, auth)?;
+    account_from_token(&state, &auth)?;
     let id = ProjectId::from_uuid(uuid);
     usecases::delete_project(&state.db, id)?;
     Ok(Json(()))
@@ -428,7 +428,7 @@ async fn delete_project(
 
 fn account_from_token(
     state: &AppState,
-    auth: Authorization<Bearer>,
+    auth: &Authorization<Bearer>,
 ) -> std::result::Result<Account, ApiError> {
     let token = auth
         .token()
