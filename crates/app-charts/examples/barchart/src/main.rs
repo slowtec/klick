@@ -155,6 +155,7 @@ fn MyBarChart() -> impl IntoView {
         height = 400.0
         data=b1.get()
         aria_label = None
+        number_format = |a,b| format!("{a}{b}")
       />
       <h1>"BarChart Example b2"</h1>
       <BarChart
@@ -162,6 +163,7 @@ fn MyBarChart() -> impl IntoView {
         height = 400.0
         data=b2.get()
         aria_label = None
+        number_format = |a,b| format!("{a}{b}")
       />
       <h1>"BarChart Example b3"</h1>
       <BarChart
@@ -169,6 +171,7 @@ fn MyBarChart() -> impl IntoView {
         height = 400.0
         data=b3.get()
         aria_label = None
+        number_format = |a,b| format!("{a}{b}")
       />
       <h1>"BarChart Example b4"</h1>
       <BarChart
@@ -176,6 +179,7 @@ fn MyBarChart() -> impl IntoView {
         height = 400.0
         data=b4.get()
         aria_label = None
+        number_format = |a,b| format!("{a}{b}")
       />
       <h1>"BarChart Example b5"</h1>
       <BarChart
@@ -183,6 +187,7 @@ fn MyBarChart() -> impl IntoView {
         height = 400.0
         data=b5.get()
         aria_label = None
+        number_format = |a,b| format!("{a}{b}")
       />
       <h1>"BarChart Example b6"</h1>
       <BarChart
@@ -190,6 +195,7 @@ fn MyBarChart() -> impl IntoView {
         height = 400.0
         data=b6.get()
         aria_label = None
+        number_format = |a,b| format!("{a}{b}")
       />
       <h1>"BarChart Example b71"</h1>
       <BarChart
@@ -197,6 +203,7 @@ fn MyBarChart() -> impl IntoView {
         height = 400.0
         data=b7.get()
         aria_label = None
+        number_format = |a,b| format!("{a}{b}")
       />
     }
 }

@@ -134,6 +134,7 @@ pub fn Recommendations(
             "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. % der Gesamtemissionen durch die ausgewählten Handlungsmaßnahmen."
           </p>
           { move || {
+              let lang = current_lang().get();
               barchart_arguments.with(|args|args.as_ref().map(|arguments|{
                   let barchart_arguments_filtered = arguments
                     .iter()
@@ -150,6 +151,7 @@ pub fn Recommendations(
                       height = 400.0
                       data=barchart_arguments_filtered
                       aria_label = Some("Ein Balkendiagramm innerhalb der Handlungsoptionen, welches nur angezeigt wird, wenn eine Verbesserung / Verschlechterung durch eine Auswahl eingetreten ist.".to_string())
+                      number_format = move |a,b| lang.format_number_with_fixed_precision(a,b)
                   />
                   }
               }))

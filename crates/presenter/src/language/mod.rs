@@ -124,17 +124,27 @@ impl Lng {
     }
 
     fn format_f64(&self, number: f64, precision: Option<usize>) -> String {
-        let num_string = match precision {
-            Some(precision) => format!("{number:.precision$}"),
-            None => number.to_string(),
+        // Handle negative numbers by separating the sign
+        let (sign, abs_number) = if number < 0.0 {
+            ("-", number.abs())
+        } else {
+            ("", number)
         };
 
+        // Format the number string based on the precision
+        let num_string = match precision {
+            Some(precision) => format!("{:.precision$}", abs_number),
+            None => abs_number.to_string(),
+        };
+
+        // Split into integer and decimal parts
         let (integer_str, decimal_str) = if let Some(pos) = num_string.find('.') {
             num_string.split_at(pos)
         } else {
             (&*num_string, "")
         };
 
+        // Format the integer part with the thousands separator
         let integer_string = integer_str
             .as_bytes()
             .rchunks(3)
@@ -144,9 +154,11 @@ impl Lng {
             .unwrap()
             .join(self.thousands_separator());
 
+        // Replace decimal point with the correct separator
         let decimal_str = decimal_str.replace('.', self.decimal_separator());
 
-        format!("{integer_string}{decimal_str}")
+        // Combine sign, integer, and decimal parts
+        format!("{}{}{}", sign, integer_string, decimal_str)
     }
 
     pub fn parse_str_as_f64(&self, input: &str) -> Result<f64, String> {

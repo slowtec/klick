@@ -7,21 +7,24 @@ pub struct BarChartArguments {
     pub percentage: Option<f64>,
 }
 
-#[component]
 #[allow(clippy::module_name_repetitions)]
-pub fn BarChart(
+#[component]
+pub fn BarChart<F>(
     width: f64,
     height: f64,
     data: Vec<BarChartArguments>,
     aria_label: Option<String>,
-) -> impl IntoView {
+    number_format: F,
+) -> impl IntoView
+where
+    F: Fn(f64, usize) -> String + 'static + Clone,
+{
     let margin = 10.0;
 
     let inner_width = width - 2.0 * margin;
     let inner_height = height - 2.0 * margin;
 
     let x_axis_position = height / 2.0;
-
     view! {
       <svg
         with=format!("{width}px")
@@ -41,6 +44,7 @@ pub fn BarChart(
             height = { inner_height }
             x_axis_position
             data
+            number_format
           />
         </g>
       </svg>
@@ -63,12 +67,16 @@ fn YAxis(height: f64) -> impl IntoView {
 
 #[component]
 #[allow(clippy::cast_precision_loss)]
-fn Bars(
+fn Bars<F>(
     width: f64,
     height: f64,
     data: Vec<BarChartArguments>,
     x_axis_position: f64,
-) -> impl IntoView {
+    number_format: F,
+) -> impl IntoView
+where
+    F: Fn(f64, usize) -> String + 'static + Clone,
+{
     let count: usize = data.len();
     let value_max = data.iter().fold(0.0, |current_max, item| {
         f64::max(current_max, f64::abs(item.value))
@@ -103,6 +111,7 @@ fn Bars(
               bar_width={ bar_width }
               bar_height={ bar_height }
               label_position
+              number_format = number_format.clone()
             />
           }
         }
@@ -117,7 +126,7 @@ enum LabelPosition {
 
 #[component]
 #[allow(clippy::cast_precision_loss)]
-fn Bar(
+fn Bar<F>(
     label: String,
     value: f64,
     percentage: Option<f64>,
@@ -126,7 +135,11 @@ fn Bar(
     bar_width: f64,
     bar_height: f64,
     label_position: LabelPosition,
-) -> impl IntoView {
+    number_format: F,
+) -> impl IntoView
+where
+    F: Fn(f64, usize) -> String + 'static + Clone,
+{
     let font_weight = RwSignal::new("bold");
     let font_size = RwSignal::new(16.0);
 
@@ -140,7 +153,7 @@ fn Bar(
         LabelPosition::Bottom => -font_size.get(),
     };
     let percentage_label = match percentage {
-        Some(p) => format!(" / {p:.2}%"),
+        Some(p) => format!(" / {}%", number_format(p, 2)),
         None => String::new(),
     };
     view! {
@@ -175,7 +188,7 @@ fn Bar(
           font-size = move || font_size.get()
           font-family = "sans-serif"
         >
-        { format!("{value:.1}{percentage_label}") }
+        { format!("{}{percentage_label}", number_format(value, 1)) }
         </text>
         </g>
       </g>

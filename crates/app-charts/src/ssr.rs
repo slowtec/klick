@@ -39,6 +39,7 @@ pub fn bar_chart_radio_input(
 
 #[must_use]
 pub fn bar_chart(data: Vec<BarChartArguments>, width: f64, height: f64) -> String {
+    let lang = Lng::De;
     render_view_as_svg(move || {
         let data = data;
         view! {
@@ -47,6 +48,7 @@ pub fn bar_chart(data: Vec<BarChartArguments>, width: f64, height: f64) -> Strin
             height
             data
             aria_label = None
+            number_format = move |a,b| lang.format_number_with_fixed_precision(a,b)
           />
         }
     })

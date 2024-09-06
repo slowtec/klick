@@ -13,6 +13,9 @@ mod format {
         assert_eq!(lng.format_number(6_000.0), "6.000");
         assert_eq!(lng.format_number(6_000.1), "6.000,1");
         assert_eq!(lng.format_number(6_000.123_456_789), "6.000,123456789");
+        assert_eq!(lng.format_number_with_fixed_precision(-600.0, 2), "-600,00");
+        assert_eq!(lng.format_number_with_fixed_precision(-600.0, 1), "-600,0");
+        assert_eq!(lng.format_number_with_fixed_precision(-600.0, 0), "-600");
     }
 
     #[test]
