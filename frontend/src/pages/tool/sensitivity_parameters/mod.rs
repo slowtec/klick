@@ -38,6 +38,8 @@ pub fn SensitivityParameters(
     let new_output = Memo::new(move |_| outcome.with(|out| out.output.clone()));
 
     let barchart_arguments = Memo::new(move |_| {
+        // don't remove the lang below or the translation won't work
+        let lang = crate::current_lang().get();
         old_output
             .get()
             .and_then(|old| new_output.get().map(|new| (new, old)))
