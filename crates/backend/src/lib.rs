@@ -291,8 +291,8 @@ async fn update_project(
     Json(updated): Json<boundary::SavedProject>,
 ) -> Result<()> {
     let account = account_from_token(&state, &auth)?;
-    let id = ProjectId::from_uuid(updated.id.0);
-    usecases::update_project(&state.db, &account, &id, updated.data)?;
+    let id = ProjectId::from(updated.id);
+    usecases::update_project(&state.db, &account, &id, updated.form_data)?;
     Ok(Json(()))
 }
 
@@ -363,12 +363,9 @@ async fn get_download(
                 return Err(ApiError::from(anyhow!("project not found")));
             };
             let project = boundary::Project::from(project);
-            let project_data = match project {
-                boundary::Project::Saved(p) => p.data,
-                boundary::Project::Unsaved(d) => d,
-            };
+            let form_data = project.into_form_data();
             // FIXME: check if pdf was already made
-            let values: HashMap<domain::InputValueId, domain::Value> = project_data.into();
+            let values: HashMap<domain::InputValueId, domain::Value> = form_data.try_into()?;
             let values = values
                 .into_iter()
                 .map(|(id, value)| (id.into(), value))
@@ -389,8 +386,7 @@ async fn get_download(
                 return Err(ApiError::from(anyhow!("project not found")));
             };
             let project = boundary::Project::from(project);
-            let data = boundary::Data { project };
-            let json_string = boundary::export_to_string_pretty(&data);
+            let json_string = boundary::export_to_string_pretty(&project);
             let headers = [
                 (header::CONTENT_TYPE, "application/json; charset=utf-8"),
                 (

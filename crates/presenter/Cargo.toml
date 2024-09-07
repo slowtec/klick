@@ -11,7 +11,7 @@ publish = false
 workspace = true
 
 [dependencies]
-klick-boundary = { version = "=0.0.0", features = ["extra-derive", "conversion"] }
+klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = { path = "../domain" }
 
 anyhow = "1.0.86"

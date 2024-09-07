@@ -238,7 +238,7 @@ mod projects {
         let client = reqwest::Client::new();
         let endpoint = endpoint(addr, "/project");
         let json: Value = serde_json::from_str(EXAMPLE_PROJECT).unwrap();
-        let project = &json["project"];
+        let project = &json["form_data"];
         let req = client.post(endpoint).bearer_auth(token).json(&project);
         let res = req.send().await.unwrap();
         assert_eq!(res.status(), 200);

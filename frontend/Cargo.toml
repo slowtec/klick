@@ -10,7 +10,7 @@ rust-version = "1.80"
 klick-app-api = "=0.0.0"
 klick-app-charts = "=0.0.0"
 klick-app-components = "=0.0.0"
-klick-boundary = { version = "=0.0.0", features = ["conversion", "extra-derive"] }
+klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-codemirror = "=0.0.0"
 klick-domain = { path = "../crates/domain" }
 klick-presenter = "=0.0.0"

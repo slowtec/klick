@@ -41,8 +41,7 @@ impl TryFrom<ProjectQuery> for Project {
 
 pub fn project_to_json_string(project: Project) -> anyhow::Result<String> {
     let project = boundary::Project::from(project);
-    let data = boundary::Data { project };
-    let string = boundary::export_to_string(&data);
+    let string = boundary::export_to_string(&project);
     Ok(string)
 }
 

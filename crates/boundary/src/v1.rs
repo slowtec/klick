@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct Import {
@@ -31,44 +31,24 @@ pub struct EnergyConsumption {
 
 #[derive(Deserialize)]
 pub struct AnnualAverage {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub nitrogen: Option<f64>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub chemical_oxygen_demand: Option<f64>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub phosphorus: Option<f64>,
 }
 
 #[derive(Deserialize)]
 pub struct SewageSludgeTreatment {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub open_sludge_bags: Option<bool>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub open_sludge_storage_containers: Option<bool>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub sewage_sludge_for_disposal: Option<f64>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub transport_distance: Option<f64>,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Default, Clone, PartialEq))]
+#[derive(Deserialize, Default)]
 pub struct OperatingMaterials {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub fecl3: Option<f64>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub feclso4: Option<f64>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub caoh2: Option<f64>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub synthetic_polymers: Option<f64>,
 }
 

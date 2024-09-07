@@ -56,7 +56,7 @@ pub fn NewProject(
             match result {
                 Ok(new_id) => {
                     error.set(None);
-                    on_success.call(new_id);
+                    on_success.call(new_id.into());
                 }
                 Err(err) => {
                     log::warn!("Unable to create projects: {err}");

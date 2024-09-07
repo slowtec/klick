@@ -1,7 +1,7 @@
 use time::{Duration, OffsetDateTime};
 
 use klick_application::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
-use klick_boundary::FormData;
+use klick_boundary::JsonFormData;
 use klick_db_sqlite::Connection;
 use klick_domain::{
     authentication::{Account, AccountToken, EmailNonce, Nonce, Password},
@@ -60,7 +60,7 @@ fn delete_outdated_unconfirmed_accounts() {
     let id = ProjectId::new();
     let created_at = OffsetDateTime::now_utc();
     let modified_at = None;
-    let data = FormData::default().into();
+    let data = JsonFormData::default();
     let project = Project {
         id,
         created_at,

@@ -14,7 +14,7 @@ log = "0.4.22"
 serde = { version = "1.0.209", features = ["derive"] }
 serde_json = "1.0.127"
 thiserror = "1.0.63"
-time = { version = "0.3.36", features = ["serde"] }
+time = { version = "0.3.36", features = ["formatting", "parsing", "serde"] }
 uuid = { version = "1.10.0", features = ["serde"] }
 
 [dependencies.klick-domain]
@@ -27,13 +27,12 @@ features = ["json"]
 optional = true
 
 [dev-dependencies]
-klick-boundary = { version = "=0.0.0", features = ["extra-derive", "conversion"] }
+klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 
 uuid = { version = "1.10.0", features = ["v4"] }
 
 [features]
 conversion = []
-extra-derive = []
 axum = ["dep:axum"]
 
 [lints]

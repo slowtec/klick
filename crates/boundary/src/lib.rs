@@ -16,6 +16,7 @@ mod v5;
 mod v6;
 mod v7;
 mod v8;
+mod v9;
 
 mod calculation;
 pub mod json_api;
@@ -24,18 +25,18 @@ pub use self::{
     calculation::calculate,
     export::{export_to_string, export_to_string_pretty, export_to_vec_pretty},
     import::{import_from_slice, import_from_str, Error as ImportError},
-    v8::*,
+    v9::*,
 };
 
 #[cfg(feature = "conversion")]
 mod conversion;
 
-pub const CURRENT_VERSION: u32 = 8;
+pub const CURRENT_VERSION: u32 = 9;
 
 type Values = HashMap<domain::Id, domain::Value>;
 type Graph = Vec<(domain::Id, domain::Id)>;
 
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[derive(Debug, Clone, PartialEq)]
 pub struct CalculationOutcome {
     pub input: Values,
     pub output: Option<Values>,

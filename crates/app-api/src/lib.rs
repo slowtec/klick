@@ -6,12 +6,14 @@ use serde_json::Value;
 use thiserror::Error;
 
 use klick_boundary::{
+    self as boundary,
     json_api::{
         self, ApiToken, ConfirmEmailAddress, Credentials, DownloadRequestResponse,
         RequestPasswordReset, ResetPassword, UserInfo,
     },
-    FormData, JsonFormData, ProjectId, SavedProject,
+    FormData, JsonFormData, SavedProject,
 };
+use klick_domain::ProjectId;
 
 #[derive(Clone, Copy)]
 pub struct UnauthorizedApi {
@@ -147,29 +149,38 @@ impl AuthorizedApi {
         &self.token
     }
 
+    // TODO: use domain values as argument
     pub async fn create_project(&self, project: &FormData) -> Result<ProjectId, Value> {
         let url = format!("{}/project", self.url);
-        self.send_with_json(Request::post(&url), &JsonFormData::from(project.clone()))
-            .await
+        let res: Result<boundary::ProjectId, _> = self
+            .send_with_json(
+                Request::post(&url),
+                &JsonFormData::try_from(project.clone()).unwrap(),
+            )
+            .await;
+        res.map(ProjectId::from)
     }
 
     pub async fn read_project(&self, id: &ProjectId) -> Result<SavedProject, Value> {
-        let url = format!("{}/project/{}", self.url, id.0);
+        let url = format!("{}/project/{id}", self.url);
         self.send(Request::get(&url)).await
     }
 
+    // TODO: use domain values as argument
     pub async fn update_project(&self, project: &SavedProject) -> Result<(), Value> {
-        let url = format!("{}/project/{}", self.url, project.id.0);
+        let id = ProjectId::from(project.id);
+        let url = format!("{}/project/{id}", self.url);
         self.send_with_json(Request::put(&url), project).await
     }
 
+    // TODO: use domain values in the result
     pub async fn all_projects(&self) -> Result<Vec<SavedProject>, Value> {
         let url = format!("{}/projects", self.url);
         self.send(Request::get(&url)).await
     }
 
     pub async fn delete_project(&self, id: ProjectId) -> Result<(), Value> {
-        let url = format!("{}/project/{}", self.url, id.0);
+        let url = format!("{}/project/{id}", self.url);
         self.send(Request::delete(&url)).await
     }
 
@@ -177,7 +188,7 @@ impl AuthorizedApi {
         &self,
         id: &ProjectId,
     ) -> Result<DownloadRequestResponse, Value> {
-        let url = format!("{}/project/{}/export?format=pdf", self.url, id.0);
+        let url = format!("{}/project/{id}/export?format=pdf", self.url);
         self.send(Request::get(&url)).await
     }
 }

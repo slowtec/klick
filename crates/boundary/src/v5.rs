@@ -38,6 +38,5 @@ pub struct ProjectData {
     pub optimization_scenario: OptimizationScenario,
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Copy, Clone, PartialEq, From))]
-pub struct ProjectId(pub Uuid);
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, From)]
+pub struct ProjectId(pub(crate) Uuid);

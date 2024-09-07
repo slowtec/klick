@@ -5,8 +5,8 @@ use leptos::*;
 
 use klick_app_components::message::*;
 use klick_boundary::{
-    calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, Data, FormData,
-    JsonFormData, Project, ProjectId, SavedProject,
+    calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, FormData, JsonFormData,
+    Project, ProjectId, SavedProject, UnsavedProject,
 };
 use klick_domain::{
     get_all_internal_nodes, input_value::optional as optional_in, units::Tons, Id,
@@ -221,11 +221,8 @@ pub fn Tool(
                         return;
                     }
                 };
-                let data = match project {
-                    Project::Saved(d) => d.data,
-                    Project::Unsaved(d) => d,
-                };
-                load_form_data(FormData::from(data));
+                let data = project.into_form_data();
+                load_form_data(FormData::try_from(data).unwrap());
             }
         }
     });
@@ -238,7 +235,7 @@ pub fn Tool(
                     log::warn!("No authorized API");
                     return;
                 };
-                match api.read_project(&id).await {
+                match api.read_project(&id.into()).await {
                     Ok(p) => {
                         current_project.set(Some(p.into()));
                     }
@@ -260,7 +257,7 @@ pub fn Tool(
                 };
                 let result_msg = match project {
                     Project::Saved(mut p) => {
-                        let mut data = FormData::from(p.data);
+                        let mut data = FormData::try_from(p.form_data).unwrap();
                         let name = data
                             .get(&In::ProjectName)
                             .cloned()
@@ -271,7 +268,7 @@ pub fn Tool(
                                 Value::text(DEFAULT_UNNAMED_PROJECT_TITLE),
                             );
                         }
-                        p.data = data.into();
+                        p.form_data = data.try_into().unwrap();
                         api.update_project(&p)
                             .await
                             .map(|()| {
@@ -284,7 +281,7 @@ pub fn Tool(
                             })
                     }
                     Project::Unsaved(p) => {
-                        let mut p = FormData::from(p);
+                        let mut p = FormData::try_from(p.form_data).unwrap();
                         let name = p
                             .get(&In::ProjectName)
                             .cloned()
@@ -295,7 +292,7 @@ pub fn Tool(
                         api.create_project(&p)
                             .await
                             .map(|new_id| {
-                                load_action.dispatch(new_id);
+                                load_action.dispatch(new_id.into());
                                 "Das Projekt wurde neu angelegt."
                             })
                             .map_err(|err| {
@@ -328,10 +325,9 @@ pub fn Tool(
 
     let download = {
         move |()| -> ObjectUrl {
-            let data = JsonFormData::from(form_data.get());
-            let project = Project::from(data);
-            let data = Data { project };
-            let json_bytes = export_to_vec_pretty(&data);
+            let form_data = JsonFormData::try_from(form_data.get()).unwrap();
+            let data = UnsavedProject { form_data };
+            let json_bytes = export_to_vec_pretty(&data.into());
 
             let blob = Blob::new_with_options(&*json_bytes, Some("application/json"));
 
@@ -341,7 +337,7 @@ pub fn Tool(
 
     let save_project = {
         move |()| {
-            let project_data = JsonFormData::from(form_data.get());
+            let form_data = JsonFormData::try_from(form_data.get()).unwrap();
             let project = match current_project.get() {
                 Some(Project::Saved(p)) => {
                     let SavedProject {
@@ -354,11 +350,11 @@ pub fn Tool(
                         id,
                         created_at,
                         modified_at,
-                        data: project_data,
+                        form_data,
                     };
                     Project::from(updated)
                 }
-                Some(Project::Unsaved(_)) | None => Project::from(project_data),
+                Some(Project::Unsaved(_)) | None => UnsavedProject { form_data }.into(),
             };
             save_action.dispatch(project);
         }
@@ -387,7 +383,7 @@ pub fn Tool(
         let Some(p) = current_project.get() else {
             return;
         };
-        let data = p.form_data().clone().into();
+        let data = p.into_form_data().try_into().unwrap();
         load_form_data(data);
     });
 

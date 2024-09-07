@@ -1,18 +1,17 @@
 use serde::Serialize;
 
-use crate::{Data, CURRENT_VERSION};
+use crate::{v9::Project, CURRENT_VERSION};
 
 #[derive(Serialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
 struct Export<'a> {
     pub version: u32,
     #[serde(flatten)]
-    pub data: &'a Data,
+    pub data: &'a Project,
 }
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
-pub fn export_to_string_pretty(data: &Data) -> String {
+pub fn export_to_string_pretty(data: &Project) -> String {
     let export = Export {
         version: CURRENT_VERSION,
         data,
@@ -22,7 +21,7 @@ pub fn export_to_string_pretty(data: &Data) -> String {
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
-pub fn export_to_string(data: &Data) -> String {
+pub fn export_to_string(data: &Project) -> String {
     let export = Export {
         version: CURRENT_VERSION,
         data,
@@ -32,7 +31,7 @@ pub fn export_to_string(data: &Data) -> String {
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
-pub fn export_to_vec_pretty(data: &Data) -> Vec<u8> {
+pub fn export_to_vec_pretty(data: &Project) -> Vec<u8> {
     let export = Export {
         version: CURRENT_VERSION,
         data,

@@ -28,7 +28,7 @@ uuid = "1.10.0"
 
 [dev-dependencies.klick-boundary]
 version = "=0.0.0"
-features = ["conversion", "extra-derive"]
+features = ["conversion"]
 
 [lints]
 workspace = true

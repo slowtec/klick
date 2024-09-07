@@ -67,7 +67,7 @@ fn Project(
     let delete_project = create_action(move |(): &()| {
         let id = project.id;
         async move {
-            let result = api.get().delete_project(id).await;
+            let result = api.get().delete_project(id.into()).await;
             match result {
                 Ok(()) => {
                     on_delete_success.call(());
@@ -94,7 +94,8 @@ fn Project(
         })
         .unwrap_or(time::UtcOffset::UTC);
 
-    let project_name = FormData::from(project.data)
+    let project_name = FormData::try_from(project.form_data)
+        .unwrap()
         .get(&Id::ProjectName)
         .cloned()
         .map(Value::as_text_unchecked);

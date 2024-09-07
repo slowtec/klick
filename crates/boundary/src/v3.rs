@@ -1,4 +1,3 @@
-#[cfg(feature = "extra-derive")]
 use serde::{Deserialize, Serialize};
 
 pub use crate::v2::{
@@ -14,23 +13,13 @@ pub(crate) struct Import {
 
 #[derive(Deserialize)]
 pub struct InputData {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub plant_name: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub population_equivalent: Option<f64>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub wastewater: Option<f64>,
-
     pub influent_average: AnnualAverage,
-
     pub effluent_average: AnnualAverage,
-
     pub energy_consumption: EnergyConsumption,
-
     pub sewage_sludge_treatment: SewageSludgeTreatment,
-
     pub operating_materials: OperatingMaterials,
 }
 
@@ -40,7 +29,7 @@ pub struct Scenario {
     pub ch4_chp_emission_factor: Option<CH4ChpEmissionFactorScenario>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 pub struct CH4ChpEmissionFactorScenario {
     pub calculation_method: CH4ChpEmissionFactorCalcMethod,
     pub custom_factor: Option<f64>,
@@ -48,7 +37,6 @@ pub struct CH4ChpEmissionFactorScenario {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, Copy, PartialEq, Eq))]
 pub enum CH4ChpEmissionFactorCalcMethod {
     MicroGasTurbines,
     GasolineEngine,

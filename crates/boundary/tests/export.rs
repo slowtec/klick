@@ -1,113 +1,103 @@
-use time::OffsetDateTime;
-use uuid::Uuid;
+use std::collections::HashMap;
 
-use klick_boundary::*;
-use klick_domain::{units, InputValueId as Id, Value};
+use serde_json::json;
+use time::OffsetDateTime;
+
+use klick_boundary::{self as boundary, InputValueId as In, *};
+use klick_domain::ProjectId;
 
 #[test]
 fn export() {
-    let id = ProjectId(Uuid::new_v4());
-    let mut data = JsonFormData::default();
+    let id = ProjectId::new();
 
-    data.set(Id::ProjectName, Some(Value::text("Project")));
-    data.set(Id::PlantName, Some("test export".to_string().into()));
-    data.set(Id::Wastewater, Some(Value::qubicmeters(3456.889)));
-    data.set(
-        Id::SensitivityN2OCalculationMethod,
-        Some(Value::n2o_emission_factor_calc_method(
-            units::N2oEmissionFactorCalcMethod::Custom,
-        )),
+    let form_data: HashMap<In, serde_json::Value> = [
+        (In::ProjectName, json!("Project")),
+        (In::PlantName, json!("test export")),
+        (In::Wastewater, json!(3456.889)),
+        (
+            In::SensitivityN2OCalculationMethod,
+            serde_json::to_value(N2oEmissionFactorCalcMethod::CustomFactor).unwrap(),
+        ),
+        (In::SensitivityN2OCustomFactor, json!(1.5)),
+        (
+            In::SensitivityCH4ChpCalculationMethod,
+            serde_json::to_value(CH4ChpEmissionFactorCalcMethod::MicroGasTurbines).unwrap(),
+        ),
+        (In::SensitivityCH4ChpCustomFactor, json!(3.45)),
+    ]
+    .iter()
+    .cloned()
+    .collect();
+
+    let project = SavedProject {
+        id: id.into(),
+        created_at: OffsetDateTime::now_utc(),
+        modified_at: None,
+        form_data: form_data.into(),
+    };
+
+    let json_string = export_to_string_pretty(&project.into());
+
+    assert!(json_string.starts_with(&format!("{{\n  \"version\": {CURRENT_VERSION}")));
+    assert!(json_string.contains("\"wastewater\": 3456.889"));
+
+    let json = serde_json::from_str::<serde_json::Value>(&json_string).unwrap();
+    let p_id = serde_json::from_value::<boundary::ProjectId>(json["id"].clone()).unwrap();
+
+    assert_eq!(ProjectId::from(p_id), id);
+
+    let form_data = &json["form_data"];
+    assert_eq!(form_data["project-name"], "Project");
+    assert_eq!(form_data["plant-name"], "test export");
+
+    assert_eq!(form_data["sensitivity-n2o-custom-factor"], 1.5);
+    assert_eq!(
+        form_data["sensitivity-n2o-calculation-method"],
+        "custom-factor"
     );
-    data.set(Id::SensitivityN2OCustomFactor, Some(Value::percent(01.5)));
-    data.set(
-        Id::SensitivityCH4ChpCalculationMethod,
-        Some(Value::ch4_chp_emission_factor_calc_method(
-            units::Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines,
-        )),
+
+    assert_eq!(form_data["sensitivity-ch4-chp-custom-factor"], 3.45);
+    assert_eq!(
+        form_data["sensitivity-ch4-chp-calculation-method"],
+        "micro-gas-turbines"
     );
-    data.set(
-        Id::SensitivityCH4ChpCustomFactor,
-        Some(Value::percent(3.45)),
-    );
+
+    assert_eq!(form_data["wastewater"], 3456.889);
+}
+
+#[test]
+fn roundtrip() {
+    let id = ProjectId::new().into();
+
+    let form_data: HashMap<In, serde_json::Value> = [
+        (In::ProjectName, json!("Project")),
+        (In::PlantName, json!("test export")),
+        (In::Wastewater, json!(3456.889)),
+        (In::InfluentNitrogen, json!(1.234_5)),
+        (
+            In::SensitivityN2OCalculationMethod,
+            serde_json::to_value(N2oEmissionFactorCalcMethod::Pesimistic).unwrap(),
+        ),
+        (In::SensitivityN2OCustomFactor, json!(1.3)),
+        (
+            In::SensitivityCH4ChpCalculationMethod,
+            serde_json::to_value(CH4ChpEmissionFactorCalcMethod::GasolineEngine).unwrap(),
+        ),
+        (In::SensitivityCH4ChpCustomFactor, json!(3.45)),
+    ]
+    .iter()
+    .cloned()
+    .collect();
 
     let project = SavedProject {
         id,
         created_at: OffsetDateTime::now_utc(),
         modified_at: None,
-        data,
+        form_data: form_data.into(),
     }
     .into();
-    let data = Data { project };
-
-    let json_string = export_to_string_pretty(&data);
-    assert!(json_string.starts_with(&format!("{{\n  \"version\": {CURRENT_VERSION}")));
-    assert!(json_string.contains("\"wastewater\": 3456.889"));
-    let json = serde_json::from_str::<serde_json::Value>(&json_string).unwrap();
-    let project = &json["project"];
-
-    assert_eq!(project["id"], id.0.to_string());
-    assert_eq!(project["project_title"], "Project");
-
-    assert_eq!(
-        project["sensitivity_parameters"]["n2o_emissions"]["custom_emission_factor"],
-        1.5
-    );
-    assert_eq!(
-        project["sensitivity_parameters"]["n2o_emissions"]["calculation_method"],
-        "custom-factor"
-    );
-
-    assert_eq!(
-        project["sensitivity_parameters"]["ch4_chp_emissions"]["custom_emission_factor"],
-        3.45
-    );
-    assert_eq!(
-        project["sensitivity_parameters"]["ch4_chp_emissions"]["calculation_method"],
-        "micro-gas-turbines"
-    );
-}
-
-#[test]
-fn roundtrip() {
-    let id = ProjectId(Uuid::new_v4());
-    let mut data = JsonFormData::default();
-
-    data.set(Id::ProjectName, Some(Value::text("Project")));
-    data.set(Id::PlantName, Some("test export".to_string().into()));
-    data.set(Id::Wastewater, Some(Value::qubicmeters(3456.889)));
-    data.set(
-        Id::InfluentNitrogen,
-        Some(Value::milligrams_per_liter(1.234_5)),
-    );
-    data.set(
-        Id::SensitivityN2OCalculationMethod,
-        Some(Value::n2o_emission_factor_calc_method(
-            units::N2oEmissionFactorCalcMethod::Pesimistic,
-        )),
-    );
-    data.set(Id::SensitivityN2OCustomFactor, Some(Value::percent(1.3)));
-
-    data.set(
-        Id::SensitivityCH4ChpCalculationMethod,
-        Some(Value::ch4_chp_emission_factor_calc_method(
-            units::Ch4ChpEmissionFactorCalcMethod::GasolineEngine,
-        )),
-    );
-    data.set(
-        Id::SensitivityCH4ChpCustomFactor,
-        Some(Value::percent(3.45)),
-    );
-
-    let project = Project::Saved(SavedProject {
-        id,
-        created_at: OffsetDateTime::now_utc(),
-        modified_at: None,
-        data,
-    });
-    let data = Data {
-        project: project.clone(),
-    };
-    let json_string = export_to_string_pretty(&data);
+    let json_string = export_to_string_pretty(&project);
     let imported = import_from_str(&json_string).unwrap();
+
     assert_eq!(imported, project);
 }

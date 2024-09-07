@@ -1,4 +1,6 @@
-use crate::{v1, v2, v3, v4, v5, v6, v7, v8};
+use std::collections::HashMap;
+
+use crate::{v1, v2, v3, v4, v5, v6, v7, v8, v9};
 
 const V1_OPERATING_MATERIALS_DIVISOR: f64 = 1_000.0;
 
@@ -563,4 +565,42 @@ pub fn from_v7(data: v7::Data) -> v8::Data {
         v7::Project::Unsaved(unsaved_project) => v8::Project::Unsaved(unsaved_project.into()),
     };
     v8::Data { project }
+}
+
+pub fn from_v8(data: v8::Data) -> v9::Project {
+    let v8::Data { project } = data;
+    match project {
+        v8::Project::Unsaved(form_data) => {
+            let form_data = from_v8_form_data(form_data);
+            v9::UnsavedProject { form_data }.into()
+        }
+        v8::Project::Saved(saved_project) => {
+            let v8::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                data,
+            } = saved_project;
+            let form_data = from_v8_form_data(data);
+            v9::SavedProject {
+                id,
+                created_at,
+                modified_at,
+                form_data,
+            }
+            .into()
+        }
+    }
+}
+
+fn from_v8_form_data(data: v8::JsonFormData) -> v9::JsonFormData {
+    let form_data = v8::FormData::from(data)
+        .into_iter()
+        .map(|(id, value)| {
+            let id = v9::InputValueId::from(id);
+            let value = id.value_to_json(value).unwrap();
+            (id, value)
+        })
+        .collect::<HashMap<_, _>>();
+    v9::JsonFormData::from(form_data)
 }

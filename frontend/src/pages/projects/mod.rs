@@ -70,7 +70,7 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
     let download_pdf = create_action(move |id: &ProjectId| {
         let id = *id;
         async move {
-            let result = api.get().download_pdf_report(&id).await;
+            let result = api.get().download_pdf_report(&id.into()).await;
             match result {
                 Ok(response) => {
                     log::debug!("{}", &response.download_url);

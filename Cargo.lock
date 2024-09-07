@@ -1653,6 +1653,7 @@ version = "0.0.0"
 dependencies = [
  "gloo-net",
  "klick-boundary",
+ "klick-domain",
  "log",
  "serde",
  "serde_json",

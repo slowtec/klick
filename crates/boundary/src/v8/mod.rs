@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use derive_more::From;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use time::OffsetDateTime;
 
 use klick_domain::{self as domain, Value};
@@ -14,27 +14,16 @@ mod sensitivity_parameters;
 
 pub use self::{optimization_scenario::*, plant_profile::*, sensitivity_parameters::*};
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone))]
+#[derive(Deserialize)]
 pub struct Data {
     pub project: Project,
 }
 
-#[derive(Serialize, Deserialize, From)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[derive(Deserialize, From)]
 #[serde(untagged)]
 pub enum Project {
     Saved(SavedProject),
     Unsaved(JsonFormData),
-}
-
-impl Project {
-    #[must_use]
-    pub const fn form_data(&self) -> &JsonFormData {
-        match self {
-            Self::Saved(SavedProject { data, .. }) | Self::Unsaved(data) => data,
-        }
-    }
 }
 
 impl From<FormData> for Project {
@@ -43,8 +32,7 @@ impl From<FormData> for Project {
     }
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Debug, Clone, PartialEq))]
+#[derive(Deserialize)]
 pub struct SavedProject {
     pub id: ProjectId,
     pub created_at: OffsetDateTime,
@@ -400,10 +388,8 @@ impl From<HashMap<domain::InputValueId, Value>> for JsonFormData {
     }
 }
 
-#[derive(Serialize, Deserialize)]
-#[cfg_attr(feature = "extra-derive", derive(Default, Debug, Clone, PartialEq))]
+#[derive(Deserialize, Default)]
 pub struct JsonFormData {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) project_title: Option<String>,
     // First page in the tool frontend
     pub(crate) plant_profile: PlantProfile,
@@ -413,21 +399,8 @@ pub struct JsonFormData {
     pub(crate) optimization_scenario: OptimizationScenario,
 }
 
-// NOTE:
-// In the future, we want to use a HashMap,
-// which is why we are first implementing manual access via variable IDs.
 impl JsonFormData {
-    // TODO:
-    // Use value spec to validate the input
-    // and return a result with
-    // enum Error {
-    //    InvalidType,
-    //    OutOfRange,
-    //    Immutable, // e.g. constants
-    // }
-
-    // TODO: #[deprecated]
-    pub fn set(&mut self, id: domain::InputValueId, value: Option<Value>) {
+    fn set(&mut self, id: domain::InputValueId, value: Option<Value>) {
         use domain::{InputValueId as Id, Value as V};
 
         debug_assert!(value
