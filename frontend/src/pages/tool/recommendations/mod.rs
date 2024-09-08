@@ -23,16 +23,16 @@ mod n2o_emissions_side_stream_system;
 #[component]
 pub fn Recommendations(
     form_data: RwSignal<FormData>,
-    outcome: Signal<CalculationOutcome>,
+    current_section: RwSignal<PageSection>,
+    recommendation_outcome: Signal<CalculationOutcome>,
     sensitivity_outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
-    current_section: RwSignal<PageSection>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let lang = crate::current_lang().get();
 
     let old_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
-    let new_output = Memo::new(move |_| outcome.with(|out| out.output.clone()));
+    let new_output = Memo::new(move |_| recommendation_outcome.with(|out| out.output.clone()));
 
     let barchart_arguments = Memo::new(move |_| {
         old_output
@@ -51,7 +51,7 @@ pub fn Recommendations(
     });
 
     let form_data_overview = move || {
-        outcome.with(|out| {
+        recommendation_outcome.with(|out| {
             let input = out.input.clone();
             view! {
               <FormDataOverview input />
@@ -61,7 +61,7 @@ pub fn Recommendations(
 
     view! {
       <Show
-        when = move || outcome.with(|out|out.output.is_some())
+        when = move || recommendation_outcome.with(|out|out.output.is_some())
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
       <h4 class="my-8 text-lg font-bold">
@@ -75,7 +75,7 @@ pub fn Recommendations(
         n2o_emissions_side_stream_system::options(
           form_data,
           form_data.into(),
-          outcome,
+          recommendation_outcome,
           show_side_stream_controls,
           accessibility_always_show_option
         )
@@ -86,7 +86,7 @@ pub fn Recommendations(
       { ch4_emissions_open_digesters::options(
           form_data,
           form_data.into(),
-          outcome,
+          recommendation_outcome,
           accessibility_always_show_option,
       ) }
       { leak_test::options(
@@ -95,13 +95,13 @@ pub fn Recommendations(
       { excess_energy_co2_equivalent::options(
           form_data,
           form_data.into(),
-          outcome,
+          recommendation_outcome,
           accessibility_always_show_option,
         )
       }
 
       <h4 class="my-8 text-lg font-bold">
-        { move || outcome.with(|outcome|outcome.output.as_ref().map(|out|{
+        { move || recommendation_outcome.with(|outcome|outcome.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
                 &outcome.input,
                 out.clone(),
@@ -112,7 +112,7 @@ pub fn Recommendations(
         }
       </h4>
 
-      { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
+      { move || recommendation_outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
           let lang = current_lang().get();
           view!{ <Sankey data graph lang/> }
         }))

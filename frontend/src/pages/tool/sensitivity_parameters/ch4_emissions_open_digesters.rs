@@ -12,7 +12,7 @@ use crate::pages::tool::{
 #[component]
 pub fn CH4EmissionsOpenDigesters(
     form_data: RwSignal<FormData>,
-    outcome: Signal<CalculationOutcome>,
+    sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let show_sludge_bags_controls = Signal::derive(move || {
@@ -136,7 +136,7 @@ pub fn CH4EmissionsOpenDigesters(
            { move || {
                let show_sludge_bags_controls_class = if show_sludge_bags_controls.get() { String::new() } else { "hidden".to_string() };
                let show_sludge_storage_containers_controls_class = if show_sludge_storage_containers_controls.get() { String::new() } else { "hidden".to_string() };
-               outcome.with(|out|out.output.as_ref().map(|out|{
+               sensitivity_outcome.with(|out|out.output.as_ref().map(|out|{
                  view! {
                    <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_bags_controls_class}") }

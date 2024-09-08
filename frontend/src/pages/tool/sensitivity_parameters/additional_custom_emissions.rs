@@ -11,7 +11,7 @@ use klick_domain::{
 #[component]
 pub fn AdditionalCustomEmissions(
     form_data: RwSignal<FormData>,
-    outcome: Signal<CalculationOutcome>,
+    sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
     custom_emissions_message: RwSignal<String>,
 ) -> impl IntoView {
@@ -56,7 +56,7 @@ pub fn AdditionalCustomEmissions(
           })
           errors = errors.into()
         />
-        <Show when = move || outcome.with(|out|out.output.is_some())>
+        <Show when = move || sensitivity_outcome.with(|out|out.output.is_some())>
           <p class="mt-2 text-sm" style="color: red">
             { custom_emissions_message }
           </p>
@@ -87,7 +87,7 @@ pub fn AdditionalCustomEmissions(
         </InfoBox>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
         { move ||
-          outcome.with(|outcome|
+          sensitivity_outcome.with(|outcome|
             outcome.output.as_ref().map(|out|{
               view! {
                 <dl class="mx-3 my-2 grid grid-cols-2 text-sm">

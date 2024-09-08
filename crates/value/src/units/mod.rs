@@ -1133,17 +1133,17 @@ values! {
         enums {
             #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr)]
             N2oEmissionFactorCalcMethod {
-              #[default]
               TuWien2016,
               Optimistic,
               Pesimistic,
+              #[default]
               Ipcc2019,
               Custom,
             }
             #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr)]
             Ch4ChpEmissionFactorCalcMethod {
-                #[default]
                 MicroGasTurbines,
+                #[default]
                 GasolineEngine,
                 JetEngine,
                 Custom,

@@ -11,7 +11,7 @@ use crate::pages::tool::{
 #[component]
 pub fn FossilCO2Emissions(
     form_data: RwSignal<FormData>,
-    outcome: Signal<CalculationOutcome>,
+    sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let field_set = field_set(form_data.write_only(), form_data.into());
@@ -56,7 +56,7 @@ pub fn FossilCO2Emissions(
          </p>
          <div class="border-t pt-3 mt-4 border-gray-900/10">
          { move || {
-             outcome.with(|out|out.output.as_ref().map(|out|{
+          sensitivity_outcome.with(|out|out.output.as_ref().map(|out|{
                let out = &out;
                view! {
                  <dl class="mx-3 my-2 grid grid-cols-2 text-sm">

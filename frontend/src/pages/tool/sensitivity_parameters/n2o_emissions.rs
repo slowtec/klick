@@ -16,7 +16,7 @@ use crate::pages::tool::{fields::create_field, Card};
 #[component]
 pub fn N2OEmissionsSensitivity(
     form_data: RwSignal<FormData>,
-    outcome: Signal<CalculationOutcome>,
+    sensitivity_outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -78,7 +78,7 @@ pub fn N2OEmissionsSensitivity(
     // -----   ----- //
 
     let bar_chart_view = move || {
-        outcome.with(|outcome| {
+        sensitivity_outcome.with(|outcome| {
             outcome.sensitivity_n2o_calculations.as_ref().map(|out| {
                 let data = out
                     .iter()
@@ -169,7 +169,7 @@ pub fn N2OEmissionsSensitivity(
 
           <div class="border-t pt-3 mt-4 border-gray-900/10">
             { move ||
-              outcome.with(|outcome|
+              sensitivity_outcome.with(|outcome|
                 outcome.output.as_ref().map(|out|{
                   let show_side_stream_controls_class = if show_side_stream_controls.get() { String::new() } else { "hidden".to_string() };
                   view! {

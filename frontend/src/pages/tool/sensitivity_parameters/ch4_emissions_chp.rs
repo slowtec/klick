@@ -19,7 +19,7 @@ use crate::pages::tool::{
 #[component]
 pub fn CH4EmissionsCHP(
     form_data: RwSignal<FormData>,
-    outcome: Signal<CalculationOutcome>,
+    sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     // -----   ----- //
@@ -41,7 +41,7 @@ pub fn CH4EmissionsCHP(
             .and_then(ToPrimitive::to_u64)
     });
     let show_ch4_chp = Signal::derive(move || {
-        outcome.with(|out| {
+        sensitivity_outcome.with(|out| {
             out.sensitivity_ch4_chp_calculations
                 .as_ref()
                 .map(|out| !out.is_empty() && out.iter().any(|(_, tons, _)| *tons > Tons::zero()))
@@ -77,7 +77,7 @@ pub fn CH4EmissionsCHP(
     // -----   ----- //
 
     let bar_chart_view = move || {
-        outcome.with(|out| {
+        sensitivity_outcome.with(|out| {
             out.sensitivity_ch4_chp_calculations.as_ref().map(|out| {
                 let data = out
                     .iter()
@@ -156,7 +156,7 @@ pub fn CH4EmissionsCHP(
 
             <div class="border-t pt-3 mt-4 border-gray-900/10">
               { move ||
-                outcome.with(|outcome|
+                sensitivity_outcome.with(|outcome|
                   outcome.output.as_ref().map(|out|{
                     view! {
                       <dl class="mx-3 my-2 grid grid-cols-2 text-sm">

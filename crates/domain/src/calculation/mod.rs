@@ -155,9 +155,13 @@ fn emissions_factors_and_methods(
     let gas_supply = required!(In::GasSupply, &from)?;
     let purchase_of_biogas = required!(In::PurchaseOfBiogas, &from)?;
 
+    let sludge_bags_are_open_ = required!(In::ScenarioSludgeBagsAreOpen, &from)?;
     let sludge_bags_are_open = required!(In::SludgeTreatmentBagsAreOpen, &from)?;
+
     let sludge_bags_factor = optional!(In::SensitivitySludgeBagsCustomFactor, &from);
 
+    let sludge_storage_containers_are_open_ =
+        required!(In::ScenarioSludgeStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_are_open =
         required!(In::SludgeTreatmentStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_factor =
@@ -238,21 +242,22 @@ fn emissions_factors_and_methods(
 
     let ch4_water = chemical_oxygen_demand_effluent * wastewater * EMISSION_FACTOR_CH4_WATER;
 
-    let ch4_slippage_sludge_bags = if sludge_bags_are_open {
+    let ch4_slippage_sludge_bags = if sludge_bags_are_open && sludge_bags_are_open_ {
         calculate_ch4_slippage_sludge_bags(digester_count, methane_fraction, sludge_bags_factor)
     } else {
         Tons::zero()
     };
 
-    let ch4_slippage_sludge_storage = if sludge_storage_containers_are_open {
-        calculate_ch4_slippage_sludge_storage(
-            sewage_gas_produced,
-            methane_fraction,
-            sludge_storage_containers_factor,
-        )
-    } else {
-        Tons::zero()
-    };
+    let ch4_slippage_sludge_storage =
+        if sludge_storage_containers_are_open && sludge_storage_containers_are_open_ {
+            calculate_ch4_slippage_sludge_storage(
+                sewage_gas_produced,
+                methane_fraction,
+                sludge_storage_containers_factor,
+            )
+        } else {
+            Tons::zero()
+        };
 
     let n2o_plant = n2o_plant * GWP_N2O;
     let n2o_water = n2o_water * GWP_N2O;
@@ -689,8 +694,8 @@ pub fn calculate_ch4_chp(
     methane_fraction: Percent,
 ) -> (Tons, Factor) {
     let ch4_emission_factor = match calculation_method {
-        Some(Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines) | None => Factor::new(0.01),
-        Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine) => Factor::new(0.015),
+        Some(Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
+        Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine) | None => Factor::new(0.015), // FIXME None is a hack and it seems to not use the default value from units.rs
         Some(Ch4ChpEmissionFactorCalcMethod::JetEngine) => Factor::new(0.025),
         Some(Ch4ChpEmissionFactorCalcMethod::Custom) => {
             custom_factor.expect("custom CH4 EF").into()

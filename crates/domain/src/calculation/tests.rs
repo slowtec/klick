@@ -118,7 +118,7 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     );
     assert_eq!(
         out!(Out::Ch4ChpCalculatedEmissionFactor, values).unwrap(),
-        Factor::new(0.01).into()
+        Factor::new(0.015).into()
     );
 
     assert_eq!(
@@ -149,11 +149,11 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     );
     assert_eq!(
         out!(Out::Ch4CombinedHeatAndPowerPlant, values).unwrap(),
-        Tons::new(52.314_360_000_000_01)
+        Tons::new(78.47154)
     );
     assert_eq!(
         out!(Out::Ch4Emissions, values).unwrap(),
-        Tons::new(318.72084594)
+        Tons::new(344.87802594000004)
     );
     assert_eq!(out!(Out::FossilEmissions, values).unwrap(), Tons::zero());
     assert_eq!(
@@ -179,11 +179,11 @@ fn calculate_with_n2o_emission_factor_method_by_tu_wien_2016() {
     );
     assert_eq!(
         out!(Out::TotalEmissions, values).unwrap(),
-        Tons::new(1310.9858175599998)
+        Tons::new(1337.14299756)
     );
     assert_eq!(
         out!(Out::DirectEmissions, values).unwrap(),
-        Tons::new(778.8571425599998)
+        Tons::new(805.01432256)
     );
     assert_eq!(
         out!(Out::ProcessEnergySavings, values).unwrap(),
@@ -259,7 +259,7 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     );
     assert_eq!(
         out!(Out::Ch4ChpCalculatedEmissionFactor, values).unwrap(),
-        Factor::new(0.01).into()
+        Factor::new(0.015).into()
     );
 
     // create_test_results_on_changes_co2_equivalents(&co2);
@@ -285,11 +285,11 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     assert_eq!(out!(Out::Ch4Water, values).unwrap(), Tons::new(25.38675594));
     assert_eq!(
         out!(Out::Ch4CombinedHeatAndPowerPlant, values).unwrap(),
-        Tons::new(52.31436000000001)
+        Tons::new(78.47154)
     );
     assert_eq!(
         out!(Out::Ch4Emissions, values).unwrap(),
-        Tons::new(318.72084594)
+        Tons::new(344.87802594000004)
     );
     assert_eq!(out!(Out::FossilEmissions, values).unwrap(), Tons::zero());
     assert_eq!(
@@ -315,11 +315,11 @@ fn calculate_with_n2o_emission_factor_method_optimistic() {
     );
     assert_eq!(
         out!(Out::TotalEmissions, values).unwrap(),
-        Tons::new(1181.3961498525)
+        Tons::new(1207.5533298525002)
     );
     assert_eq!(
         out!(Out::DirectEmissions, values).unwrap(),
-        Tons::new(649.2674748525)
+        Tons::new(675.4246548525)
     );
     assert_eq!(
         out!(Out::ProcessEnergySavings, values).unwrap(),
@@ -392,7 +392,7 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     );
     assert_eq!(
         out!(Out::Ch4ChpCalculatedEmissionFactor, values).unwrap(),
-        Factor::new(0.01).into()
+        Factor::new(0.015).into()
     );
 
     // create_test_results_on_changes_co2_equivalents(&values);
@@ -418,11 +418,11 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     assert_eq!(out!(Out::Ch4Water, values).unwrap(), Tons::new(25.38675594));
     assert_eq!(
         out!(Out::Ch4CombinedHeatAndPowerPlant, values).unwrap(),
-        Tons::new(52.31436000000001)
+        Tons::new(78.47154)
     );
     assert_eq!(
         out!(Out::Ch4Emissions, values).unwrap(),
-        Tons::new(318.72084594)
+        Tons::new(344.87802594000004)
     );
     assert_eq!(out!(Out::FossilEmissions, values).unwrap(), Tons::zero());
     assert_eq!(
@@ -448,11 +448,11 @@ fn calculate_with_n2o_emission_factor_method_pesimistic() {
     );
     assert_eq!(
         out!(Out::TotalEmissions, values).unwrap(),
-        Tons::new(1611.9266073525)
+        Tons::new(1638.0837873525002)
     );
     assert_eq!(
         out!(Out::DirectEmissions, values).unwrap(),
-        Tons::new(1079.7979323525)
+        Tons::new(1105.9551123525002)
     );
     assert_eq!(
         out!(Out::ProcessEnergySavings, values).unwrap(),
@@ -525,7 +525,7 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     );
     assert_eq!(
         out!(Out::Ch4ChpCalculatedEmissionFactor, values).unwrap(),
-        Factor::new(0.01).into()
+        Factor::new(0.015).into()
     );
 
     // To genereate the tests:
@@ -555,11 +555,11 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     assert_eq!(out!(Out::Ch4Water, values).unwrap(), Tons::new(25.38675594));
     assert_eq!(
         out!(Out::Ch4CombinedHeatAndPowerPlant, values).unwrap(),
-        Tons::new(52.31436000000001)
+        Tons::new(78.47154)
     );
     assert_eq!(
         out!(Out::Ch4Emissions, values).unwrap(),
-        Tons::new(318.72084594)
+        Tons::new(344.87802594000004)
     );
     assert_eq!(out!(Out::FossilEmissions, values).unwrap(), Tons::zero());
     assert_eq!(
@@ -585,11 +585,11 @@ fn calculate_with_n2o_emission_factor_method_ipcc2019() {
     );
     assert_eq!(
         out!(Out::TotalEmissions, values).unwrap(),
-        Tons::new(2300.7753393525)
+        Tons::new(2326.9325193525)
     );
     assert_eq!(
         out!(Out::DirectEmissions, values).unwrap(),
-        Tons::new(1768.6466643525)
+        Tons::new(1794.8038443525002)
     );
     assert_eq!(
         out!(Out::ProcessEnergySavings, values).unwrap(),
@@ -664,7 +664,7 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     );
     assert_eq!(
         out!(Out::Ch4ChpCalculatedEmissionFactor, values).unwrap(),
-        Factor::new(0.01).into()
+        Factor::new(0.015).into()
     );
 
     assert_eq!(out!(Out::N2oPlant, values).unwrap(), Tons::new(861.060_915));
@@ -692,11 +692,11 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     );
     assert_eq!(
         out!(Out::Ch4CombinedHeatAndPowerPlant, values).unwrap(),
-        Tons::new(52.314_360_000_000_01)
+        Tons::new(78.47154)
     );
     assert_eq!(
         out!(Out::Ch4Emissions, values).unwrap(),
-        Tons::new(318.72084594)
+        Tons::new(344.87802594000004)
     );
     assert_eq!(out!(Out::FossilEmissions, values).unwrap(), Tons::zero());
     assert_eq!(
@@ -722,11 +722,11 @@ fn calculate_with_n2o_emission_factor_method_custom_factor() {
     );
     assert_eq!(
         out!(Out::TotalEmissions, values).unwrap(),
-        Tons::new(1_784.138_790_352_5)
+        Tons::new(1810.2959703525003)
     );
     assert_eq!(
         out!(Out::DirectEmissions, values).unwrap(),
-        Tons::new(1_252.010_115_352_500_2)
+        Tons::new(1278.1672953525)
     );
     assert_eq!(
         out!(Out::ProcessEnergySavings, values).unwrap(),

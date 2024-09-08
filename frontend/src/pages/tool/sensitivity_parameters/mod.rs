@@ -26,7 +26,7 @@ use self::{
 pub fn SensitivityParameters(
     form_data: RwSignal<FormData>,
     current_section: RwSignal<PageSection>,
-    outcome: Signal<CalculationOutcome>,
+    sensitivity_outcome: Signal<CalculationOutcome>,
     profile_outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
@@ -35,7 +35,7 @@ pub fn SensitivityParameters(
     let lang = crate::current_lang().get();
 
     let old_output = Memo::new(move |_| profile_outcome.with(|out| out.output.clone()));
-    let new_output = Memo::new(move |_| outcome.with(|out| out.output.clone()));
+    let new_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
 
     let barchart_arguments = Memo::new(move |_| {
         // don't remove the lang below or the translation won't work
@@ -72,18 +72,18 @@ pub fn SensitivityParameters(
         </div>
         <N2OEmissionsSensitivity
           form_data
-          outcome
+          sensitivity_outcome
           show_side_stream_controls
           accessibility_always_show_option
         />
         <CH4EmissionsCHP
           form_data
-          outcome
+          sensitivity_outcome
           accessibility_always_show_option
         />
         <CH4EmissionsOpenDigesters
           form_data
-          outcome
+          sensitivity_outcome
           accessibility_always_show_option
         />
         <CH4EmissionsOpenSludgeStorage
@@ -92,18 +92,18 @@ pub fn SensitivityParameters(
         />
         <FossilCO2Emissions
           form_data
-          outcome
+          sensitivity_outcome
           accessibility_always_show_option
         />
         <AdditionalCustomEmissions
           form_data
-          outcome
+          sensitivity_outcome
           accessibility_always_show_option
           custom_emissions_message
         />
 
         <h4 class="my-8 text-lg font-bold">
-          { move || outcome.with(|outcome|outcome.output.as_ref().map(|out|{
+          { move || sensitivity_outcome.with(|outcome|outcome.output.as_ref().map(|out|{
                 klick_presenter::create_sankey_chart_header(
                   &outcome.input,
                   out.clone(),
@@ -114,7 +114,7 @@ pub fn SensitivityParameters(
           }
         </h4>
 
-        { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
+        { move || sensitivity_outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
           let lang = current_lang().get();
             view!{ <Sankey data graph lang/> }
           }))

@@ -20,7 +20,7 @@ pub use self::field_sets::field_sets;
 pub fn PlantProfile(
     form_data: RwSignal<FormData>,
     current_section: RwSignal<PageSection>,
-    outcome: Signal<CalculationOutcome>,
+    profile_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let lang = current_lang();
@@ -67,7 +67,7 @@ pub fn PlantProfile(
         </Show>
         { list_of_missing_fields }
         <h4 class="my-8 text-lg font-bold">
-        { move || outcome.with(|outcome|outcome.output.as_ref().map(|out|{
+        { move || profile_outcome.with(|outcome|outcome.output.as_ref().map(|out|{
               klick_presenter::create_sankey_chart_header(
                 &outcome.input,
                 out.clone(),
@@ -77,12 +77,12 @@ pub fn PlantProfile(
             }))
         }
         </h4>
-        { move || outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
+        { move || profile_outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
             let lang = current_lang().get();
             view!{ <Sankey data graph lang/> }
           }))
         }
-        <Show when = move || outcome.with(|outcome|outcome.output.is_some())>
+        <Show when = move || profile_outcome.with(|outcome|outcome.output.is_some())>
           <button
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
             on:click = move |_| { current_section.set(PageSection::Sensitivity); }
