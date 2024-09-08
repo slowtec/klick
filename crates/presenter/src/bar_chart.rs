@@ -22,6 +22,7 @@ pub fn recommendation_diff_bar_chart(
         Out::ProcessEnergySavings,
         Out::PhotovoltaicExpansionSavings,
         Out::DistrictHeatingSavings,
+        Out::AdditionalCustomEmissions,
         Out::TotalEmissions,
     ];
     diff_bar_chart(old, new, &data_labels, lng)
@@ -41,6 +42,7 @@ pub fn sensitivity_diff_bar_chart(
         Out::Ch4CombinedHeatAndPowerPlant,
         Out::FossilEmissions,
         Out::N2oSideStream,
+        Out::AdditionalCustomEmissions,
         Out::TotalEmissions,
     ];
     diff_bar_chart(old, new, &data_labels, lng)

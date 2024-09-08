@@ -12,7 +12,6 @@ use klick_domain::{
     get_all_internal_nodes,
     input_value::optional as optional_in,
     units::Tons,
-    units::{Ch4ChpEmissionFactorCalcMethod, N2oEmissionFactorCalcMethod},
     Id, InputValueId as In, Value,
 };
 use klick_presenter as presenter;
