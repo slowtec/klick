@@ -35,6 +35,7 @@ fn NotAuthorized() -> impl IntoView {
 const ENABLED_BUTTON_CLASS: &str = "rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
 
 const DISABLED_BUTTON_CLASS: &str = "rounded bg-gray-100 px-2 py-1 text-sm font-semibold text-gray-300 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-not-allowed";
+
 #[component]
 fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) -> impl IntoView {
     let show_new_project = RwSignal::new(false);
@@ -48,33 +49,38 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
 
     let error = RwSignal::<Option<String>>::new(None);
 
-    let load_projects = create_action(move |(): &()| async move {
-        let result = api.get().all_projects().await;
-        match result {
-            Ok(p) => {
-                projects.set(p);
-                error.set(None);
-            }
-            Err(err) => {
-                projects.update(std::vec::Vec::clear);
-                log::warn!("Unable to load projects: {err}");
-                error.set(Some(
-                    "Es tut uns leid, es ist ein Kommunikationsproblem aufgetreten.".to_string(),
-                ));
+    let load_projects = Action::new(move |(): &()| {
+        let api = api.get();
+        async move {
+            let result = api.all_projects().await;
+            match result {
+                Ok(p) => {
+                    projects.set(p);
+                    error.set(None);
+                }
+                Err(err) => {
+                    projects.update(Vec::clear);
+                    log::warn!("Unable to load projects: {err}");
+                    error.set(Some(
+                        "Es tut uns leid, es ist ein Kommunikationsproblem aufgetreten."
+                            .to_string(),
+                    ));
+                }
             }
         }
     });
 
     let download_link: NodeRef<leptos::html::A> = create_node_ref();
 
-    let download_pdf = create_action(move |id: &ProjectId| {
+    let download_pdf = Action::new(move |id: &ProjectId| {
         let id = *id;
+        let api = api.get();
+        let link = download_link.get().expect("<a> to exist");
         async move {
-            let result = api.get().download_pdf_report(&id.into()).await;
+            let result = api.download_pdf_report(&id.into()).await;
             match result {
                 Ok(response) => {
                     log::debug!("{}", &response.download_url);
-                    let link = download_link.get().expect("<a> to exist");
                     link.set_attribute("href", &response.download_url).unwrap();
                     link.set_attribute("download", "klimabilanz.pdf").unwrap();
                     link.click();

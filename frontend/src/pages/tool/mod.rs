@@ -9,10 +9,8 @@ use klick_boundary::{
     Project, ProjectId, SavedProject, UnsavedProject,
 };
 use klick_domain::{
-    get_all_internal_nodes,
-    input_value::optional as optional_in,
-    units::Tons,
-    Id, InputValueId as In, Value,
+    get_all_internal_nodes, input_value::optional as optional_in, units::Tons, Id,
+    InputValueId as In, Value,
 };
 use klick_presenter as presenter;
 
