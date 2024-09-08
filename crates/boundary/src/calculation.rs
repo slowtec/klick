@@ -19,11 +19,11 @@ pub fn calculate(
 ) -> CalculationOutcome {
     log::debug!("Calculate");
 
-    let mut output = domain::calculate(input, custom_edges)
+    let mut calc_output = domain::calculate(input, custom_edges)
         .map_err(|err| log::warn!("{err}"))
         .ok();
 
-    let custom_sum: Option<Tons> = output.clone().map(|(values, _)| {
+    let custom_sum: Option<Tons> = calc_output.clone().map(|(values, _)| {
         values
             .iter()
             .filter_map(|(id, value)| {
@@ -37,14 +37,14 @@ pub fn calculate(
             .fold(Tons::new(0.0), |acc, element| acc + element)
     });
 
-    if let Some((values, _)) = &mut output {
+    if let Some((values, _)) = &mut calc_output {
         if let Some(sum) = custom_sum {
             values.insert(Id::Out(Out::AdditionalCustomEmissions), Value::from(sum));
         }
     }
 
     log::debug!("Calculate all N2O emission factor scenarios");
-    let maybe_graph = output.clone().map(|(_, graph)| graph).clone();
+    let maybe_graph = calc_output.clone().map(|(_, graph)| graph).clone();
 
     let sensitivity_n2o_calculations =
         domain::calculate_all_n2o_emission_factor_scenarios(&input, maybe_graph.as_deref())
@@ -70,10 +70,16 @@ pub fn calculate(
         Some(results)
     };
 
+    let input = input.clone();
+    let output = calc_output.as_ref().map(|(values, _)| values.clone());
+    let graph = calc_output.as_ref().map(|(_, graph)| graph.clone());
+
+    log::debug!("Calculation finished");
+
     CalculationOutcome {
-        input: input.clone(),
-        output: output.as_ref().map(|(values, _)| values.clone()),
-        graph: output.as_ref().map(|(_, graph)| graph.clone()),
+        input,
+        output,
+        graph,
         sensitivity_n2o_calculations,
         sensitivity_ch4_chp_calculations,
     }

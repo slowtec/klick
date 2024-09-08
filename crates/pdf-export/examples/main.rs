@@ -24,18 +24,12 @@ fn project_example_data() -> HashMap<Id, Value> {
             In::InfluentChemicalOxygenDemand,
             Value::milligrams_per_liter(1_020.0),
         ),
-        (
-            In::InfluentTotalOrganicCarbohydrates,
-            Value::milligrams_per_liter(0.0),
-        ),
         (In::EffluentNitrogen, Value::milligrams_per_liter(15.77)),
         (
             In::EffluentChemicalOxygenDemand,
             Value::milligrams_per_liter(47.18),
         ),
         (In::OperatingMaterialFeCl3, Value::tons(310.5)),
-        (In::OperatingMaterialFeClSO4, Value::tons(0.0)),
-        (In::OperatingMaterialCaOH2, Value::tons(0.0)),
         (In::OperatingMaterialSyntheticPolymers, Value::tons(12.0)),
         (In::SewageGasProduced, Value::qubicmeters(420_000.0)),
         (In::MethaneFraction, Value::percent(62.0)),
@@ -58,8 +52,6 @@ fn project_example_data() -> HashMap<Id, Value> {
             Value::kilometers(150.0),
         ),
         (In::SludgeTreatmentDigesterCount, Value::count(3)),
-        (In::SideStreamTreatmentTotalNitrogen, Value::tons(0.0)),
-        (In::SensitivityCO2FossilCustomFactor, Value::factor(0.0)),
         (In::ScenarioSludgeBagsAreOpen, Value::bool(true)),
         (
             In::ScenarioSludgeStorageContainersAreOpen,

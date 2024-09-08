@@ -1,10 +1,15 @@
 #![allow(unused)] // FIXME
 
-use std::{collections::HashMap, io::Write, path::Path, sync::LazyLock};
+use std::{
+    collections::HashMap,
+    io::Write,
+    path::Path,
+    process::{Command, Stdio},
+    sync::LazyLock,
+};
 
-use anyhow::bail;
+use anyhow::{bail, Context as _};
 use num_traits::ToPrimitive;
-use pandoc::{InputFormat, InputKind, MarkdownExtension, OutputFormat, OutputKind, PandocOutput};
 use serde::Serialize;
 use tera::{Context, Tera};
 use time::{format_description::FormatItem, macros::format_description, OffsetDateTime, UtcOffset};
@@ -34,6 +39,7 @@ pub static TEMPLATES: LazyLock<Tera> = LazyLock::new(|| {
 });
 
 pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> {
+    log::debug!("Create PDF report");
     let lang = Lng::De;
     let date = current_date_as_string()?;
     let outcome = boundary::calculate(form_data, None, vec![]); // FIXME make this static, not another evaluation of all models
@@ -47,6 +53,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
     let mut recommendation_barchart_svg_file =
         tempfile::Builder::new().suffix(".svg").tempfile()?;
 
+    log::debug!("Render sankey charts");
     let sankey_data = outcome.output.clone().zip(outcome.graph.clone());
 
     let plant_profile_sankey_svg_file_path = if let Some(output) = &sankey_data {
@@ -73,6 +80,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
         None
     };
 
+    log::debug!("Render bar charts");
     let selected_n2o_scenario = &outcome
         .input
         .get(&In::SensitivityN2OCalculationMethod.into())
@@ -355,17 +363,30 @@ fn render_svg_sankey_chart(
 }
 
 fn render_pdf(markdown: String) -> anyhow::Result<Vec<u8>> {
-    let mut pandoc = pandoc::new();
-    pandoc.set_input(InputKind::Pipe(markdown));
-    pandoc.set_output(OutputKind::Pipe);
-    pandoc.set_input_format(InputFormat::Markdown, vec![]);
-    pandoc.set_output_format(OutputFormat::Pdf, vec![]);
-    let output = pandoc.execute()?;
+    log::debug!("Render PDF");
+    let mut child = Command::new("pandoc")
+        .args(&["-o", "-", "-f", "markdown", "-t", "pdf"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .context("Failed to start pandoc process")?;
 
-    let PandocOutput::ToBufferRaw(bytes) = output else {
-        bail!("unexpeced pandoc output");
-    };
-    Ok(bytes)
+    // Write the Markdown content in stdin of the process
+    {
+        let stdin = child.stdin.as_mut().context("Failed to open stdin")?;
+        stdin
+            .write_all(markdown.as_bytes())
+            .context("Failed to write to stdin")?;
+    }
+
+    // Read the PDF data from stdout of the process
+    let output = child.wait_with_output().context("Failed to read stdout")?;
+
+    if !output.status.success() {
+        bail!("Pandoc process failed with status: {}", output.status);
+    }
+
+    Ok(output.stdout)
 }
 
 const DATE_FORMAT_DESCRIPTION: &[FormatItem<'_>] = format_description!("[day].[month].[year]");

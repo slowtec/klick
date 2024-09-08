@@ -28,7 +28,7 @@ pub fn BarChartRadioInput(
 
     view! {
       <svg
-        with=format!("{width}px")
+        width=format!("{width}px")
         height=format!("{height}px")
         viewBox=format!("0 0 {width} {height}")
         xmlns="http://www.w3.org/2000/svg"
@@ -53,20 +53,6 @@ pub fn BarChartRadioInput(
       </svg>
     }
 }
-
-// #[component]
-// fn XAxis(width: f64) -> impl IntoView {
-//     view! {
-//       // <line x1=0 y1=0 x2={width} y2=0 stroke-width=1 stroke="#bbb" />
-//     }
-// }
-
-// #[component]
-// fn YAxis(height: f64) -> impl IntoView {
-//     view! {
-//       // <line x1=0 y1=0 x2=0 y2={ height } stroke-width=1 stroke="#bbb" />
-//     }
-// }
 
 #[component]
 #[allow(clippy::cast_precision_loss)]
@@ -180,7 +166,7 @@ fn Bar(
     let co2_value_label = lang.format_number_with_fixed_precision(co2_value, 0);
     let gap = width * 0.01;
     let transparent_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
-    let hovered_color = move || if hovered.get() { "grey" } else { "" };
+    let hovered_color = move || if hovered.get() { Some("grey") } else { None };
 
     view! {
       <g class="bar"
@@ -201,7 +187,7 @@ fn Bar(
             width={ bar_width + gap }
             height={ height }
             fill="transparent"
-            stroke={ hovered_color }
+            stroke = { hovered_color }
             stroke-width="3"
             stroke-dasharray="0 5"
             stroke-linecap="round"

@@ -312,7 +312,7 @@ struct Export {
     format: Format,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "snake_case")]
 enum Format {
     Json,
@@ -325,11 +325,17 @@ async fn get_export(
     Query(params): Query<Export>,
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::DownloadRequestResponse> {
-    account_from_token(&state, &auth)?;
+    let account = account_from_token(&state, &auth)?;
     let id = ProjectId::from_uuid(uuid);
-    log::debug!("Export project {id:?}");
+    log::debug!(
+        "{} requested an {:?} export of project {id}",
+        account.email_address,
+        params.format
+    );
     if state.db.find_project(&id)?.is_none() {
-        return Err(ApiError::from(anyhow!("project not found")));
+        let err = anyhow!("project {id} not found");
+        log::warn!("{err}");
+        return Err(ApiError::from(err));
     };
     let file_name = match params.format {
         Format::Json => "klimabilanz.json",
@@ -354,15 +360,24 @@ async fn get_download(
     State(state): State<AppState>,
     Path((download_id, filename)): Path<(Uuid, std::path::PathBuf)>,
 ) -> std::result::Result<Response, ApiError> {
+    log::debug!("Download {download_id}");
     let Some(download) = state.downloads.write().remove(&download_id) else {
-        return Err(ApiError::from(anyhow!("download not found")));
+        let err = anyhow!("download {download_id} not found");
+        log::warn!("{err}");
+        return Err(ApiError::from(err));
     };
+    let project_id = match download {
+        Download::PdfReport { project_id } | Download::JsonProject { project_id } => project_id,
+    };
+    let Some(project) = state.db.find_project(&project_id)? else {
+        let err = anyhow!("project {project_id} not found");
+        log::warn!("{err}");
+        return Err(ApiError::from(err));
+    };
+    let project = boundary::Project::from(project);
+
     match download {
-        Download::PdfReport { project_id } => {
-            let Some(project) = state.db.find_project(&project_id)? else {
-                return Err(ApiError::from(anyhow!("project not found")));
-            };
-            let project = boundary::Project::from(project);
+        Download::PdfReport { .. } => {
             let form_data = project.into_form_data();
             // FIXME: check if pdf was already made
             let values: HashMap<domain::InputValueId, domain::Value> = form_data.try_into()?;
@@ -381,11 +396,7 @@ async fn get_download(
             ];
             Ok((headers, bytes).into_response())
         }
-        Download::JsonProject { project_id } => {
-            let Some(project) = state.db.find_project(&project_id)? else {
-                return Err(ApiError::from(anyhow!("project not found")));
-            };
-            let project = boundary::Project::from(project);
+        Download::JsonProject { .. } => {
             let json_string = boundary::export_to_string_pretty(&project);
             let headers = [
                 (header::CONTENT_TYPE, "application/json; charset=utf-8"),

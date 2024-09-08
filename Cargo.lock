@@ -1809,8 +1809,8 @@ dependencies = [
  "klick-boundary",
  "klick-domain",
  "klick-presenter",
+ "log",
  "num-traits",
- "pandoc",
  "serde",
  "tempfile",
  "tera",
@@ -2268,15 +2268,6 @@ name = "pad-adapter"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56d80efc4b6721e8be2a10a5df21a30fa0b470f1539e53d8b4e6e75faf938b63"
-
-[[package]]
-name = "pandoc"
-version = "0.8.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "463d53d1a77a4291203dbf9d461365609e6857c95bd7d807098bffdc0a02a65c"
-dependencies = [
- "itertools 0.12.1",
-]
 
 [[package]]
 name = "parking_lot"
