@@ -89,3 +89,4 @@ WaterExpansionSavings = Savings from Water Energy Expansion
 DistrictHeatingSavings = Savings from District Heating
 FossilEnergySavings = Savings from Fossil Energy Sources
 ExcessEnergyCo2Equivalent = Energy-Related Emissions
+AdditionalCustomEmissions = Custom Emissions
