@@ -1,8 +1,10 @@
+use std::{collections::HashSet, sync::LazyLock};
+
+use regex::Regex;
+use thiserror::Error;
+
 #[cfg(test)]
 mod tests;
-use regex::Regex;
-use std::collections::HashSet;
-use thiserror::Error;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct EdgeDefined {
@@ -26,18 +28,23 @@ pub enum CustomEmission {
 }
 
 impl CustomEmission {
+    #[must_use]
     pub const fn line(&self) -> usize {
         match self {
             Self::EdgeUndefined(e) => e.line,
             Self::EdgeDefined(e) => e.line,
         }
     }
+
+    #[must_use]
     pub const fn target(&self) -> &String {
         match self {
             Self::EdgeUndefined(e) => &e.target,
             Self::EdgeDefined(e) => &e.target,
         }
     }
+
+    #[must_use]
     pub const fn source(&self) -> &String {
         match self {
             Self::EdgeUndefined(e) => &e.source,
@@ -58,12 +65,10 @@ impl NumberFormat {
     fn parse_number(&self, num_str: &str) -> Result<f64, std::num::ParseFloatError> {
         match self {
             NumberFormat::DE => {
-                //println!("DE");
                 let normalized = num_str.replace('.', "").replace(',', ".");
                 normalized.parse::<f64>()
             }
             NumberFormat::US => {
-                //println!("US");
                 let normalized = num_str.replace(',', "");
                 normalized.parse::<f64>()
             }
@@ -71,49 +76,50 @@ impl NumberFormat {
     }
 }
 
+static OPTIONAL_REGEXP: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"^\s*"(?P<source>[^"]+)"\s*(?P<value>[\d.,]+)?\s*(?:"(?P<target>[^"]+)")\s*$"#)
+        .unwrap()
+});
+
+#[allow(clippy::missing_panics_doc)]
 pub fn parse_line(
     line_number: usize,
     line: &str,
     number_format: NumberFormat,
 ) -> Result<Option<CustomEmission>, String> {
-    let optional_regexp = Regex::new(
-        r#"^\s*"(?P<source>[^"]+)"\s*(?P<value>[\d.,]+)?\s*(?:"(?P<target>[^"]+)")\s*$"#,
-    )
-    .unwrap();
-    let Some(captures) = optional_regexp.captures(line) else {
+    let Some(captures) = OPTIONAL_REGEXP.captures(line) else {
         if line.trim().is_empty() {
             return Ok(None);
         }
         return Err(format!(
             //"Line \"{}\" does not match expected format, which must be: [\"ID\" \"ID\"] or [\"ID\" NUM \"ID\"]",
-            "Zeile \"{}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]",
-            line_number
+            "Zeile \"{line_number}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]"
         ));
     };
+    let source = captures["source"].to_string();
+    let target = captures["target"].to_string();
     let Some(value) = captures.name("value") else {
-        return Ok(Some(CustomEmission::EdgeUndefined(EdgeUndefined {
+        let emission = CustomEmission::EdgeUndefined(EdgeUndefined {
             line: line_number,
-            source: captures["source"].to_string(),
-            target: captures["target"].to_string(),
-        })));
+            source,
+            target,
+        });
+        return Ok(Some(emission));
     };
-    let number = match number_format.parse_number(value.as_str()) {
-        Ok(number) => number,
-        Err(e) => {
-            return Err(format!(
-                //"The number \"{}\" on line \"{}\" does not match expected format: {}",
-                "Die Nummer \"{}\" auf Zeile \"{}\" ist nicht im erwarteten Format: {}",
-                value.as_str(),
-                line_number,
-                e
-            ));
-        }
-    };
+
+    let value = number_format.parse_number(value.as_str()).map_err(|err| {
+        format!(
+            //"The number \"{}\" on line \"{}\" does not match expected format: {}",
+            "Die Nummer \"{}\" auf Zeile \"{line_number}\" ist nicht im erwarteten Format: {err}",
+            value.as_str(),
+        )
+    })?;
+
     Ok(Some(CustomEmission::EdgeDefined(EdgeDefined {
         line: line_number,
-        source: captures["source"].to_string(),
-        target: captures["target"].to_string(),
-        value: number,
+        source,
+        target,
+        value,
     })))
 }
 
@@ -121,22 +127,15 @@ pub fn parse_emission(
     input: &str,
     number_format: NumberFormat,
 ) -> Result<Vec<CustomEmission>, String> {
-    let mut result: Vec<CustomEmission> = Vec::new();
-    for (line_number, line) in input.lines().enumerate() {
-        // println!("line: {line}");
-        let parsed = parse_line(line_number + 1, line, number_format);
-        // println!("{parsed:?}");
-        match parsed {
-            Ok(pe) => match pe {
-                Some(s) => result.push(s),
-                None => {}
-            },
-            Err(e) => {
-                return Err(e);
-            }
-        }
-    }
-    Ok(result)
+    let emissions = input
+        .lines()
+        .enumerate()
+        .map(|(line_number, line)| parse_line(line_number + 1, line, number_format))
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .flatten()
+        .collect();
+    Ok(emissions)
 }
 
 #[derive(Error, Debug)]
@@ -188,12 +187,12 @@ pub enum CustomEmissionParserError {
 
 // these checks are written for like 8 nodes max, so performance isn't the main objective
 pub fn check_graph(
-    custom_edges: Vec<CustomEmission>,
+    custom_edges: &[CustomEmission],
     all_internal_nodes_names: Vec<String>,
 ) -> Result<(), CustomEmissionParserError> {
     let mut edges_defined: Vec<EdgeDefined> = vec![];
     let mut edges_undefined: Vec<EdgeUndefined> = vec![];
-    for edge in &custom_edges {
+    for edge in custom_edges {
         match edge {
             CustomEmission::EdgeDefined(e) => edges_defined.push(e.clone()),
             CustomEmission::EdgeUndefined(e) => edges_undefined.push(e.clone()),
@@ -280,7 +279,7 @@ pub fn check_graph(
     }
 
     // 7. no cycle between edge(s)
-    let mut edges_unvisited: Vec<CustomEmission> = custom_edges.clone();
+    let mut edges_unvisited: Vec<CustomEmission> = custom_edges.to_owned();
     let mut edges_visited: Vec<CustomEmission> = vec![];
     let mut visited_targets: HashSet<String> = all_internal_nodes_names
         .into_iter()
@@ -309,10 +308,9 @@ pub fn check_graph(
                     name: n.to_string(),
                     line: e.line(),
                 });
-            } else {
-                //   - if not, add them & and add edges to edges_unvisited (set found_one_more to true)
-                visited_targets_new.insert(e.source().clone());
             }
+            //   - if not, add them & and add edges to edges_unvisited (set found_one_more to true)
+            visited_targets_new.insert(e.source().clone());
         }
         // update old state with new knowledge
         edges_unvisited = edges_unvisited_new;
@@ -320,7 +318,7 @@ pub fn check_graph(
         visited_targets.extend(visited_targets_new);
 
         // 3. if found_one_more is false, exit
-        if found_one_more == false {
+        if !found_one_more {
             break;
         }
         found_one_more = false;
@@ -328,12 +326,12 @@ pub fn check_graph(
 
     // 8. enforce connections: no loose edges, each must connect to something
     //    if all_edges_list is not empty, report the remainder elements as loose edges
-    if edges_unvisited.len() > 0 {
-        let lines: String = edges_unvisited.into_iter().fold("".to_string(), |sum, e| {
-            let comma = if sum == "" { "" } else { ", " };
+    if !edges_unvisited.is_empty() {
+        let lines: String = edges_unvisited.into_iter().fold(String::new(), |sum, e| {
+            let comma = if sum.is_empty() { "" } else { ", " };
             sum + format!("{}{}", comma, e.line()).as_str()
         });
-        return Err(CustomEmissionParserError::DetachedNodesVoilation { lines: lines });
+        return Err(CustomEmissionParserError::DetachedNodesVoilation { lines });
     }
 
     Ok(())

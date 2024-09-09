@@ -11,23 +11,19 @@ use klick_boundary::{
     self as boundary, calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome,
     FormData, JsonFormData, Project, ProjectId, SavedProject, UnsavedProject,
 };
+use klick_custom_values_parser::{self as custom_emission_parser, CustomEmission};
 use klick_domain::{
     get_all_internal_nodes, input_value::optional as optional_in, units::Tons, Id,
     InputValueId as In, Value,
 };
 use klick_presenter as presenter;
 
-use crate::{
-    api::AuthorizedApi,
-    pages::tool::parser::{self as custom_emission_parser, CustomEmission},
-    SECTION_ID_TOOL_HOME,
-};
+use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
 
 mod breadcrumbs;
 mod example_data;
 mod fields;
 mod form_data_overview;
-mod parser;
 mod plant_profile;
 mod project_menu;
 mod recommendations;
@@ -561,7 +557,7 @@ pub fn Tool(
             .map(|x| format!("{:?}", x).to_string())
             .collect();
 
-        match custom_emission_parser::check_graph(r, all_internal_nodes_names) {
+        match custom_emission_parser::check_graph(&r, all_internal_nodes_names) {
             Ok(_) => {
                 custom_emissions_message.set("".to_string());
                 custom_values.set(custom_values_vec);

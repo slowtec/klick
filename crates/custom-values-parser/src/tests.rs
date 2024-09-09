@@ -11,7 +11,7 @@ fn internal_node_names() -> Vec<String> {
         "OtherIndirectEmissions",
     ]
     .iter()
-    .map(|e| e.to_string())
+    .map(|e| (*e).to_string())
     .collect()
 }
 
@@ -248,50 +248,50 @@ fn edge_defined_de_floats_us() {
 
 #[test]
 fn check_graph_empty() {
-    let edges = vec![];
-    let q: Vec<CustomEmission> = edges;
+    let edges = &[];
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     assert!(r.is_ok());
 }
 
 #[test]
 fn check_graph_cycle_edge_defined() {
-    let edges = vec![CustomEmission::EdgeDefined(EdgeDefined {
+    let edges = &[CustomEmission::EdgeDefined(EdgeDefined {
         line: 1,
         source: "a".to_string(),
         target: "a".to_string(),
         value: 1.1,
     })];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     match r {
         Err(CustomEmissionParserError::InsideEdgeCycleVoilation { line }) => {
             assert_eq!(line, 1);
         }
-        _ => panic!("Expected InsideEdgeCycleVoilation, but got {:?}", r),
+        _ => panic!("Expected InsideEdgeCycleVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_cycle_edge_undefined() {
-    let edges = vec![CustomEmission::EdgeUndefined(EdgeUndefined {
+    let edges = &[CustomEmission::EdgeUndefined(EdgeUndefined {
         line: 1,
         source: "a".to_string(),
         target: "a".to_string(),
     })];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     match r {
         Err(CustomEmissionParserError::InsideEdgeCycleVoilation { line }) => {
             assert_eq!(line, 1);
         }
-        _ => panic!("Expected InsideEdgeCycleVoilation, but got {:?}", r),
+        _ => panic!("Expected InsideEdgeCycleVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_cycle_two_nodes() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeUndefined(EdgeUndefined {
             line: 1,
             source: "a".to_string(),
@@ -308,7 +308,7 @@ fn check_graph_cycle_two_nodes() {
             target: "TotalEmissions".to_string(),
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     let node_name = "b".to_string();
     match r {
@@ -316,13 +316,13 @@ fn check_graph_cycle_two_nodes() {
             assert_eq!(name, node_name);
             assert_eq!(line, 2);
         }
-        _ => panic!("Expected EdgeCycleVoilation, but got {:?}", r),
+        _ => panic!("Expected EdgeCycleVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_cycle_many_nodes() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeUndefined(EdgeUndefined {
             line: 1,
             source: "a".to_string(),
@@ -344,7 +344,7 @@ fn check_graph_cycle_many_nodes() {
             target: "TotalEmissions".to_string(),
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     let node_name = "b".to_string();
     match r {
@@ -352,13 +352,13 @@ fn check_graph_cycle_many_nodes() {
             assert_eq!(name, node_name);
             assert_eq!(line, 3);
         }
-        _ => panic!("Expected EdgeCycleVoilation, but got {:?}", r),
+        _ => panic!("Expected EdgeCycleVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_cycle_many_nodes_two() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "a".to_string(),
@@ -381,7 +381,7 @@ fn check_graph_cycle_many_nodes_two() {
             target: "TotalEmissions".to_string(),
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     let node_name = "c".to_string();
     match r {
@@ -389,13 +389,13 @@ fn check_graph_cycle_many_nodes_two() {
             assert_eq!(name, node_name);
             assert_eq!(line, 2);
         }
-        _ => panic!("Expected EdgeCycleVoilation, but got {:?}", r),
+        _ => panic!("Expected EdgeCycleVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_conflict_source_name_not_unique() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "a".to_string(),
@@ -409,20 +409,20 @@ fn check_graph_conflict_source_name_not_unique() {
             value: 1.2,
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     match r {
         Err(CustomEmissionParserError::EdgeNotUniqueVoilation { e1_line, e2_line }) => {
             assert_eq!(e1_line, 1);
             assert_eq!(e2_line, 2);
         }
-        _ => panic!("Expected EdgeNotUniqueVoilation, but got {:?}", r),
+        _ => panic!("Expected EdgeNotUniqueVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_too_many_values() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "a".to_string(),
@@ -436,38 +436,38 @@ fn check_graph_too_many_values() {
             value: 1.2,
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     match r {
         Err(CustomEmissionParserError::NodeToNodeLinkVoilation { e1_line, e2_line }) => {
             assert_eq!(e1_line, 1);
             assert_eq!(e2_line, 2);
         }
-        _ => panic!("Expected NodeToNodeLinkVoilation, but got {:?}", r),
+        _ => panic!("Expected NodeToNodeLinkVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_unconnected_edge() {
-    let edges: Vec<CustomEmission> = vec![CustomEmission::EdgeUndefined(EdgeUndefined {
+    let edges = &[CustomEmission::EdgeUndefined(EdgeUndefined {
         line: 1,
         source: "a".to_string(),
         target: "b".to_string(),
     })];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     let found_lines = "1".to_string();
     match r {
         Err(CustomEmissionParserError::DetachedNodesVoilation { lines }) => {
             assert_eq!(lines, found_lines);
         }
-        _ => panic!("Expected DetachedNodesVoilation, but got {:?}", r),
+        _ => panic!("Expected DetachedNodesVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_unconnected_edges() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "foo".to_string(),
@@ -487,20 +487,20 @@ fn check_graph_unconnected_edges() {
             value: 1.2,
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     let found_lines = "2".to_string();
     match r {
         Err(CustomEmissionParserError::DetachedNodesVoilation { lines }) => {
             assert_eq!(lines, found_lines);
         }
-        _ => panic!("Expected DetachedNodesVoilation, but got {:?}", r),
+        _ => panic!("Expected DetachedNodesVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_emission_node_links_emission_node() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "foo".to_string(),
@@ -514,32 +514,20 @@ fn check_graph_emission_node_links_emission_node() {
             value: 1.2,
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     match r {
         Err(CustomEmissionParserError::NodeToNodeLinkVoilation { e1_line, e2_line }) => {
             assert_eq!(e1_line, 2);
             assert_eq!(e2_line, 1);
         }
-        _ => panic!("Expected NodeToNodeLinkVoilation, but got {:?}", r),
+        _ => panic!("Expected NodeToNodeLinkVoilation, but got {r:?}"),
     }
 }
 
-// #[test]
-// fn check_graph_no_value_edge() {
-//     let q: Vec<CustomEmission> = vec![CustomEmission::EdgeUndefined(EdgeUndefined {
-//         line: 1,
-//         source: "a".to_string(),
-//         target: "TotalEmissions".to_string(),
-//     })];
-//     let r = check_graph(q, internal_node_names());
-//     print!("{:?}", r);
-//     assert!(r.is_err());
-// }
-
 #[test]
 fn check_graph_proper_edge() {
-    let q: Vec<CustomEmission> = vec![CustomEmission::EdgeDefined(EdgeDefined {
+    let q = &[CustomEmission::EdgeDefined(EdgeDefined {
         line: 1,
         source: "a".to_string(),
         target: "TotalEmissions".to_string(),
@@ -551,7 +539,7 @@ fn check_graph_proper_edge() {
 
 #[test]
 fn check_graph_using_reserved_names() {
-    let edges = vec![
+    let edges = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "TotalEmissions".to_string(),
@@ -565,7 +553,7 @@ fn check_graph_using_reserved_names() {
             value: 1.2,
         }),
     ];
-    let q: Vec<CustomEmission> = edges;
+    let q = edges;
     let r = check_graph(q, internal_node_names());
     let node_name = "TotalEmissions".to_string();
     match r {
@@ -573,13 +561,13 @@ fn check_graph_using_reserved_names() {
             assert_eq!(name, node_name);
             assert_eq!(line, 1);
         }
-        _ => panic!("Expected ReservedNameVoilation, but got {:?}", r),
+        _ => panic!("Expected ReservedNameVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_duplicate_name() {
-    let q: Vec<CustomEmission> = vec![
+    let q = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "a".to_string(),
@@ -599,13 +587,13 @@ fn check_graph_duplicate_name() {
             assert_eq!(e1_line, 1);
             assert_eq!(e2_line, 2);
         }
-        _ => panic!("Expected DuplicatedNodeNameVoilation, but got {:?}", r),
+        _ => panic!("Expected DuplicatedNodeNameVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_edge_to_leaf() {
-    let q: Vec<CustomEmission> = vec![
+    let q = &[
         CustomEmission::EdgeUndefined(EdgeUndefined {
             line: 1,
             source: "a".to_string(),
@@ -624,13 +612,13 @@ fn check_graph_edge_to_leaf() {
             assert_eq!(e1_line, 1);
             assert_eq!(e2_line, 2);
         }
-        _ => panic!("Expected EdgeToLeafVoilation, but got {:?}", r),
+        _ => panic!("Expected EdgeToLeafVoilation, but got {r:?}"),
     }
 }
 
 #[test]
 fn check_graph_example() {
-    let q: Vec<CustomEmission> = vec![
+    let q = &[
         CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "H₂ Generator".to_string(),
@@ -662,6 +650,6 @@ fn check_graph_example() {
         }),
     ];
     let r = check_graph(q, internal_node_names());
-    println!("{:?}", r);
+    println!("{r:?}");
     assert!(r.is_ok());
 }

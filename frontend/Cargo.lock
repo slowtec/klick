@@ -1042,6 +1042,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-custom-values-parser"
+version = "0.0.0"
+dependencies = [
+ "regex",
+ "thiserror",
+]
+
+[[package]]
 name = "klick-domain"
 version = "0.4.13"
 dependencies = [
@@ -1080,6 +1088,7 @@ dependencies = [
  "klick-app-components",
  "klick-boundary",
  "klick-codemirror",
+ "klick-custom-values-parser",
  "klick-domain",
  "klick-presenter",
  "leptos",
