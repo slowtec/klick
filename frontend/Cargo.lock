@@ -1045,7 +1045,6 @@ dependencies = [
 name = "klick-custom-values-parser"
 version = "0.0.0"
 dependencies = [
- "regex",
  "thiserror",
 ]
 
@@ -1099,7 +1098,6 @@ dependencies = [
  "log",
  "num-traits",
  "pulldown-cmark",
- "regex",
  "serde",
  "serde_json",
  "strum",

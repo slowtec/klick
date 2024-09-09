@@ -1,6 +1,5 @@
-use std::{collections::HashSet, sync::LazyLock};
+use std::collections::HashSet;
 
-use regex::Regex;
 use thiserror::Error;
 
 #[cfg(test)]
@@ -76,42 +75,62 @@ impl NumberFormat {
     }
 }
 
-static OPTIONAL_REGEXP: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r#"^\s*"(?P<source>[^"]+)"\s*(?P<value>[\d.,]+)?\s*(?:"(?P<target>[^"]+)")\s*$"#)
-        .unwrap()
-});
-
-#[allow(clippy::missing_panics_doc)]
 pub fn parse_line(
     line_number: usize,
     line: &str,
     number_format: NumberFormat,
 ) -> Result<Option<CustomEmission>, String> {
-    let Some(captures) = OPTIONAL_REGEXP.captures(line) else {
-        if line.trim().is_empty() {
-            return Ok(None);
-        }
+    let trimmed = line.trim();
+
+    if trimmed.is_empty() {
+        return Ok(None);
+    }
+
+    if !trimmed.starts_with('"') || !trimmed.ends_with('"') {
         return Err(format!(
-            //"Line \"{}\" does not match expected format, which must be: [\"ID\" \"ID\"] or [\"ID\" NUM \"ID\"]",
             "Zeile \"{line_number}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]"
         ));
+    }
+
+    let trimmed = &trimmed[1..trimmed.len() - 1];
+
+    let mut parts = trimmed
+        .split('"')
+        .filter_map(|part| {
+            let part = part.trim();
+            if part.is_empty() {
+                None
+            } else {
+                Some(part)
+            }
+        })
+        .collect::<Vec<&str>>();
+
+    if parts.len() < 2 || parts.len() > 3 {
+        return Err(format!(
+            "Zeile \"{line_number}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]"
+        ));
+    }
+
+    let source = parts.remove(0).to_string();
+    let target = if parts.len() == 2 {
+        parts.remove(1).to_string()
+    } else {
+        parts.remove(0).to_string()
     };
-    let source = captures["source"].to_string();
-    let target = captures["target"].to_string();
-    let Some(value) = captures.name("value") else {
-        let emission = CustomEmission::EdgeUndefined(EdgeUndefined {
+
+    let Some(value_str) = parts.get(0) else {
+        return Ok(Some(CustomEmission::EdgeUndefined(EdgeUndefined {
             line: line_number,
             source,
             target,
-        });
-        return Ok(Some(emission));
+        })));
     };
 
-    let value = number_format.parse_number(value.as_str()).map_err(|err| {
+    let value = number_format.parse_number(value_str).map_err(|err| {
         format!(
-            //"The number \"{}\" on line \"{}\" does not match expected format: {}",
             "Die Nummer \"{}\" auf Zeile \"{line_number}\" ist nicht im erwarteten Format: {err}",
-            value.as_str(),
+            value_str,
         )
     })?;
 
