@@ -7,11 +7,10 @@ Ressourceneffizienz Baden-Württemberg
 Kleiner Schlossplatz 13\
 70173 Stuttgart
 
-Telefon 0711 252841-10\
-Telefax 0711 252841-49
-
-[info@umwelttechnik-bw.de](mailto:info@umwelttechnik-bw.de)\
-[www.umwelttechnik-bw.de](https://www.umwelttechnik-bw.de)
+* Telefon [0711 252841-10](tel:+071125284110)
+* Telefax [0711 252841-49](tel:+071125284149)
+* [info@umwelttechnik-bw.de](mailto:info@umwelttechnik-bw.de)
+* [www.umwelttechnik-bw.de](https://www.umwelttechnik-bw.de)
 
 Geschäftsführer: Dr.-Ing. Hannes Spieth\
 Amtsgericht Stuttgart HRB 737443

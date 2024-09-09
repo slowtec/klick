@@ -30,7 +30,7 @@ use self::{
     footer::Footer,
     nav::Nav,
     pages::{
-        ConfirmEmailAddress, Faq, Login, Page, PageSection, Projects, Register, ResetPassword,
+        ConfirmEmailAddress, Login, Page, PageSection, Projects, Register, ResetPassword,
         ResetPasswordRequest, Tool,
     },
 };
@@ -249,10 +249,10 @@ pub fn App() -> impl IntoView {
                 set_current_page.update(|p|*p = Page::Faq);
                 view! {
                   <Main>
-                    <header class="prose">
-                      <h1>"FAQs"</h1>
-                    </header>
-                    <Faq />
+                    <ContentLoader
+                      file = "faq.html"
+                      lng = lng
+                    />
                   </Main>
                 }
               }

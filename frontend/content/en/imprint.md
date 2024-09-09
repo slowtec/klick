@@ -4,14 +4,13 @@ Environmental Technology BW GmbH\
 State agency for environmental technology and\
 Resource efficiency Baden-Württemberg
 
-Small Schlossplatz 13\
+Kleiner Schlossplatz 13\
 70173 Stuttgart
 
-Phone 0711 252841-10\
-Fax 0711 252841-49
-
-[info@umwelttechnik-bw.de](mailto:info@umwelttechnik-bw.de)\
-[www.umwelttechnik-bw.de](https://www.umwelttechnik-bw.de)
+* Phone [0711 252841-10](tel:+071125284110)
+* Fax [0711 252841-49](tel:+071125284149)
+* [info@umwelttechnik-bw.de](mailto:info@umwelttechnik-bw.de)
+* [www.umwelttechnik-bw.de](https://www.umwelttechnik-bw.de)
 
 Managing Director: Dr.-Ing. Hannes Spieth\
 Local court Stuttgart HRB 737443
