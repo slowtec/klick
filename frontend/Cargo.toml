@@ -39,6 +39,7 @@ serde = { version = "1.0.209", features = ["derive"] }
 strum = "0.26.3"
 thiserror = "1.0.63"
 time = { version = "0.3.36", features = ["macros", "formatting"] }
+gloo-utils = "0.2.0"
 
 [patch.crates-io]
 # Local paths to library crates in workspace

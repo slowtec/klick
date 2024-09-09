@@ -12,29 +12,27 @@ struct Export<'a> {
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
 pub fn export_to_string_pretty(data: &Project) -> String {
-    let export = Export {
-        version: CURRENT_VERSION,
-        data,
-    };
+    let export = pack(data);
     serde_json::to_string_pretty(&export).expect("Valid input data")
 }
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
 pub fn export_to_string(data: &Project) -> String {
-    let export = Export {
-        version: CURRENT_VERSION,
-        data,
-    };
+    let export = pack(data);
     serde_json::to_string(&export).expect("Valid input data")
 }
 
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
 pub fn export_to_vec_pretty(data: &Project) -> Vec<u8> {
-    let export = Export {
+    let export = pack(data);
+    serde_json::to_vec_pretty(&export).expect("Valid input data")
+}
+
+fn pack(data: &Project) -> Export {
+    Export {
         version: CURRENT_VERSION,
         data,
-    };
-    serde_json::to_vec_pretty(&export).expect("Valid input data")
+    }
 }

@@ -1,12 +1,15 @@
 use std::collections::{HashMap, HashSet};
 
 use gloo_file::{Blob, File, ObjectUrl};
+use gloo_storage::{SessionStorage, Storage as _};
+use gloo_utils::errors::JsError;
+use js_sys::wasm_bindgen::JsCast;
 use leptos::*;
 
 use klick_app_components::message::*;
 use klick_boundary::{
-    calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome, FormData, JsonFormData,
-    Project, ProjectId, SavedProject, UnsavedProject,
+    self as boundary, calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome,
+    FormData, JsonFormData, Project, ProjectId, SavedProject, UnsavedProject,
 };
 use klick_domain::{
     get_all_internal_nodes, input_value::optional as optional_in, units::Tons, Id,
@@ -74,7 +77,8 @@ pub fn Tool(
     //    Signals    //
     // -----   ----- //
 
-    let form_data: RwSignal<HashMap<In, Value>> = RwSignal::new(FormData::default());
+    let initial_form_data = form_data_from_session_storage();
+    let form_data = RwSignal::new(initial_form_data);
 
     let load_form_data = move |data: HashMap<_, _>| {
         form_data.set(data);
@@ -116,59 +120,37 @@ pub fn Tool(
         let custom_leafs = vec![];
         let custom_edges = None;
 
-        const PROFILE_IDS: &[Id] = &[
-            Id::In(In::ProjectName),
-            Id::In(In::PlantName),
-            Id::In(In::PopulationEquivalent),
-            Id::In(In::Wastewater),
-            Id::In(In::InfluentNitrogen),
-            Id::In(In::InfluentChemicalOxygenDemand),
-            Id::In(In::InfluentTotalOrganicCarbohydrates),
-            Id::In(In::EffluentNitrogen),
-            Id::In(In::EffluentChemicalOxygenDemand),
-            Id::In(In::SewageGasProduced),
-            Id::In(In::MethaneFraction),
-            Id::In(In::GasSupply),
-            Id::In(In::PurchaseOfBiogas),
-            Id::In(In::TotalPowerConsumption),
-            Id::In(In::OnSitePowerGeneration),
-            Id::In(In::EmissionFactorElectricityMix),
-            Id::In(In::HeatingOil),
-            Id::In(In::SideStreamTreatmentTotalNitrogen),
-            Id::In(In::OperatingMaterialFeCl3),
-            Id::In(In::OperatingMaterialFeClSO4),
-            Id::In(In::OperatingMaterialCaOH2),
-            Id::In(In::OperatingMaterialSyntheticPolymers),
-            Id::In(In::SludgeTreatmentBagsAreOpen),
-            Id::In(In::SludgeTreatmentStorageContainersAreOpen),
-            Id::In(In::SludgeTreatmentDisposal),
-            Id::In(In::SludgeTreatmentTransportDistance),
-            Id::In(In::SludgeTreatmentDigesterCount),
-            //Id::In(In::SensitivityN2OCalculationMethod),
-            //Id::In(In::SensitivityCH4ChpCalculationMethod),
-            // Id::In(In::SensitivityN2OCustomFactor),
-            // Id::In(In::SensitivityN2OSideStreamFactor),
-            // Id::In(In::SensitivityCH4ChpCustomFactor),
-            // Id::In(In::SensitivityCO2FossilCustomFactor),
-            // Id::In(In::SensitivitySludgeBagsCustomFactor),
-            // Id::In(In::SensitivitySludgeStorageCustomFactor),
-
-            // Id::In(In::ScenarioSludgeBagsAreOpen),
-            // Id::In(In::ScenarioSludgeStorageContainersAreOpen),
-            // Id::In(In::ScenarioN2OSideStreamFactor),
-            // Id::In(In::ScenarioN2OSideStreamCoverIsOpen),
-            // Id::In(In::ScenarioProcessEnergySaving),
-            // Id::In(In::ScenarioFossilEnergySaving),
-            // Id::In(In::ScenarioDistrictHeating),
-            // Id::In(In::ScenarioPhotovoltaicEnergyExpansion),
-            // Id::In(In::ScenarioEstimatedSelfPhotovolaticUsage),
-            // Id::In(In::ScenarioWindEnergyExpansion),
-            // Id::In(In::ScenarioEstimatedSelfWindEnergyUsage),
-            // Id::In(In::ScenarioWaterEnergyExpansion),
-            // Id::In(In::ScenarioEstimatedSelfWaterEnergyUsage),
+        const PROFILE_IDS: &[In] = &[
+            In::ProjectName,
+            In::PlantName,
+            In::PopulationEquivalent,
+            In::Wastewater,
+            In::InfluentNitrogen,
+            In::InfluentChemicalOxygenDemand,
+            In::InfluentTotalOrganicCarbohydrates,
+            In::EffluentNitrogen,
+            In::EffluentChemicalOxygenDemand,
+            In::SewageGasProduced,
+            In::MethaneFraction,
+            In::GasSupply,
+            In::PurchaseOfBiogas,
+            In::TotalPowerConsumption,
+            In::OnSitePowerGeneration,
+            In::EmissionFactorElectricityMix,
+            In::HeatingOil,
+            In::SideStreamTreatmentTotalNitrogen,
+            In::OperatingMaterialFeCl3,
+            In::OperatingMaterialFeClSO4,
+            In::OperatingMaterialCaOH2,
+            In::OperatingMaterialSyntheticPolymers,
+            In::SludgeTreatmentBagsAreOpen,
+            In::SludgeTreatmentStorageContainersAreOpen,
+            In::SludgeTreatmentDisposal,
+            In::SludgeTreatmentTransportDistance,
+            In::SludgeTreatmentDigesterCount,
         ];
 
-        let profile_ids: HashSet<_> = PROFILE_IDS.iter().collect();
+        let profile_ids: HashSet<_> = PROFILE_IDS.iter().copied().map(Id::from).collect();
 
         let values: HashMap<_, _> = values
             .into_iter()
@@ -200,57 +182,44 @@ pub fn Tool(
             Some(&*edges)
         };
 
-        const SENSITIVITY_IDS: &[Id] = &[
-            Id::In(In::ProjectName),
-            Id::In(In::PlantName),
-            Id::In(In::PopulationEquivalent),
-            Id::In(In::Wastewater),
-            Id::In(In::InfluentNitrogen),
-            Id::In(In::InfluentChemicalOxygenDemand),
-            Id::In(In::InfluentTotalOrganicCarbohydrates),
-            Id::In(In::EffluentNitrogen),
-            Id::In(In::EffluentChemicalOxygenDemand),
-            Id::In(In::SewageGasProduced),
-            Id::In(In::MethaneFraction),
-            Id::In(In::GasSupply),
-            Id::In(In::PurchaseOfBiogas),
-            Id::In(In::TotalPowerConsumption),
-            Id::In(In::OnSitePowerGeneration),
-            Id::In(In::EmissionFactorElectricityMix),
-            Id::In(In::HeatingOil),
-            Id::In(In::SideStreamTreatmentTotalNitrogen),
-            Id::In(In::OperatingMaterialFeCl3),
-            Id::In(In::OperatingMaterialFeClSO4),
-            Id::In(In::OperatingMaterialCaOH2),
-            Id::In(In::OperatingMaterialSyntheticPolymers),
-            Id::In(In::SludgeTreatmentBagsAreOpen),
-            Id::In(In::SludgeTreatmentStorageContainersAreOpen),
-            Id::In(In::SludgeTreatmentDisposal),
-            Id::In(In::SludgeTreatmentTransportDistance),
-            Id::In(In::SludgeTreatmentDigesterCount),
-            Id::In(In::SensitivityN2OCalculationMethod),
-            Id::In(In::SensitivityCH4ChpCalculationMethod),
-            Id::In(In::SensitivityN2OCustomFactor),
-            Id::In(In::SensitivityN2OSideStreamFactor),
-            Id::In(In::SensitivityCH4ChpCustomFactor),
-            Id::In(In::SensitivityCO2FossilCustomFactor),
-            Id::In(In::SensitivitySludgeBagsCustomFactor),
-            Id::In(In::SensitivitySludgeStorageCustomFactor),
-            // Id::In(In::ScenarioSludgeBagsAreOpen),
-            // Id::In(In::ScenarioSludgeStorageContainersAreOpen),
-            // Id::In(In::ScenarioN2OSideStreamFactor),
-            // Id::In(In::ScenarioN2OSideStreamCoverIsOpen),
-            // Id::In(In::ScenarioProcessEnergySaving),
-            // Id::In(In::ScenarioFossilEnergySaving),
-            // Id::In(In::ScenarioDistrictHeating),
-            // Id::In(In::ScenarioPhotovoltaicEnergyExpansion),
-            // Id::In(In::ScenarioEstimatedSelfPhotovolaticUsage),
-            // Id::In(In::ScenarioWindEnergyExpansion),
-            // Id::In(In::ScenarioEstimatedSelfWindEnergyUsage),
-            // Id::In(In::ScenarioWaterEnergyExpansion),
-            // Id::In(In::ScenarioEstimatedSelfWaterEnergyUsage),
+        const SENSITIVITY_IDS: &[In] = &[
+            In::ProjectName,
+            In::PlantName,
+            In::PopulationEquivalent,
+            In::Wastewater,
+            In::InfluentNitrogen,
+            In::InfluentChemicalOxygenDemand,
+            In::InfluentTotalOrganicCarbohydrates,
+            In::EffluentNitrogen,
+            In::EffluentChemicalOxygenDemand,
+            In::SewageGasProduced,
+            In::MethaneFraction,
+            In::GasSupply,
+            In::PurchaseOfBiogas,
+            In::TotalPowerConsumption,
+            In::OnSitePowerGeneration,
+            In::EmissionFactorElectricityMix,
+            In::HeatingOil,
+            In::SideStreamTreatmentTotalNitrogen,
+            In::OperatingMaterialFeCl3,
+            In::OperatingMaterialFeClSO4,
+            In::OperatingMaterialCaOH2,
+            In::OperatingMaterialSyntheticPolymers,
+            In::SludgeTreatmentBagsAreOpen,
+            In::SludgeTreatmentStorageContainersAreOpen,
+            In::SludgeTreatmentDisposal,
+            In::SludgeTreatmentTransportDistance,
+            In::SludgeTreatmentDigesterCount,
+            In::SensitivityN2OCalculationMethod,
+            In::SensitivityCH4ChpCalculationMethod,
+            In::SensitivityN2OCustomFactor,
+            In::SensitivityN2OSideStreamFactor,
+            In::SensitivityCH4ChpCustomFactor,
+            In::SensitivityCO2FossilCustomFactor,
+            In::SensitivitySludgeBagsCustomFactor,
+            In::SensitivitySludgeStorageCustomFactor,
         ];
-        let profile_ids: HashSet<_> = SENSITIVITY_IDS.iter().collect();
+        let profile_ids: HashSet<_> = SENSITIVITY_IDS.iter().copied().map(Id::from).collect();
         let values = values
             .into_iter()
             .filter(|(i, _)| profile_ids.contains(i) || i.is_custom())
@@ -281,57 +250,57 @@ pub fn Tool(
             Some(&*edges)
         };
 
-        const RECOMMENDATION_IDS: &[Id] = &[
-            Id::In(In::ProjectName),
-            Id::In(In::PlantName),
-            Id::In(In::PopulationEquivalent),
-            Id::In(In::Wastewater),
-            Id::In(In::InfluentNitrogen),
-            Id::In(In::InfluentChemicalOxygenDemand),
-            Id::In(In::InfluentTotalOrganicCarbohydrates),
-            Id::In(In::EffluentNitrogen),
-            Id::In(In::EffluentChemicalOxygenDemand),
-            Id::In(In::SewageGasProduced),
-            Id::In(In::MethaneFraction),
-            Id::In(In::GasSupply),
-            Id::In(In::PurchaseOfBiogas),
-            Id::In(In::TotalPowerConsumption),
-            Id::In(In::OnSitePowerGeneration),
-            Id::In(In::EmissionFactorElectricityMix),
-            Id::In(In::HeatingOil),
-            Id::In(In::SideStreamTreatmentTotalNitrogen),
-            Id::In(In::OperatingMaterialFeCl3),
-            Id::In(In::OperatingMaterialFeClSO4),
-            Id::In(In::OperatingMaterialCaOH2),
-            Id::In(In::OperatingMaterialSyntheticPolymers),
-            Id::In(In::SludgeTreatmentBagsAreOpen),
-            Id::In(In::SludgeTreatmentStorageContainersAreOpen),
-            Id::In(In::SludgeTreatmentDisposal),
-            Id::In(In::SludgeTreatmentTransportDistance),
-            Id::In(In::SludgeTreatmentDigesterCount),
-            Id::In(In::SensitivityN2OCalculationMethod),
-            Id::In(In::SensitivityCH4ChpCalculationMethod),
-            Id::In(In::SensitivityN2OCustomFactor),
-            Id::In(In::SensitivityN2OSideStreamFactor),
-            Id::In(In::SensitivityCH4ChpCustomFactor),
-            Id::In(In::SensitivityCO2FossilCustomFactor),
-            Id::In(In::SensitivitySludgeBagsCustomFactor),
-            Id::In(In::SensitivitySludgeStorageCustomFactor),
-            Id::In(In::ScenarioSludgeBagsAreOpen),
-            Id::In(In::ScenarioSludgeStorageContainersAreOpen),
-            Id::In(In::ScenarioN2OSideStreamFactor),
-            Id::In(In::ScenarioN2OSideStreamCoverIsOpen),
-            Id::In(In::ScenarioProcessEnergySaving),
-            Id::In(In::ScenarioFossilEnergySaving),
-            Id::In(In::ScenarioDistrictHeating),
-            Id::In(In::ScenarioPhotovoltaicEnergyExpansion),
-            Id::In(In::ScenarioEstimatedSelfPhotovolaticUsage),
-            Id::In(In::ScenarioWindEnergyExpansion),
-            Id::In(In::ScenarioEstimatedSelfWindEnergyUsage),
-            Id::In(In::ScenarioWaterEnergyExpansion),
-            Id::In(In::ScenarioEstimatedSelfWaterEnergyUsage),
+        const RECOMMENDATION_IDS: &[In] = &[
+            In::ProjectName,
+            In::PlantName,
+            In::PopulationEquivalent,
+            In::Wastewater,
+            In::InfluentNitrogen,
+            In::InfluentChemicalOxygenDemand,
+            In::InfluentTotalOrganicCarbohydrates,
+            In::EffluentNitrogen,
+            In::EffluentChemicalOxygenDemand,
+            In::SewageGasProduced,
+            In::MethaneFraction,
+            In::GasSupply,
+            In::PurchaseOfBiogas,
+            In::TotalPowerConsumption,
+            In::OnSitePowerGeneration,
+            In::EmissionFactorElectricityMix,
+            In::HeatingOil,
+            In::SideStreamTreatmentTotalNitrogen,
+            In::OperatingMaterialFeCl3,
+            In::OperatingMaterialFeClSO4,
+            In::OperatingMaterialCaOH2,
+            In::OperatingMaterialSyntheticPolymers,
+            In::SludgeTreatmentBagsAreOpen,
+            In::SludgeTreatmentStorageContainersAreOpen,
+            In::SludgeTreatmentDisposal,
+            In::SludgeTreatmentTransportDistance,
+            In::SludgeTreatmentDigesterCount,
+            In::SensitivityN2OCalculationMethod,
+            In::SensitivityCH4ChpCalculationMethod,
+            In::SensitivityN2OCustomFactor,
+            In::SensitivityN2OSideStreamFactor,
+            In::SensitivityCH4ChpCustomFactor,
+            In::SensitivityCO2FossilCustomFactor,
+            In::SensitivitySludgeBagsCustomFactor,
+            In::SensitivitySludgeStorageCustomFactor,
+            In::ScenarioSludgeBagsAreOpen,
+            In::ScenarioSludgeStorageContainersAreOpen,
+            In::ScenarioN2OSideStreamFactor,
+            In::ScenarioN2OSideStreamCoverIsOpen,
+            In::ScenarioProcessEnergySaving,
+            In::ScenarioFossilEnergySaving,
+            In::ScenarioDistrictHeating,
+            In::ScenarioPhotovoltaicEnergyExpansion,
+            In::ScenarioEstimatedSelfPhotovolaticUsage,
+            In::ScenarioWindEnergyExpansion,
+            In::ScenarioEstimatedSelfWindEnergyUsage,
+            In::ScenarioWaterEnergyExpansion,
+            In::ScenarioEstimatedSelfWaterEnergyUsage,
         ];
-        let profile_ids: HashSet<_> = RECOMMENDATION_IDS.iter().collect();
+        let profile_ids: HashSet<_> = RECOMMENDATION_IDS.iter().copied().map(Id::from).collect();
         let values = values
             .into_iter()
             .filter(|(i, _)| profile_ids.contains(i) || i.is_custom())
@@ -524,13 +493,13 @@ pub fn Tool(
     //    Effects    //
     // -----   ----- //
 
-    create_effect(move |_| {
+    Effect::new(move |_| {
         let s = current_section.get();
         let id = s.section_id();
         scroll_to_element_by_id(id);
     });
 
-    create_effect(move |_| {
+    Effect::new(move |_| {
         let Some(p) = current_project.get() else {
             return;
         };
@@ -538,7 +507,12 @@ pub fn Tool(
         load_form_data(data);
     });
 
-    create_effect(move |_| {
+    Effect::new(move |_| {
+        let data = form_data.get();
+        form_data_to_session_storage(data);
+    });
+
+    Effect::new(move |_| {
         let additional_custom_emissions_string = form_data.with(|values| {
             values
                 .get(&In::AdditionalCustomEmissions)
@@ -689,5 +663,36 @@ pub fn DataCollectionEnforcementHelper(current_section: RwSignal<PageSection>) -
       >
         "zu der Datenerfassung"
       </button>
+    }
+}
+
+const FORM_DATA_SESSION_STORAGE_KEY: &str = "klick-form-data";
+
+fn form_data_from_session_storage() -> HashMap<In, Value> {
+    let Ok(Some(json)) = SessionStorage::raw().get_item(FORM_DATA_SESSION_STORAGE_KEY) else {
+        return HashMap::default();
+    };
+    let Ok(project) = boundary::import_from_str(&json) else {
+        return HashMap::default();
+    };
+    let Ok(form_data) = project.into_form_data().try_into() else {
+        return HashMap::default();
+    };
+    form_data
+}
+
+fn form_data_to_session_storage(data: HashMap<In, Value>) {
+    let Ok(form_data) = data.try_into() else {
+        return;
+    };
+    let project = Project::from(UnsavedProject { form_data });
+    let json = boundary::export_to_string(&project);
+    let result = SessionStorage::raw().set_item(FORM_DATA_SESSION_STORAGE_KEY, &json);
+
+    if let Err(err) = result
+        .map_err(|err| err.dyn_into::<js_sys::Error>().unwrap())
+        .map_err(JsError::from)
+    {
+        log::warn!("Unable to save form data in session storage: {err}");
     }
 }

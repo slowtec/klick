@@ -1073,6 +1073,7 @@ dependencies = [
  "gloo-file",
  "gloo-net",
  "gloo-storage",
+ "gloo-utils",
  "js-sys",
  "klick-app-api",
  "klick-app-charts",
