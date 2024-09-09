@@ -24,15 +24,13 @@ pub fn PlantProfile(
     profile_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let lang = current_lang();
-
     // -----   ----- //
     //     Form      //
     // -----   ----- //
 
     let field_sets = field_sets(form_data);
     let (field_views, missing_fields, labels) =
-        render_field_sets(field_sets, accessibility_always_show_option, lang);
+        render_field_sets(field_sets, accessibility_always_show_option, current_lang());
     let labels = Rc::new(labels);
 
     // -----   ----- //
@@ -73,7 +71,7 @@ pub fn PlantProfile(
                 &outcome.input,
                 out.clone(),
                 klick_presenter::Formatting::Text,
-                lang.get(),
+                current_lang().get(),
               )
             }))
         }

@@ -30,7 +30,7 @@ pub fn Recommendations(
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let lang = crate::current_lang().get();
+    let lang = crate::current_lang();
 
     let old_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
     let new_output = Memo::new(move |_| recommendation_outcome.with(|out| out.output.clone()));
@@ -40,7 +40,7 @@ pub fn Recommendations(
             .get()
             .and_then(|old| new_output.get().map(|new| (new, old)))
             .map(|(new, old)| {
-                klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
+                klick_presenter::sensitivity_diff_bar_chart(old, new, lang.get())
                     .into_iter()
                     .map(|(label, value, percentage)| BarChartArguments {
                         label,
@@ -108,7 +108,7 @@ pub fn Recommendations(
                 &outcome.input,
                 out.clone(),
                 klick_presenter::Formatting::Text,
-                lang,
+                current_lang().get(),
               )
             }))
         }

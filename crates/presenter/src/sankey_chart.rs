@@ -18,6 +18,14 @@ pub fn create_sankey_chart_header(
     formatting: Formatting,
     lang: Lng,
 ) -> String {
+    let plant_name = match &data
+        .get(&In::PlantName.into())
+        .cloned()
+        .map(Value::as_text_unchecked)
+    {
+        Some(v) => v.to_string(),
+        None => String::new(),
+    };
     let population_equivalent = match &data
         .get(&In::PopulationEquivalent.into())
         .cloned()
@@ -27,42 +35,44 @@ pub fn create_sankey_chart_header(
         Some(v) => format!("{v}"),
         None => String::new(),
     };
-
-    let plant_name = match &data
-        .get(&In::PlantName.into())
-        .cloned()
-        .map(Value::as_text_unchecked)
-    {
-        Some(v) => v.to_string(),
-        None => String::new(),
+    let ew = match lang {
+        Lng::De => "EW",
+        Lng::En => "Res",
     };
-
+    let tge = match lang {
+        Lng::De => "Treibhausgasemissionen",
+        Lng::En => "greenhouse gas emissions",
+    };
+    let co2_label = match formatting {
+        Formatting::Text => "CO₂",
+        Formatting::LaTeX => r"CO\textsubscript{2}",
+    };
+    let eq_per_a = match lang {
+        Lng::De => "Äquivalente/Jahr",
+        Lng::En => "Equivalents/Year",
+    };
+    let scenario = match lang {
+        Lng::De => "Szenario",
+        Lng::En => "Scenario",
+    };
+    let method = formatting.fmt_label(
+        required!(Out::N2oEmissionFactorCalcMethod, values).unwrap(),
+        lang,
+    );
+    let n2o_label = match formatting {
+        Formatting::Text => "N₂O",
+        Formatting::LaTeX => r"N\textsubscript{2}O",
+    };
     let emission_factor = lang.format_number_with_fixed_precision(
         f64::from(
             required!(Out::N2oCalculatedEmissionFactor, values)
                 .unwrap()
                 .convert_to::<Percent>(),
         ),
-        3,
+        2,
     );
-
-    let method = formatting.fmt_label(
-        required!(Out::N2oEmissionFactorCalcMethod, values).unwrap(),
-        lang,
-    );
-
-    let n2o_label = match formatting {
-        Formatting::Text => "N₂O",
-        Formatting::LaTeX => r"N\textsubscript{2}O",
-    };
-
-    let co2_label = match formatting {
-        Formatting::Text => "CO₂",
-        Formatting::LaTeX => r"CO\textsubscript{2}",
-    };
-
     format!(
-        "{plant_name} ({population_equivalent} EW) / Treibhausgasemissionen [t {co2_label} Äquivalente/Jahr] - Szenario {method} ({n2o_label}-EF={emission_factor})"
+        "{plant_name} ({population_equivalent} {ew}) / {tge} [t {co2_label} {eq_per_a}] - {scenario} {method} ({n2o_label}-EF={emission_factor})"
     )
 }
 

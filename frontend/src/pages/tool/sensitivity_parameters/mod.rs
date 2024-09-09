@@ -33,19 +33,15 @@ pub fn SensitivityParameters(
     accessibility_always_show_option: Option<RwSignal<bool>>,
     custom_emissions_message: RwSignal<String>,
 ) -> impl IntoView {
-    let lang = crate::current_lang().get();
-
     let old_output = Memo::new(move |_| profile_outcome.with(|out| out.output.clone()));
     let new_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
 
     let barchart_arguments = Memo::new(move |_| {
-        // don't remove the lang below or the translation won't work
-        let lang = crate::current_lang().get();
         old_output
             .get()
             .and_then(|old| new_output.get().map(|new| (new, old)))
             .map(|(new, old)| {
-                klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
+                klick_presenter::sensitivity_diff_bar_chart(old, new, current_lang().get())
                     .into_iter()
                     .map(|(label, value, percentage)| BarChartArguments {
                         label,
@@ -109,14 +105,14 @@ pub fn SensitivityParameters(
                   &outcome.input,
                   out.clone(),
                   klick_presenter::Formatting::Text,
-                  lang,
+                  current_lang().get(),
                 )
               }))
           }
         </h4>
 
         { move || sensitivity_outcome.with(|out| out.output.clone().zip(out.graph.clone()).map(|(data, graph)|{
-          let lang = current_lang().get();
+            let lang = current_lang().get();
             view!{ <Sankey data graph lang/> }
           }))
         }
@@ -138,7 +134,6 @@ pub fn SensitivityParameters(
             "Das folgende Diagramm zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. die [%]-Änderung der Gesamtemissionen durch die ausgewählten Emissionsfaktoren."
           </p>
           { move || {
-            let lang = current_lang().get();
               barchart_arguments.with(|args|args.as_ref().map(|arguments|{
                   let barchart_arguments_filtered = arguments
                     .iter()
@@ -155,7 +150,7 @@ pub fn SensitivityParameters(
                       height = 400.0
                       data=barchart_arguments_filtered
                       aria_label = Some("Ein Balkendiagramm innerhalb der Sensitivität, welches nur angezeigt wird, wenn eine Verbesserung / Verschlechterung durch eine Auswahl eingetreten ist.".to_string())
-                      number_format = move |a,b| lang.format_number_with_fixed_precision(a,b)
+                      number_format = move |a,b| current_lang().get().format_number_with_fixed_precision(a,b)
                   />
                   }
               }))

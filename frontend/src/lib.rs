@@ -104,8 +104,6 @@ pub fn App() -> impl IntoView {
     let logged_in = Signal::derive(move || user_info.get().is_some());
     let current_project = RwSignal::new(None::<boundary::Project>);
 
-    // TODO: avoid mixing lang and lng
-    let lang = leptos_fluent::i18n().language;
     let lng = current_lang();
 
     // -- actions -- //
