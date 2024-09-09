@@ -26,7 +26,8 @@ pub fn CH4EmissionsCHP(
     //    Signals    //
     // -----   ----- //
 
-    let lang = crate::current_lang().get(); // FIXME
+    let lang = crate::current_lang();
+
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
             d.get(&Id::SensitivityCH4ChpCalculationMethod)
@@ -53,7 +54,8 @@ pub fn CH4EmissionsCHP(
     // -----   ----- //
 
     let field_set = field_set(form_data.write_only(), form_data.read_only().into());
-    let (chp_view, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
+    let (chp_view, _, _) =
+        render_field_sets(vec![field_set], accessibility_always_show_option, lang);
 
     // -----   ----- //
     //   Callbacks   //
@@ -83,7 +85,7 @@ pub fn CH4EmissionsCHP(
                     .iter()
                     .map(|(szenario, value, factor)| {
                         klick_app_charts::BarChartRadioInputArguments {
-                            label: Some(szenario.label(lang)),
+                            label: Some(szenario.label(lang.get())),
                             value: (*value).into(),
                             emission_factor: f64::from(*factor),
                         }
@@ -97,7 +99,7 @@ pub fn CH4EmissionsCHP(
                     selected_bar = selected_scenario_index
                     emission_factor_label = Some("CH₄ EF")
                     aria_label = Some("Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Methanemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.".to_string())
-                    lang
+                    lang = lang.get()
                     on_change = on_bar_chart_input_changed
                   />
                 }
@@ -135,7 +137,7 @@ pub fn CH4EmissionsCHP(
 
             <p>
             "Es ist das Szenario \"" { move ||
-                selected_scenario.get().as_ref().map(|id|id.label(lang))
+                selected_scenario.get().as_ref().map(|id|id.label(lang.get()))
             }
             "\" ausgewählt in t CO₂ Äquivalente/Jahr.
             Durch Anklicken kann ein anderes Szenario ausgewählt werden."

@@ -5,7 +5,6 @@ use leptos::*;
 use klick_app_components::forms::*;
 use klick_boundary::{FormData, ProjectId};
 use klick_domain::{InputValueId as Id, Value};
-use klick_presenter::Lng;
 
 use crate::{api::AuthorizedApi, label_signal};
 
@@ -17,6 +16,8 @@ pub fn NewProject(
     on_cancel: Callback<(), ()>,
     on_success: Callback<ProjectId, ()>,
 ) -> impl IntoView {
+    let lang = crate::current_lang();
+
     let title = RwSignal::<Option<String>>::new(None);
     let on_change = Callback::new(move |txt: Option<String>| {
         title.update(|t| *t = txt);
@@ -40,7 +41,7 @@ pub fn NewProject(
     let field_id = dom_node_id();
     let missing_fields = RwSignal::new(HashSet::new());
 
-    let field_view = render_field(field, field_id, missing_fields, Lng::De, None);
+    let field_view = render_field(field, field_id, missing_fields, lang, None);
 
     let create_project = create_action(move |(): &()| {
         let mut project = FormData::default();

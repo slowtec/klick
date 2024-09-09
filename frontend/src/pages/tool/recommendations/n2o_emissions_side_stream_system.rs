@@ -16,8 +16,9 @@ pub fn options(
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = crate::current_lang();
     let field_set = field_set(form_data.write_only(), input_data);
-    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
+    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, lang);
 
     view! {
       <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >

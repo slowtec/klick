@@ -15,6 +15,8 @@ pub fn CH4EmissionsOpenDigesters(
     sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = crate::current_lang();
+
     let show_sludge_bags_controls = Signal::derive(move || {
         // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
         form_data.with(|d| {
@@ -63,7 +65,8 @@ pub fn CH4EmissionsOpenDigesters(
         draw_border: false,
     };
 
-    let (fields_view1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
+    let (fields_view1, _, _) =
+        render_field_sets(vec![field_set], accessibility_always_show_option, lang);
 
     let id = Id::SensitivitySludgeStorageCustomFactor;
     let custom_factor_field2 = create_field(form_data.write_only(), form_data.into(), id);
@@ -75,7 +78,8 @@ pub fn CH4EmissionsOpenDigesters(
         draw_border: false,
     };
 
-    let (fields_view2, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
+    let (fields_view2, _, _) =
+        render_field_sets(vec![field_set], accessibility_always_show_option, lang);
 
     // FIXME: set default values in page::tool::default_values
     // create_effect(move |_| {

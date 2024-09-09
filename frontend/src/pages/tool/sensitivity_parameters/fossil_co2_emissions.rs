@@ -14,8 +14,10 @@ pub fn FossilCO2Emissions(
     sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
+    let lang = crate::current_lang();
+
     let field_set = field_set(form_data.write_only(), form_data.into());
-    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option);
+    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, lang);
 
     view! {
        <Card id="sensitivity-fossil-co2" title = "Fossile CO₂-Emissionen aus Abwasser" bg_color="bg-blue" accessibility_always_show_option>

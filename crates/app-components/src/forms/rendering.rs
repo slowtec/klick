@@ -19,11 +19,11 @@ type Labels = HashMap<FieldId, Signal<String>>;
 pub fn render_field_sets(
     field_sets: Vec<FieldSet>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lng: Signal<Lng>,
 ) -> (Vec<View>, Signal<MissingFields>, Labels) {
     let mut set_views = vec![];
     let mut labels = HashMap::new();
     let missing_fields = RwSignal::new(HashSet::new());
-    let lng = Lng::De; // TODO
 
     for set in field_sets {
         let mut field_views = vec![];
@@ -70,7 +70,7 @@ pub fn render_field(
     field: Field,
     id: FieldId,
     missing_fields: RwSignal<HashSet<FieldId>>,
-    lng: Lng,
+    lng: Signal<Lng>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
     let Field {
@@ -381,11 +381,11 @@ fn FloatInput(
     required: bool,
     input_value: Signal<Option<f64>>,
     #[prop(into)] on_change: Callback<Option<f64>, ()>,
-    lng: Lng,
+    lng: Signal<Lng>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let format_number = move |v| lng.format_number(v);
-    let format_plain_number = move |v| lng.format_number_without_thousands_separators(v);
+    let format_number = move |v| lng.get().format_number(v);
+    let format_plain_number = move |v| lng.get().format_number_without_thousands_separators(v);
     number_input_field(
         label,
         unit,
@@ -415,11 +415,14 @@ fn UnsignedIntegerInput(
     required: bool,
     input_value: Signal<Option<u64>>,
     #[prop(into)] on_change: Callback<Option<u64>, ()>,
-    lng: Lng,
+    lng: Signal<Lng>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
-    let format_number = move |v| lng.format_number(v as f64);
-    let format_plain_number = move |v| lng.format_number_without_thousands_separators(v as f64);
+    let format_number = move |v| lng.get().format_number(v as f64);
+    let format_plain_number = move |v| {
+        lng.get()
+            .format_number_without_thousands_separators(v as f64)
+    };
     number_input_field(
         label,
         unit,
@@ -449,7 +452,7 @@ fn number_input_field<F, N>(
     input_value: Signal<Option<N>>,
     on_change: Callback<Option<N>, ()>,
     evaluate_input: F,
-    lng: Lng,
+    lng: Signal<Lng>,
     format_value: impl Fn(N) -> String + Copy + 'static,
     format_plain_value: impl Fn(N) -> String + Copy + 'static,
     accessibility_always_show_option: Option<RwSignal<bool>>,
@@ -467,7 +470,7 @@ where
             let new_value = input_value.get().map(format_value).unwrap_or_default();
             txt.set(new_value);
         }
-        match evaluate_input(&txt.get(), required, limits, lng) {
+        match evaluate_input(&txt.get(), required, limits, lng.get()) {
             Ok(_) => {
                 error.set(None);
             }
@@ -481,7 +484,7 @@ where
 
     let on_input = move |ev| {
         let input = event_target_value(&ev);
-        let result = evaluate_input(&input, required, limits, lng);
+        let result = evaluate_input(&input, required, limits, lng.get());
         txt.set(input);
         match result {
             Err(err) => {

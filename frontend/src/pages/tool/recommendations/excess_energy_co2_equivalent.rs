@@ -17,6 +17,8 @@ pub fn options(
     //    Signals    //
     // -----   ----- //
 
+    let lang = crate::current_lang();
+
     let excess_energy_co2_equivalent = Signal::derive(move || {
         outcome.with(|out| {
             out.output
@@ -50,7 +52,7 @@ pub fn options(
     // -----   ----- //
 
     let field_sets = field_sets(form_data.write_only(), input_data);
-    let (view, _, _) = render_field_sets(field_sets, accessibility_always_show_option);
+    let (view, _, _) = render_field_sets(field_sets, accessibility_always_show_option, lang);
 
     // -----   ----- //
     //     View      //

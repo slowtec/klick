@@ -31,7 +31,7 @@ pub fn PlantProfile(
 
     let field_sets = field_sets(form_data);
     let (field_views, missing_fields, labels) =
-        render_field_sets(field_sets, accessibility_always_show_option);
+        render_field_sets(field_sets, accessibility_always_show_option, lang);
     let labels = Rc::new(labels);
 
     // -----   ----- //

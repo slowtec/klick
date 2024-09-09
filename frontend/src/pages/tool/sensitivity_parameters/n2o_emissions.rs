@@ -48,12 +48,14 @@ pub fn N2OEmissionsSensitivity(
     let (n2o_custom_factor_view, _, _) = render_field_sets(
         n2o_custom_factor_field_set,
         accessibility_always_show_option,
+        lang,
     );
 
     let side_stream_factor_field_set = side_stream_factor(form_data);
     let (side_stream_factor_view, _, _) = render_field_sets(
         side_stream_factor_field_set,
         accessibility_always_show_option,
+        lang,
     );
 
     // -----   ----- //
