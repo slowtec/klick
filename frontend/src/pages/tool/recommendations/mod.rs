@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
@@ -65,7 +66,8 @@ pub fn Recommendations(
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
       <h4 class="my-8 text-lg font-bold">
-      "Übersicht über Eingabewerte (Datenerfassung und Sensitivität)"
+      { move_tr!("form_data_table_overview")}
+
       </h4>
       { form_data_overview }
       { n2o_emissions_in_the_biological_treatment_stage::options(

@@ -89,4 +89,4 @@ WaterExpansionSavings = Einsparung durch Wasserkraft
 DistrictHeatingSavings = Einsparung durch Abwärmenutzung
 FossilEnergySavings = Einsparung bei Fossilen Energiequellen
 ExcessEnergyCo2Equivalent = Energiebedingte Emissionen
-AdditionalCustomEmissions = Benutzer Emissionen
+AdditionalCustomEmissions = Benutzerdef. Emissionen

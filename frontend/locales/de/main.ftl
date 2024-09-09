@@ -31,3 +31,5 @@ how-does-it-work              = Wie funktioniert es?
 reset-password-description    = Sie erhalten eine E-Mail mit einem Link, über den Sie Ihr neues Passwort festlegen können.
 email-sent-to-reset-password  = E-mail zum Zurücksetzen des Passworts versandt.
 reset-request-success-message = Prüfen Sie nun Ihren E-Mail-Posteingang und öffnen Sie die entsprechende E-Mail. Klicken Sie dann auf den darin enthaltenen Link, um Ihr neues Passwort einzugeben.
+
+form_data_table_overview      = Übersicht über Eingabewerte (Datenerfassung und Sensitivität)

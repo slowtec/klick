@@ -172,11 +172,6 @@ pub fn App() -> impl IntoView {
         }
     });
 
-    Effect::new(move |_| {
-        let current_lang = lang.get();
-        log::info!("Language changed to {}", current_lang.name);
-    });
-
     view! {
       <div _ref=app_ref>
         <Nav

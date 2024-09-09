@@ -6,9 +6,9 @@ where
     E: Copy + PartialEq + 'static,
 {
     let crumbs: Vec<_> = entries
-    .iter()
-    .map(|(title, entry)| view! { <Entry title=*title entry=*entry current /> })
-    .collect();
+        .iter()
+        .map(|(title, entry)| view! { <Entry title=*title entry=*entry current /> })
+        .collect();
 
     view! {
       <nav class="flex" aria-label="Breadcrumb">
@@ -20,7 +20,7 @@ where
 }
 
 #[component]
-fn Entry<E>(title:Signal<String>, entry: E, current: RwSignal<E>) -> impl IntoView
+fn Entry<E>(title: Signal<String>, entry: E, current: RwSignal<E>) -> impl IntoView
 where
     E: Copy + PartialEq + 'static,
 {

@@ -604,11 +604,17 @@ pub fn Tool(
         }
         .into_view(),
     };
-    
+
     let breadcumb_entries: Vec<(Signal<String>, PageSection)> = vec![
-        ({move_tr!("page-datacollection")}, PageSection::DataCollection),
-        ({move_tr!("page-sensitivity")}, PageSection::Sensitivity),
-        ({move_tr!("page-recommendations")}, PageSection::Recommendation),
+        (
+            { move_tr!("page-datacollection") },
+            PageSection::DataCollection,
+        ),
+        ({ move_tr!("page-sensitivity") }, PageSection::Sensitivity),
+        (
+            { move_tr!("page-recommendations") },
+            PageSection::Recommendation,
+        ),
     ];
 
     view! {
