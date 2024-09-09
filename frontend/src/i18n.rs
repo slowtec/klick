@@ -90,7 +90,7 @@ fn LanguageOptions() -> impl IntoView {
 
                     <a
                       class=format!("{select_style} cursor-pointer block px-4 py-2 text-sm text-left items-center inline-flex hover:bg-gray-100 {rounded_style}")
-                      role="menuitem"
+                      role="menuitem" href=""
                       on:click = move |_| { lang.activate(); }
                     >
                       <span class=format!("fi fis fi-circle inline-block mr-2 fi-{flag_icon}")></span>
