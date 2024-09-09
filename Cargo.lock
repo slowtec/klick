@@ -1782,10 +1782,8 @@ dependencies = [
  "libsqlite3-sys",
  "log",
  "parking_lot",
- "serde_json",
  "thiserror",
  "time",
- "uuid",
 ]
 
 [[package]]
@@ -1799,9 +1797,6 @@ dependencies = [
  "klick-value",
  "log",
  "mailparse",
- "num-derive",
- "num-traits",
- "paste",
  "thiserror",
  "time",
  "uuid",
@@ -1834,7 +1829,6 @@ dependencies = [
  "klick-boundary",
  "klick-domain",
  "serde",
- "strum",
 ]
 
 [[package]]
@@ -1854,7 +1848,6 @@ name = "klick-value-spec"
 version = "0.0.0"
 dependencies = [
  "itertools 0.13.0",
- "proc-macro2",
  "quote",
  "syn",
 ]

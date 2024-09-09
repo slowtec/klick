@@ -17,11 +17,9 @@ klick-domain = { path = "../crates/domain" }
 klick-presenter = "=0.0.0"
 
 # External dependencies
-chrono = "0.4"
 anyhow = "1.0.86"
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
-derive_more = "1.0.0"
 fluent-templates = { version = "0.10.1",  features = ["macros", "walkdir"] }
 gloo-file = { version = "0.3.0", features = ["futures"] }
 gloo-net = { version = "0.6.0", default-features = false, features = ["json", "http"] }
@@ -35,10 +33,6 @@ leptos_meta = { version = "0.6.14", features = ["csr"] }
 leptos_router = { version = "0.6.14", features = ["csr"] }
 log = "0.4.22"
 num-traits = "0.2.19"
-serde_json = "1.0.127"
-serde = { version = "1.0.209", features = ["derive"] }
-strum = "0.26.3"
-thiserror = "1.0.63"
 time = { version = "0.3.36", features = ["macros", "formatting"] }
 
 [patch.crates-io]
