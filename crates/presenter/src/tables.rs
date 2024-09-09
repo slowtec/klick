@@ -53,7 +53,12 @@ pub fn plant_profile_as_table(
 ) -> Table {
     let custom_emissions: Option<(&str, Vec<_>)> = if data.iter().any(|(id, _)| id.is_custom()) {
         Some((
-            "Benutzerdefinierte Emissionen",
+            {
+                match lang {
+                    Lng::De => "Benutzerdefinierte Emissionen",
+                    Lng::En => "Custom defined emissions",
+                }
+            },
             data.iter()
                 .filter_map(|(id, _)| {
                     if id.is_custom() {
@@ -67,14 +72,23 @@ pub fn plant_profile_as_table(
     } else {
         None
     };
-
     let sections = [
         (
-            "Angaben zur Kläranlage",
+            {
+                match lang {
+                    Lng::De => "Angaben zur Kläranlage",
+                    Lng::En => "Sewage treatment plant details",
+                }
+            },
             vec![In::PlantName, In::PopulationEquivalent, In::Wastewater],
         ),
         (
-            "Zulauf-Parameter (Jahresmittelwerte)",
+            {
+                match lang {
+                    Lng::De => "Zulauf-Parameter (Jahresmittelwerte)",
+                    Lng::En => "Inflow parameters (annual averages)",
+                }
+            },
             vec![
                 In::InfluentNitrogen,
                 In::InfluentChemicalOxygenDemand,
@@ -82,11 +96,21 @@ pub fn plant_profile_as_table(
             ],
         ),
         (
-            "Ablauf-Parameter (Jahresmittelwerte)",
+            {
+                match lang {
+                    Lng::De => "Ablauf-Parameter (Jahresmittelwerte)",
+                    Lng::En => "Outflow parameters (annual averages)",
+                }
+            },
             vec![In::EffluentNitrogen, In::EffluentChemicalOxygenDemand],
         ),
         (
-            "Energiebedarf",
+            {
+                match lang {
+                    Lng::De => "Energiebedarf",
+                    Lng::En => "Energy requirements",
+                }
+            },
             vec![
                 In::TotalPowerConsumption,
                 In::OnSitePowerGeneration,
@@ -99,7 +123,12 @@ pub fn plant_profile_as_table(
             ],
         ),
         (
-            "Klärschlammbehandlung",
+            {
+                match lang {
+                    Lng::De => "Klärschlammbehandlung",
+                    Lng::En => "Sewage sludge treatment",
+                }
+            },
             vec![
                 In::SludgeTreatmentDigesterCount,
                 In::SludgeTreatmentDisposal,
@@ -109,11 +138,21 @@ pub fn plant_profile_as_table(
             ],
         ),
         (
-            "Prozesswasserbehandlung",
+            {
+                match lang {
+                    Lng::De => "Prozesswasserbehandlung",
+                    Lng::En => "Process water treatment",
+                }
+            },
             vec![In::SideStreamTreatmentTotalNitrogen],
         ),
         (
-            "Eingesetzte Betriebsstoffe",
+            {
+                match lang {
+                    Lng::De => "Eingesetzte Betriebsstoffe",
+                    Lng::En => "Operating materials used",
+                }
+            },
             vec![
                 In::OperatingMaterialFeCl3,
                 In::OperatingMaterialFeClSO4,
@@ -152,12 +191,19 @@ pub fn plant_profile_as_table(
 }
 
 #[must_use]
-pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Formatting) -> Table {
-    let lang = Lng::De;
-
+pub fn sensitivity_parameters_as_table(
+    data: &HashMap<Id, Value>,
+    formatting: Formatting,
+    lang: Lng,
+) -> Table {
     let sections = vec![
         (
-            "Lachgasemissionen",
+            {
+                match lang {
+                    Lng::De => "Lachgasemissionen",
+                    Lng::En => "Nitrous oxide emissions",
+                }
+            },
             vec![
                 In::SensitivityN2OCalculationMethod,
                 In::SensitivityN2OCustomFactor,
@@ -165,14 +211,26 @@ pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Fo
             ],
         ),
         (
-            "Methanemissionen aus Blockheizkraftwerken (BHKW)",
+            {
+                match lang {
+                    Lng::De => "Methanemissionen aus Blockheizkraftwerken (BHKW)",
+                    Lng::En => "Methane emissions from combined heat and power plants (CHP)",
+                }
+            },
             vec![
                 In::SensitivityCH4ChpCalculationMethod,
                 In::SensitivityCH4ChpCustomFactor,
             ],
         ),
         (
-            "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung",
+            {
+                match lang {
+                    Lng::De => {
+                        "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung"
+                    }
+                    Lng::En => "Methane emissions from open digestion towers and sludge storage",
+                }
+            },
             vec![
                 In::SensitivitySludgeBagsCustomFactor,
                 In::SensitivitySludgeStorageCustomFactor,
@@ -180,8 +238,14 @@ pub fn sensitivity_parameters_as_table(data: &HashMap<Id, Value>, formatting: Fo
         ),
         (
             match formatting {
-                Formatting::Text => "Fossile CO₂-Emissionen aus Abwasser",
-                Formatting::LaTeX => "Fossile $CO_2$-Emissionen aus Abwasser",
+                Formatting::Text => match lang {
+                    Lng::De => "Fossile CO₂-Emissionen aus Abwasser",
+                    Lng::En => "Fossil CO₂ emissions from wastewater",
+                },
+                Formatting::LaTeX => match lang {
+                    Lng::De => "Fossile $CO_2$-Emissionen aus Abwasser",
+                    Lng::En => "Fossil $CO_2$ emissions from wastewater",
+                },
             },
             vec![In::SensitivityCO2FossilCustomFactor],
         ),

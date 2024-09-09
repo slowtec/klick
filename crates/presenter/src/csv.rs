@@ -17,7 +17,7 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome, lang: Lng) -> String
 
     let mut plant_profile_table = plant_profile_as_table(&out.input, unit, lang);
 
-    let sensitivity_parameters_table = sensitivity_parameters_as_table(&out.input, unit);
+    let sensitivity_parameters_table = sensitivity_parameters_as_table(&out.input, unit, lang);
 
     let co2_equivalents_table = out
         .output

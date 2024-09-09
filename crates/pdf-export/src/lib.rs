@@ -221,7 +221,7 @@ fn render_markdown_template(
     let plant_profile_table = create_latex_table(&plant_profile_table_data)?;
 
     let sensitivity_table_data =
-        presenter::sensitivity_parameters_as_table(&outcome.input, Formatting::LaTeX);
+        presenter::sensitivity_parameters_as_table(&outcome.input, Formatting::LaTeX, lang);
     let sensitivity_parameters_table = create_latex_table(&sensitivity_table_data)?;
 
     let plant_name = outcome
