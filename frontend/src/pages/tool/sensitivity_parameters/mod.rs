@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
@@ -166,7 +167,7 @@ pub fn SensitivityParameters(
         class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
         on:click = move |_| { current_section.set(PageSection::Recommendation); }
       >
-        "zur den Handlungsempfehlungen"
+         { move_tr!("to-the-recommendations") }
       </button>
       </Show>
     }

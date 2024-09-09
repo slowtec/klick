@@ -1,15 +1,14 @@
 use leptos::*;
 
 #[component]
-pub fn Breadcrumbs<E>(entries: &'static [(&'static str, E)], current: RwSignal<E>) -> impl IntoView
+pub fn Breadcrumbs<E>(entries: Vec<(Signal<String>, E)>, current: RwSignal<E>) -> impl IntoView
 where
     E: Copy + PartialEq + 'static,
 {
     let crumbs: Vec<_> = entries
-        .iter()
-        .copied()
-        .map(|(title, entry)| view! { <Entry title entry current /> })
-        .collect();
+    .iter()
+    .map(|(title, entry)| view! { <Entry title=*title entry=*entry current /> })
+    .collect();
 
     view! {
       <nav class="flex" aria-label="Breadcrumb">
@@ -21,7 +20,7 @@ where
 }
 
 #[component]
-fn Entry<E>(title: &'static str, entry: E, current: RwSignal<E>) -> impl IntoView
+fn Entry<E>(title:Signal<String>, entry: E, current: RwSignal<E>) -> impl IntoView
 where
     E: Copy + PartialEq + 'static,
 {

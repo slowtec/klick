@@ -1,5 +1,10 @@
 klick                         = KlicK
 to-the-tool                   = Zum Tool
+to-the-sensitivity            = Zur Sensitivität
+to-the-recommendations        = Zu den Handlungsempfehlungen
+page-datacollection           = Datenerfassung
+page-sensitivity              = Sensitivität
+page-recommendations          = Handlungsempfehlungen
 email-address                 = E-Mail Adresse
 password                      = Passwort
 communication-error           = Ein Kommunikationsfehler ist aufgetreten

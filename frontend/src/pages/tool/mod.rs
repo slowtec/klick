@@ -5,6 +5,7 @@ use gloo_storage::{SessionStorage, Storage as _};
 use gloo_utils::errors::JsError;
 use js_sys::wasm_bindgen::JsCast;
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_components::message::*;
 use klick_boundary::{
@@ -52,12 +53,6 @@ impl PageSection {
         }
     }
 }
-
-const BREADCRUMPS_ENTRIES: &[(&str, PageSection)] = &[
-    ("Datenerfassung", PageSection::DataCollection),
-    ("Sensitivität", PageSection::Sensitivity),
-    ("Handlungsempfehlungen", PageSection::Recommendation),
-];
 
 const DEFAULT_UNNAMED_PROJECT_TITLE: &str = "Unbenannt";
 
@@ -609,12 +604,18 @@ pub fn Tool(
         }
         .into_view(),
     };
+    
+    let breadcumb_entries: Vec<(Signal<String>, PageSection)> = vec![
+        ({move_tr!("page-datacollection")}, PageSection::DataCollection),
+        ({move_tr!("page-sensitivity")}, PageSection::Sensitivity),
+        ({move_tr!("page-recommendations")}, PageSection::Recommendation),
+    ];
 
     view! {
       <div class="space-y-10" >
         <div class="flex center-items justify-between">
           <Breadcrumbs
-            entries = { BREADCRUMPS_ENTRIES }
+            entries = { breadcumb_entries }
             current = current_section
           />
           <ProjectMenu

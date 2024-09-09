@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_components::forms::render_field_sets;
 use klick_boundary::FormData;
@@ -87,7 +88,7 @@ pub fn PlantProfile(
             class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
             on:click = move |_| { current_section.set(PageSection::Sensitivity); }
           >
-            "zur Sensitivität"
+            { move_tr!("to-the-sensitivity") }
           </button>
         </Show>
       </div>

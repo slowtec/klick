@@ -1,5 +1,4 @@
 mod confirm_email_address;
-mod faq;
 mod login;
 mod projects;
 mod register;
@@ -8,7 +7,7 @@ mod reset_password_request;
 mod tool;
 
 pub use self::{
-    confirm_email_address::*, faq::*, login::*, projects::*, register::*, reset_password::*,
+    confirm_email_address::*, login::*, projects::*, register::*, reset_password::*,
     reset_password_request::*, tool::*,
 };
 
