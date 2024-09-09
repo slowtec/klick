@@ -20,6 +20,7 @@ pub enum Lng {
 }
 
 impl Lng {
+    #[must_use]
     pub fn try_from_id(id: &LanguageIdentifier) -> Option<Self> {
         match *id {
             GERMAN => Some(Self::De),
@@ -28,6 +29,7 @@ impl Lng {
         }
     }
 
+    #[must_use]
     pub const fn id(&self) -> LanguageIdentifier {
         match self {
             Self::En => ENGLISH,
@@ -133,7 +135,7 @@ impl Lng {
 
         // Format the number string based on the precision
         let num_string = match precision {
-            Some(precision) => format!("{:.precision$}", abs_number),
+            Some(precision) => format!("{abs_number:.precision$}"),
             None => abs_number.to_string(),
         };
 
@@ -158,7 +160,7 @@ impl Lng {
         let decimal_str = decimal_str.replace('.', self.decimal_separator());
 
         // Combine sign, integer, and decimal parts
-        format!("{}{}{}", sign, integer_string, decimal_str)
+        format!("{sign}{integer_string}{decimal_str}")
     }
 
     pub fn parse_str_as_f64(&self, input: &str) -> Result<f64, String> {

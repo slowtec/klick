@@ -121,8 +121,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
 
     let sensitivity_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
         .output
-        .as_ref()
-        .map(|o| o.clone())
+        .clone()
         .and_then(|old| outcome.output.as_ref().map(|o| (o.clone(), old)))
         .map(|(new, old)| {
             presenter::sensitivity_diff_bar_chart(old, new, lang)
@@ -148,8 +147,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
 
     let recommendation_barchart_svg_file_path: Option<String> = if let Some(data) = outcome
         .output
-        .as_ref()
-        .map(|o| o.clone())
+        .clone()
         .and_then(|old| outcome.output.as_ref().map(|o| (o.clone(), old)))
         .map(|(new, old)| {
             presenter::recommendation_diff_bar_chart(old, new, lang)
@@ -365,7 +363,7 @@ fn render_svg_sankey_chart(
 fn render_pdf(markdown: String) -> anyhow::Result<Vec<u8>> {
     log::debug!("Render PDF");
     let mut child = Command::new("pandoc")
-        .args(&["-o", "-", "-f", "markdown", "-t", "pdf"])
+        .args(["-o", "-", "-f", "markdown", "-t", "pdf"])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()

@@ -30,7 +30,7 @@ pub fn render_field_sets(
 
         for field in set.fields {
             let id = crate::forms::dom_node_id();
-            labels.insert(id, field.label.clone());
+            labels.insert(id, field.label);
             let view = render_field(
                 field,
                 id,
@@ -273,7 +273,7 @@ fn create_tooltip(
       <div class="block columns-2 sm:flex sm:justify-start sm:space-x-2">
         <label for={ id.to_string() } class="block text-sm font-bold leading-6 text-gray-900">
           { required_hint }
-          { label.clone() }
+          { label }
         </label>
         <div class="flex-col md:flex-row flex items-center md:justify-center">
           <a
@@ -346,7 +346,7 @@ fn TextInput(
 ) -> impl IntoView {
     view! {
       <div id={ format!("focus-{id}") }>
-        { move || create_tooltip(label.clone(), description.clone(), required, accessibility_always_show_option, id) }
+        { move || create_tooltip(label, description.clone(), required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm group">
           <input
             type = "text"
@@ -517,7 +517,7 @@ where
 
     view! {
       <div>
-        { move || create_tooltip(label.clone(), description.clone(), required, accessibility_always_show_option, id) }
+        { move || create_tooltip(label, description.clone(), required, accessibility_always_show_option, id) }
         <div class="relative mt-2 rounded-md shadow-sm">
           <input
             id = id.to_string()

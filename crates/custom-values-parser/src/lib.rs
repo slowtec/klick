@@ -119,7 +119,7 @@ pub fn parse_line(
         parts.remove(0).to_string()
     };
 
-    let Some(value_str) = parts.get(0) else {
+    let Some(value_str) = parts.first() else {
         return Ok(Some(CustomEmission::EdgeUndefined(EdgeUndefined {
             line: line_number,
             source,
@@ -129,8 +129,7 @@ pub fn parse_line(
 
     let value = number_format.parse_number(value_str).map_err(|err| {
         format!(
-            "Die Nummer \"{}\" auf Zeile \"{line_number}\" ist nicht im erwarteten Format: {err}",
-            value_str,
+            "Die Nummer \"{value_str}\" auf Zeile \"{line_number}\" ist nicht im erwarteten Format: {err}",
         )
     })?;
 

@@ -103,15 +103,16 @@ pub fn create_sankey_chart_data(
         .iter()
         .filter_map(|id| {
             let value = co2_equivalents
-                .get(&id)
+                .get(id)
                 .cloned()
                 .and_then(Value::as_tons)
                 .unwrap_or_else(Tons::zero);
 
             let (label, color, color_light) = match id {
-                x @ Id::Custom(label) => resolve_color(graph, &x)
-                    .map(|(color, color_light)| (label.clone(), color, color_light))
-                    .unwrap_or_else(|| (label.clone(), "black", "grey")),
+                x @ Id::Custom(label) => resolve_color(graph, x).map_or_else(
+                    || (label.clone(), "black", "grey"),
+                    |(color, color_light)| (label.clone(), color, color_light),
+                ),
                 Id::Out(id) => (id.label(lang).to_string(), id.color(), id.color_light()),
                 Id::In(_) => {
                     return None;
@@ -125,10 +126,10 @@ pub fn create_sankey_chart_data(
     let filtered_edges = graph
         .iter()
         .filter(|(source, target)| {
-            let Some(source_value) = co2_equivalents.get(&source) else {
+            let Some(source_value) = co2_equivalents.get(source) else {
                 return false;
             };
-            let Some(target_value) = co2_equivalents.get(&target) else {
+            let Some(target_value) = co2_equivalents.get(target) else {
                 return false;
             };
             *source_value != Tons::zero().into() && *target_value != Tons::zero().into()

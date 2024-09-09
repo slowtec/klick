@@ -291,7 +291,7 @@ fn import_v6() {
     let project = import_from_str(json).unwrap();
     let project = HashMap::<In, Value>::try_from(project.form_data().clone()).unwrap();
 
-    let project = HashMap::from(project);
+    let project = project;
 
     assert_eq!(
         project
@@ -414,7 +414,7 @@ fn import_v9() {
 
     assert_eq!(
         form_data.get(&In::Wastewater).cloned(),
-        Some(Value::qubicmeters(2135250.0))
+        Some(Value::qubicmeters(2_135_250.0))
     );
 
     assert_eq!(
@@ -446,7 +446,7 @@ fn import_v9() {
 
     assert_eq!(
         form_data.get(&In::SewageGasProduced).cloned(),
-        Some(Value::qubicmeters(420000.0))
+        Some(Value::qubicmeters(420_000.0))
     );
 
     assert_eq!(
@@ -461,12 +461,12 @@ fn import_v9() {
 
     assert_eq!(
         form_data.get(&In::TotalPowerConsumption).cloned(),
-        Some(Value::kilowatthours(1665000.0))
+        Some(Value::kilowatthours(1_665_000.0))
     );
 
     assert_eq!(
         form_data.get(&In::OnSitePowerGeneration).cloned(),
-        Some(Value::kilowatthours(810000.0))
+        Some(Value::kilowatthours(810_000.0))
     );
 
     assert_eq!(

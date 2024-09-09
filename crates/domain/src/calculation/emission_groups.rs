@@ -81,10 +81,8 @@ where
     values
 }
 
+#[must_use]
 pub fn get_all_internal_nodes() -> Vec<OutputValueId> {
-    let set: HashSet<_> = SANKEY_EDGES
-        .iter()
-        .map(|(_, target)| target.clone())
-        .collect();
-    set.iter().map(|target| target.clone()).collect()
+    let set: HashSet<_> = SANKEY_EDGES.iter().map(|(_, target)| *target).collect();
+    set.iter().copied().collect()
 }

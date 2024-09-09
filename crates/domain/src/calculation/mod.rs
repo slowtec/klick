@@ -52,8 +52,9 @@ pub fn calculate(
     Ok((co2_values, graph))
 }
 
-/// calculate_emission_groups assumes leaft to root node ordering for building the sums
+/// `calculate_emission_groups` assumes leaft to root node ordering for building the sums
 /// this also removes edges which don't end up in `target`, which is usually `Out::TotalEmissions`
+#[must_use]
 pub fn sort_and_filter_nodes(edges: Vec<(Id, Id)>, target: Id) -> Vec<(Id, Id)> {
     let mut targets: Vec<Id> = vec![target];
     let mut ret: Vec<(Id, Id)> = vec![];
@@ -62,14 +63,14 @@ pub fn sort_and_filter_nodes(edges: Vec<(Id, Id)>, target: Id) -> Vec<(Id, Id)> 
         next_edges = edges
             .clone()
             .into_iter()
-            .filter(|(_, target)| targets.iter().find(|&t| t == target).is_some())
+            .filter(|(_, target)| targets.iter().any(|t| t == target))
             .collect::<Vec<_>>();
         let next_targets: Vec<Id> = next_edges
             .iter()
             .map(|(source, _)| source.clone())
             .collect::<Vec<_>>();
         ret.append(&mut next_edges);
-        if next_targets.len() == 0 {
+        if next_targets.is_empty() {
             break;
         }
         targets = next_targets;

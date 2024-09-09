@@ -84,14 +84,14 @@ pub fn Tool(
     let custom_leafs = RwSignal::<Vec<Id>>::new(vec![]);
 
     let clear_custom_values_and_edges = move || {
-        custom_values.update(|values| values.clear());
-        custom_edges.update(|edges| edges.clear());
+        custom_values.update(std::vec::Vec::clear);
+        custom_edges.update(std::vec::Vec::clear);
     };
 
     fn try_id_lookup(id: String) -> Id {
         let id_lookup: HashMap<String, Id> = get_all_internal_nodes()
             .iter()
-            .map(|&id| (format!("{:?}", id), id.into()))
+            .map(|&id| (format!("{id:?}"), id.into()))
             .collect::<HashMap<_, _>>();
         if let Some(r) = id_lookup.get(&id.to_string()) {
             r.clone()
@@ -153,10 +153,7 @@ pub fn Tool(
 
     let sensitivity_outcome = Memo::new(move |_| {
         // FIXME apply filter for what should be in
-        let custom_values = custom_values
-            .get()
-            .into_iter()
-            .map(|(id, value)| (Id::from(id), value));
+        let custom_values = custom_values.get().into_iter();
 
         let values: HashMap<_, _> = form_data
             .get()
@@ -221,10 +218,7 @@ pub fn Tool(
 
     let recommendation_outcome = Memo::new(move |_| {
         // FIXME apply filter for what should be in
-        let custom_values = custom_values
-            .get()
-            .into_iter()
-            .map(|(id, value)| (Id::from(id), value));
+        let custom_values = custom_values.get().into_iter();
 
         let values: HashMap<_, _> = form_data
             .get()
@@ -512,7 +506,7 @@ pub fn Tool(
         });
 
         let Some(input) = additional_custom_emissions_string else {
-            custom_emissions_message.set("".to_string());
+            custom_emissions_message.set(String::new());
             clear_custom_values_and_edges();
             return;
         };
@@ -549,12 +543,12 @@ pub fn Tool(
         });
         let all_internal_nodes_names: Vec<String> = get_all_internal_nodes()
             .iter()
-            .map(|x| format!("{:?}", x).to_string())
+            .map(|x| format!("{x:?}").to_string())
             .collect();
 
         match custom_emission_parser::check_graph(&r, all_internal_nodes_names) {
-            Ok(_) => {
-                custom_emissions_message.set("".to_string());
+            Ok(()) => {
+                custom_emissions_message.set(String::new());
                 custom_values.set(custom_values_vec);
                 custom_edges.set(custom_edges_vec);
                 custom_leafs.set(custom_leafs_vec);

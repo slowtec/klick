@@ -327,23 +327,17 @@ impl InputValueId {
 
             // Count values
             Self::PopulationEquivalent | Self::SludgeTreatmentDigesterCount => {
-                let count_value = value
-                    .as_count()
-                    .ok_or_else(|| {
-                        anyhow!("Expected count value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let count_value = value.as_count().ok_or_else(|| {
+                    anyhow!("Expected count value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(u64::from(count_value)))
             }
 
             // Qubicmeters values
             Self::Wastewater | Self::SewageGasProduced | Self::GasSupply => {
-                let qubicmeters_value = value
-                    .as_qubicmeters()
-                    .ok_or_else(|| {
-                        anyhow!("Expected qubicmeters value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let qubicmeters_value = value.as_qubicmeters().ok_or_else(|| {
+                    anyhow!("Expected qubicmeters value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(qubicmeters_value)))
             }
 
@@ -353,14 +347,9 @@ impl InputValueId {
             | Self::InfluentTotalOrganicCarbohydrates
             | Self::EffluentNitrogen
             | Self::EffluentChemicalOxygenDemand => {
-                let milligrams_value = value
-                    .as_milligrams_per_liter()
-                    .ok_or_else(|| {
-                        anyhow!(
-                            "Expected milligrams_per_liter value for {self:?}, got {value_clone:?}"
-                        )
-                    })?
-                    .clone();
+                let milligrams_value = value.as_milligrams_per_liter().ok_or_else(|| {
+                    anyhow!("Expected milligrams_per_liter value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(milligrams_value)))
             }
 
@@ -371,34 +360,27 @@ impl InputValueId {
             | Self::ScenarioPhotovoltaicEnergyExpansion
             | Self::ScenarioWindEnergyExpansion
             | Self::ScenarioWaterEnergyExpansion => {
-                let kilowatt_value = value
-                    .as_kilowatthours()
-                    .ok_or_else(|| {
-                        anyhow!("Expected kilowatthours value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let kilowatt_value = value.as_kilowatthours().ok_or_else(|| {
+                    anyhow!("Expected kilowatthours value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(kilowatt_value)))
             }
 
             // GramsPerKilowatthour values
             Self::EmissionFactorElectricityMix => {
-                let grams_value = value
-                    .as_grams_per_kilowatthour()
-                    .ok_or_else(|| {
-                        anyhow!("Expected grams_per_kilowatthour value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let grams_value = value.as_grams_per_kilowatthour().ok_or_else(|| {
+                    anyhow!(
+                        "Expected grams_per_kilowatthour value for {self:?}, got {value_clone:?}"
+                    )
+                })?;
                 Ok(JsonValue::from(f64::from(grams_value)))
             }
 
             // Liters values
             Self::HeatingOil => {
-                let liters_value = value
-                    .as_liters()
-                    .ok_or_else(|| {
-                        anyhow!("Expected liters value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let liters_value = value.as_liters().ok_or_else(|| {
+                    anyhow!("Expected liters value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(liters_value)))
             }
 
@@ -409,23 +391,17 @@ impl InputValueId {
             | Self::OperatingMaterialCaOH2
             | Self::OperatingMaterialSyntheticPolymers
             | Self::SludgeTreatmentDisposal => {
-                let tons_value = value
-                    .as_tons()
-                    .ok_or_else(|| {
-                        anyhow!("Expected tons value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let tons_value = value.as_tons().ok_or_else(|| {
+                    anyhow!("Expected tons value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(tons_value)))
             }
 
             // Kilometers values
             Self::SludgeTreatmentTransportDistance => {
-                let kilometers_value = value
-                    .as_kilometers()
-                    .ok_or_else(|| {
-                        anyhow!("Expected kilometers value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let kilometers_value = value.as_kilometers().ok_or_else(|| {
+                    anyhow!("Expected kilometers value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(kilometers_value)))
             }
 
@@ -441,25 +417,20 @@ impl InputValueId {
             | Self::ScenarioEstimatedSelfPhotovolaticUsage
             | Self::ScenarioEstimatedSelfWindEnergyUsage
             | Self::ScenarioEstimatedSelfWaterEnergyUsage => {
-                let percent_value = value
-                    .as_percent()
-                    .ok_or_else(|| {
-                        anyhow!("Expected percent value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let percent_value = value.as_percent().ok_or_else(|| {
+                    anyhow!("Expected percent value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(percent_value)))
             }
 
             // QubicmetersPerHour values
             Self::SensitivitySludgeBagsCustomFactor => {
-                let qubicmeters_per_hour_value = value
-                    .as_qubicmeters_per_hour()
-                    .ok_or_else(|| {
+                let qubicmeters_per_hour_value =
+                    value.as_qubicmeters_per_hour().ok_or_else(|| {
                         anyhow!(
                             "Expected qubicmeters_per_hour value for {self:?}, got {value_clone:?}"
                         )
-                    })?
-                    .clone();
+                    })?;
                 Ok(JsonValue::from(f64::from(qubicmeters_per_hour_value)))
             }
 
@@ -487,12 +458,9 @@ impl InputValueId {
 
             // Factor values
             Self::ScenarioN2OSideStreamFactor => {
-                let factor_value = value
-                    .as_factor()
-                    .ok_or_else(|| {
-                        anyhow!("Expected factor value for {self:?}, got {value_clone:?}")
-                    })?
-                    .clone();
+                let factor_value = value.as_factor().ok_or_else(|| {
+                    anyhow!("Expected factor value for {self:?}, got {value_clone:?}")
+                })?;
                 Ok(JsonValue::from(f64::from(factor_value)))
             }
         }

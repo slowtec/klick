@@ -162,8 +162,8 @@ pub fn plant_profile_as_table(
         ),
     ]
     .into_iter()
-    .map(|(title, ids)| (title, ids.into_iter().map(|id| Id::In(id)).collect()))
-    .chain(custom_emissions.into_iter())
+    .map(|(title, ids)| (title, ids.into_iter().map(Id::In).collect()))
+    .chain(custom_emissions)
     .map(|(title, ids)| TableSection {
         title: title.to_string(),
         rows: ids
@@ -178,8 +178,8 @@ pub fn plant_profile_as_table(
                     data.get(&id).as_ref().map(|v| lang.format_value(v)),
                     match id {
                         Id::Custom(_) => Some("t".to_string()), // FIXME @markus
-                        Id::In(id) => formatting.fmt(id).map(|id| id.to_string()),
-                        Id::Out(id) => formatting.fmt(id).map(|id| id.to_string()),
+                        Id::In(id) => formatting.fmt(id).map(std::string::ToString::to_string),
+                        Id::Out(id) => formatting.fmt(id).map(std::string::ToString::to_string),
                     },
                 )
             })

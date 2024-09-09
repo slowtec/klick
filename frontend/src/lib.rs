@@ -48,6 +48,7 @@ const API_TOKEN_STORAGE_KEY: &str = "api-token";
 
 const SECTION_ID_TOOL_HOME: &str = "tool-home";
 
+#[must_use]
 pub fn current_lang() -> Signal<Lng> {
     // TODO: avoid mixing lang and lng
     let lang = leptos_fluent::i18n().language;
@@ -89,11 +90,8 @@ pub fn App() -> impl IntoView {
     let accessibility_always_show_option: Option<RwSignal<bool>> = Some(RwSignal::new(false));
 
     use_hotkeys!(("F1") => move |()| {
-      match accessibility_always_show_option {
-        Some(o) => {
-          o.set(!o.get());},
-        None => {}
-      }
+      if let Some(o) = accessibility_always_show_option {
+      o.set(!o.get());}
     });
 
     // -- signals -- //
@@ -362,6 +360,7 @@ fn ContentLoader(lng: Signal<Lng>, file: &'static str) -> impl IntoView {
 }
 
 #[component]
+#[must_use]
 pub fn HtmlLoader(url: Signal<String>) -> impl IntoView {
     let html_content = create_resource(
         move || url.get(),

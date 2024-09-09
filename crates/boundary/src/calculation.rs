@@ -27,7 +27,7 @@ pub fn calculate(
         values
             .iter()
             .filter_map(|(id, value)| {
-                if id.is_custom() && custom_leafs.iter().find(|&x| x == id).is_some() {
+                if id.is_custom() && custom_leafs.iter().any(|x| x == id) {
                     let v = value.clone().as_tons().unwrap_or_else(|| Tons::new(0.0));
                     Some(v)
                 } else {
@@ -47,7 +47,7 @@ pub fn calculate(
     let maybe_graph = calc_output.clone().map(|(_, graph)| graph).clone();
 
     let sensitivity_n2o_calculations =
-        domain::calculate_all_n2o_emission_factor_scenarios(&input, maybe_graph.as_deref())
+        domain::calculate_all_n2o_emission_factor_scenarios(input, maybe_graph.as_deref())
             .ok()
             .map(|results| {
                 results

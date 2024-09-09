@@ -115,8 +115,8 @@ fn get_all_internal_nodes_names() -> String {
     domain::get_all_internal_nodes()
         .iter()
         .fold(String::new(), |mut acc, entry| {
-            let sep = if acc.len() == 0 { "" } else { ", " };
-            let n = format!("{}\"{:?}\"", sep, entry);
+            let sep = if acc.is_empty() { "" } else { ", " };
+            let n = format!("{sep}\"{entry:?}\"");
             acc.push_str(&n);
             acc
         })

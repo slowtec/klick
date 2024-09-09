@@ -45,7 +45,7 @@ pub fn PlantProfile(
         let missing_fields = fields
             .iter()
             .map(|id| {
-                let label = labels[id].clone();
+                let label = labels[id];
                 (*id, label)
             })
             .collect::<Vec<_>>();

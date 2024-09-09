@@ -31,9 +31,7 @@ fn compile_markdown_files() {
 
     for entry in WalkDir::new(content_dir) {
         let entry = entry.unwrap();
-        if entry.file_type().is_file()
-            && entry.path().extension().map(|s| s == "md").unwrap_or(false)
-        {
+        if entry.file_type().is_file() && entry.path().extension().is_some_and(|s| s == "md") {
             let markdown_path = entry.path();
             let html_path = dist_dir.join(
                 markdown_path

@@ -121,15 +121,14 @@ impl TryFrom<JsonFormData> for HashMap<domain::InputValueId, domain::Value> {
     type Error = anyhow::Error;
 
     fn try_from(from: JsonFormData) -> Result<Self, Self::Error> {
-        Ok(from
-            .0
+        from.0
             .into_iter()
             .filter(|(_, value)| !value.is_null())
             .map(|(id, value)| {
                 id.value_from_json(value)
                     .map(|domain_value| (id.into(), domain_value))
             })
-            .collect::<Result<HashMap<_, _>, _>>()?)
+            .collect::<Result<HashMap<_, _>, _>>()
     }
 }
 
