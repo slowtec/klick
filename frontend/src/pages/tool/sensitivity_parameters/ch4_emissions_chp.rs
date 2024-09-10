@@ -11,9 +11,12 @@ use klick_domain::{
 };
 use klick_presenter::{Lng, ValueLabel};
 
-use crate::{current_lang, pages::tool::{
-    fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
-}};
+use crate::{
+    current_lang,
+    pages::tool::{
+        fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
+    },
+};
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -53,8 +56,11 @@ pub fn CH4EmissionsCHP(
     // -----   ----- //
 
     let field_set = field_set(form_data.write_only(), form_data.read_only().into());
-    let (chp_view, _, _) =
-        render_field_sets(vec![field_set], accessibility_always_show_option, current_lang()); // FIXME not sure if this works
+    let (chp_view, _, _) = render_field_sets(
+        vec![field_set],
+        accessibility_always_show_option,
+        current_lang(),
+    ); // FIXME not sure if this works
 
     // -----   ----- //
     //   Callbacks   //

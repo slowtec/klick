@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
@@ -35,12 +36,13 @@ pub fn AdditionalCustomEmissions(
     view! {
       <Card
         id = "sensitivity-misc-emissions"
-        title = "Weitere benutzerdefinierte Emissionen"
+        title = "Weitere benutzerdefinierte Emissionen" // move_tr!("sensitivity-custom-emissions").get().into()
         bg_color = "bg-blue"
         accessibility_always_show_option
       >
         <p class="my-2">
-          "Sankey-Diagramm Erweiterung mit Ihren Werten."
+        { move_tr!("sensitivity-custom-emissions-description") }
+        { move_tr!("sensitivity-custom-emissions") }
         </p>
         <CodeMirror
           input = input_signal
@@ -88,7 +90,7 @@ pub fn AdditionalCustomEmissions(
           </Cite>
         </InfoBox>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
-        { move || 
+        { move ||
 
 
           sensitivity_outcome.with(|outcome|

@@ -6,7 +6,7 @@ use klick_boundary::FormData;
 use klick_domain::{output_value::required, units::*, InputValueId as Id, OutputValueId as Out};
 
 use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
-use klick_presenter::{Lng, ValueLabel};
+use klick_presenter::ValueLabel;
 
 #[allow(clippy::too_many_lines)] // TODO
 pub fn options(
@@ -100,22 +100,17 @@ pub fn options(
           </Show>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
         { move || outcome.with(|out|out.output.clone().map(|out|{
-
-            let eq = out;
-
-            
-
             let list = [
-              (Out::ProcessEnergySavings, ""),
-              (Out::FossilEnergySavings,""),
-              (Out::PhotovoltaicExpansionSavings, ""),
-              (Out::WindExpansionSavings, ""),
-              (Out::WaterExpansionSavings, ""),
-              (Out::DistrictHeatingSavings, ""),
+              (Out::ProcessEnergySavings),
+              (Out::FossilEnergySavings),
+              (Out::PhotovoltaicExpansionSavings),
+              (Out::WindExpansionSavings),
+              (Out::WaterExpansionSavings),
+              (Out::DistrictHeatingSavings),
             ]
             .into_iter()
-            .filter_map(|(id, label)| {
-                let value = eq.get(&id.into()).cloned().and_then(Value::as_tons).unwrap();
+            .filter_map(|id| {
+                let value = out.get(&id.into()).cloned().and_then(Value::as_tons).unwrap();
                 if value > Tons::zero() {
                    Some((format!("{} {}", move_tr!("co2-savings").get(), id.label(lang)), value))
                 } else {

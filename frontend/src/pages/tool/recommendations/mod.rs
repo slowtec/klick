@@ -33,7 +33,6 @@ pub fn Recommendations(
     accessibility_always_show_option: Option<RwSignal<bool>>,
     lang: Lng,
 ) -> impl IntoView {
-
     let old_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
     let new_output = Memo::new(move |_| recommendation_outcome.with(|out| out.output.clone()));
 
@@ -134,10 +133,10 @@ pub fn Recommendations(
       >
         <div class="mx-auto p-8" >
           <h3 class="text-xl font-semibold leading-6 text-gray-900">
-            "Änderungen durch Optionen der Handlungsmaßnahmen"
+          {move_tr!("recommendation-barchart-title")}
           </h3>
           <p class="mt-2 max-w-4xl text-lg text-gray-500">
-            "Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. % der Gesamtemissionen durch die ausgewählten Handlungsmaßnahmen."
+            {move_tr!("recommendation-barchart-description")}
           </p>
           { move || {
               let lang = current_lang().get();
@@ -156,7 +155,7 @@ pub fn Recommendations(
                       width = 1100.0
                       height = 400.0
                       data=barchart_arguments_filtered
-                      aria_label = Some("Ein Balkendiagramm innerhalb der Handlungsoptionen, welches nur angezeigt wird, wenn eine Verbesserung / Verschlechterung durch eine Auswahl eingetreten ist.".to_string())
+                      aria_label = Some(move_tr!("aria_label_barchart").get())
                       number_format = move |a,b| lang.format_number_with_fixed_precision(a,b)
                   />
                   }

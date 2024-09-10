@@ -63,8 +63,7 @@ pub fn PlantProfile(
         { field_views }
         <Show when = move || !missing_fields.get().is_empty()>
           <p>
-            "Bitte ergänzen Sie folgende Werte, damit die Gesamtemissionen Ihrer Kläranlage,
-            anhand verschiedener Szenarien, berechnet werden können:"
+            {move_tr!("datacollection_missing_fields").get()}
           </p>
         </Show>
         { list_of_missing_fields }

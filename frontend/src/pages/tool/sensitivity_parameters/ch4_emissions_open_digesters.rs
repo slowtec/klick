@@ -4,11 +4,11 @@ use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{output_value::required, InputValueId as Id, OutputValueId as Out, Value};
 
+use crate::current_lang;
 use crate::pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
 };
 use klick_presenter::{Lng, ValueLabel};
-use crate::{current_lang};
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -18,7 +18,6 @@ pub fn CH4EmissionsOpenDigesters(
     accessibility_always_show_option: Option<RwSignal<bool>>,
     lang: Lng,
 ) -> impl IntoView {
-
     let show_sludge_bags_controls = Signal::derive(move || {
         // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
         form_data.with(|d| {
@@ -67,8 +66,11 @@ pub fn CH4EmissionsOpenDigesters(
         draw_border: false,
     };
 
-    let (fields_view1, _, _) =
-        render_field_sets(vec![field_set], accessibility_always_show_option, current_lang());
+    let (fields_view1, _, _) = render_field_sets(
+        vec![field_set],
+        accessibility_always_show_option,
+        current_lang(),
+    );
 
     let id = Id::SensitivitySludgeStorageCustomFactor;
     let custom_factor_field2 = create_field(form_data.write_only(), form_data.into(), id);
@@ -80,8 +82,11 @@ pub fn CH4EmissionsOpenDigesters(
         draw_border: false,
     };
 
-    let (fields_view2, _, _) =
-        render_field_sets(vec![field_set], accessibility_always_show_option, current_lang());
+    let (fields_view2, _, _) = render_field_sets(
+        vec![field_set],
+        accessibility_always_show_option,
+        current_lang(),
+    );
 
     // FIXME: set default values in page::tool::default_values
     // create_effect(move |_| {

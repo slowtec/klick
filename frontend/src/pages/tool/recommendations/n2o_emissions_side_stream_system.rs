@@ -18,9 +18,12 @@ pub fn options(
     accessibility_always_show_option: Option<RwSignal<bool>>,
     lang: Lng,
 ) -> impl IntoView {
-    
     let field_set = field_set(form_data.write_only(), input_data);
-    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, crate::current_lang());
+    let (form1, _, _) = render_field_sets(
+        vec![field_set],
+        accessibility_always_show_option,
+        crate::current_lang(),
+    );
 
     view! {
       <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >

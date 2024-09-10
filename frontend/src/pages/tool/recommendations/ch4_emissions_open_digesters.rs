@@ -61,10 +61,18 @@ pub fn options(
     // -----   ----- //
 
     let field_set = field_set1(form_data.write_only(), input_data);
-    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, crate::current_lang());
+    let (form1, _, _) = render_field_sets(
+        vec![field_set],
+        accessibility_always_show_option,
+        crate::current_lang(),
+    );
 
     let field_set = field_set2(form_data.write_only(), input_data);
-    let (form2, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, crate::current_lang());
+    let (form2, _, _) = render_field_sets(
+        vec![field_set],
+        accessibility_always_show_option,
+        crate::current_lang(),
+    );
 
     // -----   ----- //
     //     View      //

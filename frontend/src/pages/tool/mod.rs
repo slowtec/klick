@@ -656,7 +656,7 @@ pub fn DataCollectionEnforcementHelper(current_section: RwSignal<PageSection>) -
     view! {
         <div class="my-8 border-b border-gray-200 pb-5" >
         <p>
-          "Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können."
+          {move_tr!("datacollection_enforcement_helper")}
         </p>
       </div>
       <button

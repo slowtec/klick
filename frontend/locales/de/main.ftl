@@ -34,3 +34,32 @@ reset-request-success-message = Prüfen Sie nun Ihren E-Mail-Posteingang und öf
 
 form_data_table_overview      = Übersicht über Eingabewerte (Datenerfassung und Sensitivität)
 co2-savings                   = CO₂ Einsparung bei
+
+# aria_label
+
+aria_label_barchart           = Ein Balkendiagramm innerhalb der Sensitivität, welches nur angezeigt wird, wenn eine Verbesserung / Verschlechterung durch eine Auswahl eingetreten ist.
+
+# profile
+
+datacollection_enforcement_helper = Bitte ergänzen Sie im Eingabeformular die fehlenden Werte, damit die Emissionen berechnet und visualisiert werden können.
+datacollection_missing_fields = Bitte ergänzen Sie folgende Werte, damit die Gesamtemissionen Ihrer Kläranlage, anhand verschiedener Szenarien, berechnet werden können:
+sludge-bags-are-closed        = Schlammtaschen sind geschlossen
+sludge-bags-are-closed-info   = Falls die Schlammtaschen des Faulturms / der Faultürme Ihrer Kläranlage geschlossen sind und nicht zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.
+sludge-storage-is-closed      = Schlammlagerung ist geschlossen
+sludge-storage-is-closed-info = Falls die Schlammstapelbehälter Ihrer Kläranlage dicht abgedeckt sind, dann dieses Feld bitte anklicken.
+
+# sensitivity
+
+sensitivity-barchart-title    = Änderungen durch Angaben der Sensitivität
+sensitivity-barchart-description = Das folgende Diagramm zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. die [%]-Änderung der Gesamtemissionen durch die ausgewählten Emissionsfaktoren.
+
+sensitivity-of-emission-factors = Sensitivität von Emissionsfaktoren
+sensitivity-of-emission-factors-info = Unter nachfolgenden „aufklappbaren“ Abschnitten haben Sie die Möglichkeit verschiedene Emissionsfaktoren (EF) genauer zu definieren. Dabei können Sie berechnen, wie sich die jeweilige Anpassung der EF von Anlagenkomponenten bzw. der Gesamtkläranlage auf die Klimabilanz auswirkt. Sie können die Sensibilisierung/Verfeinerung auch überspringen und direkt zu den Handlungsempfehlungen übergehen (in diesem Fall rechnet das KlicK-Tool auf Basis der genannten Standardfaktoren/-parameter).
+
+sensitivity-custom-emissions = Weitere benutzerdefinierte Emissionen
+sensitivity-custom-emissions-description = Erweiterung durch Ihre eigene Emissionsarten/Werten.
+
+# recommendation
+
+recommendation-barchart-title = Änderungen durch Optionen der Handlungsmaßnahmen
+recommendation-barchart-description  = Die folgende Grafik zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. % der Gesamtemissionen durch die ausgewählten Handlungsmaßnahmen.

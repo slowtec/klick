@@ -4,7 +4,7 @@ use klick_boundary::FormData;
 use klick_domain::{InputValueId as Id, Value};
 
 use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
-use klick_presenter::{Lng, ValueLabel};
+use klick_presenter::Lng;
 
 #[component]
 pub fn CH4EmissionsOpenSludgeStorage(

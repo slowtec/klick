@@ -1,6 +1,6 @@
+use klick_presenter::Lng;
 use leptos::*;
 use leptos_fluent::*;
-use klick_presenter::Lng;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
@@ -60,13 +60,9 @@ pub fn SensitivityParameters(
         fallback = move || view!{  <DataCollectionEnforcementHelper current_section /> }
       >
         <div class="my-4 ml-4">
-          <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Sensitivität von Emissionsfaktoren"</h3>
+          <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">{move_tr!("sensitivity-of-emission-factors")}</h3>
           <p class="my-2">
-            "Unter nachfolgenden „aufklappbaren“ Abschnitten haben Sie die Möglichkeit verschiedene Emissionsfaktoren (EF)
-            genauer zu definieren. Dabei können Sie berechnen, wie sich die jeweilige Anpassung der EF von
-            Anlagenkomponenten bzw. der Gesamtkläranlage auf die Klimabilanz auswirkt. Sie können die
-            Sensibilisierung/Verfeinerung auch überspringen und direkt zu den Handlungsempfehlungen übergehen
-            (in diesem Fall rechnet das KlicK-Tool auf Basis der genannten Standardfaktoren/-parameter)."
+          {move_tr!("sensitivity-of-emission-factors-info")}
           </p>
         </div>
         <N2OEmissionsSensitivity
@@ -136,10 +132,10 @@ pub fn SensitivityParameters(
       >
         <div class="mx-auto p-8" >
           <h3 class="text-xl font-semibold leading-6 text-gray-900">
-            "Änderungen durch Angaben der Sensitivität"
+            {move_tr!("sensitivity-barchart-title")}
           </h3>
           <p class="mt-2 max-w-4xl text-lg text-gray-500">
-            "Das folgende Diagramm zeigt die Änderungen der Treibhausgasemissionen [t CO₂ Äquivalente/Jahr] bzw. die [%]-Änderung der Gesamtemissionen durch die ausgewählten Emissionsfaktoren."
+            {move_tr!("sensitivity-barchart-description")}
           </p>
           { move || {
               barchart_arguments.with(|args|args.as_ref().map(|arguments|{
@@ -157,7 +153,7 @@ pub fn SensitivityParameters(
                       width = 1100.0
                       height = 400.0
                       data=barchart_arguments_filtered
-                      aria_label = Some("Ein Balkendiagramm innerhalb der Sensitivität, welches nur angezeigt wird, wenn eine Verbesserung / Verschlechterung durch eine Auswahl eingetreten ist.".to_string())
+                      aria_label = Some(move_tr!("aria_label_barchart").get())
                       number_format = move |a,b| current_lang().get().format_number_with_fixed_precision(a,b)
                   />
                   }
