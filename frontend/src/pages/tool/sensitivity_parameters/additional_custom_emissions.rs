@@ -33,16 +33,25 @@ pub fn AdditionalCustomEmissions(
 
     let errors = RwSignal::new(vec![]);
 
+    let namelist = match lang {
+        Lng::De => "Namensliste von Sankey-Knoten",
+        Lng::En => "List of Sankey-Node names",
+    };
+
+    let example = match lang {
+        Lng::De => "Beispiel",
+        Lng::En => "Example",
+    };
+
     view! {
       <Card
         id = "sensitivity-misc-emissions"
-        title = "Weitere benutzerdefinierte Emissionen" // move_tr!("sensitivity-custom-emissions").get().into()
+        title = move_tr!("sensitivity-custom-emissions").get()
         bg_color = "bg-blue"
         accessibility_always_show_option
       >
         <p class="my-2">
         { move_tr!("sensitivity-custom-emissions-description") }
-        { move_tr!("sensitivity-custom-emissions") }
         </p>
         <CodeMirror
           input = input_signal
@@ -65,21 +74,21 @@ pub fn AdditionalCustomEmissions(
             { custom_emissions_message }
           </p>
         </Show>
-        <InfoBox text = "Syntax" accessibility_always_show_option>
-          <Cite source = "" url = DWA_MERKBLATT_URL>
+        <InfoBox text = "Syntax".to_string() accessibility_always_show_option>
+          <Cite source = "".to_string() url = DWA_MERKBLATT_URL>
             <pre>
               "\"ID\" \"ID\"\n"
               "\"ID\" NUM \"ID\""
             </pre>
           </Cite>
         </InfoBox>
-        <InfoBox text = "Namensliste von Sankey-Knoten" accessibility_always_show_option>
-          <Cite source = "" url = DWA_MERKBLATT_URL>
+        <InfoBox text = namelist.to_string() accessibility_always_show_option>
+          <Cite source = "".to_string() url = DWA_MERKBLATT_URL>
             { helper_node_names }
           </Cite>
         </InfoBox>
-        <InfoBox text = "Beispiel" accessibility_always_show_option>
-          <Cite source = "" url = DWA_MERKBLATT_URL>
+        <InfoBox text = example.to_string() accessibility_always_show_option>
+          <Cite source = "".to_string() url = DWA_MERKBLATT_URL>
             <pre>
               "\"H₂ Generator\" 1223,2 \"TotalEmissions\"\n"
               "\"Kettensäge\" 400 \"Fällmittel\"\n"
@@ -91,8 +100,6 @@ pub fn AdditionalCustomEmissions(
         </InfoBox>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
         { move ||
-
-
           sensitivity_outcome.with(|outcome|
             outcome.output.as_ref().map(|out|{
               view! {

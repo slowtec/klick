@@ -43,6 +43,7 @@ pub fn sensitivity_diff_bar_chart(
         Out::FossilEmissions,
         Out::N2oSideStream,
         Out::AdditionalCustomEmissions,
+        Out::ElectricityMix,
         Out::TotalEmissions,
     ];
     diff_bar_chart(old, new, &data_labels, lng)

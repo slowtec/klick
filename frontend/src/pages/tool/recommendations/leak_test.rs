@@ -1,29 +1,23 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 pub fn options(accessibility_always_show_option: Option<RwSignal<bool>>) -> impl IntoView {
     view! {
-      <Card id="recommendation-leak-test" title="Dichtigkeitsprüfung" bg_color="bg-yellow" accessibility_always_show_option>
-        <InfoBox
-          text = "Die (jährliche) Überprüfung möglicher Leckagen und deren Behebung, kann signifikant zum THG-Minderungspotenzial an Kläranlagen beitragen."
-          accessibility_always_show_option
-        >
-          <Cite source ="Auszug aus dem DWA-Merkblatt 230-1 (S. 23 und 43)" url = DWA_MERKBLATT_URL>
-            "Methan, das an verschiedenen Behältern und Leitungen durch Undichtigkeiten und/oder Schlupfverluste austreten kann.
-            Die Roboter erkunden flächendeckend und identifizieren Leckagen auch an Orten,
-            wo sich aufgrund der Lage zuvor kein Monitoring realisieren ließ, und visualisieren die Ergebnisse entsprechend."
+      <Card id="recommendation-leak-test" title=move_tr!("recommendation-leak-test").get() bg_color="bg-yellow" accessibility_always_show_option>
+      <InfoBox text = move_tr!("recommendation-leak-test_1-text").get() accessibility_always_show_option>
+          <Cite source = move_tr!("recommendation-leak-test_1-cite-source").get() url = DWA_MERKBLATT_URL>
+            <div inner_html={ move_tr!("recommendation-leak-test_1-cite-text") }></div>
           </Cite>
         </InfoBox>
-        <InfoBox text = "Potentielle Undichtigkeiten können u.a. an Kläranlagenbauteilen wie Mannlöchern auftreten." accessibility_always_show_option>
-          <Cite source ="Auszug aus dem DWA-Merkblatt 230-1 (S. 23 und 43)" url = DWA_MERKBLATT_URL>
-            "Weitere Emissionen aus dem Faulprozess können beim Ablassen von Schwimmschlamm
-             und aus Undichtigkeiten des bei leichtem Überdruck betriebenen Gassystems entstehen."
-          </Cite>
-        </InfoBox>
+        <InfoBox text = move_tr!("recommendation-leak-test_2-text").get() accessibility_always_show_option>
+        <Cite source = move_tr!("recommendation-leak-test_2-cite-source").get() url = DWA_MERKBLATT_URL>
+          <div inner_html={ move_tr!("recommendation-leak-test_2-cite-text") }></div>
+        </Cite>
+      </InfoBox>
         <p>
-          "Zur genauen Bestimmung wo und wieviel Methan austritt werden Messungen empfohlen,
-          welche dazu genutzt werden können die THG-Minderungspotenziale genau zu bestimmen."
+        <div inner_html={ move_tr!("recommendation-leak-test-p-1") }></div>
         </p>
       </Card>
     }

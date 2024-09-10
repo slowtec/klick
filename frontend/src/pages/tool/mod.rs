@@ -664,7 +664,7 @@ pub fn DataCollectionEnforcementHelper(current_section: RwSignal<PageSection>) -
        class="rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm"
        on:click = move |_| current_section.set(PageSection::DataCollection)
       >
-        "zu der Datenerfassung"
+      {move_tr!("to-the-datacollection")}
       </button>
     }
 }

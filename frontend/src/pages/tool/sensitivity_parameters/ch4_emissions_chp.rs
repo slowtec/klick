@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
@@ -103,7 +104,7 @@ pub fn CH4EmissionsCHP(
                     data
                     selected_bar = selected_scenario_index
                     emission_factor_label = Some("CH₄ EF")
-                    aria_label = Some("Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Methanemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.".to_string())
+                    aria_label = Some(move_tr!("sensitivity-ch4-chp-aria").get())
                     lang = lang
                     on_change = on_bar_chart_input_changed
                   />
@@ -114,52 +115,38 @@ pub fn CH4EmissionsCHP(
 
     view! {
       <div class = move ||{ if show_ch4_chp.get() { None } else { Some("hidden") } } >
-        <Card id = "sensitivity-ch4-chp" title = "Methanemissionen aus Blockheizkraftwerken (BHKW)" bg_color="bg-blue" accessibility_always_show_option>
-          <InfoBox text = "BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf" accessibility_always_show_option>
-            <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
-              "Auch bei der Gasverwertung entstehen prozessbedingte Methan-Emissionen:
-              BHKW-Motoren arbeiten nach dem Vier-Takt-Prinzip.
-              Dabei sind zum Gasaustausch für eine kurze Zeit beim Übergang vom vierten (Ausstoßen)
-              in den ersten (Ansaugen) Takt sowohl das Einlass- als auch das Auslassventil (teilweise) geöffnet.
-              Durch diese Überschneidung können unter Umständen geringe Mengen unverbrannten Faulgases in den Abgasstrom gelangen.
-              Ottomotoren haben dabei einen Methanschlupf im Bereich von 1 % bis 2 %
-              Zündstrahlmotoren (sind für Faulgas nicht relevant) liegen höher in der Größenordnung von 2 % bis 3 %.
-              Mikrogasturbinen (typische Leistungsklasse von 30 kW bis 65 kW) können dagegen einen
-              Methanschlupf < 1 % erreichen (STMWI 2016)."
+        <Card id = "sensitivity-ch4-chp" title = move_tr!("sensitivity-ch4-chp").get() bg_color="bg-blue" accessibility_always_show_option>
+          <InfoBox text = move_tr!("sensitivity-ch4-chp-infobox-1-text").get() accessibility_always_show_option>
+            <Cite source = move_tr!("sensitivity-ch4-chp-infobox-1-cite-source").get() url = DWA_MERKBLATT_URL>
+              { move_tr!("sensitivity-ch4-chp-infobox-1-cite") }
             </Cite>
           </InfoBox>
 
           <p>
-            "Mit der folgenden Auswahl bzw. Eingabe eines eigenen Emissionsfaktors (EF) für das BHKW Ihrer Kläranlage
-            kann Ihre Klimabilanz bezüglich der Methanemissionen verfeinert abgeschätzt werden:"
+            <div inner_html={ move_tr!("sensitivity-ch4-chp-p-1") }></div>
           </p>
 
           <div class="my-4 ml-4">
 
             { bar_chart_view }
 
-            { chp_view }
-
             <p>
-            "Es ist das Szenario \"" { move ||
+            { move_tr!("sensitivity-ch4-chp-scenario") }
+
+            " \"" { move ||
                 selected_scenario.get().as_ref().map(|id|id.label(current_lang().get()))
             }
-            "\" ausgewählt in t CO₂ Äquivalente/Jahr.
-            Durch Anklicken kann ein anderes Szenario ausgewählt werden."
+            "\" "
+            { move_tr!("sensitivity-ch4-chp-scenario-2") }
             </p>
 
-            <InfoBox text = "Zusatzinformation zum Methanschlupf:" accessibility_always_show_option>
-              <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)" url = DWA_MERKBLATT_URL>
-                "Die Gaszusammensetzung, Brennraumtemperatur (Gasfeuchte), Brennraumgestaltung und Betriebsweise beeinflussen die Verbrennungsvorgänge.
-                Bei hohen Sauerstoffkonzentrationen (Magerbetrieb), welche für die Reduktion der NOₓ,-Bildung bei hohen Temperaturen notwendig sind,
-                steigt der Methanschlupf.
-                Neben der Betriebsweise hat auch die Aggregateleistung einen Einfluss auf den Methan-schlupf.
-                So hat sich bei Messungen im Betrieb gezeigt, dass unter Volllast in der Regel weniger Methan über das Abgas emittiert wird
-                als bei Teillastbetrieb.
-                Bei Mikrogasturbinen ist dieser Effekt sehr stark ausgeprägt
-                und kann zu einem Anstieg bis auf > 5 % im 60-%-Teillastbetrieb führen (STMWI 2016)."
-              </Cite>
-            </InfoBox>
+            <InfoBox text = move_tr!("sensitivity-ch4-chp-infobox-2-text").get() accessibility_always_show_option>
+            <Cite source = move_tr!("sensitivity-ch4-chp-infobox-2-cite-source").get() url = DWA_MERKBLATT_URL>
+              { move_tr!("sensitivity-ch4-chp-infobox-2-cite") }
+            </Cite>
+          </InfoBox>
+
+          { chp_view }
 
             <div class="border-t pt-3 mt-4 border-gray-900/10">
               { move ||

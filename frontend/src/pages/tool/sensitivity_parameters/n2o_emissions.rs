@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
@@ -108,60 +109,51 @@ pub fn N2OEmissionsSensitivity(
     };
 
     view! {
-      <Card id = "sensitivity-n2o" title = "Lachgasemissionen" bg_color="bg-blue" accessibility_always_show_option>
+      <Card id = "sensitivity-n2o" title = move_tr!("sensitivity-n2o").get() bg_color="bg-blue" accessibility_always_show_option>
         <div class="my-4 ml-4">
 
-          <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Lachgasemissionen bei der biologischen Reinigungsstufe"</h3>
+          <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">{move_tr!("n2o_emissions-h3-1").get()}</h3>
 
           <p class="my-2">
-            "Lachgasemissionen tragen wesentlich zum gesamten Treibhausgaspotenzial von Kläranlagen bei.
-            Die erste Abschätzung dieses Potenzials bei der Datenerhebung erfolgt mit einem Emissionsfaktor
-            für Lachgas (N₂O-EF) nach Parravicini et al. (2016, TU Wien), Wert siehe erster Balken im untenstehenden Diagramm."
+            <div inner_html={ move_tr!("n2o_emissions-p-1") }></div>
           </p>
 
           <p class="my-2">
-            "Da das Auftreten von N₂O-Emissionen in der Regel anlagenspezifisch ist " <b> "[N₂O Anlage] " </b> ", bietet das KlicK-Tool weitere
-            Auswertungsszenarien für Lachgasemissionen an. Diese sind im folgenden Balkendiagramm dargestellt,
-            einschließlich der daraus resultierenden Lachgasemissionen [als CO₂-Äquivalente]."
+            <div inner_html={ move_tr!("n2o_emissions-p-2") }></div>
           </p>
 
           <p class="my-2">
-            "Durch Anklicken der einzelnen Balken im Diagramm wird das jeweilige Szenario für
-            die untenstehende Gesamtbilanz (im Sankey-Diagramm) verwendet."
+            <div inner_html={ move_tr!("n2o_emissions-p-3") }></div>
           </p>
 
           { bar_chart_view }
 
           <p>
-            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(|id|id.label(lang)) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
-             Durch Anklicken kann ein anderes Szenario ausgewählt werden."
+            { move_tr!("n2o_emissions-p-4-1") }
+            " \"" { move || selected_scenario.get().as_ref().map(|id|id.label(lang)) } "\" "
+             { move_tr!("n2o_emissions-p-4-2") }
           </p>
 
           <p class="my-2">
-            "Zusätzlich können Sie (z.B. aufgrund einer eigenen Abschätzung oder einer Messkampagne) einen
-            benutzerdefinierten Wert für den N₂O-EF eingeben und bilanzieren. Der EF-Faktor erscheint im
-            Balkendiagramm und kann anschließend ebenfalls ausgewählt werden."
+          <div inner_html={ move_tr!("n2o_emissions-p-5") }></div>
           </p>
 
           { n2o_custom_factor_view }
 
           <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >
 
-            <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">"Lachgasemissionen bei der Prozesswasserbehandlung"</h3>
+            <h3 class="mt-6 text-lg font-semibold leading-7 text-gray-900">{move_tr!("n2o_emissions-h3-2").get()}</h3>
 
             <p class="my-2">
-              "Die Prozesswasserbehandlung in Kläranlagen kann mit erheblichen zusätzlichen Lachgasemissionen verbunden sein.
-              Vasilaki et al. (2019) geben in ihrer Metastudie einen Lachgas-EF von 1,7-5,1% des Gesamtstickstoffs im Prozesswasser an."
+              <div inner_html={ move_tr!("n2o_emissions-p-6") }></div>
             </p>
 
             <p class="my-2">
-              "Durch die Eingabe der jährlich behandelten Stickstoffmenge des Prozesswassers [t/a] können
-              Sie den resultierenden Anteil an den Treibhausgasemissionen [CO₂-Äq./a] abschätzen."
+              <div inner_html={ move_tr!("n2o_emissions-p-7") }></div>
             </p>
 
             <p class="my-2">
-              "Den hierfür verwendeten N₂O-EF können Sie über das Eingabefeld „N₂O-EF Prozesswasser“ unten frei
-              wählen oder leer lassen, um mit einem mittleren EF von 2% (nach Vasilaki et al. 2019) zu rechnen."
+              <div inner_html={ move_tr!("n2o_emissions-p-8") }></div>
             </p>
 
             { side_stream_factor_view }

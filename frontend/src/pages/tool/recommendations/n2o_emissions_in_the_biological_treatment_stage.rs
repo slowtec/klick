@@ -1,54 +1,43 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use crate::pages::tool::{Card, Cite, DWA_MERKBLATT_URL};
 
 pub fn options(accessibility_always_show_option: Option<RwSignal<bool>>) -> impl IntoView {
     view! {
-      <Card id="recommendation-n2o-biological" title = "Lachgasemissionen bei der biologischen Reinigungsstufe" bg_color="bg-yellow" accessibility_always_show_option>
+      <Card id="recommendation-n2o-biological" title = move_tr!("recommendation-n2o-biological").get() bg_color="bg-yellow" accessibility_always_show_option>
         <p>
-          "Lachgasemissionen tragen erheblich zum Gesamt-Treibhausgas-Potenzial von Kläranlagen bei.
-          Das Auftreten von N₂O-Emissionen ist Anlagen-spezifisch,
-          so dass zum jetzigen Stand der Forschung und des Monitorings folgende Maßnahmen
-          mit Fokus auf den Betriebseinstellungen zusammengefasst werden können:"
-          <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 23/24)" url = DWA_MERKBLATT_URL>
+        <div inner_html={ move_tr!("recommendation-n2o-biological_p_1") }></div>
+          <Cite source = move_tr!("recommendation-n2o-biological_1-cite-source").get() url = DWA_MERKBLATT_URL>
             <ul class="list-disc ml-5 space-y-1 text-gray-800">
               <li>
                 <p>
-                "Sicherstellung eines ausreichenden Schlammalters für die Nitrifikation"
+                  <div inner_html={ move_tr!("recommendation-n2o-biological_p_2") }></div>
                 </p>
               </li>
               <li>
                 <p>
-                "Vergleichmäßigung der Zulauffracht bei der Einleitung von hochkonzentrierten Teilströmen
-                wie zum Beispiel Industrieeinleitungen, Schlammwasser aus der Entwässerung oder leicht abbaubaren
-                C-Quellen zur Stützung der Denitrifikation"
+                  <div inner_html={ move_tr!("recommendation-n2o-biological_p_3") }></div>
                 </p>
               </li>
               <li>
                 <p>
-                "Vermeidung des Auftretens von Nitritkonzentrationen"
+                  <div inner_html={ move_tr!("recommendation-n2o-biological_p_4") }></div>
                 </p>
               </li>
               <li>
                 <p>
-                 "ausreichendes Denitrifikationsvolumen"
+                  <div inner_html={ move_tr!("recommendation-n2o-biological_p_5") }></div>
                 </p>
               </li>
               <li>
                 <p>
-                  "klares Belüftungsregime mit eindeutigen aeroben und anoxischen Zonen/Zeiten sowie Variabilität der Belüftung
-                  zur Bereitstellung an die Belastung angepasster Volumen"
+                  <div inner_html={ move_tr!("recommendation-n2o-biological_p_6") }></div>
                 </p>
               </li>
             </ul>
           </Cite>
-          "Bisherige Untersuchungen der Lachgasemissionen von Kläranlagen haben gezeigt,
-          dass diese häufig saisonalen Schwankungen unterliegen und in der Regel
-          anlagenspezifisch sind. Unter diesem Gesichtspunkt bieten sich Mess- und
-          Monitoringkampagnen an, die eine Datenbasis (idealerweise über ein Jahr)
-          schaffen, um den anlagenspezifischen Emissionsfaktor zu ermitteln. Dieser
-          kann für die kommunale Klimaberichterstattung genutzt werden. Darüber hinaus
-          können so potenzielle Minderungsmaßnahmen besser bewertet werden."
+          <div inner_html={ move_tr!("recommendation-n2o-biological_p_7") }></div>
         </p>
       </Card>
     }

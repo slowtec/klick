@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
@@ -107,36 +108,27 @@ pub fn CH4EmissionsOpenDigesters(
 
     view! {
       <div class = move || { if show_dialog.get() { None } else { Some("hidden") } } >
-        <Card id = "sensitivity-open-digesters" title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-blue" accessibility_always_show_option>
+        <Card id = "sensitivity-open-digesters" title = move_tr!("sensitivity-open-digesters").get() bg_color="bg-blue" accessibility_always_show_option>
           <div class = move || { if show_sludge_bags_controls.get() { None } else { Some("hidden") } } >
              <p class="my-2">
-             "Durch "<b>"offene Schlammtaschen an Faultürmen"</b>" kann Methan entweichen. Nachfolgend kann für den
-             Methanschlupf (z.B. aus einer Messkampagne oder als Schätzwert) ein Emissionsfaktor CH₄-EF [in m³/h] bilanziert werden."
+               <div inner_html={ move_tr!("sensitivity-open-digesters-p-1") }></div>
              </p>
-              <p class="my-2">
-             "Wenn Sie das Feld leer lassen, wird mit einem gemittelten EF von 1,25 m³/h nach Li (2020) gerechnet.
-             In beiden Fällen wird die Anzahl der Faultürme anteilig berücksichtigt (siehe Eingabe „Anzahl der Faultürme“ in der Datenerfassung)."
+             <p class="my-2">
+               <div inner_html={ move_tr!("sensitivity-open-digesters-p-2") }></div>
              </p>
              <div class="my-4 ml-4">
                { fields_view1 }
              </div>
           </div>
           <div class = move || { if show_sludge_storage_containers_controls.get() { None } else { Some("hidden") } } >
-            <InfoBox text = "Die Schlammlagerung trägt maßgeblich zu Methanemissionen bei" accessibility_always_show_option>
-              <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S. 24)" url = DWA_MERKBLATT_URL >
-              "In Abhängigkeit vom technischen Ausfaulgrad der Schlammfaulung und der Lagerzeit können bei der
-              Faulschlammlagerung noch bis zu 15 kg CO"<sub>2</sub>"-Äquivalente/(E·a) emittiert werden (Quelle: DWA 2020).
-              Das entspricht einem Methanbildungspotenzial von 576 g CH"<sub>4</sub>"/(E·a). Für die Methan-Emissionen aus
-              der Lagerung und Entwässerung von ausgefaultem Schlamm wird von PARRAVICINI et al. (2016) ein Bereich
-              von 2 % bis 4,5 % der Methanproduktion angegeben."
+            <InfoBox text = move_tr!("sensitivity-open-digesters_1-text").get() accessibility_always_show_option>
+              <Cite source = move_tr!("sensitivity-open-digesters_1-cite-source").get() url = DWA_MERKBLATT_URL>
+                { move_tr!("sensitivity-open-digesters_1-cite-text") }
               </Cite>
             </InfoBox>
 
            <p class="my-2">
-             "Wenn Sie (in der Datenerfassung) 'offene Schlammlager' ausgewählt haben, können Sie die Auswirkungen des
-             Methanschlupfes auf die Klimabilanz Ihrer Kläranlage abschätzen. Das folgende Eingabefeld ermöglicht Ihnen
-             dazu die Bilanzierung eines CH₄-EF [%] für Ihren Schlammstapelbehälter (z.B. auf Basis einer Restgaspotentialanalyse).
-             Wenn Sie das Feld leer lassen, wird der Referenzwert von Parravicini et al. (2016) CH₄-EF = 2 % der gesamten Klärgasmenge verwendet."
+             <div inner_html={ move_tr!("sensitivity-open-digesters-p-3") }></div>
            </p>
            <div class="my-4 ml-4">
              { fields_view2 }

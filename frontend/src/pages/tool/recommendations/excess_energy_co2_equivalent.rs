@@ -6,7 +6,7 @@ use klick_boundary::FormData;
 use klick_domain::{output_value::required, units::*, InputValueId as Id, OutputValueId as Out};
 
 use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
-use klick_presenter::ValueLabel;
+use klick_presenter::{Lng, ValueLabel};
 
 #[allow(clippy::too_many_lines)] // TODO
 pub fn options(
@@ -53,7 +53,7 @@ pub fn options(
     //    Fields     //
     // -----   ----- //
 
-    let field_sets = field_sets(form_data.write_only(), input_data);
+    let field_sets = field_sets(form_data.write_only(), input_data, lang.get());
     let (view, _, _) = render_field_sets(field_sets, accessibility_always_show_option, lang);
 
     // -----   ----- //
@@ -63,39 +63,39 @@ pub fn options(
     let lang = crate::current_lang().get();
 
     view! {
-      <Card id="recommenation-excess-energy" title ="Energiebedingte Emissionen" bg_color="bg-yellow" accessibility_always_show_option>
+      <Card id="recommenation-excess-energy" title = move_tr!("recommenation-excess-energy").get()  bg_color="bg-yellow" accessibility_always_show_option>
         <p>
-        <b>"Energiesparmaßnahmen"</b>" und "<b>"Erneuerbare Energien"</b>" können maßgeblich zur Minderung indirekter Emissionen und
-             zur Energieautarkie beitragen. Um die positiven Auswirkungen eines Zubaus der erneuerbaren Energien:
-             Photovoltaik (PV), Wind-, Wasserkraft und/oder Abwärmenutzung aufzuzeigen, können nachfolgend verschiedene
-             Szenarien bilanziert werden. Wenn Sie die jeweilige Technologie nicht bilanzieren wollen können Sie
-             das jeweilige Feld freilassen."
+          <div inner_html={ move_tr!("recommenation-excess-energy-p-1") }></div>
         </p>
         { view }
           <Show
             when= move || excess_energy_co2_equivalent.with(|v| *v > Some(Tons::zero()))
           >
             <p>
-            " Ihre Kläranlage ist energieneutral. Die Kläranlage spart "
+            { move_tr!("recommenation-excess-energy-p-2-1") }
+            " "
             {
               electricity_mix_savings.with(|d|
                 d.map(|v| lang.format_number_with_fixed_precision(f64::from(v), 0))
               )
             }
-            " t CO2-Äq./a ein."
+            " "
+            { move_tr!("recommenation-excess-energy-p-2-2") }
             </p>
           </Show>
           <Show
             when= move || excess_energy_co2_equivalent.with(|v| *v <= Some(Tons::zero())) && electricity_mix.with(|v| *v > Some(Tons::zero()))
           >
             <p>
-            "Ihre Kläranlage benötigt weiterhin externen Strom (Versorger), wodurch "
+            { move_tr!("recommenation-excess-energy-p-3-1") }
+            " "
             {
               electricity_mix.with(|d|
                 d.map(|v| lang.format_number_with_fixed_precision(f64::from(v), 0))
               )
             }
-            " t CO₂-Äq./a energiebedingte Emissionen entstehen."
+            " "
+            { move_tr!("recommenation-excess-energy-p-3-2") }
             </p>
           </Show>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
@@ -136,12 +136,19 @@ pub fn options(
     }
 }
 
-fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> Vec<FieldSet> {
+fn field_sets(
+    form_data: WriteSignal<FormData>,
+    input_data: Signal<FormData>,
+    lang: Lng,
+) -> Vec<FieldSet> {
     let draw_border = false;
 
     vec![
         FieldSet {
-            title: Some("Prozesse und fossile Energieträger"),
+            title: match lang {
+                Lng::De => Some("Prozesse und fossile Energieträger"),
+                Lng::En => Some("Processes and fossil fuels"),
+            },
             fields: vec![
                 create_field(form_data, input_data, Id::RecommendationProcessEnergySaving),
                 create_field(form_data, input_data, Id::RecommendationFossilEnergySaving),
@@ -149,7 +156,10 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
             draw_border,
         },
         FieldSet {
-            title: Some("Photovoltaik"),
+            title: match lang {
+                Lng::De => Some("Photovoltaik"),
+                Lng::En => Some("Photovoltaics"),
+            },
             fields: vec![
                 create_field(
                     form_data,
@@ -165,7 +175,10 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
             draw_border,
         },
         FieldSet {
-            title: Some("Windkraft"),
+            title: match lang {
+                Lng::De => Some("Windkraft"),
+                Lng::En => Some("Windpower"),
+            },
             fields: vec![
                 create_field(form_data, input_data, Id::RecommendationWindEnergyExpansion),
                 create_field(
@@ -177,7 +190,10 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
             draw_border,
         },
         FieldSet {
-            title: Some("Wasserkraft"),
+            title: match lang {
+                Lng::De => Some("Wasserkraft"),
+                Lng::En => Some("Hydropower"),
+            },
             fields: vec![
                 create_field(
                     form_data,
@@ -193,7 +209,10 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
             draw_border,
         },
         FieldSet {
-            title: Some("Abwärmenutzung"),
+            title: match lang {
+                Lng::De => Some("Abwärmenutzung"),
+                Lng::En => Some("Waste heat utilization"),
+            },
             fields: vec![create_field(
                 form_data,
                 input_data,

@@ -8,7 +8,7 @@ pub const DWA_MERKBLATT_URL: &str =
 
 #[component]
 pub fn InfoBox(
-    text: &'static str,
+    text: String,
     children: Children,
     accessibility_always_show_option: Option<RwSignal<bool>>,
 ) -> impl IntoView {
@@ -41,7 +41,7 @@ pub fn InfoBox(
 #[component]
 pub fn Card(
     id: &'static str,
-    title: &'static str,
+    title: String,
     children: Children,
     bg_color: &'static str,
     accessibility_always_show_option: Option<RwSignal<bool>>,
@@ -108,7 +108,7 @@ fn card_id_to_session_store_hidden_state_id(id: &str) -> String {
 }
 
 #[component]
-pub fn Cite(source: &'static str, url: &'static str, children: Children) -> impl IntoView {
+pub fn Cite(source: String, url: &'static str, children: Children) -> impl IntoView {
     view! {
       <p class="mt-4 mb-2 mx-3 px-3 border-solid border-l-8 border-slate-50 bg-slate-50 italic">
         { children() }

@@ -1,42 +1,26 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
 pub fn options(accessibility_always_show_option: Option<RwSignal<bool>>) -> impl IntoView {
     view! {
-      <Card id="recommendation-ch4-pre-treatment" title ="Methanemissionen aus der Vorklärung" bg_color="bg-yellow" accessibility_always_show_option>
+      <Card id="recommendation-ch4-pre-treatment" title = move_tr!("recommendation-ch4-pre-treatment").get() bg_color="bg-yellow" accessibility_always_show_option>
         <p>
-          "Eine gute Bewirtschaftung Ihrer Kläranlage ist ein zentraler Faktor für eine Verbesserung der Klimabilanz.
-          Bezüglich der mechanischen Reinigungsstufe und Vorklärung kann sich dies für Methanemissionen wie folgt äußern:"
+          <div inner_html={ move_tr!("recommendation-ch4-pre-treatment-1") }></div>
         </p>
         <ul class="ml-5 mt-4 list-disc">
           <li class="my-2">
-            <InfoBox text = "Vermeidung von langen Schlammaufenthaltszeiten zur Reduktion des Methanbildungspotenzials" accessibility_always_show_option>
-              <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S.28)" url = DWA_MERKBLATT_URL>
-                "In Vorklärbecken ermittelten ISGREN & MARTENSSEN (2013)
-                eine durchschnittliche CH₄-Konzentration (lediglich aus drei Proben)
-                im Vorklärbecken der Kläranlage Sjölunda von 0,83 mg CH₄/L.
-                Die CH₄-Konzentration lag damit höher als im Einlaufbereich der KA,
-                sodass hier durch die Autoren eine Methanbildung in der Vorklärung vermutet wird.
-                Die geringe Probenzahl ist hier jedoch zu beachten.
-                Aufgrund der geringen Schlammaufenthaltszeiten ist die Ausbildung
-                der für die Methanbildung benötigten Biozönose eher unwahrscheinlich."
+            <InfoBox text = move_tr!("recommenations_ch4_emissions_pre_treatment_infobox_1-text").get() accessibility_always_show_option>
+              <Cite source = move_tr!("recommenations_ch4_emissions_pre_treatment_infobox_1-cite-source").get() url = DWA_MERKBLATT_URL>
+                <div inner_html={ move_tr!("recommenations_ch4_emissions_pre_treatment_infobox_1-cite-text") }></div>
               </Cite>
             </InfoBox>
           </li>
           <li class="my-2">
-            <InfoBox text =
-              "Kontinuierlicher Primärschlammabzug so regulieren, dass einerseits ausreichend Kohlenstoff
-              für die Denitrifikation und andererseits für eine Faulung (falls gegeben) zur Verfügung steht"
-              accessibility_always_show_option>
-              <Cite source = "Auszug aus dem DWA-Merkblatt 230-1 (S.18)" url = DWA_MERKBLATT_URL>
-                "In einer vergleichbaren Studie aus Dänemark wurde gezeigt,
-                dass auch große Kläranlagen mit hoher Stickstoffreinigungsleistung
-                erhöhte Emissionsfaktoren von mehr als 0,5% aufweisen können.
-                Als möglicher Grund konnte hier unter anderem der Abzug von Schlamm
-                aus der Vorklärung zur Erhöhung der Biogasausbeute in der Faulung identifiziert werden.
-                Das aus der Ausfrachtung von Kohlenstoff resultierende verringerte Verhältnis CSB/N
-                ist dann nicht ausreichend für eine vollständige Denitrifikation."
+            <InfoBox text = move_tr!("recommenations_ch4_emissions_pre_treatment_infobox_2-text").get() accessibility_always_show_option>
+              <Cite source = move_tr!("recommenations_ch4_emissions_pre_treatment_infobox_2-cite-source").get() url = DWA_MERKBLATT_URL>
+                <div inner_html={ move_tr!("recommenations_ch4_emissions_pre_treatment_infobox_2-cite-text") }></div>
               </Cite>
             </InfoBox>
           </li>

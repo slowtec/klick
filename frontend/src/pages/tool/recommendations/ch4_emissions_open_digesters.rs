@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
@@ -79,9 +80,9 @@ pub fn options(
     // -----   ----- //
     view! {
       <div class = move || { if show_dialog.get() { None } else { Some("hidden") } }>
-      <Card id="recommendation-ch4-open-digesters" title = "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung" bg_color="bg-yellow" accessibility_always_show_option>
+      <Card id="recommendation-ch4-open-digesters" title = move_tr!("recommendation-methan-emissions").get() bg_color="bg-yellow" accessibility_always_show_option>
         <p>
-          "Das Schließen von Schlammtaschen an Faultürmen und der Schlammlager wirkt sich durch die Eindämmung von Methanschlupfen positiv auf die Klimabilanz von Kläranlagen aus. Dies können Sie über die nachfolgenden Checkboxen bilanzieren."
+          <div inner_html={ move_tr!("recommendation-ch4-open-digesters-p-1") }></div>
         </p>
           <div class = move || { if show_sludge_bags_controls.get() { None } else { Some("hidden") } }>
           {form1}
@@ -125,7 +126,7 @@ pub fn options(
 fn field_set1(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
     let id = Id::RecommendationSludgeBagsAreOpen;
     let custom_factor_field1 = Field {
-        label: RwSignal::new("Schließen der Schlammtaschen".to_string()).into(),
+        label: RwSignal::new(move_tr!("recommendation-ch4-open-closing-sludge-bags").get()).into(),
         description: None,
         required: false,
         field_type: FieldType::Bool {
@@ -157,7 +158,8 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
 fn field_set2(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
     let id = Id::RecommendationSludgeStorageContainersAreOpen;
     let custom_factor_field2 = Field {
-        label: RwSignal::new("Schließen der Schlammlagerung".to_string()).into(),
+        label: RwSignal::new(move_tr!("recommendation-ch4-open-closing-sludge-storage").get())
+            .into(),
         description: None,
         required: false,
         field_type: FieldType::Bool {

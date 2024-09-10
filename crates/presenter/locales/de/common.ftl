@@ -62,6 +62,10 @@ description-methane-percentage = Der Methangehalt des an Ihrer Kläranlage erzeu
 
 description-number-of-digesters = Falls auf Ihrer Kläranlage eine Faulung vorhanden ist, dann geben Sie bitte die Anzahl der Faultürme ein. Falls nicht lassen Sie das Feld bitte offen oder tragen eine 0 ein.
 
+description-sludge-treatment-bags-are-open = Falls die Schlammtaschen des Faulturms / der Faultürme Ihrer Kläranlage geschlossen sind und nicht zur Umgebungsluft offen sind, dann dieses Feld bitte anklicken.
+
+description-sludge-treatment-storage-containers-are-open = Falls die Schlammstapelbehälter Ihrer Kläranlage dicht abgedeckt sind, dann dieses Feld bitte anklicken.
+
 description-mass-dewatered = Angabe der Menge an Klärschlamm in Tonnen (t) die zur Entsorgung anfallen.
 
 description-distance = Entfernung von Ihrer Kläranlage zum Entsorgungsort des Klärschlamms in Kilometer (km). Die Angabe ist unabhängig von der Entsorgungsart (z.B. Verbrennung) oder der Transportform (z.B. entwässert/trocken). Falls der Klärschlamm auf Ihrer Kläranlage entsorgt wird, dieses Feld bitte freilassen.
@@ -76,11 +80,29 @@ description-calcium-hydroxide = Angabe der pro Jahr (a) eingesetzten Menge an Ka
 
 description-synthetic-polymers = Angabe der pro Jahr (a) eingesetzten Menge an synthetischen Polymeren in Tonnen (t).
 
+description-sensitivity-sludge-bags-custom-factor = Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen.
+
+description-sensitivity-sludge-storage-custom-factor = Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen.
+
+description-sensitivity-CH4-chp-custom-factor = Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CH₄ eintragen.
+
+description-sensitivity-CO2-fossil-custom-factor = Über dieses Eingabefeld können Sie (z.B. basierend auf einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF CO₂ eintragen.
+
+description-sensitivity-N2O-custom-factor = Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF N₂O eintragen. Weiter muss die Auswahlmöglichkeit (Benutzerdefiniert) manuell ausgewählt werden, um den eingegebenen Wert zu verwenden.
+
+description-sensitivity-N2O-side-stream-factor = Über dieses Eingabefeld können Sie (z.B. anhand einer eigenen Abschätzung oder einer Messkampagne) einen Wert für den EF der Prozesswasserbehandlung eintragen.
+
 description-district-heating = Angabe der Abgabeleistung an Fern-/Nahwärme in Kilowattstunden (kWh) pro Jahr (a).
+
+description-scenario-estimated-self-water-energy-usage = Geschätzte Eigennutzung der Wasserkraftleistung in Prozent (%).
 
 description-water-energy-expansion = Angabe des Zubaus an Wasserkraftleistung in Kilowattstunden (kWh) pro Jahr (a).
 
+description-scenario-estimated-self-wind-energy-usage = Geschätzte Eigennutzung der Windkraftleistung in Prozent (%).
+
 description-wind-energy-expansion = Angabe des Zubaus an Windkraftleistung in Kilowattstunden (kWh) pro Jahr (a).
+
+description-scenario-estimated-self-photovolatic-usage = Geschätzte Eigennutzung der Photovoltaikleistung in Prozent (%).
 
 description-photovoltaic-energy-expansion = Angabe des Zubaus an Photovoltaikleistung in Kilowattstunden (kWh) pro Jahr (a).
 

@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
@@ -27,14 +28,13 @@ pub fn options(
 
     view! {
       <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >
-       <Card id = "recommendation-n2o-side-stream" title = "Lachgasemissionen bei der Prozesswasserbehandlung" bg_color="bg-yellow" accessibility_always_show_option>
+       <Card id = "recommendation-n2o-side-stream" title = move_tr!("recommendation-n2o-side-stream").get() bg_color="bg-yellow" accessibility_always_show_option>
         <p class="my-2">
-          "Da es sich bei Prozesswasserbehandlungsanlagen um relativ kleine Becken handelt, können die
-          Lachgasemissionen hier durch Abdeckung und Abluftbehandlung (Oxidation) beseitigt werden."
+          <div inner_html={ move_tr!("recommendation-n2o-side-stream_p_1") }></div>
         </p>
         { form1 }
         <p class="my-2">
-        "Im Sinne der Nachhaltigkeit und der Kreislaufschließung kann eine Stickstoffrückgewinnungsanlage integriert werden."
+          <div inner_html={ move_tr!("recommendation-n2o-side-stream_p_2") }></div>
         </p>
         <div class="border-t pt-3 mt-4 border-gray-900/10">
           { move || {
