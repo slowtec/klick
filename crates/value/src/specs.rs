@@ -1,133 +1,167 @@
 use crate::{constants, units::*};
-
 use klick_value_spec::value_spec as spec;
 
 spec! {
     Value : InputValueId {
+
+        // ------    ------ //
+        //     Project      //
+        // ------    ------ //
+
         ProjectName {
            unit = String;
            optional;
         },
 
-        PlantName {
+        // ------    ------ //
+        //     Profile      //
+        // ------    ------ //
+
+        ProfilePlantName {
            unit = String;
            optional;
         },
-
-        PopulationEquivalent {
+        ProfilePopulationEquivalent {
             unit = Count;
             min = 0.0;
             max = 5_000_000.0;
         },
-        Wastewater {
+        ProfileWastewater {
             unit = Qubicmeters;
             min = 0.0;
             max = 1_000_000_000.0;
         },
-
-        InfluentNitrogen {
+        ProfileInfluentNitrogen {
             unit = MilligramsPerLiter;
             min = 1.0; // must not be 0.0 to prevent division by 0
             max = 5000.0;
         },
-        InfluentChemicalOxygenDemand {
+        ProfileInfluentChemicalOxygenDemand {
             unit = MilligramsPerLiter;
             min = 0.0;
             max = 5000.0;
         },
-        InfluentTotalOrganicCarbohydrates {
+        ProfileInfluentTotalOrganicCarbohydrates {
             unit = MilligramsPerLiter;
             optional;
             min = 0.0;
             max = 2000.0;
             default = 0.0;
         },
-
-        EffluentNitrogen {
+        ProfileEffluentNitrogen {
             unit = MilligramsPerLiter;
             min = 0.0;
             max = 1000.0;
 
         },
-        EffluentChemicalOxygenDemand {
+        ProfileEffluentChemicalOxygenDemand {
             unit = MilligramsPerLiter;
             min = 0.0;
             max = 1000.0;
         },
-
-        SewageGasProduced {
+        ProfileSewageGasProduced {
             unit = Qubicmeters;
             optional;
             min = 0.0;
             max = 100_000_000.0;
             default = 0.0;
         },
-        MethaneFraction {
+        ProfileMethaneFraction {
             unit = Percent;
             optional;
             min = 0.0;
             max = 90.0;
             default = 62.0;
         },
-        GasSupply {
+        ProfileGasSupply {
             unit = Qubicmeters;
             optional;
             default = 0.0;
         },
-        PurchaseOfBiogas {
+        ProfilePurchaseOfBiogas {
             unit = bool;
             optional;
             default = false;
         },
-        TotalPowerConsumption {
+        ProfileTotalPowerConsumption {
             unit = Kilowatthours;
             min = 0.0;
             max = 1_000_000_000.0;
         },
-        OnSitePowerGeneration {
+        ProfileOnSitePowerGeneration {
             unit = Kilowatthours;
             optional;
             min = 0.0;
             max = 50_000_000.0;
             default = 0.0;
         },
-        EmissionFactorElectricityMix {
+        ProfileEmissionFactorElectricityMix {
             unit = GramsPerKilowatthour;
             min = 0.0;
             max = 2500.0;
         },
-        HeatingOil {
+        ProfileHeatingOil {
             unit = Liters;
             optional;
             default = 0.0;
         },
-
-        SideStreamTreatmentTotalNitrogen {
+        ProfileSideStreamTreatmentTotalNitrogen {
             unit = Tons;
             optional;
             default = 0.0;
         },
-
-        OperatingMaterialFeCl3 {
+        ProfileOperatingMaterialFeCl3 {
             unit = Tons;
             max = 500_000.0;
         },
-        OperatingMaterialFeClSO4 {
+        ProfileOperatingMaterialFeClSO4 {
             unit = Tons;
             optional;
             max = 100_000.0;
             default = 0.0;
         },
-        OperatingMaterialCaOH2 {
+        ProfileOperatingMaterialCaOH2 {
             unit = Tons;
             optional;
             max = 500_000.0;
             default = 0.0;
         },
-        OperatingMaterialSyntheticPolymers {
+        ProfileOperatingMaterialSyntheticPolymers {
             unit = Tons;
             max = 50000.0;
         },
+        ProfileSludgeTreatmentBagsAreOpen {
+            unit = bool;
+            optional;
+            default = true;
+        },
+        ProfileSludgeTreatmentStorageContainersAreOpen {
+            unit = bool;
+            optional;
+            default = true;
+        },
+        ProfileSludgeTreatmentDisposal {
+            unit = Tons;
+            max = 500_000.0;
+        },
+        ProfileSludgeTreatmentTransportDistance {
+            unit = Kilometers;
+            optional;
+            min = 0.0;
+            max = 2000.0;
+            default = 0.0;
+        },
+        ProfileSludgeTreatmentDigesterCount {
+            unit = Count;
+            optional;
+            min = 0.0;
+            max = 9.0;
+            default = 0;
+        },
+
+        // ------    ------ //
+        //   Sensitivity    //
+        // ------    ------ //
 
         SensitivityN2OCalculationMethod {
             unit = N2oEmissionFactorCalcMethod;
@@ -182,112 +216,88 @@ spec! {
             max = 100.0;
             default = constants::EMISSION_FACTOR_SLUDGE_STORAGE.into();
         },
-        SludgeTreatmentBagsAreOpen {
-            unit = bool;
-            optional;
-            default = true;
-        },
-        SludgeTreatmentStorageContainersAreOpen {
-            unit = bool;
-            optional;
-            default = true;
-        },
-        SludgeTreatmentDisposal {
-            unit = Tons;
-            max = 500_000.0;
-        },
-        SludgeTreatmentTransportDistance {
-            unit = Kilometers;
-            optional;
-            min = 0.0;
-            max = 2000.0;
-            default = 0.0;
-        },
-        SludgeTreatmentDigesterCount {
-            unit = Count;
-            optional;
-            min = 0.0;
-            max = 9.0;
-            default = 0;
-        },
-
-        ScenarioSludgeBagsAreOpen {
-            unit = bool;
-            optional;
-            default = true;
-        },
-        ScenarioSludgeStorageContainersAreOpen {
-            unit = bool;
-            optional;
-            default = true;
-        },
-        ScenarioN2OSideStreamFactor {
-            unit = Factor; // TODO: should't this be Percent?
-        },
-        ScenarioN2OSideStreamCoverIsOpen {
-            unit = bool;
-            optional;
-            default = true;
-        },
-        ScenarioProcessEnergySaving {
-            unit = Percent;
-            optional;
-            min = 0.0;
-            max = 100.0;
-            default = 0.0;
-        },
-        ScenarioFossilEnergySaving {
-            unit = Percent;
-            optional;
-            min = 0.0;
-            max = 100.0;
-            default = 0.0;
-        },
-        ScenarioDistrictHeating {
-            unit = Kilowatthours;
-            optional;
-            default = 0.0;
-        },
-        ScenarioPhotovoltaicEnergyExpansion {
-            unit = Kilowatthours;
-            optional;
-            default = 0.0;
-        },
-        ScenarioEstimatedSelfPhotovolaticUsage {
-            unit = Percent;
-            optional;
-            min = 0.0;
-            max = 100.0;
-            default = 100.0;
-        },
-        ScenarioWindEnergyExpansion {
-            unit = Kilowatthours;
-            optional;
-            default = 0.0;
-        },
-        ScenarioEstimatedSelfWindEnergyUsage {
-            unit = Percent;
-            optional;
-            min = 0.0;
-            max = 100.0;
-            default = 100.0;
-        },
-        ScenarioWaterEnergyExpansion {
-            unit = Kilowatthours;
-            optional;
-            default = 0.0;
-        },
-        ScenarioEstimatedSelfWaterEnergyUsage {
-            unit = Percent;
-            optional;
-            min = 0.0;
-            max = 100.0;
-            default = 100.0;
-        },
-        AdditionalCustomEmissions {
+        SensitivityAdditionalCustomEmissions {
           unit = String;
           optional;
-        }
+        },
+
+        // ------    ------ //
+        //  Recommendation  //
+        // ------    ------ //
+
+        RecommendationSludgeBagsAreOpen {
+            unit = bool;
+            optional;
+            default = true;
+        },
+        RecommendationSludgeStorageContainersAreOpen {
+            unit = bool;
+            optional;
+            default = true;
+        },
+        RecommendationN2OSideStreamFactor {
+            unit = Factor; // TODO: should't this be Percent?
+        },
+        RecommendationN2OSideStreamCoverIsOpen {
+            unit = bool;
+            optional;
+            default = true;
+        },
+        RecommendationProcessEnergySaving {
+            unit = Percent;
+            optional;
+            min = 0.0;
+            max = 100.0;
+            default = 0.0;
+        },
+        RecommendationFossilEnergySaving {
+            unit = Percent;
+            optional;
+            min = 0.0;
+            max = 100.0;
+            default = 0.0;
+        },
+        RecommendationDistrictHeating {
+            unit = Kilowatthours;
+            optional;
+            default = 0.0;
+        },
+        RecommendationPhotovoltaicEnergyExpansion {
+            unit = Kilowatthours;
+            optional;
+            default = 0.0;
+        },
+        RecommendationEstimatedSelfPhotovolaticUsage {
+            unit = Percent;
+            optional;
+            min = 0.0;
+            max = 100.0;
+            default = 100.0;
+        },
+        RecommendationWindEnergyExpansion {
+            unit = Kilowatthours;
+            optional;
+            default = 0.0;
+        },
+        RecommendationEstimatedSelfWindEnergyUsage {
+            unit = Percent;
+            optional;
+            min = 0.0;
+            max = 100.0;
+            default = 100.0;
+        },
+        RecommendationWaterEnergyExpansion {
+            unit = Kilowatthours;
+            optional;
+            default = 0.0;
+        },
+        RecommendationEstimatedSelfWaterEnergyUsage {
+            unit = Percent;
+            optional;
+            min = 0.0;
+            max = 100.0;
+            default = 100.0;
+        },
     }
 }
 

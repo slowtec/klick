@@ -130,58 +130,61 @@ fn emissions_factors_and_methods(
 
     let from = input; // FIXME
 
-    let population_equivalent = required!(In::PopulationEquivalent, &from)?;
-    let wastewater = required!(In::Wastewater, &from)?;
-    let influent_nitrogen = required!(In::InfluentNitrogen, &from)?;
-    let influent_chemical_oxygen_demand = required!(In::InfluentChemicalOxygenDemand, &from)?;
+    let population_equivalent = required!(In::ProfilePopulationEquivalent, &from)?;
+    let wastewater = required!(In::ProfileWastewater, &from)?;
+    let influent_nitrogen = required!(In::ProfileInfluentNitrogen, &from)?;
+    let influent_chemical_oxygen_demand =
+        required!(In::ProfileInfluentChemicalOxygenDemand, &from)?;
     let influent_total_organic_carbohydrates =
-        required!(In::InfluentTotalOrganicCarbohydrates, &from)?;
+        required!(In::ProfileInfluentTotalOrganicCarbohydrates, &from)?;
 
     let chemical_oxygen_demand_influent = influent_chemical_oxygen_demand;
     let nitrogen_influent = influent_nitrogen;
     let total_organic_carbohydrates = influent_total_organic_carbohydrates;
 
-    let effluent_nitrogen = required!(In::EffluentNitrogen, &from)?;
-    let effluent_chemical_oxygen_demand = required!(In::EffluentChemicalOxygenDemand, &from)?;
+    let effluent_nitrogen = required!(In::ProfileEffluentNitrogen, &from)?;
+    let effluent_chemical_oxygen_demand =
+        required!(In::ProfileEffluentChemicalOxygenDemand, &from)?;
 
     let nitrogen_effluent = effluent_nitrogen;
     let chemical_oxygen_demand_effluent = effluent_chemical_oxygen_demand;
 
-    let sewage_gas_produced = required!(In::SewageGasProduced, &from)?;
-    let methane_fraction = required!(In::MethaneFraction, &from)?;
-    let total_power_consumption = required!(In::TotalPowerConsumption, &from)?;
-    let on_site_power_generation = required!(In::OnSitePowerGeneration, &from)?;
-    let emission_factor_electricity_mix = required!(In::EmissionFactorElectricityMix, &from)?;
-    let heating_oil = required!(In::HeatingOil, &from)?;
-    let gas_supply = required!(In::GasSupply, &from)?;
-    let purchase_of_biogas = required!(In::PurchaseOfBiogas, &from)?;
+    let sewage_gas_produced = required!(In::ProfileSewageGasProduced, &from)?;
+    let methane_fraction = required!(In::ProfileMethaneFraction, &from)?;
+    let total_power_consumption = required!(In::ProfileTotalPowerConsumption, &from)?;
+    let on_site_power_generation = required!(In::ProfileOnSitePowerGeneration, &from)?;
+    let emission_factor_electricity_mix =
+        required!(In::ProfileEmissionFactorElectricityMix, &from)?;
+    let heating_oil = required!(In::ProfileHeatingOil, &from)?;
+    let gas_supply = required!(In::ProfileGasSupply, &from)?;
+    let purchase_of_biogas = required!(In::ProfilePurchaseOfBiogas, &from)?;
 
-    let sludge_bags_are_open_ = required!(In::ScenarioSludgeBagsAreOpen, &from)?;
-    let sludge_bags_are_open = required!(In::SludgeTreatmentBagsAreOpen, &from)?;
+    let sludge_bags_are_open_ = required!(In::RecommendationSludgeBagsAreOpen, &from)?;
+    let sludge_bags_are_open = required!(In::ProfileSludgeTreatmentBagsAreOpen, &from)?;
 
     let sludge_bags_factor = optional!(In::SensitivitySludgeBagsCustomFactor, &from);
 
     let sludge_storage_containers_are_open_ =
-        required!(In::ScenarioSludgeStorageContainersAreOpen, &from)?;
+        required!(In::RecommendationSludgeStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_are_open =
-        required!(In::SludgeTreatmentStorageContainersAreOpen, &from)?;
+        required!(In::ProfileSludgeTreatmentStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_factor =
         optional!(In::SensitivitySludgeStorageCustomFactor, &from);
-    let sewage_sludge_for_disposal = required!(In::SludgeTreatmentDisposal, &from)?;
-    let transport_distance = required!(In::SludgeTreatmentTransportDistance, &from)?;
-    let digester_count = required!(In::SludgeTreatmentDigesterCount, &from)?;
+    let sewage_sludge_for_disposal = required!(In::ProfileSludgeTreatmentDisposal, &from)?;
+    let transport_distance = required!(In::ProfileSludgeTreatmentTransportDistance, &from)?;
+    let digester_count = required!(In::ProfileSludgeTreatmentDigesterCount, &from)?;
 
     let side_stream_treatment_total_nitrogen =
-        required!(In::SideStreamTreatmentTotalNitrogen, &from)?;
+        required!(In::ProfileSideStreamTreatmentTotalNitrogen, &from)?;
     let total_nitrogen = side_stream_treatment_total_nitrogen;
 
-    let side_stream_cover_is_open = required!(In::ScenarioN2OSideStreamCoverIsOpen, &from)?;
+    let side_stream_cover_is_open = required!(In::RecommendationN2OSideStreamCoverIsOpen, &from)?;
 
-    let operating_material_fecl3 = required!(In::OperatingMaterialFeCl3, &from)?;
-    let operating_material_feclso4 = required!(In::OperatingMaterialFeClSO4, &from)?;
-    let operating_material_caoh2 = required!(In::OperatingMaterialCaOH2, &from)?;
+    let operating_material_fecl3 = required!(In::ProfileOperatingMaterialFeCl3, &from)?;
+    let operating_material_feclso4 = required!(In::ProfileOperatingMaterialFeClSO4, &from)?;
+    let operating_material_caoh2 = required!(In::ProfileOperatingMaterialCaOH2, &from)?;
     let operating_material_synthetic_polymers =
-        required!(In::OperatingMaterialSyntheticPolymers, &from)?;
+        required!(In::ProfileOperatingMaterialSyntheticPolymers, &from)?;
 
     let fecl3 = operating_material_fecl3;
     let feclso4 = operating_material_feclso4;
@@ -196,18 +199,19 @@ fn emissions_factors_and_methods(
     let n2o_side_stream = emission_factor_n2o_side_stream;
     let co2_fossil = emission_factor_co2_fossil;
 
-    let process_energy_savings = required!(In::ScenarioProcessEnergySaving, &from)?;
-    let fossil_energy_savings = required!(In::ScenarioFossilEnergySaving, &from)?;
-    let district_heating = required!(In::ScenarioDistrictHeating, &from)?;
-    let photovoltaic_energy_expansion = required!(In::ScenarioPhotovoltaicEnergyExpansion, &from)?;
+    let process_energy_savings = required!(In::RecommendationProcessEnergySaving, &from)?;
+    let fossil_energy_savings = required!(In::RecommendationFossilEnergySaving, &from)?;
+    let district_heating = required!(In::RecommendationDistrictHeating, &from)?;
+    let photovoltaic_energy_expansion =
+        required!(In::RecommendationPhotovoltaicEnergyExpansion, &from)?;
     let estimated_self_photovoltaic_usage =
-        required!(In::ScenarioEstimatedSelfPhotovolaticUsage, &from)?;
-    let wind_energy_expansion = required!(In::ScenarioWindEnergyExpansion, &from)?;
+        required!(In::RecommendationEstimatedSelfPhotovolaticUsage, &from)?;
+    let wind_energy_expansion = required!(In::RecommendationWindEnergyExpansion, &from)?;
     let estimated_self_wind_energy_usage =
-        required!(In::ScenarioEstimatedSelfWindEnergyUsage, &from)?;
-    let water_energy_expansion = required!(In::ScenarioWaterEnergyExpansion, &from)?;
+        required!(In::RecommendationEstimatedSelfWindEnergyUsage, &from)?;
+    let water_energy_expansion = required!(In::RecommendationWaterEnergyExpansion, &from)?;
     let estimated_self_water_energy_usage =
-        required!(In::ScenarioEstimatedSelfWaterEnergyUsage, &from)?;
+        required!(In::RecommendationEstimatedSelfWaterEnergyUsage, &from)?;
 
     let n2o_calculation_method = required!(In::SensitivityN2OCalculationMethod, from)?;
     let n2o_custom_factor = optional!(In::SensitivityN2OCustomFactor, from);

@@ -21,7 +21,7 @@ pub fn options(
 
     let show_sludge_bags_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.get(&Id::SludgeTreatmentBagsAreOpen)
+            d.get(&Id::ProfileSludgeTreatmentBagsAreOpen)
                 .cloned()
                 .map(Value::as_bool_unchecked)
                 != Some(false)
@@ -30,7 +30,7 @@ pub fn options(
 
     let show_sludge_storage_containers_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+            d.get(&Id::ProfileSludgeTreatmentStorageContainersAreOpen)
                 .cloned()
                 .map(Value::as_bool_unchecked)
                 != Some(false)
@@ -39,14 +39,14 @@ pub fn options(
 
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
-            d.get(&Id::SludgeTreatmentDigesterCount)
+            d.get(&Id::ProfileSludgeTreatmentDigesterCount)
                 .cloned()
                 .map(Value::as_count_unchecked)
                 .map(u64::from)
                 .unwrap_or_default()
         });
         let sewage_gas_produced = form_data.with(|d| {
-            d.get(&Id::SewageGasProduced)
+            d.get(&Id::ProfileSewageGasProduced)
                 .cloned()
                 .map(Value::as_qubicmeters_unchecked)
                 .map(f64::from)
@@ -123,7 +123,7 @@ pub fn options(
 }
 
 fn field_set1(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
-    let id = Id::ScenarioSludgeBagsAreOpen;
+    let id = Id::RecommendationSludgeBagsAreOpen;
     let custom_factor_field1 = Field {
         label: RwSignal::new("Schließen der Schlammtaschen".to_string()).into(),
         description: None,
@@ -155,7 +155,7 @@ fn field_set1(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
 }
 
 fn field_set2(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
-    let id = Id::ScenarioSludgeStorageContainersAreOpen;
+    let id = Id::RecommendationSludgeStorageContainersAreOpen;
     let custom_factor_field2 = Field {
         label: RwSignal::new("Schließen der Schlammlagerung".to_string()).into(),
         description: None,

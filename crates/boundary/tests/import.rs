@@ -23,95 +23,104 @@ fn import_v1() {
     let data = HashMap::<In, Value>::try_from(project.form_data().clone()).unwrap();
 
     assert_eq!(
-        data.get(&In::PlantName)
+        data.get(&In::ProfilePlantName)
             .cloned()
             .map(V::as_text_unchecked)
             .as_deref(),
         Some("Example Plant")
     );
     assert_eq!(
-        data.get(&In::PopulationEquivalent)
+        data.get(&In::ProfilePopulationEquivalent)
             .cloned()
             .map(V::as_count_unchecked),
         Some(Count::new(120_000))
     );
     assert_eq!(
-        data.get(&In::Wastewater),
+        data.get(&In::ProfileWastewater),
         Some(&V::qubicmeters(5_000_000.0))
     );
 
     assert_eq!(
-        data.get(&In::InfluentNitrogen),
+        data.get(&In::ProfileInfluentNitrogen),
         Some(&V::milligrams_per_liter(122.0))
     );
     assert_eq!(
-        data.get(&In::InfluentChemicalOxygenDemand),
+        data.get(&In::ProfileInfluentChemicalOxygenDemand),
         Some(&V::milligrams_per_liter(333.0))
     );
 
     assert_eq!(
-        data.get(&In::EffluentNitrogen),
+        data.get(&In::ProfileEffluentNitrogen),
         Some(&V::milligrams_per_liter(11.76))
     );
     assert_eq!(
-        data.get(&In::EffluentChemicalOxygenDemand),
+        data.get(&In::ProfileEffluentChemicalOxygenDemand),
         Some(&V::milligrams_per_liter(129.0))
     );
 
     assert_eq!(
-        data.get(&In::SewageGasProduced),
+        data.get(&In::ProfileSewageGasProduced),
         Some(&Value::qubicmeters(1_260_000.0))
     );
-    assert_eq!(data.get(&In::MethaneFraction), Some(&Value::percent(62.0)));
     assert_eq!(
-        data.get(&In::OnSitePowerGeneration),
+        data.get(&In::ProfileMethaneFraction),
+        Some(&Value::percent(62.0))
+    );
+    assert_eq!(
+        data.get(&In::ProfileOnSitePowerGeneration),
         Some(&Value::kilowatthours(2_250_897.0))
     );
     assert_eq!(
-        data.get(&In::EmissionFactorElectricityMix),
+        data.get(&In::ProfileEmissionFactorElectricityMix),
         Some(&Value::grams_per_kilowatthour(468.0))
     );
-    assert_eq!(data.get(&In::GasSupply), Some(&Value::qubicmeters(500.0)));
-    assert_eq!(data.get(&In::PurchaseOfBiogas), Some(&Value::bool(true)));
     assert_eq!(
-        data.get(&In::TotalPowerConsumption),
+        data.get(&In::ProfileGasSupply),
+        Some(&Value::qubicmeters(500.0))
+    );
+    assert_eq!(
+        data.get(&In::ProfilePurchaseOfBiogas),
+        Some(&Value::bool(true))
+    );
+    assert_eq!(
+        data.get(&In::ProfileTotalPowerConsumption),
         Some(&Value::kilowatthours(2_683_259.0))
     );
 
     assert_eq!(
-        data.get(&In::SludgeTreatmentBagsAreOpen),
+        data.get(&In::ProfileSludgeTreatmentBagsAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeBagsCustomFactor), None);
     assert_eq!(
-        data.get(&In::SludgeTreatmentStorageContainersAreOpen),
+        data.get(&In::ProfileSludgeTreatmentStorageContainersAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeStorageCustomFactor), None);
     assert_eq!(
-        data.get(&In::SludgeTreatmentDisposal),
+        data.get(&In::ProfileSludgeTreatmentDisposal),
         Some(&Value::tons(3687.6))
     );
     assert_eq!(
-        data.get(&In::SludgeTreatmentTransportDistance),
+        data.get(&In::ProfileSludgeTreatmentTransportDistance),
         Some(&Value::kilometers(47.0))
     );
-    assert_eq!(data.get(&In::SludgeTreatmentDigesterCount), None);
+    assert_eq!(data.get(&In::ProfileSludgeTreatmentDigesterCount), None);
 
     assert_eq!(
-        data.get(&In::OperatingMaterialFeCl3),
+        data.get(&In::ProfileOperatingMaterialFeCl3),
         Some(&V::tons(12.345))
     );
     assert_eq!(
-        data.get(&In::OperatingMaterialFeClSO4),
+        data.get(&In::ProfileOperatingMaterialFeClSO4),
         Some(&V::tons(326.0))
     );
     assert_eq!(
-        data.get(&In::OperatingMaterialCaOH2),
+        data.get(&In::ProfileOperatingMaterialCaOH2),
         Some(&V::tons(326.26))
     );
     assert_eq!(
-        data.get(&In::OperatingMaterialSyntheticPolymers),
+        data.get(&In::ProfileOperatingMaterialSyntheticPolymers),
         Some(&V::tons(23.62))
     );
     assert_eq!(
@@ -134,95 +143,104 @@ fn import_v2() {
     let data = HashMap::<In, Value>::try_from(project.form_data().clone()).unwrap();
 
     assert_eq!(
-        data.get(&In::PlantName)
+        data.get(&In::ProfilePlantName)
             .cloned()
             .map(V::as_text_unchecked)
             .as_deref(),
         Some("Example Plant")
     );
     assert_eq!(
-        data.get(&In::PopulationEquivalent)
+        data.get(&In::ProfilePopulationEquivalent)
             .cloned()
             .map(V::as_count_unchecked),
         Some(Count::new(120_000))
     );
     assert_eq!(
-        data.get(&In::Wastewater),
+        data.get(&In::ProfileWastewater),
         Some(&V::qubicmeters(5_000_000.0))
     );
 
     assert_eq!(
-        data.get(&In::InfluentNitrogen),
+        data.get(&In::ProfileInfluentNitrogen),
         Some(&V::milligrams_per_liter(122.0))
     );
     assert_eq!(
-        data.get(&In::InfluentChemicalOxygenDemand),
+        data.get(&In::ProfileInfluentChemicalOxygenDemand),
         Some(&V::milligrams_per_liter(333.0))
     );
 
     assert_eq!(
-        data.get(&In::EffluentNitrogen),
+        data.get(&In::ProfileEffluentNitrogen),
         Some(&V::milligrams_per_liter(11.76))
     );
     assert_eq!(
-        data.get(&In::EffluentChemicalOxygenDemand),
+        data.get(&In::ProfileEffluentChemicalOxygenDemand),
         Some(&V::milligrams_per_liter(129.0))
     );
 
     assert_eq!(
-        data.get(&In::SewageGasProduced),
+        data.get(&In::ProfileSewageGasProduced),
         Some(&Value::qubicmeters(1_260_000.0))
     );
-    assert_eq!(data.get(&In::MethaneFraction), Some(&Value::percent(62.0)));
     assert_eq!(
-        data.get(&In::OnSitePowerGeneration),
+        data.get(&In::ProfileMethaneFraction),
+        Some(&Value::percent(62.0))
+    );
+    assert_eq!(
+        data.get(&In::ProfileOnSitePowerGeneration),
         Some(&Value::kilowatthours(2_250_897.0))
     );
     assert_eq!(
-        data.get(&In::EmissionFactorElectricityMix),
+        data.get(&In::ProfileEmissionFactorElectricityMix),
         Some(&Value::grams_per_kilowatthour(468.0))
     );
-    assert_eq!(data.get(&In::GasSupply), Some(&Value::qubicmeters(500.0)));
-    assert_eq!(data.get(&In::PurchaseOfBiogas), Some(&Value::bool(true)));
     assert_eq!(
-        data.get(&In::TotalPowerConsumption),
+        data.get(&In::ProfileGasSupply),
+        Some(&Value::qubicmeters(500.0))
+    );
+    assert_eq!(
+        data.get(&In::ProfilePurchaseOfBiogas),
+        Some(&Value::bool(true))
+    );
+    assert_eq!(
+        data.get(&In::ProfileTotalPowerConsumption),
         Some(&Value::kilowatthours(2_683_259.0))
     );
 
     assert_eq!(
-        data.get(&In::SludgeTreatmentBagsAreOpen),
+        data.get(&In::ProfileSludgeTreatmentBagsAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeBagsCustomFactor), None);
     assert_eq!(
-        data.get(&In::SludgeTreatmentStorageContainersAreOpen),
+        data.get(&In::ProfileSludgeTreatmentStorageContainersAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeStorageCustomFactor), None);
     assert_eq!(
-        data.get(&In::SludgeTreatmentDisposal),
+        data.get(&In::ProfileSludgeTreatmentDisposal),
         Some(&Value::tons(3687.6))
     );
     assert_eq!(
-        data.get(&In::SludgeTreatmentTransportDistance),
+        data.get(&In::ProfileSludgeTreatmentTransportDistance),
         Some(&Value::kilometers(47.0))
     );
-    assert_eq!(data.get(&In::SludgeTreatmentDigesterCount), None);
+    assert_eq!(data.get(&In::ProfileSludgeTreatmentDigesterCount), None);
 
     assert_eq!(
-        data.get(&In::OperatingMaterialFeCl3),
+        data.get(&In::ProfileOperatingMaterialFeCl3),
         Some(&V::tons(12.345))
     );
     assert_eq!(
-        data.get(&In::OperatingMaterialFeClSO4),
+        data.get(&In::ProfileOperatingMaterialFeClSO4),
         Some(&V::tons(326.0))
     );
     assert_eq!(
-        data.get(&In::OperatingMaterialCaOH2),
+        data.get(&In::ProfileOperatingMaterialCaOH2),
         Some(&V::tons(326.26))
     );
     assert_eq!(
-        data.get(&In::OperatingMaterialSyntheticPolymers),
+        data.get(&In::ProfileOperatingMaterialSyntheticPolymers),
         Some(&V::tons(23.62))
     );
 
@@ -271,14 +289,14 @@ fn import_v5() {
     assert_eq!(project.get(&In::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
         project
-            .get(&In::SludgeTreatmentBagsAreOpen)
+            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
     );
     assert_eq!(
         project
-            .get(&In::SludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
@@ -303,14 +321,14 @@ fn import_v6() {
     assert_eq!(project.get(&In::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
         project
-            .get(&In::SludgeTreatmentBagsAreOpen)
+            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
     );
     assert_eq!(
         project
-            .get(&In::SludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
@@ -357,7 +375,7 @@ fn import_v8() {
 
     assert_eq!(
         form_data
-            .get(&In::InfluentTotalOrganicCarbohydrates)
+            .get(&In::ProfileInfluentTotalOrganicCarbohydrates)
             .cloned()
             .map(V::as_milligrams_per_liter_unchecked)
             .map(f64::from),
@@ -365,13 +383,13 @@ fn import_v8() {
     );
 
     assert_eq!(
-        form_data.get(&In::SideStreamTreatmentTotalNitrogen),
+        form_data.get(&In::ProfileSideStreamTreatmentTotalNitrogen),
         Some(&Value::tons(101.4))
     );
 
     assert_eq!(
         form_data
-            .get(&In::SludgeTreatmentBagsAreOpen)
+            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
@@ -379,17 +397,17 @@ fn import_v8() {
 
     assert_eq!(
         form_data
-            .get(&In::SludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
     );
     assert_eq!(
-        form_data.get(&In::SludgeTreatmentBagsAreOpen),
+        form_data.get(&In::ProfileSludgeTreatmentBagsAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(
-        form_data.get(&In::SludgeTreatmentStorageContainersAreOpen),
+        form_data.get(&In::ProfileSludgeTreatmentStorageContainersAreOpen),
         Some(&Value::bool(true))
     );
 }
@@ -403,136 +421,146 @@ fn import_v9() {
     assert_eq!(form_data.get(&In::ProjectName), None);
 
     assert_eq!(
-        form_data.get(&In::PlantName).cloned(),
+        form_data.get(&In::ProfilePlantName).cloned(),
         Some(Value::text("Muster Klärwerk".to_string()))
     );
 
     assert_eq!(
-        form_data.get(&In::PopulationEquivalent).cloned(),
+        form_data.get(&In::ProfilePopulationEquivalent).cloned(),
         Some(Value::count(50000))
     );
 
     assert_eq!(
-        form_data.get(&In::Wastewater).cloned(),
+        form_data.get(&In::ProfileWastewater).cloned(),
         Some(Value::qubicmeters(2_135_250.0))
     );
 
     assert_eq!(
-        form_data.get(&In::InfluentNitrogen).cloned(),
+        form_data.get(&In::ProfileInfluentNitrogen).cloned(),
         Some(Value::milligrams_per_liter(94.0))
     );
 
     assert_eq!(
-        form_data.get(&In::InfluentChemicalOxygenDemand).cloned(),
+        form_data
+            .get(&In::ProfileInfluentChemicalOxygenDemand)
+            .cloned(),
         Some(Value::milligrams_per_liter(1020.0))
     );
 
     assert_eq!(
         form_data
-            .get(&In::InfluentTotalOrganicCarbohydrates)
+            .get(&In::ProfileInfluentTotalOrganicCarbohydrates)
             .cloned(),
         Some(Value::milligrams_per_liter(101.99))
     );
 
     assert_eq!(
-        form_data.get(&In::EffluentNitrogen).cloned(),
+        form_data.get(&In::ProfileEffluentNitrogen).cloned(),
         Some(Value::milligrams_per_liter(15.77))
     );
 
     assert_eq!(
-        form_data.get(&In::EffluentChemicalOxygenDemand).cloned(),
+        form_data
+            .get(&In::ProfileEffluentChemicalOxygenDemand)
+            .cloned(),
         Some(Value::milligrams_per_liter(47.18))
     );
 
     assert_eq!(
-        form_data.get(&In::SewageGasProduced).cloned(),
+        form_data.get(&In::ProfileSewageGasProduced).cloned(),
         Some(Value::qubicmeters(420_000.0))
     );
 
     assert_eq!(
-        form_data.get(&In::MethaneFraction).cloned(),
+        form_data.get(&In::ProfileMethaneFraction).cloned(),
         Some(Value::percent(62.0))
     );
 
     assert_eq!(
-        form_data.get(&In::PurchaseOfBiogas).cloned(),
+        form_data.get(&In::ProfilePurchaseOfBiogas).cloned(),
         Some(Value::bool(false))
     );
 
     assert_eq!(
-        form_data.get(&In::TotalPowerConsumption).cloned(),
+        form_data.get(&In::ProfileTotalPowerConsumption).cloned(),
         Some(Value::kilowatthours(1_665_000.0))
     );
 
     assert_eq!(
-        form_data.get(&In::OnSitePowerGeneration).cloned(),
+        form_data.get(&In::ProfileOnSitePowerGeneration).cloned(),
         Some(Value::kilowatthours(810_000.0))
     );
 
     assert_eq!(
-        form_data.get(&In::EmissionFactorElectricityMix).cloned(),
+        form_data
+            .get(&In::ProfileEmissionFactorElectricityMix)
+            .cloned(),
         Some(Value::grams_per_kilowatthour(420.0))
     );
 
     assert_eq!(
-        form_data.get(&In::HeatingOil).cloned(),
+        form_data.get(&In::ProfileHeatingOil).cloned(),
         Some(Value::liters(2132.12))
     );
 
     assert_eq!(
         form_data
-            .get(&In::SideStreamTreatmentTotalNitrogen)
+            .get(&In::ProfileSideStreamTreatmentTotalNitrogen)
             .cloned(),
         Some(Value::tons(101.4))
     );
 
     assert_eq!(
-        form_data.get(&In::SludgeTreatmentBagsAreOpen).cloned(),
-        Some(Value::bool(true))
-    );
-
-    assert_eq!(
         form_data
-            .get(&In::SludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
             .cloned(),
         Some(Value::bool(true))
     );
 
     assert_eq!(
-        form_data.get(&In::SludgeTreatmentDisposal).cloned(),
+        form_data
+            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
+            .cloned(),
+        Some(Value::bool(true))
+    );
+
+    assert_eq!(
+        form_data.get(&In::ProfileSludgeTreatmentDisposal).cloned(),
         Some(Value::tons(3016.5))
     );
 
     assert_eq!(
         form_data
-            .get(&In::SludgeTreatmentTransportDistance)
+            .get(&In::ProfileSludgeTreatmentTransportDistance)
             .cloned(),
         Some(Value::kilometers(150.0))
     );
 
     assert_eq!(
-        form_data.get(&In::SludgeTreatmentDigesterCount).cloned(),
+        form_data
+            .get(&In::ProfileSludgeTreatmentDigesterCount)
+            .cloned(),
         Some(Value::count(3))
     );
 
     assert_eq!(
-        form_data.get(&In::OperatingMaterialFeCl3).cloned(),
+        form_data.get(&In::ProfileOperatingMaterialFeCl3).cloned(),
         Some(Value::tons(310.5))
     );
 
     assert_eq!(
-        form_data.get(&In::OperatingMaterialFeClSO4).cloned(),
+        form_data.get(&In::ProfileOperatingMaterialFeClSO4).cloned(),
         Some(Value::tons(0.0))
     );
 
     assert_eq!(
-        form_data.get(&In::OperatingMaterialCaOH2).cloned(),
+        form_data.get(&In::ProfileOperatingMaterialCaOH2).cloned(),
         Some(Value::tons(0.0))
     );
 
     assert_eq!(
         form_data
-            .get(&In::OperatingMaterialSyntheticPolymers)
+            .get(&In::ProfileOperatingMaterialSyntheticPolymers)
             .cloned(),
         Some(Value::tons(12.0))
     );
@@ -558,13 +586,15 @@ fn import_v9() {
 
     assert_eq!(
         form_data
-            .get(&In::ScenarioN2OSideStreamCoverIsOpen)
+            .get(&In::RecommendationN2OSideStreamCoverIsOpen)
             .cloned(),
         Some(Value::bool(true))
     );
 
     assert_eq!(
-        form_data.get(&In::ScenarioN2OSideStreamFactor).cloned(),
+        form_data
+            .get(&In::RecommendationN2OSideStreamFactor)
+            .cloned(),
         Some(Value::factor(101.4))
     );
 }

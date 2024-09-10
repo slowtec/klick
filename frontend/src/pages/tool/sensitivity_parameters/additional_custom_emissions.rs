@@ -6,7 +6,7 @@ use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_
 use klick_boundary::FormData;
 use klick_codemirror::CodeMirror;
 use klick_domain::{
-    self as domain, output_value::required, InputValueId as Id, OutputValueId as Out, Value,
+    self as domain, output_value::required, InputValueId as In, OutputValueId as Out, Value,
 };
 use klick_presenter::{Lng, ValueLabel};
 
@@ -25,7 +25,7 @@ pub fn AdditionalCustomEmissions(
 
     let input_signal: Signal<Option<String>> = Signal::derive(move || {
         form_data.with(|d| {
-            d.get(&Id::AdditionalCustomEmissions)
+            d.get(&In::SensitivityAdditionalCustomEmissions)
                 .cloned()
                 .map(Value::as_text_unchecked)
         })
@@ -50,10 +50,10 @@ pub fn AdditionalCustomEmissions(
               form_data.update(|d|{
                 match value {
                     Some(v) => {
-                      d.insert(Id::AdditionalCustomEmissions, Value::text(v));
+                      d.insert(In::SensitivityAdditionalCustomEmissions, Value::text(v));
                     }
                     None => {
-                      d.remove(&Id::AdditionalCustomEmissions);
+                      d.remove(&In::SensitivityAdditionalCustomEmissions);
                     }
                 }
               });

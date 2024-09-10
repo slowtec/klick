@@ -143,8 +143,8 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
         FieldSet {
             title: Some("Prozesse und fossile Energieträger"),
             fields: vec![
-                create_field(form_data, input_data, Id::ScenarioProcessEnergySaving),
-                create_field(form_data, input_data, Id::ScenarioFossilEnergySaving),
+                create_field(form_data, input_data, Id::RecommendationProcessEnergySaving),
+                create_field(form_data, input_data, Id::RecommendationFossilEnergySaving),
             ],
             draw_border,
         },
@@ -154,12 +154,12 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
                 create_field(
                     form_data,
                     input_data,
-                    Id::ScenarioPhotovoltaicEnergyExpansion,
+                    Id::RecommendationPhotovoltaicEnergyExpansion,
                 ),
                 create_field(
                     form_data,
                     input_data,
-                    Id::ScenarioEstimatedSelfPhotovolaticUsage,
+                    Id::RecommendationEstimatedSelfPhotovolaticUsage,
                 ),
             ],
             draw_border,
@@ -167,11 +167,11 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
         FieldSet {
             title: Some("Windkraft"),
             fields: vec![
-                create_field(form_data, input_data, Id::ScenarioWindEnergyExpansion),
+                create_field(form_data, input_data, Id::RecommendationWindEnergyExpansion),
                 create_field(
                     form_data,
                     input_data,
-                    Id::ScenarioEstimatedSelfWindEnergyUsage,
+                    Id::RecommendationEstimatedSelfWindEnergyUsage,
                 ),
             ],
             draw_border,
@@ -179,11 +179,15 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
         FieldSet {
             title: Some("Wasserkraft"),
             fields: vec![
-                create_field(form_data, input_data, Id::ScenarioWaterEnergyExpansion),
                 create_field(
                     form_data,
                     input_data,
-                    Id::ScenarioEstimatedSelfWaterEnergyUsage,
+                    Id::RecommendationWaterEnergyExpansion,
+                ),
+                create_field(
+                    form_data,
+                    input_data,
+                    Id::RecommendationEstimatedSelfWaterEnergyUsage,
                 ),
             ],
             draw_border,
@@ -193,7 +197,7 @@ fn field_sets(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) ->
             fields: vec![create_field(
                 form_data,
                 input_data,
-                Id::ScenarioDistrictHeating,
+                Id::RecommendationDistrictHeating,
             )],
             draw_border,
         },

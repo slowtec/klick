@@ -224,7 +224,7 @@ fn render_markdown_template(
 
     let plant_name = outcome
         .input
-        .get(&In::PlantName.into())
+        .get(&In::ProfilePlantName.into())
         .cloned()
         .map_or_else(|| "Klärwerk".to_string(), Value::as_text_unchecked);
 

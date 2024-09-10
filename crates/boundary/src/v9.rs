@@ -71,31 +71,41 @@ pub struct SavedProject {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
 pub enum InputValueId {
+    // --- Project ---//
     ProjectName,
-    PlantName,
-    PopulationEquivalent,
-    Wastewater,
-    InfluentNitrogen,
-    InfluentChemicalOxygenDemand,
-    InfluentTotalOrganicCarbohydrates,
-    EffluentNitrogen,
-    EffluentChemicalOxygenDemand,
-    SewageGasProduced,
-    MethaneFraction,
-    GasSupply,
-    PurchaseOfBiogas,
-    TotalPowerConsumption,
-    OnSitePowerGeneration,
-    EmissionFactorElectricityMix,
-    HeatingOil,
-    SideStreamTreatmentTotalNitrogen,
-    #[serde(rename = "operating-material-fe-cl3")]
-    OperatingMaterialFeCl3,
-    #[serde(rename = "operating-material-fe-cl-so4")]
-    OperatingMaterialFeClSO4,
-    #[serde(rename = "operating-material-ca-oh2")]
-    OperatingMaterialCaOH2,
-    OperatingMaterialSyntheticPolymers,
+
+    // --- Profile ---//
+    ProfilePlantName,
+    ProfilePopulationEquivalent,
+    ProfileWastewater,
+    ProfileInfluentNitrogen,
+    ProfileInfluentChemicalOxygenDemand,
+    ProfileInfluentTotalOrganicCarbohydrates,
+    ProfileEffluentNitrogen,
+    ProfileEffluentChemicalOxygenDemand,
+    ProfileSewageGasProduced,
+    ProfileMethaneFraction,
+    ProfileGasSupply,
+    ProfilePurchaseOfBiogas,
+    ProfileTotalPowerConsumption,
+    ProfileOnSitePowerGeneration,
+    ProfileEmissionFactorElectricityMix,
+    ProfileHeatingOil,
+    ProfileSideStreamTreatmentTotalNitrogen,
+    #[serde(rename = "profile-operating-material-fe-cl3")]
+    ProfileOperatingMaterialFeCl3,
+    #[serde(rename = "profile-operating-material-fe-cl-so4")]
+    ProfileOperatingMaterialFeClSO4,
+    #[serde(rename = "profile-operating-material-ca-oh2")]
+    ProfileOperatingMaterialCaOH2,
+    ProfileOperatingMaterialSyntheticPolymers,
+    ProfileSludgeTreatmentBagsAreOpen,
+    ProfileSludgeTreatmentStorageContainersAreOpen,
+    ProfileSludgeTreatmentDisposal,
+    ProfileSludgeTreatmentTransportDistance,
+    ProfileSludgeTreatmentDigesterCount,
+
+    // --- Sensitivity ---//
     #[serde(rename = "sensitivity-n2o-calculation-method")]
     SensitivityN2OCalculationMethod,
     #[serde(rename = "sensitivity-n2o-custom-factor")]
@@ -110,27 +120,24 @@ pub enum InputValueId {
     SensitivityCO2FossilCustomFactor,
     SensitivitySludgeBagsCustomFactor,
     SensitivitySludgeStorageCustomFactor,
-    SludgeTreatmentBagsAreOpen,
-    SludgeTreatmentStorageContainersAreOpen,
-    SludgeTreatmentDisposal,
-    SludgeTreatmentTransportDistance,
-    SludgeTreatmentDigesterCount,
-    ScenarioSludgeBagsAreOpen,
-    ScenarioSludgeStorageContainersAreOpen,
-    #[serde(rename = "scenario-n2o-side-stream-factor")]
-    ScenarioN2OSideStreamFactor,
-    #[serde(rename = "scenario-n2o-side-stream-cover-is-open")]
-    ScenarioN2OSideStreamCoverIsOpen,
-    ScenarioProcessEnergySaving,
-    ScenarioFossilEnergySaving,
-    ScenarioDistrictHeating,
-    ScenarioPhotovoltaicEnergyExpansion,
-    ScenarioEstimatedSelfPhotovolaticUsage,
-    ScenarioWindEnergyExpansion,
-    ScenarioEstimatedSelfWindEnergyUsage,
-    ScenarioWaterEnergyExpansion,
-    ScenarioEstimatedSelfWaterEnergyUsage,
-    AdditionalCustomEmissions,
+    SensitivityAdditionalCustomEmissions,
+
+    // --- Recommendation ---//
+    RecommendationSludgeBagsAreOpen,
+    RecommendationSludgeStorageContainersAreOpen,
+    #[serde(rename = "recommendation-n2o-side-stream-factor")]
+    RecommendationN2OSideStreamFactor,
+    #[serde(rename = "recommendation-n2o-side-stream-cover-is-open")]
+    RecommendationN2OSideStreamCoverIsOpen,
+    RecommendationProcessEnergySaving,
+    RecommendationFossilEnergySaving,
+    RecommendationDistrictHeating,
+    RecommendationPhotovoltaicEnergyExpansion,
+    RecommendationEstimatedSelfPhotovolaticUsage,
+    RecommendationWindEnergyExpansion,
+    RecommendationEstimatedSelfWindEnergyUsage,
+    RecommendationWaterEnergyExpansion,
+    RecommendationEstimatedSelfWaterEnergyUsage,
 }
 
 impl InputValueId {
@@ -139,7 +146,7 @@ impl InputValueId {
     // we need a clear assignment for v9 at this point.
     pub fn value_from_json(&self, v: JsonValue) -> anyhow::Result<Value> {
         let v = match self {
-            Self::ProjectName | Self::PlantName => {
+            Self::ProjectName | Self::ProfilePlantName => {
                 let v = v
                     .as_str()
                     .ok_or_else(|| anyhow!("Expected text value for {self:?}, got {v:?}"))?;
@@ -147,12 +154,12 @@ impl InputValueId {
             }
 
             // Boolean values
-            Self::ScenarioSludgeStorageContainersAreOpen
-            | Self::PurchaseOfBiogas
-            | Self::SludgeTreatmentBagsAreOpen
-            | Self::ScenarioSludgeBagsAreOpen
-            | Self::ScenarioN2OSideStreamCoverIsOpen
-            | Self::SludgeTreatmentStorageContainersAreOpen => {
+            Self::RecommendationSludgeStorageContainersAreOpen
+            | Self::ProfilePurchaseOfBiogas
+            | Self::ProfileSludgeTreatmentBagsAreOpen
+            | Self::RecommendationSludgeBagsAreOpen
+            | Self::RecommendationN2OSideStreamCoverIsOpen
+            | Self::ProfileSludgeTreatmentStorageContainersAreOpen => {
                 let v = v
                     .as_bool()
                     .ok_or_else(|| anyhow!("Expected bool value for {self:?}, got {v:?}"))?;
@@ -160,7 +167,7 @@ impl InputValueId {
             }
 
             // Count values
-            Self::PopulationEquivalent | Self::SludgeTreatmentDigesterCount => {
+            Self::ProfilePopulationEquivalent | Self::ProfileSludgeTreatmentDigesterCount => {
                 let v = v
                     .as_u64()
                     .ok_or_else(|| anyhow!("Expected count value for {self:?}, got {v:?}"))?;
@@ -168,7 +175,7 @@ impl InputValueId {
             }
 
             // Qubicmeters values
-            Self::Wastewater | Self::SewageGasProduced | Self::GasSupply => {
+            Self::ProfileWastewater | Self::ProfileSewageGasProduced | Self::ProfileGasSupply => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected qubicmeters value for {self:?}, got {v:?}"))?;
@@ -176,11 +183,11 @@ impl InputValueId {
             }
 
             // MilligramsPerLiter values
-            Self::InfluentNitrogen
-            | Self::InfluentChemicalOxygenDemand
-            | Self::InfluentTotalOrganicCarbohydrates
-            | Self::EffluentNitrogen
-            | Self::EffluentChemicalOxygenDemand => {
+            Self::ProfileInfluentNitrogen
+            | Self::ProfileInfluentChemicalOxygenDemand
+            | Self::ProfileInfluentTotalOrganicCarbohydrates
+            | Self::ProfileEffluentNitrogen
+            | Self::ProfileEffluentChemicalOxygenDemand => {
                 let v = v.as_f64().ok_or_else(|| {
                     anyhow!("Expected milligrams_per_liter value for {self:?}, got {v:?}")
                 })?;
@@ -188,12 +195,12 @@ impl InputValueId {
             }
 
             // Kilowatthours values
-            Self::TotalPowerConsumption
-            | Self::OnSitePowerGeneration
-            | Self::ScenarioDistrictHeating
-            | Self::ScenarioPhotovoltaicEnergyExpansion
-            | Self::ScenarioWindEnergyExpansion
-            | Self::ScenarioWaterEnergyExpansion => {
+            Self::ProfileTotalPowerConsumption
+            | Self::ProfileOnSitePowerGeneration
+            | Self::RecommendationDistrictHeating
+            | Self::RecommendationPhotovoltaicEnergyExpansion
+            | Self::RecommendationWindEnergyExpansion
+            | Self::RecommendationWaterEnergyExpansion => {
                 let v = v.as_f64().ok_or_else(|| {
                     anyhow!("Expected kilowatthours value for {self:?}, got {v:?}")
                 })?;
@@ -201,7 +208,7 @@ impl InputValueId {
             }
 
             // GramsPerKilowatthour values
-            Self::EmissionFactorElectricityMix => {
+            Self::ProfileEmissionFactorElectricityMix => {
                 let v = v.as_f64().ok_or_else(|| {
                     anyhow!("Expected grams_per_kilowatthour value for {self:?}, got {v:?}")
                 })?;
@@ -209,7 +216,7 @@ impl InputValueId {
             }
 
             // Liters values
-            Self::HeatingOil => {
+            Self::ProfileHeatingOil => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected liters value for {self:?}, got {v:?}"))?;
@@ -217,12 +224,12 @@ impl InputValueId {
             }
 
             // Tons values
-            Self::SideStreamTreatmentTotalNitrogen
-            | Self::OperatingMaterialFeCl3
-            | Self::OperatingMaterialFeClSO4
-            | Self::OperatingMaterialCaOH2
-            | Self::OperatingMaterialSyntheticPolymers
-            | Self::SludgeTreatmentDisposal => {
+            Self::ProfileSideStreamTreatmentTotalNitrogen
+            | Self::ProfileOperatingMaterialFeCl3
+            | Self::ProfileOperatingMaterialFeClSO4
+            | Self::ProfileOperatingMaterialCaOH2
+            | Self::ProfileOperatingMaterialSyntheticPolymers
+            | Self::ProfileSludgeTreatmentDisposal => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected tons value for {self:?}, got {v:?}"))?;
@@ -230,7 +237,7 @@ impl InputValueId {
             }
 
             // Kilometers values
-            Self::SludgeTreatmentTransportDistance => {
+            Self::ProfileSludgeTreatmentTransportDistance => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected kilometers value for {self:?}, got {v:?}"))?;
@@ -238,17 +245,17 @@ impl InputValueId {
             }
 
             // Percent values
-            Self::MethaneFraction
+            Self::ProfileMethaneFraction
             | Self::SensitivityN2OCustomFactor
             | Self::SensitivityN2OSideStreamFactor
             | Self::SensitivityCH4ChpCustomFactor
             | Self::SensitivityCO2FossilCustomFactor
             | Self::SensitivitySludgeStorageCustomFactor
-            | Self::ScenarioProcessEnergySaving
-            | Self::ScenarioFossilEnergySaving
-            | Self::ScenarioEstimatedSelfPhotovolaticUsage
-            | Self::ScenarioEstimatedSelfWindEnergyUsage
-            | Self::ScenarioEstimatedSelfWaterEnergyUsage => {
+            | Self::RecommendationProcessEnergySaving
+            | Self::RecommendationFossilEnergySaving
+            | Self::RecommendationEstimatedSelfPhotovolaticUsage
+            | Self::RecommendationEstimatedSelfWindEnergyUsage
+            | Self::RecommendationEstimatedSelfWaterEnergyUsage => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected percent value for {self:?}, got {v:?}"))?;
@@ -276,7 +283,7 @@ impl InputValueId {
             }
 
             // Factor values
-            Self::ScenarioN2OSideStreamFactor => {
+            Self::RecommendationN2OSideStreamFactor => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected factor value for {self:?}, got {v:?}"))?;
@@ -284,7 +291,7 @@ impl InputValueId {
             }
 
             // Text values
-            Self::AdditionalCustomEmissions => {
+            Self::SensitivityAdditionalCustomEmissions => {
                 let v = v
                     .as_str()
                     .ok_or_else(|| anyhow!("Expected text value for {self:?}, got {v:?}"))?;
@@ -302,7 +309,9 @@ impl InputValueId {
 
         match self {
             // Text values
-            Self::ProjectName | Self::PlantName | Self::AdditionalCustomEmissions => {
+            Self::ProjectName
+            | Self::ProfilePlantName
+            | Self::SensitivityAdditionalCustomEmissions => {
                 let text_value = value
                     .as_text()
                     .ok_or_else(|| {
@@ -313,12 +322,12 @@ impl InputValueId {
             }
 
             // Boolean values
-            Self::ScenarioSludgeStorageContainersAreOpen
-            | Self::PurchaseOfBiogas
-            | Self::SludgeTreatmentBagsAreOpen
-            | Self::ScenarioSludgeBagsAreOpen
-            | Self::ScenarioN2OSideStreamCoverIsOpen
-            | Self::SludgeTreatmentStorageContainersAreOpen => {
+            Self::RecommendationSludgeStorageContainersAreOpen
+            | Self::ProfilePurchaseOfBiogas
+            | Self::ProfileSludgeTreatmentBagsAreOpen
+            | Self::RecommendationSludgeBagsAreOpen
+            | Self::RecommendationN2OSideStreamCoverIsOpen
+            | Self::ProfileSludgeTreatmentStorageContainersAreOpen => {
                 let bool_value = value.as_bool().ok_or_else(|| {
                     anyhow!("Expected bool value for {self:?}, got {value_clone:?}")
                 })?;
@@ -326,7 +335,7 @@ impl InputValueId {
             }
 
             // Count values
-            Self::PopulationEquivalent | Self::SludgeTreatmentDigesterCount => {
+            Self::ProfilePopulationEquivalent | Self::ProfileSludgeTreatmentDigesterCount => {
                 let count_value = value.as_count().ok_or_else(|| {
                     anyhow!("Expected count value for {self:?}, got {value_clone:?}")
                 })?;
@@ -334,7 +343,7 @@ impl InputValueId {
             }
 
             // Qubicmeters values
-            Self::Wastewater | Self::SewageGasProduced | Self::GasSupply => {
+            Self::ProfileWastewater | Self::ProfileSewageGasProduced | Self::ProfileGasSupply => {
                 let qubicmeters_value = value.as_qubicmeters().ok_or_else(|| {
                     anyhow!("Expected qubicmeters value for {self:?}, got {value_clone:?}")
                 })?;
@@ -342,11 +351,11 @@ impl InputValueId {
             }
 
             // MilligramsPerLiter values
-            Self::InfluentNitrogen
-            | Self::InfluentChemicalOxygenDemand
-            | Self::InfluentTotalOrganicCarbohydrates
-            | Self::EffluentNitrogen
-            | Self::EffluentChemicalOxygenDemand => {
+            Self::ProfileInfluentNitrogen
+            | Self::ProfileInfluentChemicalOxygenDemand
+            | Self::ProfileInfluentTotalOrganicCarbohydrates
+            | Self::ProfileEffluentNitrogen
+            | Self::ProfileEffluentChemicalOxygenDemand => {
                 let milligrams_value = value.as_milligrams_per_liter().ok_or_else(|| {
                     anyhow!("Expected milligrams_per_liter value for {self:?}, got {value_clone:?}")
                 })?;
@@ -354,12 +363,12 @@ impl InputValueId {
             }
 
             // Kilowatthours values
-            Self::TotalPowerConsumption
-            | Self::OnSitePowerGeneration
-            | Self::ScenarioDistrictHeating
-            | Self::ScenarioPhotovoltaicEnergyExpansion
-            | Self::ScenarioWindEnergyExpansion
-            | Self::ScenarioWaterEnergyExpansion => {
+            Self::ProfileTotalPowerConsumption
+            | Self::ProfileOnSitePowerGeneration
+            | Self::RecommendationDistrictHeating
+            | Self::RecommendationPhotovoltaicEnergyExpansion
+            | Self::RecommendationWindEnergyExpansion
+            | Self::RecommendationWaterEnergyExpansion => {
                 let kilowatt_value = value.as_kilowatthours().ok_or_else(|| {
                     anyhow!("Expected kilowatthours value for {self:?}, got {value_clone:?}")
                 })?;
@@ -367,7 +376,7 @@ impl InputValueId {
             }
 
             // GramsPerKilowatthour values
-            Self::EmissionFactorElectricityMix => {
+            Self::ProfileEmissionFactorElectricityMix => {
                 let grams_value = value.as_grams_per_kilowatthour().ok_or_else(|| {
                     anyhow!(
                         "Expected grams_per_kilowatthour value for {self:?}, got {value_clone:?}"
@@ -377,7 +386,7 @@ impl InputValueId {
             }
 
             // Liters values
-            Self::HeatingOil => {
+            Self::ProfileHeatingOil => {
                 let liters_value = value.as_liters().ok_or_else(|| {
                     anyhow!("Expected liters value for {self:?}, got {value_clone:?}")
                 })?;
@@ -385,12 +394,12 @@ impl InputValueId {
             }
 
             // Tons values
-            Self::SideStreamTreatmentTotalNitrogen
-            | Self::OperatingMaterialFeCl3
-            | Self::OperatingMaterialFeClSO4
-            | Self::OperatingMaterialCaOH2
-            | Self::OperatingMaterialSyntheticPolymers
-            | Self::SludgeTreatmentDisposal => {
+            Self::ProfileSideStreamTreatmentTotalNitrogen
+            | Self::ProfileOperatingMaterialFeCl3
+            | Self::ProfileOperatingMaterialFeClSO4
+            | Self::ProfileOperatingMaterialCaOH2
+            | Self::ProfileOperatingMaterialSyntheticPolymers
+            | Self::ProfileSludgeTreatmentDisposal => {
                 let tons_value = value.as_tons().ok_or_else(|| {
                     anyhow!("Expected tons value for {self:?}, got {value_clone:?}")
                 })?;
@@ -398,7 +407,7 @@ impl InputValueId {
             }
 
             // Kilometers values
-            Self::SludgeTreatmentTransportDistance => {
+            Self::ProfileSludgeTreatmentTransportDistance => {
                 let kilometers_value = value.as_kilometers().ok_or_else(|| {
                     anyhow!("Expected kilometers value for {self:?}, got {value_clone:?}")
                 })?;
@@ -406,17 +415,17 @@ impl InputValueId {
             }
 
             // Percent values
-            Self::MethaneFraction
+            Self::ProfileMethaneFraction
             | Self::SensitivityN2OCustomFactor
             | Self::SensitivityN2OSideStreamFactor
             | Self::SensitivityCH4ChpCustomFactor
             | Self::SensitivityCO2FossilCustomFactor
             | Self::SensitivitySludgeStorageCustomFactor
-            | Self::ScenarioProcessEnergySaving
-            | Self::ScenarioFossilEnergySaving
-            | Self::ScenarioEstimatedSelfPhotovolaticUsage
-            | Self::ScenarioEstimatedSelfWindEnergyUsage
-            | Self::ScenarioEstimatedSelfWaterEnergyUsage => {
+            | Self::RecommendationProcessEnergySaving
+            | Self::RecommendationFossilEnergySaving
+            | Self::RecommendationEstimatedSelfPhotovolaticUsage
+            | Self::RecommendationEstimatedSelfWindEnergyUsage
+            | Self::RecommendationEstimatedSelfWaterEnergyUsage => {
                 let percent_value = value.as_percent().ok_or_else(|| {
                     anyhow!("Expected percent value for {self:?}, got {value_clone:?}")
                 })?;
@@ -457,7 +466,7 @@ impl InputValueId {
             }
 
             // Factor values
-            Self::ScenarioN2OSideStreamFactor => {
+            Self::RecommendationN2OSideStreamFactor => {
                 let factor_value = value.as_factor().ok_or_else(|| {
                     anyhow!("Expected factor value for {self:?}, got {value_clone:?}")
                 })?;

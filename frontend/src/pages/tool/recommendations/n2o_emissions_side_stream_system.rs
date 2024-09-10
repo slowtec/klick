@@ -63,7 +63,7 @@ pub fn options(
 }
 
 fn field_set(form_data: WriteSignal<FormData>, input_data: Signal<FormData>) -> FieldSet {
-    let id = Id::ScenarioN2OSideStreamCoverIsOpen;
+    let id = Id::RecommendationN2OSideStreamCoverIsOpen;
     let custom_factor_field = Field {
         label: label_signal(id),
         description: None,

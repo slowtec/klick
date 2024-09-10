@@ -50,76 +50,76 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
         let values = [
             (Id::ProjectName, from.project_title.map(Value::Text)),
             (
-                Id::PlantName,
+                Id::ProfilePlantName,
                 from.plant_profile.plant_name.map(Value::Text),
             ),
             (
-                Id::PopulationEquivalent,
+                Id::ProfilePopulationEquivalent,
                 from.plant_profile
                     .population_equivalent
                     .map(|v| v as u64)
                     .map(V::count),
             ),
             (
-                Id::Wastewater,
+                Id::ProfileWastewater,
                 from.plant_profile.wastewater.map(Value::qubicmeters),
             ),
             (
-                Id::InfluentNitrogen,
+                Id::ProfileInfluentNitrogen,
                 from.plant_profile
                     .influent_average
                     .total_nitrogen
                     .map(V::milligrams_per_liter),
             ),
             (
-                Id::InfluentChemicalOxygenDemand,
+                Id::ProfileInfluentChemicalOxygenDemand,
                 from.plant_profile
                     .influent_average
                     .chemical_oxygen_demand
                     .map(V::milligrams_per_liter),
             ),
             (
-                Id::InfluentTotalOrganicCarbohydrates,
+                Id::ProfileInfluentTotalOrganicCarbohydrates,
                 from.plant_profile
                     .influent_average
                     .total_organic_carbohydrates
                     .map(V::milligrams_per_liter),
             ),
             (
-                Id::EffluentNitrogen,
+                Id::ProfileEffluentNitrogen,
                 from.plant_profile
                     .effluent_average
                     .total_nitrogen
                     .map(V::milligrams_per_liter),
             ),
             (
-                Id::EffluentChemicalOxygenDemand,
+                Id::ProfileEffluentChemicalOxygenDemand,
                 from.plant_profile
                     .effluent_average
                     .chemical_oxygen_demand
                     .map(V::milligrams_per_liter),
             ),
             (
-                Id::SideStreamTreatmentTotalNitrogen,
+                Id::ProfileSideStreamTreatmentTotalNitrogen,
                 from.plant_profile
                     .side_stream_treatment
                     .total_nitrogen
                     .map(V::tons),
             ),
             (
-                Id::OperatingMaterialFeCl3,
+                Id::ProfileOperatingMaterialFeCl3,
                 from.plant_profile.operating_materials.fecl3.map(V::tons),
             ),
             (
-                Id::OperatingMaterialFeClSO4,
+                Id::ProfileOperatingMaterialFeClSO4,
                 from.plant_profile.operating_materials.feclso4.map(V::tons),
             ),
             (
-                Id::OperatingMaterialCaOH2,
+                Id::ProfileOperatingMaterialCaOH2,
                 from.plant_profile.operating_materials.caoh2.map(V::tons),
             ),
             (
-                Id::OperatingMaterialSyntheticPolymers,
+                Id::ProfileOperatingMaterialSyntheticPolymers,
                 from.plant_profile
                     .operating_materials
                     .synthetic_polymers
@@ -184,7 +184,7 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::percent),
             ),
             (
-                Id::SludgeTreatmentBagsAreOpen,
+                Id::ProfileSludgeTreatmentBagsAreOpen,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .sludge_bags_are_closed
@@ -192,7 +192,7 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::SludgeTreatmentStorageContainersAreOpen,
+                Id::ProfileSludgeTreatmentStorageContainersAreOpen,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .sludge_storage_containers_are_closed
@@ -200,84 +200,84 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::SludgeTreatmentDisposal,
+                Id::ProfileSludgeTreatmentDisposal,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .sewage_sludge_for_disposal
                     .map(V::tons),
             ),
             (
-                Id::SludgeTreatmentTransportDistance,
+                Id::ProfileSludgeTreatmentTransportDistance,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .transport_distance
                     .map(V::kilometers),
             ),
             (
-                Id::SludgeTreatmentDigesterCount,
+                Id::ProfileSludgeTreatmentDigesterCount,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .digester_count
                     .map(V::count),
             ),
             (
-                Id::SewageGasProduced,
+                Id::ProfileSewageGasProduced,
                 from.plant_profile
                     .energy_consumption
                     .sewage_gas_produced
                     .map(V::qubicmeters),
             ),
             (
-                Id::MethaneFraction,
+                Id::ProfileMethaneFraction,
                 from.plant_profile
                     .energy_consumption
                     .methane_fraction
                     .map(V::percent),
             ),
             (
-                Id::GasSupply,
+                Id::ProfileGasSupply,
                 from.plant_profile
                     .energy_consumption
                     .gas_supply
                     .map(V::qubicmeters),
             ),
             (
-                Id::PurchaseOfBiogas,
+                Id::ProfilePurchaseOfBiogas,
                 from.plant_profile
                     .energy_consumption
                     .purchase_of_biogas
                     .map(V::bool),
             ),
             (
-                Id::TotalPowerConsumption,
+                Id::ProfileTotalPowerConsumption,
                 from.plant_profile
                     .energy_consumption
                     .total_power_consumption
                     .map(V::kilowatthours),
             ),
             (
-                Id::OnSitePowerGeneration,
+                Id::ProfileOnSitePowerGeneration,
                 from.plant_profile
                     .energy_consumption
                     .on_site_power_generation
                     .map(V::kilowatthours),
             ),
             (
-                Id::EmissionFactorElectricityMix,
+                Id::ProfileEmissionFactorElectricityMix,
                 from.plant_profile
                     .energy_consumption
                     .emission_factor_electricity_mix
                     .map(V::grams_per_kilowatthour),
             ),
             (
-                Id::HeatingOil,
+                Id::ProfileHeatingOil,
                 from.plant_profile
                     .energy_consumption
                     .heating_oil
                     .map(V::liters),
             ),
             (
-                Id::ScenarioSludgeBagsAreOpen,
+                Id::RecommendationSludgeBagsAreOpen,
                 from.optimization_scenario
                     .sewage_sludge_treatment
                     .sludge_bags_are_closed
@@ -285,7 +285,7 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::ScenarioSludgeStorageContainersAreOpen,
+                Id::RecommendationSludgeStorageContainersAreOpen,
                 from.optimization_scenario
                     .sewage_sludge_treatment
                     .sludge_storage_containers_are_closed
@@ -293,14 +293,14 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::ScenarioN2OSideStreamFactor,
+                Id::RecommendationN2OSideStreamFactor,
                 from.sensitivity_parameters
                     .n2o_emissions
                     .side_stream_emission_factor
                     .map(V::factor),
             ),
             (
-                Id::ScenarioN2OSideStreamCoverIsOpen,
+                Id::RecommendationN2OSideStreamCoverIsOpen,
                 from.optimization_scenario
                     .side_stream_treatment
                     .side_stream_cover_is_closed
@@ -308,63 +308,63 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::ScenarioProcessEnergySaving,
+                Id::RecommendationProcessEnergySaving,
                 from.optimization_scenario
                     .energy_emissions
                     .process_energy_savings
                     .map(V::percent),
             ),
             (
-                Id::ScenarioFossilEnergySaving,
+                Id::RecommendationFossilEnergySaving,
                 from.optimization_scenario
                     .energy_emissions
                     .fossil_energy_savings
                     .map(V::percent),
             ),
             (
-                Id::ScenarioPhotovoltaicEnergyExpansion,
+                Id::RecommendationPhotovoltaicEnergyExpansion,
                 from.optimization_scenario
                     .energy_emissions
                     .photovoltaic_energy_expansion
                     .map(V::kilowatthours),
             ),
             (
-                Id::ScenarioEstimatedSelfPhotovolaticUsage,
+                Id::RecommendationEstimatedSelfPhotovolaticUsage,
                 from.optimization_scenario
                     .energy_emissions
                     .estimated_self_photovoltaic_usage
                     .map(V::percent),
             ),
             (
-                Id::ScenarioWindEnergyExpansion,
+                Id::RecommendationWindEnergyExpansion,
                 from.optimization_scenario
                     .energy_emissions
                     .wind_energy_expansion
                     .map(V::kilowatthours),
             ),
             (
-                Id::ScenarioEstimatedSelfWindEnergyUsage,
+                Id::RecommendationEstimatedSelfWindEnergyUsage,
                 from.optimization_scenario
                     .energy_emissions
                     .estimated_self_wind_energy_usage
                     .map(V::percent),
             ),
             (
-                Id::ScenarioWaterEnergyExpansion,
+                Id::RecommendationWaterEnergyExpansion,
                 from.optimization_scenario
                     .energy_emissions
                     .water_energy_expansion
                     .map(V::kilowatthours),
             ),
             (
-                Id::ScenarioEstimatedSelfWaterEnergyUsage,
+                Id::RecommendationEstimatedSelfWaterEnergyUsage,
                 from.optimization_scenario
                     .energy_emissions
                     .estimated_self_water_energy_usage
                     .map(V::percent),
             ),
             (
-                Id::ScenarioDistrictHeating,
+                Id::RecommendationDistrictHeating,
                 from.optimization_scenario
                     .energy_emissions
                     .district_heating
@@ -411,62 +411,62 @@ impl JsonFormData {
             Id::ProjectName => {
                 self.project_title = value.map(Value::as_text_unchecked);
             }
-            Id::PlantName => {
+            Id::ProfilePlantName => {
                 self.plant_profile.plant_name = value.map(Value::as_text_unchecked);
             }
-            Id::PopulationEquivalent => {
+            Id::ProfilePopulationEquivalent => {
                 self.plant_profile.population_equivalent = value
                     .map(V::as_count_unchecked)
                     .map(|v| u64::from(v) as f64);
             }
-            Id::Wastewater => {
+            Id::ProfileWastewater => {
                 self.plant_profile.wastewater =
                     value.map(V::as_qubicmeters_unchecked).map(Into::into);
             }
-            Id::InfluentNitrogen => {
+            Id::ProfileInfluentNitrogen => {
                 self.plant_profile.influent_average.total_nitrogen = value
                     .map(V::as_milligrams_per_liter_unchecked)
                     .map(Into::into);
             }
-            Id::InfluentChemicalOxygenDemand => {
+            Id::ProfileInfluentChemicalOxygenDemand => {
                 self.plant_profile.influent_average.chemical_oxygen_demand = value
                     .map(V::as_milligrams_per_liter_unchecked)
                     .map(Into::into);
             }
-            Id::InfluentTotalOrganicCarbohydrates => {
+            Id::ProfileInfluentTotalOrganicCarbohydrates => {
                 self.plant_profile
                     .influent_average
                     .total_organic_carbohydrates = value
                     .map(V::as_milligrams_per_liter_unchecked)
                     .map(Into::into);
             }
-            Id::EffluentNitrogen => {
+            Id::ProfileEffluentNitrogen => {
                 self.plant_profile.effluent_average.total_nitrogen = value
                     .map(V::as_milligrams_per_liter_unchecked)
                     .map(Into::into);
             }
-            Id::EffluentChemicalOxygenDemand => {
+            Id::ProfileEffluentChemicalOxygenDemand => {
                 self.plant_profile.effluent_average.chemical_oxygen_demand = value
                     .map(V::as_milligrams_per_liter_unchecked)
                     .map(Into::into);
             }
-            Id::SideStreamTreatmentTotalNitrogen => {
+            Id::ProfileSideStreamTreatmentTotalNitrogen => {
                 self.plant_profile.side_stream_treatment.total_nitrogen =
                     value.map(V::as_tons_unchecked).map(Into::into);
             }
-            Id::OperatingMaterialFeCl3 => {
+            Id::ProfileOperatingMaterialFeCl3 => {
                 self.plant_profile.operating_materials.fecl3 =
                     value.map(V::as_tons_unchecked).map(Into::into);
             }
-            Id::OperatingMaterialFeClSO4 => {
+            Id::ProfileOperatingMaterialFeClSO4 => {
                 self.plant_profile.operating_materials.feclso4 =
                     value.map(V::as_tons_unchecked).map(Into::into);
             }
-            Id::OperatingMaterialCaOH2 => {
+            Id::ProfileOperatingMaterialCaOH2 => {
                 self.plant_profile.operating_materials.caoh2 =
                     value.map(V::as_tons_unchecked).map(Into::into);
             }
-            Id::OperatingMaterialSyntheticPolymers => {
+            Id::ProfileOperatingMaterialSyntheticPolymers => {
                 self.plant_profile.operating_materials.synthetic_polymers =
                     value.map(V::as_tons_unchecked).map(Into::into);
             }
@@ -516,146 +516,146 @@ impl JsonFormData {
                     .emission_factor_sludge_storage_containers =
                     value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::SludgeTreatmentBagsAreOpen => {
+            Id::ProfileSludgeTreatmentBagsAreOpen => {
                 let closed = value.map(V::as_bool_unchecked).map(|v| !v); // open => closed
                 self.plant_profile
                     .sewage_sludge_treatment
                     .sludge_bags_are_closed = closed;
             }
-            Id::SludgeTreatmentStorageContainersAreOpen => {
+            Id::ProfileSludgeTreatmentStorageContainersAreOpen => {
                 let closed = value.map(V::as_bool_unchecked).map(|v| !v); // open => closed
                 self.plant_profile
                     .sewage_sludge_treatment
                     .sludge_storage_containers_are_closed = closed;
             }
-            Id::SludgeTreatmentDisposal => {
+            Id::ProfileSludgeTreatmentDisposal => {
                 self.plant_profile
                     .sewage_sludge_treatment
                     .sewage_sludge_for_disposal = value.map(V::as_tons_unchecked).map(Into::into);
             }
-            Id::SludgeTreatmentTransportDistance => {
+            Id::ProfileSludgeTreatmentTransportDistance => {
                 self.plant_profile
                     .sewage_sludge_treatment
                     .transport_distance = value.map(V::as_kilometers_unchecked).map(Into::into);
             }
-            Id::SludgeTreatmentDigesterCount => {
+            Id::ProfileSludgeTreatmentDigesterCount => {
                 self.plant_profile.sewage_sludge_treatment.digester_count =
                     value.map(V::as_count_unchecked).map(Into::into);
             }
-            Id::SewageGasProduced => {
+            Id::ProfileSewageGasProduced => {
                 self.plant_profile.energy_consumption.sewage_gas_produced =
                     value.map(V::as_qubicmeters_unchecked).map(Into::into);
             }
-            Id::MethaneFraction => {
+            Id::ProfileMethaneFraction => {
                 self.plant_profile.energy_consumption.methane_fraction =
                     value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::GasSupply => {
+            Id::ProfileGasSupply => {
                 self.plant_profile.energy_consumption.gas_supply =
                     value.map(V::as_qubicmeters_unchecked).map(Into::into);
             }
-            Id::PurchaseOfBiogas => {
+            Id::ProfilePurchaseOfBiogas => {
                 self.plant_profile.energy_consumption.purchase_of_biogas =
                     value.map(V::as_bool_unchecked);
             }
-            Id::TotalPowerConsumption => {
+            Id::ProfileTotalPowerConsumption => {
                 self.plant_profile
                     .energy_consumption
                     .total_power_consumption =
                     value.map(V::as_kilowatthours_unchecked).map(Into::into);
             }
-            Id::OnSitePowerGeneration => {
+            Id::ProfileOnSitePowerGeneration => {
                 self.plant_profile
                     .energy_consumption
                     .on_site_power_generation =
                     value.map(V::as_kilowatthours_unchecked).map(Into::into);
             }
-            Id::EmissionFactorElectricityMix => {
+            Id::ProfileEmissionFactorElectricityMix => {
                 self.plant_profile
                     .energy_consumption
                     .emission_factor_electricity_mix = value
                     .map(V::as_grams_per_kilowatthour_unchecked)
                     .map(Into::into);
             }
-            Id::HeatingOil => {
+            Id::ProfileHeatingOil => {
                 self.plant_profile.energy_consumption.heating_oil =
                     value.map(V::as_liters_unchecked).map(Into::into);
             }
-            Id::ScenarioSludgeBagsAreOpen => {
+            Id::RecommendationSludgeBagsAreOpen => {
                 self.optimization_scenario
                     .sewage_sludge_treatment
                     .sludge_bags_are_closed = value.map(V::as_bool_unchecked).map(|v| !v);
                 // open => closed
             }
-            Id::ScenarioSludgeStorageContainersAreOpen => {
+            Id::RecommendationSludgeStorageContainersAreOpen => {
                 self.optimization_scenario
                     .sewage_sludge_treatment
                     .sludge_storage_containers_are_closed =
                     value.map(V::as_bool_unchecked).map(|v| !v); // open => closed
             }
-            Id::ScenarioN2OSideStreamFactor => {
+            Id::RecommendationN2OSideStreamFactor => {
                 self.sensitivity_parameters
                     .n2o_emissions
                     .side_stream_emission_factor =
                     value.map(V::as_factor_unchecked).map(Into::into);
             }
-            Id::ScenarioN2OSideStreamCoverIsOpen => {
+            Id::RecommendationN2OSideStreamCoverIsOpen => {
                 self.optimization_scenario
                     .side_stream_treatment
                     .side_stream_cover_is_closed = value.map(V::as_bool_unchecked).map(|v| !v);
                 // open => closed
             }
-            Id::ScenarioProcessEnergySaving => {
+            Id::RecommendationProcessEnergySaving => {
                 self.optimization_scenario
                     .energy_emissions
                     .process_energy_savings = value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::ScenarioFossilEnergySaving => {
+            Id::RecommendationFossilEnergySaving => {
                 self.optimization_scenario
                     .energy_emissions
                     .fossil_energy_savings = value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::ScenarioPhotovoltaicEnergyExpansion => {
+            Id::RecommendationPhotovoltaicEnergyExpansion => {
                 self.optimization_scenario
                     .energy_emissions
                     .photovoltaic_energy_expansion =
                     value.map(V::as_kilowatthours_unchecked).map(Into::into);
             }
-            Id::ScenarioEstimatedSelfPhotovolaticUsage => {
+            Id::RecommendationEstimatedSelfPhotovolaticUsage => {
                 self.optimization_scenario
                     .energy_emissions
                     .estimated_self_photovoltaic_usage =
                     value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::ScenarioWindEnergyExpansion => {
+            Id::RecommendationWindEnergyExpansion => {
                 self.optimization_scenario
                     .energy_emissions
                     .wind_energy_expansion =
                     value.map(V::as_kilowatthours_unchecked).map(Into::into);
             }
-            Id::ScenarioEstimatedSelfWindEnergyUsage => {
+            Id::RecommendationEstimatedSelfWindEnergyUsage => {
                 self.optimization_scenario
                     .energy_emissions
                     .estimated_self_wind_energy_usage =
                     value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::ScenarioWaterEnergyExpansion => {
+            Id::RecommendationWaterEnergyExpansion => {
                 self.optimization_scenario
                     .energy_emissions
                     .water_energy_expansion =
                     value.map(V::as_kilowatthours_unchecked).map(Into::into);
             }
-            Id::ScenarioEstimatedSelfWaterEnergyUsage => {
+            Id::RecommendationEstimatedSelfWaterEnergyUsage => {
                 self.optimization_scenario
                     .energy_emissions
                     .estimated_self_water_energy_usage =
                     value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::ScenarioDistrictHeating => {
+            Id::RecommendationDistrictHeating => {
                 self.optimization_scenario.energy_emissions.district_heating =
                     value.map(V::as_kilowatthours_unchecked).map(Into::into);
             }
-            Id::AdditionalCustomEmissions => {
+            Id::SensitivityAdditionalCustomEmissions => {
                 // FIXME
             }
         }

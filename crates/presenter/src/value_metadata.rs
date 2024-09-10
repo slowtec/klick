@@ -62,182 +62,182 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
             },
         ),
         (
-            Id::PlantName,
+            Id::ProfilePlantName,
             M {
                 placeholder: P::Label,
                 description: "description-plant-name",
             },
         ),
         (
-            Id::PopulationEquivalent,
+            Id::ProfilePopulationEquivalent,
             M {
                 placeholder: P::text("connected-inhabitants"),
                 description: "description-connected-inhabitants",
             },
         ),
         (
-            Id::Wastewater,
+            Id::ProfileWastewater,
             M {
                 placeholder: P::text("wastewater-quantity"),
                 description: "description-wastewater-quantity",
             },
         ),
         (
-            Id::InfluentChemicalOxygenDemand,
+            Id::ProfileInfluentChemicalOxygenDemand,
             M {
                 placeholder: P::text("cod"),
                 description: "description-cod",
             },
         ),
         (
-            Id::InfluentNitrogen,
+            Id::ProfileInfluentNitrogen,
             M {
                 placeholder: P::text("total-nitrogen"),
                 description: "description-total-nitrogen",
             },
         ),
         (
-            Id::InfluentTotalOrganicCarbohydrates,
+            Id::ProfileInfluentTotalOrganicCarbohydrates,
             M {
                 placeholder: P::text("toc"),
                 description: "description-toc",
             },
         ),
         (
-            Id::EffluentNitrogen,
+            Id::ProfileEffluentNitrogen,
             M {
                 placeholder: P::text("total-nitrogen"),
                 description: "description-total-nitrogen-effluent",
             },
         ),
         (
-            Id::EffluentChemicalOxygenDemand,
+            Id::ProfileEffluentChemicalOxygenDemand,
             M {
                 placeholder: P::text("cod"),
                 description: "description-cod-effluent",
             },
         ),
         (
-            Id::TotalPowerConsumption,
+            Id::ProfileTotalPowerConsumption,
             M {
                 placeholder: P::text("total-power-consumption"),
                 description: "description-total-power-consumption",
             },
         ),
         (
-            Id::OnSitePowerGeneration,
+            Id::ProfileOnSitePowerGeneration,
             M {
                 placeholder: P::text("self-generated-power"),
                 description: "description-self-generated-power",
             },
         ),
         (
-            Id::EmissionFactorElectricityMix,
+            Id::ProfileEmissionFactorElectricityMix,
             M {
                 placeholder: P::text("emission-factor-electricity-mix"),
                 description: "description-emission-factor-electricity-mix",
             },
         ),
         (
-            Id::GasSupply,
+            Id::ProfileGasSupply,
             M {
                 placeholder: P::text("gas-supply"),
                 description: "description-gas-supply",
             },
         ),
         (
-            Id::PurchaseOfBiogas,
+            Id::ProfilePurchaseOfBiogas,
             M {
                 placeholder: P::text("biogas-purchase"),
                 description: "description-biogas-purchase",
             },
         ),
         (
-            Id::HeatingOil,
+            Id::ProfileHeatingOil,
             M {
                 placeholder: P::text("heating-oil-purchase"),
                 description: "description-heating-oil-purchase",
             },
         ),
         (
-            Id::SewageGasProduced,
+            Id::ProfileSewageGasProduced,
             M {
                 placeholder: P::text("sewage-gas-produced"),
                 description: "description-sewage-gas-produced",
             },
         ),
         (
-            Id::MethaneFraction,
+            Id::ProfileMethaneFraction,
             M {
                 placeholder: P::text("methane-percentage"),
                 description: "description-methane-percentage",
             },
         ),
         (
-            Id::SludgeTreatmentDigesterCount,
+            Id::ProfileSludgeTreatmentDigesterCount,
             M {
                 placeholder: P::text("number-of-digesters"),
                 description: "description-number-of-digesters",
             },
         ),
         (
-            Id::SludgeTreatmentBagsAreOpen,
+            Id::ProfileSludgeTreatmentBagsAreOpen,
             M {
                 placeholder: P::none(),
                 description: "description-sludge-treatment-bags-are-open",
             },
         ),
         (
-            Id::SludgeTreatmentStorageContainersAreOpen,
+            Id::ProfileSludgeTreatmentStorageContainersAreOpen,
             M {
                 placeholder: P::none(),
                 description: "description-sludge-treatment-storage-containers-are-open",
             },
         ),
         (
-            Id::SludgeTreatmentDisposal,
+            Id::ProfileSludgeTreatmentDisposal,
             M {
                 placeholder: P::text("mass-dewatered"),
                 description: "description-mass-dewatered",
             },
         ),
         (
-            Id::SludgeTreatmentTransportDistance,
+            Id::ProfileSludgeTreatmentTransportDistance,
             M {
                 placeholder: P::text("distance"),
                 description: "description-distance",
             },
         ),
         (
-            Id::SideStreamTreatmentTotalNitrogen,
+            Id::ProfileSideStreamTreatmentTotalNitrogen,
             M {
                 placeholder: P::text("total-nitrogen"),
                 description: "description-total-nitrogen-side-stream",
             },
         ),
         (
-            Id::OperatingMaterialFeCl3,
+            Id::ProfileOperatingMaterialFeCl3,
             M {
                 placeholder: P::text("ferrous-chloride"),
                 description: "description-ferrous-chloride",
             },
         ),
         (
-            Id::OperatingMaterialFeClSO4,
+            Id::ProfileOperatingMaterialFeClSO4,
             M {
                 placeholder: P::text("ferrous-chloride-sulfate"),
                 description: "description-ferrous-chloride-sulfate",
             },
         ),
         (
-            Id::OperatingMaterialCaOH2,
+            Id::ProfileOperatingMaterialCaOH2,
             M {
                 placeholder: P::text("calcium-hydroxide"),
                 description: "description-calcium-hydroxide",
             },
         ),
         (
-            Id::OperatingMaterialSyntheticPolymers,
+            Id::ProfileOperatingMaterialSyntheticPolymers,
             M {
                 placeholder: P::text("synthetic-polymers"),
                 description: "description-synthetic-polymers",
@@ -286,70 +286,70 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
             },
         ),
         (
-            Id::ScenarioDistrictHeating,
+            Id::RecommendationDistrictHeating,
             M {
                 placeholder: P::text("district-heating"),
                 description: "description-district-heating",
             },
         ),
         (
-            Id::ScenarioEstimatedSelfWaterEnergyUsage,
+            Id::RecommendationEstimatedSelfWaterEnergyUsage,
             M {
                 placeholder: P::default_value(),
                 description: "description-scenario-estimated-self-water-energy-usage",
             },
         ),
         (
-            Id::ScenarioWaterEnergyExpansion,
+            Id::RecommendationWaterEnergyExpansion,
             M {
                 placeholder: P::text("self-use-water-energy"),
                 description: "description-water-energy-expansion",
             },
         ),
         (
-            Id::ScenarioEstimatedSelfWindEnergyUsage,
+            Id::RecommendationEstimatedSelfWindEnergyUsage,
             M {
                 placeholder: P::default_value(),
                 description: "description-scenario-estimated-self-wind-energy-usage",
             },
         ),
         (
-            Id::ScenarioWindEnergyExpansion,
+            Id::RecommendationWindEnergyExpansion,
             M {
                 placeholder: P::text("self-use-wind-energy"),
                 description: "description-wind-energy-expansion",
             },
         ),
         (
-            Id::ScenarioEstimatedSelfPhotovolaticUsage,
+            Id::RecommendationEstimatedSelfPhotovolaticUsage,
             M {
                 placeholder: P::default_value(),
                 description: "description-scenario-estimated-self-photovolatic-usage",
             },
         ),
         (
-            Id::ScenarioPhotovoltaicEnergyExpansion,
+            Id::RecommendationPhotovoltaicEnergyExpansion,
             M {
                 placeholder: P::text("self-use-pv-energy"),
                 description: "description-photovoltaic-energy-expansion",
             },
         ),
         (
-            Id::ScenarioFossilEnergySaving,
+            Id::RecommendationFossilEnergySaving,
             M {
                 placeholder: P::text("fossil-energy-saving"),
                 description: "description-fossil-energy-saving",
             },
         ),
         (
-            Id::ScenarioProcessEnergySaving,
+            Id::RecommendationProcessEnergySaving,
             M {
                 placeholder: P::text("process-energy-saving"),
                 description: "description-process-energy-saving",
             },
         ),
         (
-            Id::AdditionalCustomEmissions,
+            Id::SensitivityAdditionalCustomEmissions,
             M {
                 placeholder: P::none(),
                 description: "description-additional-custom-emissions",

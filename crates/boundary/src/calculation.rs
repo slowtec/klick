@@ -59,8 +59,8 @@ pub fn calculate(
     let sensitivity_ch4_chp_calculations = {
         log::debug!("Calculate all CH4 CHP emission factor scenarios");
 
-        let sewage_gas_produced = required!(In::SewageGasProduced, &input).unwrap();
-        let methane_fraction = required!(In::MethaneFraction, &input).unwrap();
+        let sewage_gas_produced = required!(In::ProfileSewageGasProduced, &input).unwrap();
+        let methane_fraction = required!(In::ProfileMethaneFraction, &input).unwrap();
         let custom_ch4_chp_emission_factor = optional!(In::SensitivityCH4ChpCustomFactor, &input);
         let results = domain::calculate_all_ch4_chp_emission_factor_scenarios(
             sewage_gas_produced,

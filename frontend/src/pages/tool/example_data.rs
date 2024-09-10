@@ -5,45 +5,60 @@ pub fn example_form_data() -> FormData {
     let mut data = FormData::default();
 
     let values = [
-        (Id::PlantName, Value::text("Muster Klärwerk")),
-        (Id::PopulationEquivalent, Value::count(50_000)),
-        (Id::Wastewater, Value::qubicmeters(2_135_250.0)),
-        (Id::InfluentNitrogen, Value::milligrams_per_liter(94.0)),
+        (Id::ProfilePlantName, Value::text("Muster Klärwerk")),
+        (Id::ProfilePopulationEquivalent, Value::count(50_000)),
+        (Id::ProfileWastewater, Value::qubicmeters(2_135_250.0)),
         (
-            Id::InfluentChemicalOxygenDemand,
+            Id::ProfileInfluentNitrogen,
+            Value::milligrams_per_liter(94.0),
+        ),
+        (
+            Id::ProfileInfluentChemicalOxygenDemand,
             Value::milligrams_per_liter(1_020.0),
         ),
         (
-            Id::InfluentTotalOrganicCarbohydrates,
+            Id::ProfileInfluentTotalOrganicCarbohydrates,
             Value::milligrams_per_liter(382.5),
         ),
-        (Id::EffluentNitrogen, Value::milligrams_per_liter(15.77)),
         (
-            Id::EffluentChemicalOxygenDemand,
+            Id::ProfileEffluentNitrogen,
+            Value::milligrams_per_liter(15.77),
+        ),
+        (
+            Id::ProfileEffluentChemicalOxygenDemand,
             Value::milligrams_per_liter(47.18),
         ),
-        (Id::SewageGasProduced, Value::qubicmeters(420_000.0)),
-        (Id::MethaneFraction, Value::percent(62.0)),
-        (Id::PurchaseOfBiogas, Value::bool(false)),
-        (Id::TotalPowerConsumption, Value::kilowatthours(1_665_000.0)),
-        (Id::OnSitePowerGeneration, Value::kilowatthours(810_000.0)),
+        (Id::ProfileSewageGasProduced, Value::qubicmeters(420_000.0)),
+        (Id::ProfileMethaneFraction, Value::percent(62.0)),
+        (Id::ProfilePurchaseOfBiogas, Value::bool(false)),
         (
-            Id::EmissionFactorElectricityMix,
+            Id::ProfileTotalPowerConsumption,
+            Value::kilowatthours(1_665_000.0),
+        ),
+        (
+            Id::ProfileOnSitePowerGeneration,
+            Value::kilowatthours(810_000.0),
+        ),
+        (
+            Id::ProfileEmissionFactorElectricityMix,
             Value::grams_per_kilowatthour(420.0),
         ),
-        (Id::SludgeTreatmentBagsAreOpen, Value::bool(true)),
+        (Id::ProfileSludgeTreatmentBagsAreOpen, Value::bool(true)),
         (
-            Id::SludgeTreatmentStorageContainersAreOpen,
+            Id::ProfileSludgeTreatmentStorageContainersAreOpen,
             Value::bool(true),
         ),
-        (Id::SludgeTreatmentDisposal, Value::tons(3016.5)),
+        (Id::ProfileSludgeTreatmentDisposal, Value::tons(3016.5)),
         (
-            Id::SludgeTreatmentTransportDistance,
+            Id::ProfileSludgeTreatmentTransportDistance,
             Value::kilometers(150.0),
         ),
-        (Id::SludgeTreatmentDigesterCount, Value::count(1)),
-        (Id::OperatingMaterialFeCl3, Value::tons(310.5)),
-        (Id::OperatingMaterialSyntheticPolymers, Value::tons(12.0)),
+        (Id::ProfileSludgeTreatmentDigesterCount, Value::count(1)),
+        (Id::ProfileOperatingMaterialFeCl3, Value::tons(310.5)),
+        (
+            Id::ProfileOperatingMaterialSyntheticPolymers,
+            Value::tons(12.0),
+        ),
         (
             Id::SensitivityN2OCalculationMethod,
             Value::n2o_emission_factor_calc_method(N2oEmissionFactorCalcMethod::Ipcc2019),

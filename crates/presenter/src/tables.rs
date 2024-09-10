@@ -80,7 +80,11 @@ pub fn plant_profile_as_table(
                     Lng::En => "Sewage treatment plant details",
                 }
             },
-            vec![In::PlantName, In::PopulationEquivalent, In::Wastewater],
+            vec![
+                In::ProfilePlantName,
+                In::ProfilePopulationEquivalent,
+                In::ProfileWastewater,
+            ],
         ),
         (
             {
@@ -90,9 +94,9 @@ pub fn plant_profile_as_table(
                 }
             },
             vec![
-                In::InfluentNitrogen,
-                In::InfluentChemicalOxygenDemand,
-                In::InfluentTotalOrganicCarbohydrates,
+                In::ProfileInfluentNitrogen,
+                In::ProfileInfluentChemicalOxygenDemand,
+                In::ProfileInfluentTotalOrganicCarbohydrates,
             ],
         ),
         (
@@ -102,7 +106,10 @@ pub fn plant_profile_as_table(
                     Lng::En => "Outflow parameters (annual averages)",
                 }
             },
-            vec![In::EffluentNitrogen, In::EffluentChemicalOxygenDemand],
+            vec![
+                In::ProfileEffluentNitrogen,
+                In::ProfileEffluentChemicalOxygenDemand,
+            ],
         ),
         (
             {
@@ -112,14 +119,14 @@ pub fn plant_profile_as_table(
                 }
             },
             vec![
-                In::TotalPowerConsumption,
-                In::OnSitePowerGeneration,
-                In::EmissionFactorElectricityMix,
-                In::GasSupply,
-                In::PurchaseOfBiogas,
-                In::HeatingOil,
-                In::SewageGasProduced,
-                In::MethaneFraction,
+                In::ProfileTotalPowerConsumption,
+                In::ProfileOnSitePowerGeneration,
+                In::ProfileEmissionFactorElectricityMix,
+                In::ProfileGasSupply,
+                In::ProfilePurchaseOfBiogas,
+                In::ProfileHeatingOil,
+                In::ProfileSewageGasProduced,
+                In::ProfileMethaneFraction,
             ],
         ),
         (
@@ -130,11 +137,11 @@ pub fn plant_profile_as_table(
                 }
             },
             vec![
-                In::SludgeTreatmentDigesterCount,
-                In::SludgeTreatmentDisposal,
-                In::SludgeTreatmentTransportDistance,
-                In::SludgeTreatmentBagsAreOpen,
-                In::SludgeTreatmentStorageContainersAreOpen,
+                In::ProfileSludgeTreatmentDigesterCount,
+                In::ProfileSludgeTreatmentDisposal,
+                In::ProfileSludgeTreatmentTransportDistance,
+                In::ProfileSludgeTreatmentBagsAreOpen,
+                In::ProfileSludgeTreatmentStorageContainersAreOpen,
             ],
         ),
         (
@@ -144,7 +151,7 @@ pub fn plant_profile_as_table(
                     Lng::En => "Process water treatment",
                 }
             },
-            vec![In::SideStreamTreatmentTotalNitrogen],
+            vec![In::ProfileSideStreamTreatmentTotalNitrogen],
         ),
         (
             {
@@ -154,10 +161,10 @@ pub fn plant_profile_as_table(
                 }
             },
             vec![
-                In::OperatingMaterialFeCl3,
-                In::OperatingMaterialFeClSO4,
-                In::OperatingMaterialCaOH2,
-                In::OperatingMaterialSyntheticPolymers,
+                In::ProfileOperatingMaterialFeCl3,
+                In::ProfileOperatingMaterialFeClSO4,
+                In::ProfileOperatingMaterialCaOH2,
+                In::ProfileOperatingMaterialSyntheticPolymers,
             ],
         ),
     ]

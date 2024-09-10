@@ -47,34 +47,34 @@ impl ValueUnit for OutputValueId {}
 impl ValueUnit for InputValueId {
     fn unit_as_latex(&self) -> Option<&'static str> {
         match self {
-            Self::PlantName => None,
-            Self::PopulationEquivalent => None,
-            Self::Wastewater => Some(LATEX_QUBICMETERS),
-            Self::InfluentNitrogen | Self::InfluentChemicalOxygenDemand => {
+            Self::ProfilePlantName => None,
+            Self::ProfilePopulationEquivalent => None,
+            Self::ProfileWastewater => Some(LATEX_QUBICMETERS),
+            Self::ProfileInfluentNitrogen | Self::ProfileInfluentChemicalOxygenDemand => {
                 Some(LATEX_MILLIGRAMSPERLITER)
             }
-            Self::InfluentTotalOrganicCarbohydrates => Some(LATEX_MILLIGRAMSPERLITER),
-            Self::EffluentNitrogen | Self::EffluentChemicalOxygenDemand => {
+            Self::ProfileInfluentTotalOrganicCarbohydrates => Some(LATEX_MILLIGRAMSPERLITER),
+            Self::ProfileEffluentNitrogen | Self::ProfileEffluentChemicalOxygenDemand => {
                 Some(LATEX_MILLIGRAMSPERLITER)
             }
-            Self::SewageGasProduced => Some(LATEX_QUBICMETERS),
-            Self::MethaneFraction => Some(LATEX_PERCENT),
-            Self::GasSupply => Some(LATEX_KILOWATTHOURS),
-            Self::PurchaseOfBiogas => None,
-            Self::TotalPowerConsumption => Some(LATEX_KILOWATTHOURS),
-            Self::OnSitePowerGeneration => Some(LATEX_KILOWATTHOURS),
-            Self::EmissionFactorElectricityMix => Some(LATEX_GRAMSPERKILOWATTHOUR),
-            Self::HeatingOil => Some(LATEX_TONS),
-            Self::SideStreamTreatmentTotalNitrogen => Some(LATEX_TONS),
-            Self::SludgeTreatmentBagsAreOpen => None, // FIXME implement latex representation
-            Self::SludgeTreatmentStorageContainersAreOpen => None, // FIXME implement latex representation
-            Self::SludgeTreatmentDisposal => Some(LATEX_TONS),
-            Self::SludgeTreatmentTransportDistance => Some(LATEX_KILOMETERS),
-            Self::SludgeTreatmentDigesterCount => None,
-            Self::OperatingMaterialFeCl3
-            | Self::OperatingMaterialFeClSO4
-            | Self::OperatingMaterialCaOH2
-            | Self::OperatingMaterialSyntheticPolymers => Some(LATEX_TONS),
+            Self::ProfileSewageGasProduced => Some(LATEX_QUBICMETERS),
+            Self::ProfileMethaneFraction => Some(LATEX_PERCENT),
+            Self::ProfileGasSupply => Some(LATEX_KILOWATTHOURS),
+            Self::ProfilePurchaseOfBiogas => None,
+            Self::ProfileTotalPowerConsumption => Some(LATEX_KILOWATTHOURS),
+            Self::ProfileOnSitePowerGeneration => Some(LATEX_KILOWATTHOURS),
+            Self::ProfileEmissionFactorElectricityMix => Some(LATEX_GRAMSPERKILOWATTHOUR),
+            Self::ProfileHeatingOil => Some(LATEX_TONS),
+            Self::ProfileSideStreamTreatmentTotalNitrogen => Some(LATEX_TONS),
+            Self::ProfileSludgeTreatmentBagsAreOpen => None, // FIXME implement latex representation
+            Self::ProfileSludgeTreatmentStorageContainersAreOpen => None, // FIXME implement latex representation
+            Self::ProfileSludgeTreatmentDisposal => Some(LATEX_TONS),
+            Self::ProfileSludgeTreatmentTransportDistance => Some(LATEX_KILOMETERS),
+            Self::ProfileSludgeTreatmentDigesterCount => None,
+            Self::ProfileOperatingMaterialFeCl3
+            | Self::ProfileOperatingMaterialFeClSO4
+            | Self::ProfileOperatingMaterialCaOH2
+            | Self::ProfileOperatingMaterialSyntheticPolymers => Some(LATEX_TONS),
             // FIXME
             _ => None,
         }
@@ -82,34 +82,34 @@ impl ValueUnit for InputValueId {
 
     fn unit_as_text(&self) -> Option<&'static str> {
         match self {
-            Self::PlantName => None,
-            Self::PopulationEquivalent => None,
-            Self::Wastewater => Some(TEXT_QUBICMETERS),
-            Self::InfluentNitrogen | Self::InfluentChemicalOxygenDemand => {
+            Self::ProfilePlantName => None,
+            Self::ProfilePopulationEquivalent => None,
+            Self::ProfileWastewater => Some(TEXT_QUBICMETERS),
+            Self::ProfileInfluentNitrogen | Self::ProfileInfluentChemicalOxygenDemand => {
                 Some(TEXT_MILLIGRAMSPERLITER)
             }
-            Self::InfluentTotalOrganicCarbohydrates => Some(TEXT_MILLIGRAMSPERLITER),
-            Self::EffluentNitrogen | Self::EffluentChemicalOxygenDemand => {
+            Self::ProfileInfluentTotalOrganicCarbohydrates => Some(TEXT_MILLIGRAMSPERLITER),
+            Self::ProfileEffluentNitrogen | Self::ProfileEffluentChemicalOxygenDemand => {
                 Some(TEXT_MILLIGRAMSPERLITER)
             }
-            Self::SewageGasProduced => Some(TEXT_QUBICMETERS),
-            Self::MethaneFraction => Some(TEXT_PERCENT),
-            Self::GasSupply => Some(TEXT_KILOWATTHOURS),
-            Self::PurchaseOfBiogas => None,
-            Self::TotalPowerConsumption => Some(TEXT_KILOWATTHOURS),
-            Self::OnSitePowerGeneration => Some(TEXT_KILOWATTHOURS),
-            Self::EmissionFactorElectricityMix => Some(TEXT_GRAMSPERKILOWATTHOUR),
-            Self::HeatingOil => Some(TEXT_TONS),
-            Self::SideStreamTreatmentTotalNitrogen => Some(TEXT_TONS),
-            Self::SludgeTreatmentBagsAreOpen => None,
-            Self::SludgeTreatmentStorageContainersAreOpen => None,
-            Self::SludgeTreatmentDisposal => Some(TEXT_TONS),
-            Self::SludgeTreatmentTransportDistance => Some(TEXT_KILOMETERS),
-            Self::SludgeTreatmentDigesterCount => None,
-            Self::OperatingMaterialFeCl3
-            | Self::OperatingMaterialFeClSO4
-            | Self::OperatingMaterialCaOH2
-            | Self::OperatingMaterialSyntheticPolymers => Some(TEXT_TONS),
+            Self::ProfileSewageGasProduced => Some(TEXT_QUBICMETERS),
+            Self::ProfileMethaneFraction => Some(TEXT_PERCENT),
+            Self::ProfileGasSupply => Some(TEXT_KILOWATTHOURS),
+            Self::ProfilePurchaseOfBiogas => None,
+            Self::ProfileTotalPowerConsumption => Some(TEXT_KILOWATTHOURS),
+            Self::ProfileOnSitePowerGeneration => Some(TEXT_KILOWATTHOURS),
+            Self::ProfileEmissionFactorElectricityMix => Some(TEXT_GRAMSPERKILOWATTHOUR),
+            Self::ProfileHeatingOil => Some(TEXT_TONS),
+            Self::ProfileSideStreamTreatmentTotalNitrogen => Some(TEXT_TONS),
+            Self::ProfileSludgeTreatmentBagsAreOpen => None,
+            Self::ProfileSludgeTreatmentStorageContainersAreOpen => None,
+            Self::ProfileSludgeTreatmentDisposal => Some(TEXT_TONS),
+            Self::ProfileSludgeTreatmentTransportDistance => Some(TEXT_KILOMETERS),
+            Self::ProfileSludgeTreatmentDigesterCount => None,
+            Self::ProfileOperatingMaterialFeCl3
+            | Self::ProfileOperatingMaterialFeClSO4
+            | Self::ProfileOperatingMaterialCaOH2
+            | Self::ProfileOperatingMaterialSyntheticPolymers => Some(TEXT_TONS),
             Self::SensitivityN2OCalculationMethod | Self::SensitivityCH4ChpCalculationMethod => {
                 None
             }

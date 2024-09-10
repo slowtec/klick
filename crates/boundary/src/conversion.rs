@@ -152,27 +152,33 @@ impl From<v9::InputValueId> for domain::InputValueId {
         use v9::InputValueId as In;
         match from {
             In::ProjectName => Self::ProjectName,
-            In::PlantName => Self::PlantName,
-            In::PopulationEquivalent => Self::PopulationEquivalent,
-            In::Wastewater => Self::Wastewater,
-            In::InfluentNitrogen => Self::InfluentNitrogen,
-            In::InfluentChemicalOxygenDemand => Self::InfluentChemicalOxygenDemand,
-            In::InfluentTotalOrganicCarbohydrates => Self::InfluentTotalOrganicCarbohydrates,
-            In::EffluentNitrogen => Self::EffluentNitrogen,
-            In::EffluentChemicalOxygenDemand => Self::EffluentChemicalOxygenDemand,
-            In::SewageGasProduced => Self::SewageGasProduced,
-            In::MethaneFraction => Self::MethaneFraction,
-            In::GasSupply => Self::GasSupply,
-            In::PurchaseOfBiogas => Self::PurchaseOfBiogas,
-            In::TotalPowerConsumption => Self::TotalPowerConsumption,
-            In::OnSitePowerGeneration => Self::OnSitePowerGeneration,
-            In::EmissionFactorElectricityMix => Self::EmissionFactorElectricityMix,
-            In::HeatingOil => Self::HeatingOil,
-            In::SideStreamTreatmentTotalNitrogen => Self::SideStreamTreatmentTotalNitrogen,
-            In::OperatingMaterialFeCl3 => Self::OperatingMaterialFeCl3,
-            In::OperatingMaterialFeClSO4 => Self::OperatingMaterialFeClSO4,
-            In::OperatingMaterialCaOH2 => Self::OperatingMaterialCaOH2,
-            In::OperatingMaterialSyntheticPolymers => Self::OperatingMaterialSyntheticPolymers,
+            In::ProfilePlantName => Self::ProfilePlantName,
+            In::ProfilePopulationEquivalent => Self::ProfilePopulationEquivalent,
+            In::ProfileWastewater => Self::ProfileWastewater,
+            In::ProfileInfluentNitrogen => Self::ProfileInfluentNitrogen,
+            In::ProfileInfluentChemicalOxygenDemand => Self::ProfileInfluentChemicalOxygenDemand,
+            In::ProfileInfluentTotalOrganicCarbohydrates => {
+                Self::ProfileInfluentTotalOrganicCarbohydrates
+            }
+            In::ProfileEffluentNitrogen => Self::ProfileEffluentNitrogen,
+            In::ProfileEffluentChemicalOxygenDemand => Self::ProfileEffluentChemicalOxygenDemand,
+            In::ProfileSewageGasProduced => Self::ProfileSewageGasProduced,
+            In::ProfileMethaneFraction => Self::ProfileMethaneFraction,
+            In::ProfileGasSupply => Self::ProfileGasSupply,
+            In::ProfilePurchaseOfBiogas => Self::ProfilePurchaseOfBiogas,
+            In::ProfileTotalPowerConsumption => Self::ProfileTotalPowerConsumption,
+            In::ProfileOnSitePowerGeneration => Self::ProfileOnSitePowerGeneration,
+            In::ProfileEmissionFactorElectricityMix => Self::ProfileEmissionFactorElectricityMix,
+            In::ProfileHeatingOil => Self::ProfileHeatingOil,
+            In::ProfileSideStreamTreatmentTotalNitrogen => {
+                Self::ProfileSideStreamTreatmentTotalNitrogen
+            }
+            In::ProfileOperatingMaterialFeCl3 => Self::ProfileOperatingMaterialFeCl3,
+            In::ProfileOperatingMaterialFeClSO4 => Self::ProfileOperatingMaterialFeClSO4,
+            In::ProfileOperatingMaterialCaOH2 => Self::ProfileOperatingMaterialCaOH2,
+            In::ProfileOperatingMaterialSyntheticPolymers => {
+                Self::ProfileOperatingMaterialSyntheticPolymers
+            }
             In::SensitivityN2OCalculationMethod => Self::SensitivityN2OCalculationMethod,
             In::SensitivityN2OCustomFactor => Self::SensitivityN2OCustomFactor,
             In::SensitivityN2OSideStreamFactor => Self::SensitivityN2OSideStreamFactor,
@@ -181,33 +187,41 @@ impl From<v9::InputValueId> for domain::InputValueId {
             In::SensitivityCO2FossilCustomFactor => Self::SensitivityCO2FossilCustomFactor,
             In::SensitivitySludgeBagsCustomFactor => Self::SensitivitySludgeBagsCustomFactor,
             In::SensitivitySludgeStorageCustomFactor => Self::SensitivitySludgeStorageCustomFactor,
-            In::SludgeTreatmentBagsAreOpen => Self::SludgeTreatmentBagsAreOpen,
-            In::SludgeTreatmentStorageContainersAreOpen => {
-                Self::SludgeTreatmentStorageContainersAreOpen
+            In::ProfileSludgeTreatmentBagsAreOpen => Self::ProfileSludgeTreatmentBagsAreOpen,
+            In::ProfileSludgeTreatmentStorageContainersAreOpen => {
+                Self::ProfileSludgeTreatmentStorageContainersAreOpen
             }
-            In::SludgeTreatmentDisposal => Self::SludgeTreatmentDisposal,
-            In::SludgeTreatmentTransportDistance => Self::SludgeTreatmentTransportDistance,
-            In::SludgeTreatmentDigesterCount => Self::SludgeTreatmentDigesterCount,
-            In::ScenarioSludgeBagsAreOpen => Self::ScenarioSludgeBagsAreOpen,
-            In::ScenarioSludgeStorageContainersAreOpen => {
-                Self::ScenarioSludgeStorageContainersAreOpen
+            In::ProfileSludgeTreatmentDisposal => Self::ProfileSludgeTreatmentDisposal,
+            In::ProfileSludgeTreatmentTransportDistance => {
+                Self::ProfileSludgeTreatmentTransportDistance
             }
-            In::ScenarioN2OSideStreamFactor => Self::ScenarioN2OSideStreamFactor,
-            In::ScenarioN2OSideStreamCoverIsOpen => Self::ScenarioN2OSideStreamCoverIsOpen,
-            In::ScenarioProcessEnergySaving => Self::ScenarioProcessEnergySaving,
-            In::ScenarioFossilEnergySaving => Self::ScenarioFossilEnergySaving,
-            In::ScenarioDistrictHeating => Self::ScenarioDistrictHeating,
-            In::ScenarioPhotovoltaicEnergyExpansion => Self::ScenarioPhotovoltaicEnergyExpansion,
-            In::ScenarioEstimatedSelfPhotovolaticUsage => {
-                Self::ScenarioEstimatedSelfPhotovolaticUsage
+            In::ProfileSludgeTreatmentDigesterCount => Self::ProfileSludgeTreatmentDigesterCount,
+            In::RecommendationSludgeBagsAreOpen => Self::RecommendationSludgeBagsAreOpen,
+            In::RecommendationSludgeStorageContainersAreOpen => {
+                Self::RecommendationSludgeStorageContainersAreOpen
             }
-            In::ScenarioWindEnergyExpansion => Self::ScenarioWindEnergyExpansion,
-            In::ScenarioEstimatedSelfWindEnergyUsage => Self::ScenarioEstimatedSelfWindEnergyUsage,
-            In::ScenarioWaterEnergyExpansion => Self::ScenarioWaterEnergyExpansion,
-            In::ScenarioEstimatedSelfWaterEnergyUsage => {
-                Self::ScenarioEstimatedSelfWaterEnergyUsage
+            In::RecommendationN2OSideStreamFactor => Self::RecommendationN2OSideStreamFactor,
+            In::RecommendationN2OSideStreamCoverIsOpen => {
+                Self::RecommendationN2OSideStreamCoverIsOpen
             }
-            In::AdditionalCustomEmissions => Self::AdditionalCustomEmissions,
+            In::RecommendationProcessEnergySaving => Self::RecommendationProcessEnergySaving,
+            In::RecommendationFossilEnergySaving => Self::RecommendationFossilEnergySaving,
+            In::RecommendationDistrictHeating => Self::RecommendationDistrictHeating,
+            In::RecommendationPhotovoltaicEnergyExpansion => {
+                Self::RecommendationPhotovoltaicEnergyExpansion
+            }
+            In::RecommendationEstimatedSelfPhotovolaticUsage => {
+                Self::RecommendationEstimatedSelfPhotovolaticUsage
+            }
+            In::RecommendationWindEnergyExpansion => Self::RecommendationWindEnergyExpansion,
+            In::RecommendationEstimatedSelfWindEnergyUsage => {
+                Self::RecommendationEstimatedSelfWindEnergyUsage
+            }
+            In::RecommendationWaterEnergyExpansion => Self::RecommendationWaterEnergyExpansion,
+            In::RecommendationEstimatedSelfWaterEnergyUsage => {
+                Self::RecommendationEstimatedSelfWaterEnergyUsage
+            }
+            In::SensitivityAdditionalCustomEmissions => Self::SensitivityAdditionalCustomEmissions,
         }
     }
 }
@@ -217,27 +231,33 @@ impl From<domain::InputValueId> for v9::InputValueId {
         use domain::InputValueId as In;
         match from {
             In::ProjectName => Self::ProjectName,
-            In::PlantName => Self::PlantName,
-            In::PopulationEquivalent => Self::PopulationEquivalent,
-            In::Wastewater => Self::Wastewater,
-            In::InfluentNitrogen => Self::InfluentNitrogen,
-            In::InfluentChemicalOxygenDemand => Self::InfluentChemicalOxygenDemand,
-            In::InfluentTotalOrganicCarbohydrates => Self::InfluentTotalOrganicCarbohydrates,
-            In::EffluentNitrogen => Self::EffluentNitrogen,
-            In::EffluentChemicalOxygenDemand => Self::EffluentChemicalOxygenDemand,
-            In::SewageGasProduced => Self::SewageGasProduced,
-            In::MethaneFraction => Self::MethaneFraction,
-            In::GasSupply => Self::GasSupply,
-            In::PurchaseOfBiogas => Self::PurchaseOfBiogas,
-            In::TotalPowerConsumption => Self::TotalPowerConsumption,
-            In::OnSitePowerGeneration => Self::OnSitePowerGeneration,
-            In::EmissionFactorElectricityMix => Self::EmissionFactorElectricityMix,
-            In::HeatingOil => Self::HeatingOil,
-            In::SideStreamTreatmentTotalNitrogen => Self::SideStreamTreatmentTotalNitrogen,
-            In::OperatingMaterialFeCl3 => Self::OperatingMaterialFeCl3,
-            In::OperatingMaterialFeClSO4 => Self::OperatingMaterialFeClSO4,
-            In::OperatingMaterialCaOH2 => Self::OperatingMaterialCaOH2,
-            In::OperatingMaterialSyntheticPolymers => Self::OperatingMaterialSyntheticPolymers,
+            In::ProfilePlantName => Self::ProfilePlantName,
+            In::ProfilePopulationEquivalent => Self::ProfilePopulationEquivalent,
+            In::ProfileWastewater => Self::ProfileWastewater,
+            In::ProfileInfluentNitrogen => Self::ProfileInfluentNitrogen,
+            In::ProfileInfluentChemicalOxygenDemand => Self::ProfileInfluentChemicalOxygenDemand,
+            In::ProfileInfluentTotalOrganicCarbohydrates => {
+                Self::ProfileInfluentTotalOrganicCarbohydrates
+            }
+            In::ProfileEffluentNitrogen => Self::ProfileEffluentNitrogen,
+            In::ProfileEffluentChemicalOxygenDemand => Self::ProfileEffluentChemicalOxygenDemand,
+            In::ProfileSewageGasProduced => Self::ProfileSewageGasProduced,
+            In::ProfileMethaneFraction => Self::ProfileMethaneFraction,
+            In::ProfileGasSupply => Self::ProfileGasSupply,
+            In::ProfilePurchaseOfBiogas => Self::ProfilePurchaseOfBiogas,
+            In::ProfileTotalPowerConsumption => Self::ProfileTotalPowerConsumption,
+            In::ProfileOnSitePowerGeneration => Self::ProfileOnSitePowerGeneration,
+            In::ProfileEmissionFactorElectricityMix => Self::ProfileEmissionFactorElectricityMix,
+            In::ProfileHeatingOil => Self::ProfileHeatingOil,
+            In::ProfileSideStreamTreatmentTotalNitrogen => {
+                Self::ProfileSideStreamTreatmentTotalNitrogen
+            }
+            In::ProfileOperatingMaterialFeCl3 => Self::ProfileOperatingMaterialFeCl3,
+            In::ProfileOperatingMaterialFeClSO4 => Self::ProfileOperatingMaterialFeClSO4,
+            In::ProfileOperatingMaterialCaOH2 => Self::ProfileOperatingMaterialCaOH2,
+            In::ProfileOperatingMaterialSyntheticPolymers => {
+                Self::ProfileOperatingMaterialSyntheticPolymers
+            }
             In::SensitivityN2OCalculationMethod => Self::SensitivityN2OCalculationMethod,
             In::SensitivityN2OCustomFactor => Self::SensitivityN2OCustomFactor,
             In::SensitivityN2OSideStreamFactor => Self::SensitivityN2OSideStreamFactor,
@@ -246,33 +266,41 @@ impl From<domain::InputValueId> for v9::InputValueId {
             In::SensitivityCO2FossilCustomFactor => Self::SensitivityCO2FossilCustomFactor,
             In::SensitivitySludgeBagsCustomFactor => Self::SensitivitySludgeBagsCustomFactor,
             In::SensitivitySludgeStorageCustomFactor => Self::SensitivitySludgeStorageCustomFactor,
-            In::SludgeTreatmentBagsAreOpen => Self::SludgeTreatmentBagsAreOpen,
-            In::SludgeTreatmentStorageContainersAreOpen => {
-                Self::SludgeTreatmentStorageContainersAreOpen
+            In::ProfileSludgeTreatmentBagsAreOpen => Self::ProfileSludgeTreatmentBagsAreOpen,
+            In::ProfileSludgeTreatmentStorageContainersAreOpen => {
+                Self::ProfileSludgeTreatmentStorageContainersAreOpen
             }
-            In::SludgeTreatmentDisposal => Self::SludgeTreatmentDisposal,
-            In::SludgeTreatmentTransportDistance => Self::SludgeTreatmentTransportDistance,
-            In::SludgeTreatmentDigesterCount => Self::SludgeTreatmentDigesterCount,
-            In::ScenarioSludgeBagsAreOpen => Self::ScenarioSludgeBagsAreOpen,
-            In::ScenarioSludgeStorageContainersAreOpen => {
-                Self::ScenarioSludgeStorageContainersAreOpen
+            In::ProfileSludgeTreatmentDisposal => Self::ProfileSludgeTreatmentDisposal,
+            In::ProfileSludgeTreatmentTransportDistance => {
+                Self::ProfileSludgeTreatmentTransportDistance
             }
-            In::ScenarioN2OSideStreamFactor => Self::ScenarioN2OSideStreamFactor,
-            In::ScenarioN2OSideStreamCoverIsOpen => Self::ScenarioN2OSideStreamCoverIsOpen,
-            In::ScenarioProcessEnergySaving => Self::ScenarioProcessEnergySaving,
-            In::ScenarioFossilEnergySaving => Self::ScenarioFossilEnergySaving,
-            In::ScenarioDistrictHeating => Self::ScenarioDistrictHeating,
-            In::ScenarioPhotovoltaicEnergyExpansion => Self::ScenarioPhotovoltaicEnergyExpansion,
-            In::ScenarioEstimatedSelfPhotovolaticUsage => {
-                Self::ScenarioEstimatedSelfPhotovolaticUsage
+            In::ProfileSludgeTreatmentDigesterCount => Self::ProfileSludgeTreatmentDigesterCount,
+            In::RecommendationSludgeBagsAreOpen => Self::RecommendationSludgeBagsAreOpen,
+            In::RecommendationSludgeStorageContainersAreOpen => {
+                Self::RecommendationSludgeStorageContainersAreOpen
             }
-            In::ScenarioWindEnergyExpansion => Self::ScenarioWindEnergyExpansion,
-            In::ScenarioEstimatedSelfWindEnergyUsage => Self::ScenarioEstimatedSelfWindEnergyUsage,
-            In::ScenarioWaterEnergyExpansion => Self::ScenarioWaterEnergyExpansion,
-            In::ScenarioEstimatedSelfWaterEnergyUsage => {
-                Self::ScenarioEstimatedSelfWaterEnergyUsage
+            In::RecommendationN2OSideStreamFactor => Self::RecommendationN2OSideStreamFactor,
+            In::RecommendationN2OSideStreamCoverIsOpen => {
+                Self::RecommendationN2OSideStreamCoverIsOpen
             }
-            In::AdditionalCustomEmissions => Self::AdditionalCustomEmissions,
+            In::RecommendationProcessEnergySaving => Self::RecommendationProcessEnergySaving,
+            In::RecommendationFossilEnergySaving => Self::RecommendationFossilEnergySaving,
+            In::RecommendationDistrictHeating => Self::RecommendationDistrictHeating,
+            In::RecommendationPhotovoltaicEnergyExpansion => {
+                Self::RecommendationPhotovoltaicEnergyExpansion
+            }
+            In::RecommendationEstimatedSelfPhotovolaticUsage => {
+                Self::RecommendationEstimatedSelfPhotovolaticUsage
+            }
+            In::RecommendationWindEnergyExpansion => Self::RecommendationWindEnergyExpansion,
+            In::RecommendationEstimatedSelfWindEnergyUsage => {
+                Self::RecommendationEstimatedSelfWindEnergyUsage
+            }
+            In::RecommendationWaterEnergyExpansion => Self::RecommendationWaterEnergyExpansion,
+            In::RecommendationEstimatedSelfWaterEnergyUsage => {
+                Self::RecommendationEstimatedSelfWaterEnergyUsage
+            }
+            In::SensitivityAdditionalCustomEmissions => Self::SensitivityAdditionalCustomEmissions,
         }
     }
 }

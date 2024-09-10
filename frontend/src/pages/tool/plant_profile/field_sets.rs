@@ -28,10 +28,14 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
             Lng::De => Some("Angaben zur Kläranlage"),
             Lng::En => Some("Sewage treatment plant details"),
         };
-        let fields = [Id::PlantName, Id::PopulationEquivalent, Id::Wastewater]
-            .into_iter()
-            .map(|id| create_field(write, read, id))
-            .collect();
+        let fields = [
+            Id::ProfilePlantName,
+            Id::ProfilePopulationEquivalent,
+            Id::ProfileWastewater,
+        ]
+        .into_iter()
+        .map(|id| create_field(write, read, id))
+        .collect();
         FieldSet {
             title,
             fields,
@@ -48,9 +52,9 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                 Lng::En => Some("Inflow parameters (annual averages)"),
             },
             fields: [
-                Id::InfluentChemicalOxygenDemand,
-                Id::InfluentNitrogen,
-                Id::InfluentTotalOrganicCarbohydrates,
+                Id::ProfileInfluentChemicalOxygenDemand,
+                Id::ProfileInfluentNitrogen,
+                Id::ProfileInfluentTotalOrganicCarbohydrates,
             ]
             .into_iter()
             .map(|id| create_field(write, read, id))
@@ -62,10 +66,13 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                 Lng::De => Some("Ablauf-Parameter (Jahresmittelwerte)"),
                 Lng::En => Some("Outflow parameters (annual averages)"),
             },
-            fields: [Id::EffluentChemicalOxygenDemand, Id::EffluentNitrogen]
-                .into_iter()
-                .map(|id| create_field(write, read, id))
-                .collect(),
+            fields: [
+                Id::ProfileEffluentChemicalOxygenDemand,
+                Id::ProfileEffluentNitrogen,
+            ]
+            .into_iter()
+            .map(|id| create_field(write, read, id))
+            .collect(),
             draw_border,
         },
         FieldSet {
@@ -74,14 +81,14 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                 Lng::En => Some("Energy requirements"),
             },
             fields: [
-                Id::TotalPowerConsumption,
-                Id::OnSitePowerGeneration,
-                Id::EmissionFactorElectricityMix,
-                Id::GasSupply,
-                Id::PurchaseOfBiogas,
-                Id::HeatingOil,
-                Id::SewageGasProduced,
-                Id::MethaneFraction,
+                Id::ProfileTotalPowerConsumption,
+                Id::ProfileOnSitePowerGeneration,
+                Id::ProfileEmissionFactorElectricityMix,
+                Id::ProfileGasSupply,
+                Id::ProfilePurchaseOfBiogas,
+                Id::ProfileHeatingOil,
+                Id::ProfileSewageGasProduced,
+                Id::ProfileMethaneFraction,
             ]
             .into_iter()
             .map(|id| create_field(write, read, id))
@@ -94,21 +101,21 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                 Lng::En => Some("Sewage sludge treatment"),
             },
             fields: vec![
-                create_field(write, read, Id::SludgeTreatmentDigesterCount),
+                create_field(write, read, Id::ProfileSludgeTreatmentDigesterCount),
                 Field {
-                    label: RwSignal::new(move_tr!("sludge-bags-are-closed").get()).into(), // TODO: Invert label of Id::SludgeTreatmentBagsAreOpen.label(),
+                    label: RwSignal::new(move_tr!("sludge-bags-are-closed").get()).into(), // TODO: Invert label of Id::ProfileSludgeTreatmentBagsAreOpen.label(),
                     description: Some(move_tr!("sludge-bags-are-closed-info").get()),
                     required: false,
                     field_type: FieldType::Bool {
                         initial_value: None,
                         on_change: Callback::new(move |v: bool| {
                             form_data.update(|d| {
-                                d.insert(Id::SludgeTreatmentBagsAreOpen, Value::bool(!v));
+                                d.insert(Id::ProfileSludgeTreatmentBagsAreOpen, Value::bool(!v));
                             });
                         }),
                         input: Signal::derive(move || {
                             form_data.with(|d| {
-                                d.get(&Id::SludgeTreatmentBagsAreOpen)
+                                d.get(&Id::ProfileSludgeTreatmentBagsAreOpen)
                                     .cloned()
                                     .map(Value::as_bool_unchecked)
                                     .is_some_and(|v| !v)
@@ -117,7 +124,7 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                     },
                 },
                 Field {
-                    label: RwSignal::new(move_tr!("sludge-storage-is-closed").get()).into(), // TODO: Invert label of Id::SludgeTreatmentStorageContainersAreOpen.label(),
+                    label: RwSignal::new(move_tr!("sludge-storage-is-closed").get()).into(), // TODO: Invert label of Id::ProfileSludgeTreatmentStorageContainersAreOpen.label(),
                     description: Some(move_tr!("sludge-storage-is-closed-info").get()),
                     required: false,
                     field_type: FieldType::Bool {
@@ -125,14 +132,14 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                         on_change: Callback::new(move |v: bool| {
                             form_data.update(|d| {
                                 d.insert(
-                                    Id::SludgeTreatmentStorageContainersAreOpen,
+                                    Id::ProfileSludgeTreatmentStorageContainersAreOpen,
                                     Value::bool(!v),
                                 );
                             });
                         }),
                         input: Signal::derive(move || {
                             form_data.with(|d| {
-                                d.get(&Id::SludgeTreatmentStorageContainersAreOpen)
+                                d.get(&Id::ProfileSludgeTreatmentStorageContainersAreOpen)
                                     .cloned()
                                     .map(Value::as_bool_unchecked)
                                     .is_some_and(|v| !v)
@@ -140,8 +147,8 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                         }),
                     },
                 },
-                create_field(write, read, Id::SludgeTreatmentDisposal),
-                create_field(write, read, Id::SludgeTreatmentTransportDistance),
+                create_field(write, read, Id::ProfileSludgeTreatmentDisposal),
+                create_field(write, read, Id::ProfileSludgeTreatmentTransportDistance),
             ],
             draw_border,
         },
@@ -154,7 +161,7 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
             fields: vec![create_field(
                 write,
                 read,
-                Id::SideStreamTreatmentTotalNitrogen,
+                Id::ProfileSideStreamTreatmentTotalNitrogen,
             )],
             draw_border,
         },
@@ -164,10 +171,10 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                 Lng::En => Some("Operating materials used"),
             },
             fields: [
-                Id::OperatingMaterialFeCl3,
-                Id::OperatingMaterialFeClSO4,
-                Id::OperatingMaterialCaOH2,
-                Id::OperatingMaterialSyntheticPolymers,
+                Id::ProfileOperatingMaterialFeCl3,
+                Id::ProfileOperatingMaterialFeClSO4,
+                Id::ProfileOperatingMaterialCaOH2,
+                Id::ProfileOperatingMaterialSyntheticPolymers,
             ]
             .into_iter()
             .map(|id| create_field(write, read, id))

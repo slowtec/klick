@@ -31,34 +31,43 @@ fn ch4_combined_heat_and_power_plant_computation_helper(
 
 fn example_values() -> HashMap<Id, Value> {
     [
-        (In::PopulationEquivalent, V::count(50_000)),
-        (In::Wastewater, V::qubicmeters(2_135_250.0)),
-        (In::InfluentNitrogen, V::milligrams_per_liter(94.0)),
+        (In::ProfilePopulationEquivalent, V::count(50_000)),
+        (In::ProfileWastewater, V::qubicmeters(2_135_250.0)),
+        (In::ProfileInfluentNitrogen, V::milligrams_per_liter(94.0)),
         (
-            In::InfluentChemicalOxygenDemand,
+            In::ProfileInfluentChemicalOxygenDemand,
             V::milligrams_per_liter(1_020.0),
         ),
         (
-            In::InfluentTotalOrganicCarbohydrates,
+            In::ProfileInfluentTotalOrganicCarbohydrates,
             V::milligrams_per_liter(382.5),
         ),
-        (In::EffluentNitrogen, V::milligrams_per_liter(15.77)),
+        (In::ProfileEffluentNitrogen, V::milligrams_per_liter(15.77)),
         (
-            In::EffluentChemicalOxygenDemand,
+            In::ProfileEffluentChemicalOxygenDemand,
             V::milligrams_per_liter(47.18),
         ),
-        (In::SewageGasProduced, V::qubicmeters(420_000.0)),
-        (In::TotalPowerConsumption, V::kilowatthours(1_665_000.0)),
-        (In::OnSitePowerGeneration, V::kilowatthours(810_000.0)),
+        (In::ProfileSewageGasProduced, V::qubicmeters(420_000.0)),
         (
-            In::EmissionFactorElectricityMix,
+            In::ProfileTotalPowerConsumption,
+            V::kilowatthours(1_665_000.0),
+        ),
+        (
+            In::ProfileOnSitePowerGeneration,
+            V::kilowatthours(810_000.0),
+        ),
+        (
+            In::ProfileEmissionFactorElectricityMix,
             V::grams_per_kilowatthour(420.0),
         ),
-        (In::SludgeTreatmentDisposal, V::tons(3016.5)),
-        (In::SludgeTreatmentTransportDistance, V::kilometers(150.0)),
-        (In::SludgeTreatmentDigesterCount, V::count(1)),
-        (In::OperatingMaterialFeCl3, V::tons(310.5)),
-        (In::OperatingMaterialSyntheticPolymers, V::tons(12.0)),
+        (In::ProfileSludgeTreatmentDisposal, V::tons(3016.5)),
+        (
+            In::ProfileSludgeTreatmentTransportDistance,
+            V::kilometers(150.0),
+        ),
+        (In::ProfileSludgeTreatmentDigesterCount, V::count(1)),
+        (In::ProfileOperatingMaterialFeCl3, V::tons(310.5)),
+        (In::ProfileOperatingMaterialSyntheticPolymers, V::tons(12.0)),
         (In::SensitivityCO2FossilCustomFactor, V::percent(0.0)),
     ]
     .into_iter()

@@ -14,14 +14,14 @@ pub fn CH4EmissionsOpenSludgeStorage(
 ) -> impl IntoView {
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
-            d.get(&Id::SludgeTreatmentDigesterCount)
+            d.get(&Id::ProfileSludgeTreatmentDigesterCount)
                 .cloned()
                 .map(Value::as_count_unchecked)
                 .map(u64::from)
                 .unwrap_or_default()
         });
         let sewage_gas_produced = form_data.with(|d| {
-            d.get(&Id::SewageGasProduced)
+            d.get(&Id::ProfileSewageGasProduced)
                 .cloned()
                 .map(Value::as_qubicmeters_unchecked)
                 .map(f64::from)

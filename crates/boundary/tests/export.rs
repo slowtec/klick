@@ -12,8 +12,8 @@ fn export() {
 
     let form_data: HashMap<In, serde_json::Value> = [
         (In::ProjectName, json!("Project")),
-        (In::PlantName, json!("test export")),
-        (In::Wastewater, json!(3456.889)),
+        (In::ProfilePlantName, json!("test export")),
+        (In::ProfileWastewater, json!(3456.889)),
         (
             In::SensitivityN2OCalculationMethod,
             serde_json::to_value(N2oEmissionFactorCalcMethod::CustomFactor).unwrap(),
@@ -39,7 +39,7 @@ fn export() {
     let json_string = export_to_string_pretty(&project.into());
 
     assert!(json_string.starts_with(&format!("{{\n  \"version\": {CURRENT_VERSION}")));
-    assert!(json_string.contains("\"wastewater\": 3456.889"));
+    assert!(json_string.contains("\"profile-wastewater\": 3456.889"));
 
     let json = serde_json::from_str::<serde_json::Value>(&json_string).unwrap();
     let p_id = serde_json::from_value::<boundary::ProjectId>(json["id"].clone()).unwrap();
@@ -48,7 +48,7 @@ fn export() {
 
     let form_data = &json["form_data"];
     assert_eq!(form_data["project-name"], "Project");
-    assert_eq!(form_data["plant-name"], "test export");
+    assert_eq!(form_data["profile-plant-name"], "test export");
 
     assert_eq!(form_data["sensitivity-n2o-custom-factor"], 1.5);
     assert_eq!(
@@ -62,7 +62,7 @@ fn export() {
         "micro-gas-turbines"
     );
 
-    assert_eq!(form_data["wastewater"], 3456.889);
+    assert_eq!(form_data["profile-wastewater"], 3456.889);
 }
 
 #[test]
@@ -71,9 +71,9 @@ fn roundtrip() {
 
     let form_data: HashMap<In, serde_json::Value> = [
         (In::ProjectName, json!("Project")),
-        (In::PlantName, json!("test export")),
-        (In::Wastewater, json!(3456.889)),
-        (In::InfluentNitrogen, json!(1.234_5)),
+        (In::ProfilePlantName, json!("test export")),
+        (In::ProfileWastewater, json!(3456.889)),
+        (In::ProfileInfluentNitrogen, json!(1.234_5)),
         (
             In::SensitivityN2OCalculationMethod,
             serde_json::to_value(N2oEmissionFactorCalcMethod::Pesimistic).unwrap(),
