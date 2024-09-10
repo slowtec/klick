@@ -9,11 +9,11 @@ use klick_domain::{
     units::{Ch4ChpEmissionFactorCalcMethod, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };
-use klick_presenter::ValueLabel;
+use klick_presenter::{Lng, ValueLabel};
 
-use crate::pages::tool::{
+use crate::{current_lang, pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
-};
+}};
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -21,12 +21,11 @@ pub fn CH4EmissionsCHP(
     form_data: RwSignal<FormData>,
     sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lang: Lng,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
     // -----   ----- //
-
-    let lang = crate::current_lang();
 
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
@@ -55,7 +54,7 @@ pub fn CH4EmissionsCHP(
 
     let field_set = field_set(form_data.write_only(), form_data.read_only().into());
     let (chp_view, _, _) =
-        render_field_sets(vec![field_set], accessibility_always_show_option, lang);
+        render_field_sets(vec![field_set], accessibility_always_show_option, current_lang()); // FIXME not sure if this works
 
     // -----   ----- //
     //   Callbacks   //
@@ -85,7 +84,7 @@ pub fn CH4EmissionsCHP(
                     .iter()
                     .map(|(szenario, value, factor)| {
                         klick_app_charts::BarChartRadioInputArguments {
-                            label: Some(szenario.label(lang.get())),
+                            label: Some(szenario.label(lang)),
                             value: (*value).into(),
                             emission_factor: f64::from(*factor),
                         }
@@ -99,7 +98,7 @@ pub fn CH4EmissionsCHP(
                     selected_bar = selected_scenario_index
                     emission_factor_label = Some("CH₄ EF")
                     aria_label = Some("Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Methanemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.".to_string())
-                    lang = lang.get()
+                    lang = lang
                     on_change = on_bar_chart_input_changed
                   />
                 }
@@ -137,7 +136,7 @@ pub fn CH4EmissionsCHP(
 
             <p>
             "Es ist das Szenario \"" { move ||
-                selected_scenario.get().as_ref().map(|id|id.label(lang.get()))
+                selected_scenario.get().as_ref().map(|id|id.label(current_lang().get()))
             }
             "\" ausgewählt in t CO₂ Äquivalente/Jahr.
             Durch Anklicken kann ein anderes Szenario ausgewählt werden."
@@ -162,12 +161,12 @@ pub fn CH4EmissionsCHP(
                   outcome.output.as_ref().map(|out|{
                     view! {
                       <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
-                        <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Methanemissionen aus Blockheizkraftwerken (BHKW)"</dt>
+                        <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::Ch4CombinedHeatAndPowerPlant.label(lang) }</dt>
                         <dd class="text-lg py-1 px-3">
                           { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::Ch4CombinedHeatAndPowerPlant, out).unwrap()), 2) }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                         </dd>
-                        <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                        <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::TotalEmissions.label(lang) }</dt>
                         <dd class="text-lg py-1 px-3">
                           { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::TotalEmissions, out).unwrap()), 2) }
                           <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>

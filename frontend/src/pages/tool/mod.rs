@@ -21,6 +21,8 @@ use klick_presenter as presenter;
 
 use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
 
+use crate::current_lang;
+
 mod breadcrumbs;
 mod example_data;
 mod fields;
@@ -571,6 +573,7 @@ pub fn Tool(
               current_section
               profile_outcome = profile_outcome.into()
               accessibility_always_show_option
+              lang = current_lang().get()
             />
         }
         .into_view(),
@@ -583,6 +586,7 @@ pub fn Tool(
               show_side_stream_controls = show_side_stream_controls.into()
               accessibility_always_show_option
               custom_emissions_message
+              lang = current_lang().get()
             />
         }
         .into_view(),
@@ -594,6 +598,7 @@ pub fn Tool(
               sensitivity_outcome = sensitivity_outcome.into()
               show_side_stream_controls = show_side_stream_controls.into()
               accessibility_always_show_option
+              lang = current_lang().get()
             />
         }
         .into_view(),

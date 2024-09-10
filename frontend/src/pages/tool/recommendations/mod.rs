@@ -13,6 +13,8 @@ use crate::{
     sankey::Sankey,
 };
 
+use klick_presenter::Lng;
+
 mod ch4_emissions_open_digesters;
 mod ch4_emissions_pre_treatment;
 mod excess_energy_co2_equivalent;
@@ -29,8 +31,8 @@ pub fn Recommendations(
     sensitivity_outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lang: Lng,
 ) -> impl IntoView {
-    let lang = crate::current_lang();
 
     let old_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
     let new_output = Memo::new(move |_| recommendation_outcome.with(|out| out.output.clone()));
@@ -40,7 +42,7 @@ pub fn Recommendations(
             .get()
             .and_then(|old| new_output.get().map(|new| (new, old)))
             .map(|(new, old)| {
-                klick_presenter::sensitivity_diff_bar_chart(old, new, lang.get())
+                klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
                     .into_iter()
                     .map(|(label, value, percentage)| BarChartArguments {
                         label,
@@ -79,7 +81,8 @@ pub fn Recommendations(
           form_data.into(),
           recommendation_outcome,
           show_side_stream_controls,
-          accessibility_always_show_option
+          accessibility_always_show_option,
+          lang
         )
       }
       { ch4_emissions_pre_treatment::options(
@@ -90,6 +93,7 @@ pub fn Recommendations(
           form_data.into(),
           recommendation_outcome,
           accessibility_always_show_option,
+          lang
       ) }
       { leak_test::options(
         accessibility_always_show_option

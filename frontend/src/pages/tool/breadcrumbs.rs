@@ -6,8 +6,8 @@ where
     E: Copy + PartialEq + 'static,
 {
     let crumbs: Vec<_> = entries
-        .iter()
-        .map(|(title, entry)| view! { <Entry title=*title entry=*entry current /> })
+        .into_iter()
+        .map(|(title, entry)| view! { <Entry title entry current /> })
         .collect();
 
     view! {

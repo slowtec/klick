@@ -7,6 +7,8 @@ use klick_domain::{output_value::required, InputValueId as Id, OutputValueId as 
 use crate::pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
 };
+use klick_presenter::{Lng, ValueLabel};
+use crate::{current_lang};
 
 #[allow(clippy::too_many_lines)] // TODO
 #[component]
@@ -14,8 +16,8 @@ pub fn CH4EmissionsOpenDigesters(
     form_data: RwSignal<FormData>,
     sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lang: Lng,
 ) -> impl IntoView {
-    let lang = crate::current_lang();
 
     let show_sludge_bags_controls = Signal::derive(move || {
         // a better way could be to check out.co2_equivalents.ch4_sludge_bags > 0.0
@@ -66,7 +68,7 @@ pub fn CH4EmissionsOpenDigesters(
     };
 
     let (fields_view1, _, _) =
-        render_field_sets(vec![field_set], accessibility_always_show_option, lang);
+        render_field_sets(vec![field_set], accessibility_always_show_option, current_lang());
 
     let id = Id::SensitivitySludgeStorageCustomFactor;
     let custom_factor_field2 = create_field(form_data.write_only(), form_data.into(), id);
@@ -79,7 +81,7 @@ pub fn CH4EmissionsOpenDigesters(
     };
 
     let (fields_view2, _, _) =
-        render_field_sets(vec![field_set], accessibility_always_show_option, lang);
+        render_field_sets(vec![field_set], accessibility_always_show_option, current_lang());
 
     // FIXME: set default values in page::tool::default_values
     // create_effect(move |_| {
@@ -145,7 +147,7 @@ pub fn CH4EmissionsOpenDigesters(
                    <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_bags_controls_class}") }
                      >
-                        "CH₄ Schlupf Schlammtaschen"
+                     { Out::Ch4SludgeBags.label(lang) }
                      </dt>
                      <dd class={ format!("text-lg py-1 px-3 {show_sludge_bags_controls_class}") }
                      >
@@ -154,13 +156,13 @@ pub fn CH4EmissionsOpenDigesters(
                      </dd>
                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_sludge_storage_containers_controls_class}") }
                      >
-                        "CH₄ Schlupf Schlammlagerung"
+                     { Out::Ch4SludgeStorageContainers.label(lang) }
                      </dt>
                      <dd class={ format!("text-lg py-1 px-3 {show_sludge_storage_containers_controls_class}") } >
                        { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::Ch4SludgeStorageContainers, out).unwrap()), 2) }
                        <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                      </dd>
-                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                     <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::TotalEmissions.label(lang) }</dt>
                      <dd class="text-lg py-1 px-3">
                        { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::TotalEmissions, out).unwrap()), 2) }
                        <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>

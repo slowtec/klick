@@ -1,5 +1,6 @@
 use leptos::*;
 use leptos_fluent::*;
+use klick_presenter::Lng;
 
 use klick_app_charts::{BarChart, BarChartArguments};
 use klick_boundary::FormData;
@@ -32,6 +33,7 @@ pub fn SensitivityParameters(
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
     custom_emissions_message: RwSignal<String>,
+    lang: Lng,
 ) -> impl IntoView {
     let old_output = Memo::new(move |_| profile_outcome.with(|out| out.output.clone()));
     let new_output = Memo::new(move |_| sensitivity_outcome.with(|out| out.output.clone()));
@@ -41,7 +43,7 @@ pub fn SensitivityParameters(
             .get()
             .and_then(|old| new_output.get().map(|new| (new, old)))
             .map(|(new, old)| {
-                klick_presenter::sensitivity_diff_bar_chart(old, new, current_lang().get())
+                klick_presenter::sensitivity_diff_bar_chart(old, new, lang)
                     .into_iter()
                     .map(|(label, value, percentage)| BarChartArguments {
                         label,
@@ -72,31 +74,37 @@ pub fn SensitivityParameters(
           sensitivity_outcome
           show_side_stream_controls
           accessibility_always_show_option
+          lang
         />
         <CH4EmissionsCHP
           form_data
           sensitivity_outcome
           accessibility_always_show_option
+          lang
         />
         <CH4EmissionsOpenDigesters
           form_data
           sensitivity_outcome
           accessibility_always_show_option
+          lang
         />
         <CH4EmissionsOpenSludgeStorage
           form_data
           accessibility_always_show_option
+          lang
         />
         <FossilCO2Emissions
           form_data
           sensitivity_outcome
           accessibility_always_show_option
+          lang
         />
         <AdditionalCustomEmissions
           form_data
           sensitivity_outcome
           accessibility_always_show_option
           custom_emissions_message
+          lang
         />
 
         <h4 class="my-8 text-lg font-bold">

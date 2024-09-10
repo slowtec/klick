@@ -8,7 +8,7 @@ use klick_domain::{
     output_value::*, units::N2oEmissionFactorCalcMethod, InputValueId as In, OutputValueId as Out,
     Value,
 };
-use klick_presenter::ValueLabel;
+use klick_presenter::{Lng, ValueLabel};
 
 use crate::pages::tool::{fields::create_field, Card};
 
@@ -19,12 +19,11 @@ pub fn N2OEmissionsSensitivity(
     sensitivity_outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lang: Lng,
 ) -> impl IntoView {
     // -----   ----- //
     //    Signals    //
     // -----   ----- //
-
-    let lang = crate::current_lang();
 
     let selected_scenario = Signal::derive(move || {
         form_data.with(|d| {
@@ -48,14 +47,14 @@ pub fn N2OEmissionsSensitivity(
     let (n2o_custom_factor_view, _, _) = render_field_sets(
         n2o_custom_factor_field_set,
         accessibility_always_show_option,
-        lang,
+        crate::current_lang(),
     );
 
     let side_stream_factor_field_set = side_stream_factor(form_data);
     let (side_stream_factor_view, _, _) = render_field_sets(
         side_stream_factor_field_set,
         accessibility_always_show_option,
-        lang,
+        crate::current_lang(),
     );
 
     // -----   ----- //
@@ -86,7 +85,7 @@ pub fn N2OEmissionsSensitivity(
                     .iter()
                     .map(
                         |(szenario, outcome)| klick_app_charts::BarChartRadioInputArguments {
-                            label: Some(szenario.label(lang.get())),
+                            label: Some(szenario.label(lang)),
                             value: required!(Out::N2oPlant, outcome).unwrap().into(),
                             emission_factor: f64::from(required!(Out::N2oCalculatedEmissionFactor, outcome).unwrap()),
                         },
@@ -100,7 +99,7 @@ pub fn N2OEmissionsSensitivity(
                     selected_bar = selected_scenario_index
                     emission_factor_label = Some("N₂O EF")
                     aria_label = Some("Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Lachgasemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.".to_string())
-                    lang = lang.get()
+                    lang = lang
                     on_change = on_bar_chart_input_changed
                   />
                 }
@@ -134,7 +133,7 @@ pub fn N2OEmissionsSensitivity(
           { bar_chart_view }
 
           <p>
-            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(|id|id.label(lang.get())) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
+            "Es ist das Szenario \"" { move || selected_scenario.get().as_ref().map(|id|id.label(lang)) } "\" ausgewählt in t CO₂ Äquivalente/Jahr.
              Durch Anklicken kann ein anderes Szenario ausgewählt werden."
           </p>
 
@@ -176,17 +175,17 @@ pub fn N2OEmissionsSensitivity(
                   let show_side_stream_controls_class = if show_side_stream_controls.get() { String::new() } else { "hidden".to_string() };
                   view! {
                     <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
-                      <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Anlage"</dt>
+                      <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::N2oPlant.label(lang) }</dt>
                       <dd class="text-lg py-1 px-3">
                         { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::N2oPlant, out).unwrap()), 2) }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                       </dd>
-                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_side_stream_controls_class}") }>"N₂O Prozesswasserbehandlung"</dt>
+                      <dt class={ format!("text-lg font-semibold text-right px-3 py-1 text-gray-500 {show_side_stream_controls_class}") }>{ Out::N2oSideStream.label(lang) }</dt>
                       <dd class={ format!("text-lg py-1 px-3 {show_side_stream_controls_class}") }>
                         { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::N2oSideStream, out).unwrap()), 2) }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                       </dd>
-                      <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                      <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::TotalEmissions.label(lang) }</dt>
                       <dd class="text-lg py-1 px-3">
                         { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::TotalEmissions, out).unwrap()), 2) }
                         <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>

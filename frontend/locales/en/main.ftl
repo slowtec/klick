@@ -32,3 +32,4 @@ reset-password-description    = You will receive an e-mail with a link that you 
 email-sent-to-reset-password  = E-mail sent to reset the password.
 reset-request-success-message = Now check your e-mail inbox and open the corresponding e-mail. Then click on the link it contains to enter your new password.
 form_data_table_overview      = Overview of entered values (Data collection and sensitivity parameters)
+co2-savings                   = CO₂ Savings by

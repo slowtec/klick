@@ -7,17 +7,18 @@ use klick_domain::{output_value::required, InputValueId as Id, OutputValueId as 
 use crate::pages::tool::{
     fields::create_field, CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL,
 };
+use klick_presenter::{Lng, ValueLabel};
 
 #[component]
 pub fn FossilCO2Emissions(
     form_data: RwSignal<FormData>,
     sensitivity_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lang: Lng,
 ) -> impl IntoView {
-    let lang = crate::current_lang();
 
     let field_set = field_set(form_data.write_only(), form_data.into());
-    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, lang);
+    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, crate::current_lang());
 
     view! {
        <Card id="sensitivity-fossil-co2" title = "Fossile CO₂-Emissionen aus Abwasser" bg_color="bg-blue" accessibility_always_show_option>
@@ -62,12 +63,12 @@ pub fn FossilCO2Emissions(
                let out = &out;
                view! {
                  <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
-                   <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Fossile CO₂-Emissionen"</dt>
+                   <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::FossilEmissions.label(lang) }</dt>
                    <dd class="text-lg py-1 px-3">
                      { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::FossilEmissions, out).unwrap()), 2) }
                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                    </dd>
-                   <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                   <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::TotalEmissions.label(lang) }</dt>
                    <dd class="text-lg py-1 px-3">
                      { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::TotalEmissions, out).unwrap()), 2) }
                      <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>

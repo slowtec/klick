@@ -1,10 +1,12 @@
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{output_value::required, units::*, InputValueId as Id, OutputValueId as Out};
 
 use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
+use klick_presenter::{Lng, ValueLabel};
 
 #[allow(clippy::too_many_lines)] // TODO
 pub fn options(
@@ -101,19 +103,21 @@ pub fn options(
 
             let eq = out;
 
+            
+
             let list = [
-              (Out::ProcessEnergySavings, "CO₂ Einsparung durch Energieeinsparung bei Prozessen"),
-              (Out::FossilEnergySavings,"CO₂ Einsparung bei Fossilen Energiequellen"),
-              (Out::PhotovoltaicExpansionSavings, "CO₂ Einsparung durch Photovoltaik"),
-              (Out::WindExpansionSavings, "CO₂ Einsparung durch Windkraft"),
-              (Out::WaterExpansionSavings, "CO₂ Einsparung durch Wasserkraft"),
-              (Out::DistrictHeatingSavings, "CO₂ Einsparung durch Abwärmenutzung"),
+              (Out::ProcessEnergySavings, ""),
+              (Out::FossilEnergySavings,""),
+              (Out::PhotovoltaicExpansionSavings, ""),
+              (Out::WindExpansionSavings, ""),
+              (Out::WaterExpansionSavings, ""),
+              (Out::DistrictHeatingSavings, ""),
             ]
             .into_iter()
             .filter_map(|(id, label)| {
                 let value = eq.get(&id.into()).cloned().and_then(Value::as_tons).unwrap();
                 if value > Tons::zero() {
-                   Some((label, value))
+                   Some((format!("{} {}", move_tr!("co2-savings").get(), id.label(lang)), value))
                 } else {
                    None
                 }

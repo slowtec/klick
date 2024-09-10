@@ -3,6 +3,7 @@ use leptos::*;
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{output_value::required, InputValueId as Id, OutputValueId as Out, Value};
+use klick_presenter::{Lng, ValueLabel};
 
 use crate::{
     label_signal,
@@ -15,10 +16,11 @@ pub fn options(
     outcome: Signal<CalculationOutcome>,
     show_side_stream_controls: Signal<bool>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lang: Lng,
 ) -> impl IntoView {
-    let lang = crate::current_lang();
+    
     let field_set = field_set(form_data.write_only(), input_data);
-    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, lang);
+    let (form1, _, _) = render_field_sets(vec![field_set], accessibility_always_show_option, crate::current_lang());
 
     view! {
       <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >
@@ -36,12 +38,12 @@ pub fn options(
               outcome.with(|out|out.output.as_ref().map(|out|{
                 view! {
                   <dl class="mx-3 my-2 grid grid-cols-2 text-sm">
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"N₂O Prozesswasserbehandlung"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::N2oSideStream.label(lang) }</dt>
                     <dd class="text-lg py-1 px-3">
                       { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::N2oSideStream, out).unwrap()), 2) }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>
                     </dd>
-                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">"Gesamtemissionen"</dt>
+                    <dt class="text-lg font-semibold text-right px-3 py-1 text-gray-500">{ Out::TotalEmissions.label(lang) }</dt>
                     <dd class="text-lg py-1 px-3">
                       { crate::current_lang().get().format_number_with_fixed_precision(f64::from(required!(Out::TotalEmissions, out).unwrap()), 2) }
                       <span class="ml-2 text-gray-400">{ "t CO₂-Äq./a" }</span>

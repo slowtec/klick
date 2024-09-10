@@ -3,6 +3,8 @@ use std::rc::Rc;
 use leptos::*;
 use leptos_fluent::*;
 
+use klick_presenter::Lng;
+
 use klick_app_components::forms::render_field_sets;
 use klick_boundary::FormData;
 
@@ -23,12 +25,13 @@ pub fn PlantProfile(
     current_section: RwSignal<PageSection>,
     profile_outcome: Signal<CalculationOutcome>,
     accessibility_always_show_option: Option<RwSignal<bool>>,
+    lang: Lng,
 ) -> impl IntoView {
     // -----   ----- //
     //     Form      //
     // -----   ----- //
 
-    let field_sets = field_sets(form_data);
+    let field_sets = field_sets(form_data, lang);
     let (field_views, missing_fields, labels) =
         render_field_sets(field_sets, accessibility_always_show_option, current_lang());
     let labels = Rc::new(labels);
