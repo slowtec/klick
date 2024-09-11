@@ -173,3 +173,14 @@ recommendation-n2o-biological_p_7 = Previous studies of nitrous oxide emissions 
 recommendation-n2o-side-stream   = Nitrous oxide emissions during process water treatment
 recommendation-n2o-side-stream_p_1 = Since process water treatment plants are relatively small tanks, nitrous oxide emissions can be eliminated by covering and exhaust air treatment (oxidation).
 recommendation-n2o-side-stream_p_2 = In the interests of sustainability and circularity, a nitrogen recovery plant can be integrated.
+
+########################################### project menu ###########################################
+
+project-label = Project
+project-reset-values = Reset values
+project-load-example-values = Load example
+project-load-from-file = File import
+project-save-to-file = File export
+project-export-csv = Export to CSV-file
+project-load-from-online = Load from cloud
+project-save-to-online = Save to cloud

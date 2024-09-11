@@ -184,3 +184,14 @@ recommendation-n2o-biological_p_7 = Bisherige Untersuchungen der Lachgasemission
 recommendation-n2o-side-stream   = Lachgasemissionen bei der Prozesswasserbehandlung
 recommendation-n2o-side-stream_p_1 = Da es sich bei Prozesswasserbehandlungsanlagen um relativ kleine Becken handelt, können die Lachgasemissionen hier durch Abdeckung und Abluftbehandlung (Oxidation) beseitigt werden.
 recommendation-n2o-side-stream_p_2 = Im Sinne der Nachhaltigkeit und der Kreislaufschließung kann eine Stickstoffrückgewinnungsanlage integriert werden.
+
+########################################### project menu ###########################################
+
+project-label = Projekt
+project-reset-values = Werte zurücksetzen
+project-load-example-values = Beispielwerte laden
+project-load-from-file = Datei laden
+project-save-to-file = Datei speichern
+project-export-csv = CSV-Datei exportieren
+project-load-from-online = Projekt aus Online-Speicher laden
+project-save-to-online = Projekt online speichern

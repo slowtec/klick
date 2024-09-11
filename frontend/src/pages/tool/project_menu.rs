@@ -1,7 +1,9 @@
 use gloo_file::{File, ObjectUrl};
 use leptos::*;
+use leptos_fluent::*;
 
 use klick_app_components::icons;
+use klick_presenter::Lng;
 
 use crate::Page;
 
@@ -36,7 +38,7 @@ pub fn ProjectMenu(
                   aria-expanded="true"
                   aria-haspopup="true"
                 >
-                  <div class="flex items-center ml-3">"Projekt"</div>
+                  <div class="flex items-center ml-3">{ move || move_tr!("project-label").get() }</div>
                   <icons::Bars3 />
                 </button>
               </div>
@@ -55,7 +57,7 @@ pub fn ProjectMenu(
                 <div class="absolute right-0 z-10 mt-2 w-72 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                   <div class="py-1" role="none">
                     <Entry
-                      label = "Werte zurücksetzen"
+                      label = move_tr!("project-reset-values").get()
                       on:click = move |_| {
                         clear.call(());
                         is_open.set(false);
@@ -67,13 +69,13 @@ pub fn ProjectMenu(
                         load.call(());
                         is_open.set(false);
                       }
-                      label = "Beispielwerte laden"
+                      label = move_tr!("project-load-example-values").get()
                       icon = icons::LightBulb
                     />
                   </div>
                   <Section>
                     <Entry
-                      label = "Datei laden"
+                      label = move_tr!("project-load-from-file").get()
                       on:click = move |ev| {
                           ev.prevent_default();
                           show_upload_input.set(true);
@@ -82,7 +84,7 @@ pub fn ProjectMenu(
                       icon = icons::DocumentArrowUp
                     />
                     <Entry
-                      label = "Datei speichern"
+                      label = move_tr!("project-save-to-file").get()
                       on:click = move |ev| {
                         ev.prevent_default();
                         let object_url = download.call(());
@@ -98,7 +100,7 @@ pub fn ProjectMenu(
                   </Section>
                   <Section>
                     <Entry
-                      label = "CSV-Datei exportieren"
+                      label = move_tr!("project-export-csv").get()
                       disabled = Signal::derive(move|| !show_csv_export.get())
                       disabled_text = "fehlende Eingabewerte"
                       on:click = move |ev| {
@@ -124,14 +126,14 @@ pub fn ProjectMenu(
                   </Section>
                   <Section>
                     <Entry
-                      label = "Projekt aus Online-Speicher laden"
+                      label = move_tr!("project-load-from-online").get()
                       disabled = Signal::derive(move|| !logged_in.get())
                       disabled_text = "nur mit Login"
                       icon = icons::CloudArrowUp
                       href = Page::Projects.path()
                     />
                     <Entry
-                      label = "Projekt online speichern"
+                      label = move_tr!("project-save-to-online").get()
                       disabled = Signal::derive(move|| !logged_in.get())
                       disabled_text = "nur mit Login"
                       icon = icons::CloudArrowDown
@@ -182,7 +184,7 @@ fn Section(children: Children) -> impl IntoView {
 
 #[component]
 fn Entry<V>(
-    label: &'static str,
+    label: String,
     icon: V,
     #[prop(optional)] href: Option<&'static str>,
     #[prop(optional)] disabled: Signal<bool>,
