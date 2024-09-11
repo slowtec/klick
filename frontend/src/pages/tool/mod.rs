@@ -275,7 +275,6 @@ pub fn Tool(
             In::SensitivitySludgeStorageCustomFactor,
             In::RecommendationSludgeBagsAreOpen,
             In::RecommendationSludgeStorageContainersAreOpen,
-            In::RecommendationN2OSideStreamFactor,
             In::RecommendationN2OSideStreamCoverIsOpen,
             In::RecommendationProcessEnergySaving,
             In::RecommendationFossilEnergySaving,

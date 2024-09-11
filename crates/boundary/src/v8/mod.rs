@@ -293,13 +293,6 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::RecommendationN2OSideStreamFactor,
-                from.sensitivity_parameters
-                    .n2o_emissions
-                    .side_stream_emission_factor
-                    .map(V::factor),
-            ),
-            (
                 Id::RecommendationN2OSideStreamCoverIsOpen,
                 from.optimization_scenario
                     .side_stream_treatment
@@ -592,12 +585,6 @@ impl JsonFormData {
                     .sewage_sludge_treatment
                     .sludge_storage_containers_are_closed =
                     value.map(V::as_bool_unchecked).map(|v| !v); // open => closed
-            }
-            Id::RecommendationN2OSideStreamFactor => {
-                self.sensitivity_parameters
-                    .n2o_emissions
-                    .side_stream_emission_factor =
-                    value.map(V::as_factor_unchecked).map(Into::into);
             }
             Id::RecommendationN2OSideStreamCoverIsOpen => {
                 self.optimization_scenario

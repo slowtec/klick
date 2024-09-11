@@ -125,8 +125,6 @@ pub enum InputValueId {
     // --- Recommendation ---//
     RecommendationSludgeBagsAreOpen,
     RecommendationSludgeStorageContainersAreOpen,
-    #[serde(rename = "recommendation-n2o-side-stream-factor")]
-    RecommendationN2OSideStreamFactor,
     #[serde(rename = "recommendation-n2o-side-stream-cover-is-open")]
     RecommendationN2OSideStreamCoverIsOpen,
     RecommendationProcessEnergySaving,
@@ -280,14 +278,6 @@ impl InputValueId {
             Self::SensitivityCH4ChpCalculationMethod => {
                 let method: CH4ChpEmissionFactorCalcMethod = serde_json::from_value(v)?;
                 Value::ch4_chp_emission_factor_calc_method(method.into())
-            }
-
-            // Factor values
-            Self::RecommendationN2OSideStreamFactor => {
-                let v = v
-                    .as_f64()
-                    .ok_or_else(|| anyhow!("Expected factor value for {self:?}, got {v:?}"))?;
-                Value::factor(v)
             }
 
             // Text values
@@ -463,14 +453,6 @@ impl InputValueId {
                     })?
                     .into();
                 Ok(serde_json::to_value(method)?)
-            }
-
-            // Factor values
-            Self::RecommendationN2OSideStreamFactor => {
-                let factor_value = value.as_factor().ok_or_else(|| {
-                    anyhow!("Expected factor value for {self:?}, got {value_clone:?}")
-                })?;
-                Ok(JsonValue::from(f64::from(factor_value)))
             }
         }
     }

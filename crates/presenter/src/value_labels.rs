@@ -20,7 +20,6 @@ impl ValueLabel for InputValueId {
 
     fn label_latex(&self, lng: Lng) -> String {
         match self {
-            Self::RecommendationN2OSideStreamFactor => "$N_2O$-EF Prozesswasser",
             Self::SensitivityN2OCalculationMethod => "$N_2O$ Berechnungsmethode",
             Self::SensitivityN2OCustomFactor => "$N_2O$-EF Benutzerdefiniert",
             Self::SensitivityN2OSideStreamFactor => "$N_2O$-EF Prozesswasser",

@@ -185,7 +185,7 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
 
     let expanded = quote! {
 
-        #[derive(Eq, PartialEq, Hash, Copy, Clone, Debug, strum::AsRefStr)]
+        #[derive(Eq, PartialEq, Hash, Copy, Clone, Debug, strum::AsRefStr, strum_macros::EnumIter)]
         pub enum #ident {
             #(#variants,)*
         }

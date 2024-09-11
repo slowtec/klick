@@ -3,7 +3,6 @@ use leptos::*;
 use leptos_fluent::*;
 
 use klick_app_components::icons;
-use klick_presenter::Lng;
 
 use crate::Page;
 

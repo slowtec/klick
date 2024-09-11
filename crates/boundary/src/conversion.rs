@@ -200,7 +200,6 @@ impl From<v9::InputValueId> for domain::InputValueId {
             In::RecommendationSludgeStorageContainersAreOpen => {
                 Self::RecommendationSludgeStorageContainersAreOpen
             }
-            In::RecommendationN2OSideStreamFactor => Self::RecommendationN2OSideStreamFactor,
             In::RecommendationN2OSideStreamCoverIsOpen => {
                 Self::RecommendationN2OSideStreamCoverIsOpen
             }
@@ -279,7 +278,6 @@ impl From<domain::InputValueId> for v9::InputValueId {
             In::RecommendationSludgeStorageContainersAreOpen => {
                 Self::RecommendationSludgeStorageContainersAreOpen
             }
-            In::RecommendationN2OSideStreamFactor => Self::RecommendationN2OSideStreamFactor,
             In::RecommendationN2OSideStreamCoverIsOpen => {
                 Self::RecommendationN2OSideStreamCoverIsOpen
             }

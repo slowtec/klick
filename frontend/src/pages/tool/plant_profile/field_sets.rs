@@ -103,48 +103,51 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
             fields: vec![
                 create_field(write, read, Id::ProfileSludgeTreatmentDigesterCount),
                 Field {
-                    label: RwSignal::new(move_tr!("sludge-bags-are-closed").get()).into(), // TODO: Invert label of Id::ProfileSludgeTreatmentBagsAreOpen.label(),
+                    label: RwSignal::new(move_tr!("sludge-bags-are-closed").get()).into(), // TODO: Invert label => closed/open
                     description: Some(move_tr!("sludge-bags-are-closed-info").get()),
                     required: false,
-                    field_type: FieldType::Bool {
-                        initial_value: None,
-                        on_change: Callback::new(move |v: bool| {
-                            form_data.update(|d| {
-                                d.insert(Id::ProfileSludgeTreatmentBagsAreOpen, Value::bool(!v));
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            form_data.with(|d| {
-                                d.get(&Id::ProfileSludgeTreatmentBagsAreOpen)
-                                    .cloned()
-                                    .map(Value::as_bool_unchecked)
-                                    .is_some_and(|v| !v)
-                            })
-                        }),
+                    field_type: {
+                        let field_id = Id::ProfileSludgeTreatmentBagsAreOpen;
+                        FieldType::Bool {
+                            initial_value: None,
+                            on_change: Callback::new(move |v: bool| {
+                                form_data.update(|d| {
+                                    d.insert(field_id, Value::bool(!v));
+                                });
+                            }),
+                            input: Signal::derive(move || {
+                                form_data.with(|d| {
+                                    d.get(&field_id)
+                                        .cloned()
+                                        .map(Value::as_bool_unchecked)
+                                        .is_some_and(|v| !v)
+                                })
+                            }),
+                        }
                     },
                 },
                 Field {
-                    label: RwSignal::new(move_tr!("sludge-storage-is-closed").get()).into(), // TODO: Invert label of Id::ProfileSludgeTreatmentStorageContainersAreOpen.label(),
+                    label: RwSignal::new(move_tr!("sludge-storage-is-closed").get()).into(), // TODO: Invert label => closed/open
                     description: Some(move_tr!("sludge-storage-is-closed-info").get()),
                     required: false,
-                    field_type: FieldType::Bool {
-                        initial_value: None,
-                        on_change: Callback::new(move |v: bool| {
-                            form_data.update(|d| {
-                                d.insert(
-                                    Id::ProfileSludgeTreatmentStorageContainersAreOpen,
-                                    Value::bool(!v),
-                                );
-                            });
-                        }),
-                        input: Signal::derive(move || {
-                            form_data.with(|d| {
-                                d.get(&Id::ProfileSludgeTreatmentStorageContainersAreOpen)
-                                    .cloned()
-                                    .map(Value::as_bool_unchecked)
-                                    .is_some_and(|v| !v)
-                            })
-                        }),
+                    field_type: {
+                        let field_id = Id::ProfileSludgeTreatmentStorageContainersAreOpen;
+                        FieldType::Bool {
+                            initial_value: None,
+                            on_change: Callback::new(move |v: bool| {
+                                form_data.update(|d| {
+                                    d.insert(field_id, Value::bool(!v));
+                                });
+                            }),
+                            input: Signal::derive(move || {
+                                form_data.with(|d| {
+                                    d.get(&field_id)
+                                        .cloned()
+                                        .map(Value::as_bool_unchecked)
+                                        .is_some_and(|v| !v)
+                                })
+                            }),
+                        }
                     },
                 },
                 create_field(write, read, Id::ProfileSludgeTreatmentDisposal),

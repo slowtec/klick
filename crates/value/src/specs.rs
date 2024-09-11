@@ -235,9 +235,6 @@ spec! {
             optional;
             default = true;
         },
-        RecommendationN2OSideStreamFactor {
-            unit = Factor; // TODO: should't this be Percent?
-        },
         RecommendationN2OSideStreamCoverIsOpen {
             unit = bool;
             optional;
