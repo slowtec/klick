@@ -512,10 +512,7 @@ pub fn Tool(
             clear_custom_values_and_edges();
             return;
         };
-        let res = custom_emission_parser::parse_emission(
-            input.as_str(),
-            custom_emission_parser::NumberFormat::DE,
-        );
+        let res = custom_emission_parser::parse_emission(input.as_str(), current_lang().get());
         let Ok(r) = res.map_err(|err| {
             custom_emissions_message.set(err.to_string());
             clear_custom_values_and_edges();
@@ -556,7 +553,8 @@ pub fn Tool(
                 custom_leafs.set(custom_leafs_vec);
             }
             Err(e) => {
-                custom_emissions_message.set(e.to_string());
+                let lang = current_lang();
+                custom_emissions_message.set(e.format_error(lang.get()));
                 clear_custom_values_and_edges();
             }
         }

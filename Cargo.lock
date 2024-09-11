@@ -1766,6 +1766,7 @@ dependencies = [
 name = "klick-custom-values-parser"
 version = "0.0.0"
 dependencies = [
+ "klick-presenter",
  "thiserror",
 ]
 

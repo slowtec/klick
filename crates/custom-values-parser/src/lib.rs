@@ -1,6 +1,5 @@
+use klick_presenter::Lng;
 use std::collections::HashSet;
-
-use thiserror::Error;
 
 #[cfg(test)]
 mod tests;
@@ -52,44 +51,20 @@ impl CustomEmission {
     }
 }
 
-#[allow(unused)]
-#[derive(Debug, Clone, Copy)]
-pub enum NumberFormat {
-    // FIXME refactor to use
-    DE,
-    US,
-}
-
-impl NumberFormat {
-    fn parse_number(&self, num_str: &str) -> Result<f64, std::num::ParseFloatError> {
-        match self {
-            NumberFormat::DE => {
-                let normalized = num_str.replace('.', "").replace(',', ".");
-                normalized.parse::<f64>()
-            }
-            NumberFormat::US => {
-                let normalized = num_str.replace(',', "");
-                normalized.parse::<f64>()
-            }
-        }
-    }
-}
-
-pub fn parse_line(
-    line_number: usize,
-    line: &str,
-    number_format: NumberFormat,
-) -> Result<Option<CustomEmission>, String> {
+fn parse_line(line_number: usize, line: &str, lang: Lng) -> Result<Option<CustomEmission>, String> {
     let trimmed = line.trim();
 
     if trimmed.is_empty() {
         return Ok(None);
     }
 
-    if !trimmed.starts_with('"') || !trimmed.ends_with('"') {
-        return Err(format!(
-            "Zeile \"{line_number}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]"
-        ));
+    if !trimmed.starts_with('"') || !trimmed.ends_with('"') || trimmed.len() < 2 {
+        return Err(
+            match lang {
+                Lng::De => format!("Zeile \"{line_number}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]"),
+                Lng::En => format!("Line \"{line_number}\" is not formatted correctly, expected was: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]")
+            }
+        );
     }
 
     let trimmed = &trimmed[1..trimmed.len() - 1];
@@ -107,9 +82,12 @@ pub fn parse_line(
         .collect::<Vec<&str>>();
 
     if parts.len() < 2 || parts.len() > 3 {
-        return Err(format!(
-            "Zeile \"{line_number}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]"
-        ));
+        return Err(
+            match lang {
+                Lng::De => format!("Zeile \"{line_number}\" ist nicht im erwarteten Format, erwartet war: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]"),
+                Lng::En => format!("Line \"{line_number}\" is not formatted correctly, expected was: [\"ID\" \"ID\"] oder [\"ID\" NUM \"ID\"]")
+            }
+        );
     }
 
     let source = parts.remove(0).to_string();
@@ -127,11 +105,28 @@ pub fn parse_line(
         })));
     };
 
-    let value = number_format.parse_number(value_str).map_err(|err| {
-        format!(
-            "Die Nummer \"{value_str}\" auf Zeile \"{line_number}\" ist nicht im erwarteten Format: {err}",
-        )
+    let normalized_value = match lang {
+        Lng::De => value_str.replace('.', "").replace(',', "."),
+        Lng::En => value_str.replace(',', ""),
+    };
+
+    let value = normalized_value.parse::<f64>().map_err(|err| {
+        match lang {
+            Lng::De => format!("Die Nummer \"{value_str}\" auf Zeile \"{line_number}\" ist nicht im erwarteten Format: {err}"),
+            Lng::En => format!("The number \"{value_str}\" on line \"{line_number}\" was not expected: {err}"),
+        }
     })?;
+
+    if value < 0.0 {
+        return Err(match lang {
+            Lng::De => format!(
+                "Negative Nummer \"{value_str}\" auf Zeile \"{line_number}\" macht keinen Sinn!"
+            ),
+            Lng::En => {
+                format!("Negative number \"{value_str}\" on line \"{line_number}\" is insane!")
+            }
+        });
+    }
 
     Ok(Some(CustomEmission::EdgeDefined(EdgeDefined {
         line: line_number,
@@ -141,14 +136,11 @@ pub fn parse_line(
     })))
 }
 
-pub fn parse_emission(
-    input: &str,
-    number_format: NumberFormat,
-) -> Result<Vec<CustomEmission>, String> {
+pub fn parse_emission(input: &str, lang: Lng) -> Result<Vec<CustomEmission>, String> {
     let emissions = input
         .lines()
         .enumerate()
-        .map(|(line_number, line)| parse_line(line_number + 1, line, number_format))
+        .map(|(line_number, line)| parse_line(line_number + 1, line, lang))
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
         .flatten()
@@ -156,50 +148,70 @@ pub fn parse_emission(
     Ok(emissions)
 }
 
-#[derive(Error, Debug)]
+impl CustomEmissionParserError {
+    pub fn format_error(&self, lang: Lng) -> String {
+        match self {
+            Self::ReservedNameVoilation{name, line} => {
+                match lang {
+                    Lng::De => format!("Reservierter Name {} auf Zeile: {} als Quellname", name, line),
+                    Lng::En => format!("Can't use reserved name {} on line: {} as source name", name, line)
+                }
+            }
+            Self::EdgeNotUniqueVoilation { e1_line , e2_line } => {
+                match lang {
+                    Lng::De => format!("Kantennamen sind nicht eindeutig: Kante (auf Zeile {}) und Kante (auf Zeile {}) müssen sich unterscheiden", e1_line, e2_line),
+                    Lng::En => format!("Edges are not unique: Edge (from line {}) and Edge (from line {}) need to be different", e1_line, e2_line)
+                }
+            }
+            Self::InsideEdgeCycleVoilation { line } => {
+                match lang {
+                    Lng::De => format!("Kanten-Zyklus erkannt auf Zeile: {}", line),
+                    Lng::En => format!("Edge-Cycle detected on line: {}", line)
+                }
+            }
+            Self::DuplicatedNodeNameVoilation { e1_line, e2_line } => {
+                match lang {
+                    Lng::De => format!("Knoten mit Emissionsnamen (auf Zeile {}) kollidiert mit Knoten gleichen Quellnamens (auf Zeile {})!", e1_line, e2_line),
+                    Lng::En => format!("Node with emission name (from line {}) collides with with same node source name (on line {})!", e1_line, e2_line)
+                }
+            }
+            Self::EdgeToLeafVoilation { e1_line, e2_line } => {
+                match lang {
+                    Lng::De => format!("Knoten ohne Emission (auf Zeile {}) darf nicht mit Knoten mit Emissionswert (auf Zeile {}) verlinkt sein!", e1_line, e2_line),
+                    Lng::En => format!("Node without emission (on line {}) may not link to node with emission value (on line {})!", e1_line, e2_line)
+                }
+            }
+            Self::NodeToNodeLinkVoilation { e1_line, e2_line } => {
+                match lang {
+                    Lng::De => format!("Knoten mit Emission (auf Zeile {}) darf nicht mit Knoten mit Emission (auf Zeile {}) verlinkt sein!", e1_line, e2_line),
+                    Lng::En => format!("Node with emission (on line {}) may not link to node with emission (on line {})!", e1_line, e2_line)
+                }
+            }
+            Self::EdgeCycleVoilation { name, line } => {
+                match lang {
+                    Lng::De => format!("Zyklus für {} erkannt (eine Zeile(n) {})", name, line),
+                    Lng::En => format!("Found cycle for {} (one line(s) {})", name, line)
+                }
+            }
+            Self::DetachedNodesVoilation { lines } => {
+                match lang {
+                    Lng::De => format!("Nicht korrekt verbundene Knoten gefunden (auf Zeile(n) {})", lines),
+                    Lng::En => format!("Found nodes which are not connected properly (one line(s) {})", lines)
+                }
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
 pub enum CustomEmissionParserError {
-    //#[error("Can't use reserved name {} on line: {} as source name", name, line)]
-    #[error("Reservierter Name {} auf Zeile: {} als Quellname", name, line)]
     ReservedNameVoilation { name: String, line: usize },
-
-    #[error(
-       //"Edges are not unique: Edge (from line {}) and Edge (from line {}) need to be different",
-       "Kantennamen sind nicht eindeutig: Kante (auf Zeile {}) und Kante (auf Zeile {}) müssen sich unterscheiden",
-       e1_line,
-       e2_line
-   )]
     EdgeNotUniqueVoilation { e1_line: usize, e2_line: usize },
-
-    //#[error("Edge-Cycle detected on line: {}", line)]
-    #[error("Kanten-Zyklus erkannt auf Zeile: {}", line)]
     InsideEdgeCycleVoilation { line: usize },
-
-    //#[error("Node with emission name (from line {}) collides with with same node source name (on line {})!", e1_line, e2_line)]
-    #[error("Knoten mit Emissionsnamen (auf Zeile {}) kollidiert mit Knoten gleichen Quellnamens (auf Zeile {})!", e1_line, e2_line)]
     DuplicatedNodeNameVoilation { e1_line: usize, e2_line: usize },
-
-    #[error(
-       //"Node without emission (on line {}) may not link to node with emission value (on line {})!",
-       "Knoten ohne Emission (auf Zeile {}) darf nicht mit Knoten mit Emissionswert (auf Zeile {}) verlinkt sein!",
-       e1_line,
-       e2_line
-   )]
     EdgeToLeafVoilation { e1_line: usize, e2_line: usize },
-
-    #[error(
-       //"Node with emission (on line {}) may not link to node with emission (on line {})!",
-       "Knoten mit Emission (auf Zeile {}) darf nicht mit Knoten mit Emission (auf Zeile {}) verlinkt sein!",
-       e1_line,
-       e2_line
-   )]
     NodeToNodeLinkVoilation { e1_line: usize, e2_line: usize },
-
-    //#[error("Found cycle for {} (one line(s) {})", name, line)]
-    #[error("Zyklus für {} erkannt (eine Zeile(n) {})", name, line)]
     EdgeCycleVoilation { name: String, line: usize },
-
-    //#[error("Found nodes which are not connected properly (one line(s) {})", lines)]
-    #[error("Nicht korrekt verbundene Knoten gefunden (auf Zeile(n) {})", lines)]
     DetachedNodesVoilation { lines: String },
 }
 

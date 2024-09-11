@@ -18,7 +18,7 @@ fn internal_node_names() -> Vec<String> {
 #[test]
 fn empty() {
     let input = "";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![];
     assert_eq!(output.as_slice(), q.as_slice());
 }
@@ -26,7 +26,7 @@ fn empty() {
 #[test]
 fn empty_spaces() {
     let input = "  ";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![];
     assert_eq!(output.as_slice(), q.as_slice());
 }
@@ -39,7 +39,7 @@ fn empty_spaces__() {
 #[test]
 fn empty_spaces_tab() {
     let input = " \t ";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![];
     assert_eq!(output.as_slice(), q.as_slice());
 }
@@ -47,7 +47,7 @@ fn empty_spaces_tab() {
 #[test]
 fn edge_undefined() {
     let input = "\"asdf1\" \"asdf2\"";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![CustomEmission::EdgeUndefined(EdgeUndefined {
         line: 1,
         source: "asdf1".to_string(),
@@ -59,7 +59,7 @@ fn edge_undefined() {
 #[test]
 fn edge_undefined_umlauts() {
     let input = "\"H₂ Generator\"   \"fällmittel\"";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![CustomEmission::EdgeUndefined(EdgeUndefined {
         line: 1,
         source: "H₂ Generator".to_string(),
@@ -71,7 +71,7 @@ fn edge_undefined_umlauts() {
 #[test]
 fn edge_undefined_other() {
     let input = "\"H₂ Generator\"   \"Midtbø\"";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![CustomEmission::EdgeUndefined(EdgeUndefined {
         line: 1,
         source: "H₂ Generator".to_string(),
@@ -83,7 +83,7 @@ fn edge_undefined_other() {
 #[test]
 fn edge_defined() {
     let input = "\"asdf1\" 1,1 \"asdf2\"";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![CustomEmission::EdgeDefined(EdgeDefined {
         line: 1,
         source: "asdf1".to_string(),
@@ -96,7 +96,7 @@ fn edge_defined() {
 #[test]
 fn edge_defined_umlauts() {
     let input = "\"H₂ Generator\" 1,1 \"fällmittel\"";
-    let output = parse_emission(input, NumberFormat::DE).unwrap();
+    let output = parse_emission(input, Lng::De).unwrap();
     let q: Vec<CustomEmission> = vec![CustomEmission::EdgeDefined(EdgeDefined {
         line: 1,
         source: "H₂ Generator".to_string(),
@@ -109,35 +109,35 @@ fn edge_defined_umlauts() {
 #[test]
 fn fail1() {
     let input = "\"asdf1\" aaa";
-    let output = parse_emission(input, NumberFormat::DE);
+    let output = parse_emission(input, Lng::De);
     assert!(output.is_err());
 }
 
 #[test]
 fn fail2() {
     let input = "\"asdf1\" 1,1 aaa";
-    let output = parse_emission(input, NumberFormat::DE);
+    let output = parse_emission(input, Lng::De);
     assert!(output.is_err());
 }
 
 #[test]
 fn fail3() {
     let input = "\"asdf1\" 1,1";
-    let output = parse_emission(input, NumberFormat::DE);
+    let output = parse_emission(input, Lng::De);
     assert!(output.is_err());
 }
 
 #[test]
 fn fail4() {
     let input = "a 1,1 a";
-    let output = parse_emission(input, NumberFormat::DE);
+    let output = parse_emission(input, Lng::De);
     assert!(output.is_err());
 }
 
 #[test]
 fn fail5() {
     let input = "a a";
-    let output = parse_emission(input, NumberFormat::DE);
+    let output = parse_emission(input, Lng::De);
     assert!(output.is_err());
 }
 
@@ -171,10 +171,14 @@ fn edge_defined_de_floats_de() {
     ];
     for f in floats {
         let input = format!("\"a\" {f} \"b\"");
-        let number_format = NumberFormat::DE;
         // println!("input {input}");
-        let output = parse_emission(&input, NumberFormat::DE).unwrap();
-        let v = number_format.parse_number(f).unwrap();
+        let lang = Lng::De;
+        let output = parse_emission(&input, lang).unwrap();
+        let normalized_value = match lang {
+            Lng::De => f.replace('.', "").replace(',', "."),
+            Lng::En => f.replace(',', ""),
+        };
+        let v = normalized_value.parse::<f64>().unwrap();
         let edges = vec![CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
             source: "a".to_string(),
@@ -189,7 +193,7 @@ fn edge_defined_de_floats_de() {
 #[test]
 fn edge_defined_us() {
     let input = "\"asdf1\" 1.1 \"asdf2\"";
-    let output = parse_emission(input, NumberFormat::US).unwrap();
+    let output = parse_emission(input, Lng::En).unwrap();
     let edges = vec![CustomEmission::EdgeDefined(EdgeDefined {
         line: 1,
         source: "asdf1".to_string(),
@@ -231,9 +235,8 @@ fn edge_defined_de_floats_us() {
     for f in floats {
         let input = format!("\"a\" {f} \"b\"");
         // println!("input {input}");
-        let number_format = NumberFormat::US;
-        let output = parse_emission(&input, number_format).unwrap();
-        let v = number_format.parse_number(f).unwrap();
+        let output = parse_emission(&input, Lng::En).unwrap();
+        let v = f.parse::<f64>().unwrap();
 
         let edges = vec![CustomEmission::EdgeDefined(EdgeDefined {
             line: 1,
