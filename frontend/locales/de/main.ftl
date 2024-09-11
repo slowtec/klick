@@ -82,7 +82,7 @@ sensitivity-fossil-co2-4         = Diese Anteile an fossilem CO₂ könnte z.B. 
 sensitivity-ch4-chp-aria = Ein Balkendiagramm welches verschiedene Szenarien zur Berechnung von Methanemissionen grafisch aufzeigt und gleichzeitig zur Auswahl eines dieser Szenarien verwendet wird.
 sensitivity-ch4-chp-infobox-1-text = BHKW weisen je nach Modell und Alter unterschiedliche Methanschlupfe auf
 sensitivity-ch4-chp-infobox-1-cite-source = Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)
-sensitivity-ch4-chp-infobox-1-cite = "Auch bei der Gasverwertung entstehen prozessbedingte Methan-Emissionen: BHKW-Motoren arbeiten nach dem Vier-Takt-Prinzip. Dabei sind zum Gasaustausch für eine kurze Zeit beim Übergang vom vierten (Ausstoßen) in den ersten (Ansaugen) Takt sowohl das Einlass- als auch das Auslassventil (teilweise) geöffnet. Durch diese Überschneidung können unter Umständen geringe Mengen unverbrannten Faulgases in den Abgasstrom gelangen. Ottomotoren haben dabei einen Methanschlupf im Bereich von 1 % bis 2 % Zündstrahlmotoren (sind für Faulgas nicht relevant) liegen höher in der Größenordnung von 2 % bis 3 %. Mikrogasturbinen (typische Leistungsklasse von 30 kW bis 65 kW) können dagegen einen Methanschlupf < 1 % erreichen (STMWI 2016).
+sensitivity-ch4-chp-infobox-1-cite = Auch bei der Gasverwertung entstehen prozessbedingte Methan-Emissionen: BHKW-Motoren arbeiten nach dem Vier-Takt-Prinzip. Dabei sind zum Gasaustausch für eine kurze Zeit beim Übergang vom vierten (Ausstoßen) in den ersten (Ansaugen) Takt sowohl das Einlass- als auch das Auslassventil (teilweise) geöffnet. Durch diese Überschneidung können unter Umständen geringe Mengen unverbrannten Faulgases in den Abgasstrom gelangen. Ottomotoren haben dabei einen Methanschlupf im Bereich von 1 % bis 2 % Zündstrahlmotoren (sind für Faulgas nicht relevant) liegen höher in der Größenordnung von 2 % bis 3 %. Mikrogasturbinen (typische Leistungsklasse von 30 kW bis 65 kW) können dagegen einen Methanschlupf < 1 % erreichen (STMWI 2016).
 
 sensitivity-ch4-chp-p-1 = Mit der folgenden Auswahl bzw. Eingabe eines eigenen Emissionsfaktors (EF) für das BHKW Ihrer Kläranlage kann Ihre Klimabilanz bezüglich der Methanemissionen verfeinert abgeschätzt werden:
 sensitivity-ch4-chp-scenario = Es ist das Szenario
@@ -112,7 +112,7 @@ ch4_emissions_open_sludge_storage_1-cite-text = Auch bei ordnungsgemäßem Betri
 # n2o_emissions.rs
 
 sensitivity-n2o = Lachgasemissionen
-n2o_emissions-h3-1 = "Lachgasemissionen bei der biologischen Reinigungsstufe"
+n2o_emissions-h3-1 = Lachgasemissionen bei der biologischen Reinigungsstufe
 n2o_emissions-p-1 = Lachgasemissionen tragen wesentlich zum gesamten Treibhausgaspotenzial von Kläranlagen bei. Die erste Abschätzung dieses Potenzials bei der Datenerhebung erfolgt mit einem Emissionsfaktor für Lachgas (N₂O-EF) nach Parravicini et al. (2016, TU Wien), Wert siehe erster Balken im untenstehenden Diagramm.
 n2o_emissions-p-2 = Da das Auftreten von N₂O-Emissionen in der Regel anlagenspezifisch ist  <b> [N₂O Anlage] </b>, bietet das KlicK-Tool weitere Auswertungsszenarien für Lachgasemissionen an. Diese sind im folgenden Balkendiagramm dargestellt, einschließlich der daraus resultierenden Lachgasemissionen [als CO₂-Äquivalente].
 n2o_emissions-p-3 = Durch Anklicken der einzelnen Balken im Diagramm wird das jeweilige Szenario für die untenstehende Gesamtbilanz (im Sankey-Diagramm) verwendet.

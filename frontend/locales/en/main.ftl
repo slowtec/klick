@@ -61,7 +61,7 @@ sensitivity-custom-emissions-description = Extension of emissions using your own
 
 sensitivity-ch4-chp              = Methane emissions from CHP
 sensitivity-sludge-storage       = Methane emissions from sludge storage
-sensitivity-fossil-co2           = Fossile CO₂-Emissionen from sewage
+sensitivity-fossil-co2           = Fossil CO₂-Emissionen from sewage
 
 # fossil_co2_emissions.rs
 sensitivity-fossil-co2-1         = The majority of the CO₂ released from wastewater is of biogenic origin. This CO₂ is therefore considered climate-neutral and is not included in the greenhouse gas balance. A smaller part of the CO₂ is due to fossil and synthetic compounds. Estimates assume that this can account for up to 5–10% of the organic load in municipal wastewater (Law et al. 2013). For wastewater with high proportions of commercial/industrial dischargers (> 45%), the fossil CO₂ load can be even higher (UBA 2022).
@@ -135,7 +135,7 @@ recommenation-excess-energy      = Excess Energy Emissions
 recommenation-excess-energy-p-1 = <b>Energy saving measures</b> and <b>Renewable energies</b> can make a significant contribution to reducing indirect emissions and achieving energy self-sufficiency. In order to demonstrate the positive effects of increasing renewable energies: photovoltaics (PV), wind, hydropower and/or waste heat utilization, various scenarios can be assessed below. If you do not want to assess the respective technology, you can leave the respective field blank.
 recommenation-excess-energy-p-2-1 = Your sewage treatment plant is energy neutral. The sewage treatment plant saves
 recommenation-excess-energy-p-2-2 = t CO₂-eq./a ein.
-recommenation-excess-energy-p-3-1 = Your sewage treatment plant still requires external power (supplier), which
+recommenation-excess-energy-p-3-1 = Your sewage treatment plant still requires external power (supplier), for which
 recommenation-excess-energy-p-3-2 = t CO₂-eq./a of energy-related emissions are generated.
 
 # leak_test.rs
