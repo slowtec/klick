@@ -5,13 +5,11 @@ use klick_boundary::FormData;
 use klick_domain::{InputValueId as Id, Value};
 
 use crate::pages::tool::{Card, Cite, InfoBox, DWA_MERKBLATT_URL};
-use klick_presenter::Lng;
 
 #[component]
 pub fn CH4EmissionsOpenSludgeStorage(
     accessibility_always_show_option: Option<RwSignal<bool>>,
     form_data: RwSignal<FormData>,
-    lang: Lng,
 ) -> impl IntoView {
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {

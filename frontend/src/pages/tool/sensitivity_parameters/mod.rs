@@ -87,7 +87,6 @@ pub fn SensitivityParameters(
         <CH4EmissionsOpenSludgeStorage
           form_data
           accessibility_always_show_option
-          lang
         />
         <FossilCO2Emissions
           form_data
