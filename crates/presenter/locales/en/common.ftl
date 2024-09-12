@@ -25,87 +25,50 @@ fossil-energy-saving = Fossil energy saving
 process-energy-saving = Process energy saving
 
 description-project-name = In this field, you can enter a name for your project. In the <b>logged in</b> version, the project name is used to save your inputs/results under the "Projects" tab. If you are <b>not logged in</b>, the project name is only saved on your hard drive and processed in your local browser. For more information on data processing please see the <b>FAQs</b>.
-
 description-plant-name = The indication of name and/or location is voluntary. Alternatively, a placeholder can be entered for the field. All entries can only be viewed or saved by you (not UTBW).
-
 description-connected-inhabitants = Expansion size of your sewage treatment plant in population equivalents (EW) as the sum of the connected inhabitants (E) and the industrial inhabitant equivalents (EGW).
-
 description-wastewater-quantity = The annual (a) amount of wastewater in cubic meters (m³) in the inflow of your sewage treatment plant.
-
 description-cod = The annual average chemical oxygen demand (COD) of the wastewater in the inflow of your sewage treatment plant in milligrams (mg) per liter (L).
-
 description-total-nitrogen = The total nitrogen content of the wastewater (TN) in the inflow of your sewage treatment plant in milligrams (mg) per liter (L) as an annual average.
-
 description-toc = The annual average total organic carbon (TOC) of the wastewater in the inflow of your sewage treatment plant in milligrams (mg) per liter (L).<br> If you do not have a value for TOC then please leave this field blank (Note: for calculating fossil CO₂ emissions, COD will be used in this case).
-
 description-total-nitrogen-effluent = The total nitrogen content of the wastewater (TN) in the effluent of your sewage treatment plant in milligrams (mg) per liter (L) as an annual average.
-
 description-cod-effluent = The annual average chemical oxygen demand (COD) of the wastewater in the effluent of your sewage treatment plant in milligrams (mg) per liter (L).
-
 description-total-power-consumption = The total power consumption of your sewage treatment plant in kilowatt-hours (kWh) per year (a).
-
 description-self-generated-power = Amount of self-generated power in kilowatt-hours (kWh) per year (a). If no self-generated power is produced, please leave this field blank.
-
 description-emission-factor-electricity-mix = Indication of the emission factor of the externally sourced electricity mix in grams (g) CO₂ per kilowatt-hour (kWh). If this value is not available, please leave the reference value.
-
 description-gas-supply = Amount of gas (natural gas/biogas) in cubic meters (m³) per year (a) sourced from an external supplier. If no gas is sourced externally at your sewage treatment plant, please leave this field blank.
-
 description-biogas-purchase = If your sewage treatment plant purchases biogas from external sources, please tick this field.
-
 description-heating-oil-purchase = Amount of heating oil (e.g., for heating buildings) in liters (L) per year (a) sourced from an external supplier. If no heating oil is sourced externally at your sewage treatment plant, please leave this field blank.
-
 description-sewage-gas-produced = The amount of sewage gas produced at your sewage treatment plant in cubic meters (m³) per year (a). If no sewage gas is produced at your sewage treatment plant, please leave this field blank.
-
 description-methane-percentage = The methane content of the sewage gas produced at your sewage treatment plant in percent (%). If no sewage gas is produced at your sewage treatment plant, please leave this field blank.
-
 description-number-of-digesters = If there is a digestion process at your sewage treatment plant, please enter the number of digesters. If not, please leave this field blank or enter 0.
-
 description-sludge-treatment-bags-are-open = If the sludge pockets of the digester(s) of your sewage treatment plant are closed and not open to the ambient air, please check this box.
-
 description-sludge-treatment-storage-containers-are-open = If the sludge storage tanks of your sewage treatment plant are tightly covered, please click this box.
-
 description-mass-dewatered = The amount of sewage sludge in tons (t) that has to be disposed of.
-
 description-distance = Distance from your sewage treatment plant to the disposal site of sewage sludge in kilometers (km). The information is independent of the disposal method (e.g., incineration) or the transport form (e.g., dewatered/dry). If sewage sludge is disposed of at your sewage treatment plant, please leave this field blank.
-
 description-total-nitrogen-side-stream = If there is a sidestream treatment process at your sewage treatment plant, please enter its annual total nitrogen amount in tons [t/a]. If not, please leave this field blank or enter 0.
-
 description-ferrous-chloride = Amount of ferric chloride (FeCl3) used per year (a) in tons (t).
-
 description-ferrous-chloride-sulfate = Amount of ferric chloride sulfate (FeClSO4) used per year (a) in tons (t).
-
 description-calcium-hydroxide = Amount of calcium hydroxide (Ca(OH)2) used per year (a) in tons (t).
-
 description-synthetic-polymers = Amount of synthetic polymers used per year (a) in tons (t).
-
 description-sensitivity-sludge-bags-custom-factor = Using this input field, you can enter a value for the EF CH₄ (e.g. based on your own estimate or a measurement campaign).
-
 description-sensitivity-sludge-storage-custom-factor = Using this input field, you can enter a value for the EF CH₄ (e.g. based on your own estimate or a measurement campaign).
-
 description-sensitivity-CH4-chp-custom-factor = Using this input field, you can enter a value for the EF CH₄ (e.g. based on your own estimate or a measurement campaign).
-
 description-sensitivity-CO2-fossil-custom-factor = Using this input field, you can enter a value for the EF CO₂ (e.g. based on your own estimate or a measurement campaign).
-
 description-sensitivity-N2O-custom-factor = You can use this input field to enter a value for the EF N₂O (e.g. based on your own estimate or a measurement campaign). You must then manually select the option (User-defined) to use the entered value.
-
 description-sensitivity-N2O-side-stream-factor = Using this input field, you can enter a value for the EF of the process water treatment (e.g. based on your own estimate or a measurement campaign).
-
+description-sensitivity-N2O-calculation-method = Select the calculation method for the EF N₂O.
+description-sensitivity-ch4-chp-calculation-method = Select the calculation method for the EF CH₄.
 description-district-heating = Amount of heat supplied to district heating networks in kilowatt-hours (kWh) per year (a).
-
 description-scenario-estimated-self-water-energy-usage = Estimated self-use of hydropower capacity in percent (%).
-
 description-water-energy-expansion = Expansion of hydropower capacity in kilowatt-hours (kWh) per year (a).
-
 description-scenario-estimated-self-wind-energy-usage = Estimated self-use of wind power output in percent (%).
-
 description-wind-energy-expansion = Expansion of wind power capacity in kilowatt-hours (kWh) per year (a).
-
 description-scenario-estimated-self-photovolatic-usage = Estimated self-use of photovoltaic power in percent (%).
-
 description-photovoltaic-energy-expansion = Expansion of photovoltaic capacity in kilowatt-hours (kWh) per year (a).
-
 description-fossil-energy-saving = Estimated energy savings for fossil energy carriers (e.g., heating oil/natural gas) in percent (%).
-
 description-process-energy-saving = Estimated energy savings for sewage treatment plant processes in percent (%).
-
 description-additional-custom-emissions = Using this form field, custom emissions can be added to the Sankey diagram.
+description-recommendation-sludge-treatment-bags-are-open = Sludge bags are open.
+description-recommendation-sludge-treatment-storage-containers-are-open = Sludge storage is open.
+description-recommendation-recommendation-n2o-side-stream-cover-is-open = Side stream cover is open.
