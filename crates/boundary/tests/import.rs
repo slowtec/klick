@@ -590,11 +590,4 @@ fn import_v9() {
             .cloned(),
         Some(Value::bool(true))
     );
-
-    assert_eq!(
-        form_data
-            .get(&In::RecommendationN2OSideStreamFactor)
-            .cloned(),
-        Some(Value::factor(101.4))
-    );
 }

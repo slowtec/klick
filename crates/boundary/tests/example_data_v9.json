@@ -30,7 +30,6 @@
     "sensitivity-n2o-side-stream-factor": 5.1,
     "sensitivity-co2-fossil-custom-factor": 4.3,
     "sensitivity-n2o-calculation-method": "ipcc2019",
-    "recommendation-n2o-side-stream-cover-is-open": true,
-    "recommendation-n2o-side-stream-factor": 101.4
+    "recommendation-n2o-side-stream-cover-is-open": true
   }
 }
