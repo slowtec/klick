@@ -170,9 +170,7 @@ impl From<v9::InputValueId> for domain::InputValueId {
             In::ProfileOnSitePowerGeneration => Self::ProfileOnSitePowerGeneration,
             In::ProfileEmissionFactorElectricityMix => Self::ProfileEmissionFactorElectricityMix,
             In::ProfileHeatingOil => Self::ProfileHeatingOil,
-            In::ProfileSideStreamTreatmentTotalNitrogen => {
-                Self::ProfileSideStreamTreatmentTotalNitrogen
-            }
+            In::ProfileSideStreamTotalNitrogen => Self::ProfileSideStreamTotalNitrogen,
             In::ProfileOperatingMaterialFeCl3 => Self::ProfileOperatingMaterialFeCl3,
             In::ProfileOperatingMaterialFeClSO4 => Self::ProfileOperatingMaterialFeClSO4,
             In::ProfileOperatingMaterialCaOH2 => Self::ProfileOperatingMaterialCaOH2,
@@ -187,15 +185,13 @@ impl From<v9::InputValueId> for domain::InputValueId {
             In::SensitivityCO2FossilCustomFactor => Self::SensitivityCO2FossilCustomFactor,
             In::SensitivitySludgeBagsCustomFactor => Self::SensitivitySludgeBagsCustomFactor,
             In::SensitivitySludgeStorageCustomFactor => Self::SensitivitySludgeStorageCustomFactor,
-            In::ProfileSludgeTreatmentBagsAreOpen => Self::ProfileSludgeTreatmentBagsAreOpen,
-            In::ProfileSludgeTreatmentStorageContainersAreOpen => {
-                Self::ProfileSludgeTreatmentStorageContainersAreOpen
+            In::ProfileSludgeBagsAreOpen => Self::ProfileSludgeBagsAreOpen,
+            In::ProfileSludgeStorageContainersAreOpen => {
+                Self::ProfileSludgeStorageContainersAreOpen
             }
-            In::ProfileSludgeTreatmentDisposal => Self::ProfileSludgeTreatmentDisposal,
-            In::ProfileSludgeTreatmentTransportDistance => {
-                Self::ProfileSludgeTreatmentTransportDistance
-            }
-            In::ProfileSludgeTreatmentDigesterCount => Self::ProfileSludgeTreatmentDigesterCount,
+            In::ProfileSludgeDisposal => Self::ProfileSludgeDisposal,
+            In::ProfileSludgeTransportDistance => Self::ProfileSludgeTransportDistance,
+            In::ProfileSludgeDigesterCount => Self::ProfileSludgeDigesterCount,
             In::RecommendationSludgeBagsAreOpen => Self::RecommendationSludgeBagsAreOpen,
             In::RecommendationSludgeStorageContainersAreOpen => {
                 Self::RecommendationSludgeStorageContainersAreOpen
@@ -248,9 +244,7 @@ impl From<domain::InputValueId> for v9::InputValueId {
             In::ProfileOnSitePowerGeneration => Self::ProfileOnSitePowerGeneration,
             In::ProfileEmissionFactorElectricityMix => Self::ProfileEmissionFactorElectricityMix,
             In::ProfileHeatingOil => Self::ProfileHeatingOil,
-            In::ProfileSideStreamTreatmentTotalNitrogen => {
-                Self::ProfileSideStreamTreatmentTotalNitrogen
-            }
+            In::ProfileSideStreamTotalNitrogen => Self::ProfileSideStreamTotalNitrogen,
             In::ProfileOperatingMaterialFeCl3 => Self::ProfileOperatingMaterialFeCl3,
             In::ProfileOperatingMaterialFeClSO4 => Self::ProfileOperatingMaterialFeClSO4,
             In::ProfileOperatingMaterialCaOH2 => Self::ProfileOperatingMaterialCaOH2,
@@ -265,15 +259,13 @@ impl From<domain::InputValueId> for v9::InputValueId {
             In::SensitivityCO2FossilCustomFactor => Self::SensitivityCO2FossilCustomFactor,
             In::SensitivitySludgeBagsCustomFactor => Self::SensitivitySludgeBagsCustomFactor,
             In::SensitivitySludgeStorageCustomFactor => Self::SensitivitySludgeStorageCustomFactor,
-            In::ProfileSludgeTreatmentBagsAreOpen => Self::ProfileSludgeTreatmentBagsAreOpen,
-            In::ProfileSludgeTreatmentStorageContainersAreOpen => {
-                Self::ProfileSludgeTreatmentStorageContainersAreOpen
+            In::ProfileSludgeBagsAreOpen => Self::ProfileSludgeBagsAreOpen,
+            In::ProfileSludgeStorageContainersAreOpen => {
+                Self::ProfileSludgeStorageContainersAreOpen
             }
-            In::ProfileSludgeTreatmentDisposal => Self::ProfileSludgeTreatmentDisposal,
-            In::ProfileSludgeTreatmentTransportDistance => {
-                Self::ProfileSludgeTreatmentTransportDistance
-            }
-            In::ProfileSludgeTreatmentDigesterCount => Self::ProfileSludgeTreatmentDigesterCount,
+            In::ProfileSludgeDisposal => Self::ProfileSludgeDisposal,
+            In::ProfileSludgeTransportDistance => Self::ProfileSludgeTransportDistance,
+            In::ProfileSludgeDigesterCount => Self::ProfileSludgeDigesterCount,
             In::RecommendationSludgeBagsAreOpen => Self::RecommendationSludgeBagsAreOpen,
             In::RecommendationSludgeStorageContainersAreOpen => {
                 Self::RecommendationSludgeStorageContainersAreOpen

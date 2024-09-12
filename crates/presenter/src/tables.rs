@@ -137,11 +137,11 @@ pub fn plant_profile_as_table(
                 }
             },
             vec![
-                In::ProfileSludgeTreatmentDigesterCount,
-                In::ProfileSludgeTreatmentDisposal,
-                In::ProfileSludgeTreatmentTransportDistance,
-                In::ProfileSludgeTreatmentBagsAreOpen,
-                In::ProfileSludgeTreatmentStorageContainersAreOpen,
+                In::ProfileSludgeDigesterCount,
+                In::ProfileSludgeDisposal,
+                In::ProfileSludgeTransportDistance,
+                In::ProfileSludgeBagsAreOpen,
+                In::ProfileSludgeStorageContainersAreOpen,
             ],
         ),
         (
@@ -151,7 +151,7 @@ pub fn plant_profile_as_table(
                     Lng::En => "Process water treatment",
                 }
             },
-            vec![In::ProfileSideStreamTreatmentTotalNitrogen],
+            vec![In::ProfileSideStreamTotalNitrogen],
         ),
         (
             {

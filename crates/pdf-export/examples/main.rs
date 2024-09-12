@@ -56,17 +56,11 @@ fn project_example_data() -> HashMap<Id, Value> {
             Value::grams_per_kilowatthour(420.0),
         ),
         (In::ProfileHeatingOil, Value::liters(0.0)),
-        (In::ProfileSludgeTreatmentBagsAreOpen, Value::bool(true)),
-        (
-            In::ProfileSludgeTreatmentStorageContainersAreOpen,
-            Value::bool(true),
-        ),
-        (In::ProfileSludgeTreatmentDisposal, Value::tons(3016.5)),
-        (
-            In::ProfileSludgeTreatmentTransportDistance,
-            Value::kilometers(150.0),
-        ),
-        (In::ProfileSludgeTreatmentDigesterCount, Value::count(3)),
+        (In::ProfileSludgeBagsAreOpen, Value::bool(true)),
+        (In::ProfileSludgeStorageContainersAreOpen, Value::bool(true)),
+        (In::ProfileSludgeDisposal, Value::tons(3016.5)),
+        (In::ProfileSludgeTransportDistance, Value::kilometers(150.0)),
+        (In::ProfileSludgeDigesterCount, Value::count(3)),
         (In::RecommendationSludgeBagsAreOpen, Value::bool(true)),
         (
             In::RecommendationSludgeStorageContainersAreOpen,

@@ -88,24 +88,24 @@ fn import_v1() {
     );
 
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentBagsAreOpen),
+        data.get(&In::ProfileSludgeBagsAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeBagsCustomFactor), None);
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentStorageContainersAreOpen),
+        data.get(&In::ProfileSludgeStorageContainersAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeStorageCustomFactor), None);
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentDisposal),
+        data.get(&In::ProfileSludgeDisposal),
         Some(&Value::tons(3687.6))
     );
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentTransportDistance),
+        data.get(&In::ProfileSludgeTransportDistance),
         Some(&Value::kilometers(47.0))
     );
-    assert_eq!(data.get(&In::ProfileSludgeTreatmentDigesterCount), None);
+    assert_eq!(data.get(&In::ProfileSludgeDigesterCount), None);
 
     assert_eq!(
         data.get(&In::ProfileOperatingMaterialFeCl3),
@@ -208,24 +208,24 @@ fn import_v2() {
     );
 
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentBagsAreOpen),
+        data.get(&In::ProfileSludgeBagsAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeBagsCustomFactor), None);
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentStorageContainersAreOpen),
+        data.get(&In::ProfileSludgeStorageContainersAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(data.get(&In::SensitivitySludgeStorageCustomFactor), None);
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentDisposal),
+        data.get(&In::ProfileSludgeDisposal),
         Some(&Value::tons(3687.6))
     );
     assert_eq!(
-        data.get(&In::ProfileSludgeTreatmentTransportDistance),
+        data.get(&In::ProfileSludgeTransportDistance),
         Some(&Value::kilometers(47.0))
     );
-    assert_eq!(data.get(&In::ProfileSludgeTreatmentDigesterCount), None);
+    assert_eq!(data.get(&In::ProfileSludgeDigesterCount), None);
 
     assert_eq!(
         data.get(&In::ProfileOperatingMaterialFeCl3),
@@ -289,14 +289,14 @@ fn import_v5() {
     assert_eq!(project.get(&In::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
         project
-            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
+            .get(&In::ProfileSludgeBagsAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
     );
     assert_eq!(
         project
-            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeStorageContainersAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
@@ -321,14 +321,14 @@ fn import_v6() {
     assert_eq!(project.get(&In::SensitivityCH4ChpCustomFactor), None);
     assert_eq!(
         project
-            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
+            .get(&In::ProfileSludgeBagsAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
     );
     assert_eq!(
         project
-            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeStorageContainersAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
@@ -383,13 +383,13 @@ fn import_v8() {
     );
 
     assert_eq!(
-        form_data.get(&In::ProfileSideStreamTreatmentTotalNitrogen),
+        form_data.get(&In::ProfileSideStreamTotalNitrogen),
         Some(&Value::tons(101.4))
     );
 
     assert_eq!(
         form_data
-            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
+            .get(&In::ProfileSludgeBagsAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
@@ -397,17 +397,17 @@ fn import_v8() {
 
     assert_eq!(
         form_data
-            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeStorageContainersAreOpen)
             .cloned()
             .map(Value::as_bool_unchecked),
         Some(true)
     );
     assert_eq!(
-        form_data.get(&In::ProfileSludgeTreatmentBagsAreOpen),
+        form_data.get(&In::ProfileSludgeBagsAreOpen),
         Some(&Value::bool(true))
     );
     assert_eq!(
-        form_data.get(&In::ProfileSludgeTreatmentStorageContainersAreOpen),
+        form_data.get(&In::ProfileSludgeStorageContainersAreOpen),
         Some(&Value::bool(true))
     );
 }
@@ -504,42 +504,34 @@ fn import_v9() {
     );
 
     assert_eq!(
-        form_data
-            .get(&In::ProfileSideStreamTreatmentTotalNitrogen)
-            .cloned(),
+        form_data.get(&In::ProfileSideStreamTotalNitrogen).cloned(),
         Some(Value::tons(101.4))
     );
 
     assert_eq!(
-        form_data
-            .get(&In::ProfileSludgeTreatmentBagsAreOpen)
-            .cloned(),
+        form_data.get(&In::ProfileSludgeBagsAreOpen).cloned(),
         Some(Value::bool(true))
     );
 
     assert_eq!(
         form_data
-            .get(&In::ProfileSludgeTreatmentStorageContainersAreOpen)
+            .get(&In::ProfileSludgeStorageContainersAreOpen)
             .cloned(),
         Some(Value::bool(true))
     );
 
     assert_eq!(
-        form_data.get(&In::ProfileSludgeTreatmentDisposal).cloned(),
+        form_data.get(&In::ProfileSludgeDisposal).cloned(),
         Some(Value::tons(3016.5))
     );
 
     assert_eq!(
-        form_data
-            .get(&In::ProfileSludgeTreatmentTransportDistance)
-            .cloned(),
+        form_data.get(&In::ProfileSludgeTransportDistance).cloned(),
         Some(Value::kilometers(150.0))
     );
 
     assert_eq!(
-        form_data
-            .get(&In::ProfileSludgeTreatmentDigesterCount)
-            .cloned(),
+        form_data.get(&In::ProfileSludgeDigesterCount).cloned(),
         Some(Value::count(3))
     );
 

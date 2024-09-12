@@ -107,7 +107,7 @@ spec! {
             optional;
             default = 0.0;
         },
-        ProfileSideStreamTreatmentTotalNitrogen {
+        ProfileSideStreamTotalNitrogen {
             unit = Tons;
             optional;
             default = 0.0;
@@ -132,28 +132,28 @@ spec! {
             unit = Tons;
             max = 50000.0;
         },
-        ProfileSludgeTreatmentBagsAreOpen {
+        ProfileSludgeBagsAreOpen{
             unit = bool;
             optional;
             default = true;
         },
-        ProfileSludgeTreatmentStorageContainersAreOpen {
+        ProfileSludgeStorageContainersAreOpen {
             unit = bool;
             optional;
             default = true;
         },
-        ProfileSludgeTreatmentDisposal {
+        ProfileSludgeDisposal {
             unit = Tons;
             max = 500_000.0;
         },
-        ProfileSludgeTreatmentTransportDistance {
+        ProfileSludgeTransportDistance {
             unit = Kilometers;
             optional;
             min = 0.0;
             max = 2000.0;
             default = 0.0;
         },
-        ProfileSludgeTreatmentDigesterCount {
+        ProfileSludgeDigesterCount {
             unit = Count;
             optional;
             min = 0.0;

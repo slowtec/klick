@@ -101,13 +101,13 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                 Lng::En => Some("Sewage sludge treatment"),
             },
             fields: vec![
-                create_field(write, read, Id::ProfileSludgeTreatmentDigesterCount),
+                create_field(write, read, Id::ProfileSludgeDigesterCount),
                 Field {
                     label: RwSignal::new(move_tr!("sludge-bags-are-closed").get()).into(), // TODO: Invert label => closed/open
                     description: Some(move_tr!("sludge-bags-are-closed-info").get()),
                     required: false,
                     field_type: {
-                        let field_id = Id::ProfileSludgeTreatmentBagsAreOpen;
+                        let field_id = Id::ProfileSludgeBagsAreOpen;
                         FieldType::Bool {
                             initial_value: None,
                             on_change: Callback::new(move |v: bool| {
@@ -131,7 +131,7 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                     description: Some(move_tr!("sludge-storage-is-closed-info").get()),
                     required: false,
                     field_type: {
-                        let field_id = Id::ProfileSludgeTreatmentStorageContainersAreOpen;
+                        let field_id = Id::ProfileSludgeStorageContainersAreOpen;
                         FieldType::Bool {
                             initial_value: None,
                             on_change: Callback::new(move |v: bool| {
@@ -150,8 +150,8 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
                         }
                     },
                 },
-                create_field(write, read, Id::ProfileSludgeTreatmentDisposal),
-                create_field(write, read, Id::ProfileSludgeTreatmentTransportDistance),
+                create_field(write, read, Id::ProfileSludgeDisposal),
+                create_field(write, read, Id::ProfileSludgeTransportDistance),
             ],
             draw_border,
         },
@@ -164,7 +164,7 @@ pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
             fields: vec![create_field(
                 write,
                 read,
-                Id::ProfileSideStreamTreatmentTotalNitrogen,
+                Id::ProfileSideStreamTotalNitrogen,
             )],
             draw_border,
         },

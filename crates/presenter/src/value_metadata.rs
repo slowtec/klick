@@ -174,42 +174,42 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
             },
         ),
         (
-            Id::ProfileSludgeTreatmentDigesterCount,
+            Id::ProfileSludgeDigesterCount,
             M {
                 placeholder: P::text("number-of-digesters"),
                 description: "description-number-of-digesters",
             },
         ),
         (
-            Id::ProfileSludgeTreatmentBagsAreOpen,
+            Id::ProfileSludgeBagsAreOpen,
             M {
                 placeholder: P::none(),
                 description: "description-sludge-treatment-bags-are-open",
             },
         ),
         (
-            Id::ProfileSludgeTreatmentStorageContainersAreOpen,
+            Id::ProfileSludgeStorageContainersAreOpen,
             M {
                 placeholder: P::none(),
                 description: "description-sludge-treatment-storage-containers-are-open",
             },
         ),
         (
-            Id::ProfileSludgeTreatmentDisposal,
+            Id::ProfileSludgeDisposal,
             M {
                 placeholder: P::text("mass-dewatered"),
                 description: "description-mass-dewatered",
             },
         ),
         (
-            Id::ProfileSludgeTreatmentTransportDistance,
+            Id::ProfileSludgeTransportDistance,
             M {
                 placeholder: P::text("distance"),
                 description: "description-distance",
             },
         ),
         (
-            Id::ProfileSideStreamTreatmentTotalNitrogen,
+            Id::ProfileSideStreamTotalNitrogen,
             M {
                 placeholder: P::text("total-nitrogen"),
                 description: "description-total-nitrogen-side-stream",

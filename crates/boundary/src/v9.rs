@@ -91,7 +91,7 @@ pub enum InputValueId {
     ProfileOnSitePowerGeneration,
     ProfileEmissionFactorElectricityMix,
     ProfileHeatingOil,
-    ProfileSideStreamTreatmentTotalNitrogen,
+    ProfileSideStreamTotalNitrogen,
     #[serde(rename = "profile-operating-material-fe-cl3")]
     ProfileOperatingMaterialFeCl3,
     #[serde(rename = "profile-operating-material-fe-cl-so4")]
@@ -99,11 +99,11 @@ pub enum InputValueId {
     #[serde(rename = "profile-operating-material-ca-oh2")]
     ProfileOperatingMaterialCaOH2,
     ProfileOperatingMaterialSyntheticPolymers,
-    ProfileSludgeTreatmentBagsAreOpen,
-    ProfileSludgeTreatmentStorageContainersAreOpen,
-    ProfileSludgeTreatmentDisposal,
-    ProfileSludgeTreatmentTransportDistance,
-    ProfileSludgeTreatmentDigesterCount,
+    ProfileSludgeBagsAreOpen,
+    ProfileSludgeStorageContainersAreOpen,
+    ProfileSludgeDisposal,
+    ProfileSludgeTransportDistance,
+    ProfileSludgeDigesterCount,
 
     // --- Sensitivity ---//
     #[serde(rename = "sensitivity-n2o-calculation-method")]
@@ -154,10 +154,10 @@ impl InputValueId {
             // Boolean values
             Self::RecommendationSludgeStorageContainersAreOpen
             | Self::ProfilePurchaseOfBiogas
-            | Self::ProfileSludgeTreatmentBagsAreOpen
+            | Self::ProfileSludgeBagsAreOpen
             | Self::RecommendationSludgeBagsAreOpen
             | Self::RecommendationN2OSideStreamCoverIsOpen
-            | Self::ProfileSludgeTreatmentStorageContainersAreOpen => {
+            | Self::ProfileSludgeStorageContainersAreOpen => {
                 let v = v
                     .as_bool()
                     .ok_or_else(|| anyhow!("Expected bool value for {self:?}, got {v:?}"))?;
@@ -165,7 +165,7 @@ impl InputValueId {
             }
 
             // Count values
-            Self::ProfilePopulationEquivalent | Self::ProfileSludgeTreatmentDigesterCount => {
+            Self::ProfilePopulationEquivalent | Self::ProfileSludgeDigesterCount => {
                 let v = v
                     .as_u64()
                     .ok_or_else(|| anyhow!("Expected count value for {self:?}, got {v:?}"))?;
@@ -222,12 +222,12 @@ impl InputValueId {
             }
 
             // Tons values
-            Self::ProfileSideStreamTreatmentTotalNitrogen
+            Self::ProfileSideStreamTotalNitrogen
             | Self::ProfileOperatingMaterialFeCl3
             | Self::ProfileOperatingMaterialFeClSO4
             | Self::ProfileOperatingMaterialCaOH2
             | Self::ProfileOperatingMaterialSyntheticPolymers
-            | Self::ProfileSludgeTreatmentDisposal => {
+            | Self::ProfileSludgeDisposal => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected tons value for {self:?}, got {v:?}"))?;
@@ -235,7 +235,7 @@ impl InputValueId {
             }
 
             // Kilometers values
-            Self::ProfileSludgeTreatmentTransportDistance => {
+            Self::ProfileSludgeTransportDistance => {
                 let v = v
                     .as_f64()
                     .ok_or_else(|| anyhow!("Expected kilometers value for {self:?}, got {v:?}"))?;
@@ -314,10 +314,10 @@ impl InputValueId {
             // Boolean values
             Self::RecommendationSludgeStorageContainersAreOpen
             | Self::ProfilePurchaseOfBiogas
-            | Self::ProfileSludgeTreatmentBagsAreOpen
+            | Self::ProfileSludgeBagsAreOpen
             | Self::RecommendationSludgeBagsAreOpen
             | Self::RecommendationN2OSideStreamCoverIsOpen
-            | Self::ProfileSludgeTreatmentStorageContainersAreOpen => {
+            | Self::ProfileSludgeStorageContainersAreOpen => {
                 let bool_value = value.as_bool().ok_or_else(|| {
                     anyhow!("Expected bool value for {self:?}, got {value_clone:?}")
                 })?;
@@ -325,7 +325,7 @@ impl InputValueId {
             }
 
             // Count values
-            Self::ProfilePopulationEquivalent | Self::ProfileSludgeTreatmentDigesterCount => {
+            Self::ProfilePopulationEquivalent | Self::ProfileSludgeDigesterCount => {
                 let count_value = value.as_count().ok_or_else(|| {
                     anyhow!("Expected count value for {self:?}, got {value_clone:?}")
                 })?;
@@ -384,12 +384,12 @@ impl InputValueId {
             }
 
             // Tons values
-            Self::ProfileSideStreamTreatmentTotalNitrogen
+            Self::ProfileSideStreamTotalNitrogen
             | Self::ProfileOperatingMaterialFeCl3
             | Self::ProfileOperatingMaterialFeClSO4
             | Self::ProfileOperatingMaterialCaOH2
             | Self::ProfileOperatingMaterialSyntheticPolymers
-            | Self::ProfileSludgeTreatmentDisposal => {
+            | Self::ProfileSludgeDisposal => {
                 let tons_value = value.as_tons().ok_or_else(|| {
                     anyhow!("Expected tons value for {self:?}, got {value_clone:?}")
                 })?;
@@ -397,7 +397,7 @@ impl InputValueId {
             }
 
             // Kilometers values
-            Self::ProfileSludgeTreatmentTransportDistance => {
+            Self::ProfileSludgeTransportDistance => {
                 let kilometers_value = value.as_kilometers().ok_or_else(|| {
                     anyhow!("Expected kilometers value for {self:?}, got {value_clone:?}")
                 })?;

@@ -22,7 +22,7 @@ pub fn options(
 
     let show_sludge_bags_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.get(&Id::ProfileSludgeTreatmentBagsAreOpen)
+            d.get(&Id::ProfileSludgeBagsAreOpen)
                 .cloned()
                 .map(Value::as_bool_unchecked)
                 != Some(false)
@@ -31,7 +31,7 @@ pub fn options(
 
     let show_sludge_storage_containers_controls = Signal::derive(move || {
         form_data.with(|d| {
-            d.get(&Id::ProfileSludgeTreatmentStorageContainersAreOpen)
+            d.get(&Id::ProfileSludgeStorageContainersAreOpen)
                 .cloned()
                 .map(Value::as_bool_unchecked)
                 != Some(false)
@@ -40,7 +40,7 @@ pub fn options(
 
     let show_dialog = Signal::derive(move || {
         let digester_count = form_data.with(|d| {
-            d.get(&Id::ProfileSludgeTreatmentDigesterCount)
+            d.get(&Id::ProfileSludgeDigesterCount)
                 .cloned()
                 .map(Value::as_count_unchecked)
                 .map(u64::from)

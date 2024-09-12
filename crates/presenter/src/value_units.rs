@@ -65,12 +65,12 @@ impl ValueUnit for InputValueId {
             Self::ProfileOnSitePowerGeneration => Some(LATEX_KILOWATTHOURS),
             Self::ProfileEmissionFactorElectricityMix => Some(LATEX_GRAMSPERKILOWATTHOUR),
             Self::ProfileHeatingOil => Some(LATEX_TONS),
-            Self::ProfileSideStreamTreatmentTotalNitrogen => Some(LATEX_TONS),
-            Self::ProfileSludgeTreatmentBagsAreOpen => None, // FIXME implement latex representation
-            Self::ProfileSludgeTreatmentStorageContainersAreOpen => None, // FIXME implement latex representation
-            Self::ProfileSludgeTreatmentDisposal => Some(LATEX_TONS),
-            Self::ProfileSludgeTreatmentTransportDistance => Some(LATEX_KILOMETERS),
-            Self::ProfileSludgeTreatmentDigesterCount => None,
+            Self::ProfileSideStreamTotalNitrogen => Some(LATEX_TONS),
+            Self::ProfileSludgeBagsAreOpen => None, // FIXME implement latex representation
+            Self::ProfileSludgeStorageContainersAreOpen => None, // FIXME implement latex representation
+            Self::ProfileSludgeDisposal => Some(LATEX_TONS),
+            Self::ProfileSludgeTransportDistance => Some(LATEX_KILOMETERS),
+            Self::ProfileSludgeDigesterCount => None,
             Self::ProfileOperatingMaterialFeCl3
             | Self::ProfileOperatingMaterialFeClSO4
             | Self::ProfileOperatingMaterialCaOH2
@@ -100,12 +100,12 @@ impl ValueUnit for InputValueId {
             Self::ProfileOnSitePowerGeneration => Some(TEXT_KILOWATTHOURS),
             Self::ProfileEmissionFactorElectricityMix => Some(TEXT_GRAMSPERKILOWATTHOUR),
             Self::ProfileHeatingOil => Some(TEXT_TONS),
-            Self::ProfileSideStreamTreatmentTotalNitrogen => Some(TEXT_TONS),
-            Self::ProfileSludgeTreatmentBagsAreOpen => None,
-            Self::ProfileSludgeTreatmentStorageContainersAreOpen => None,
-            Self::ProfileSludgeTreatmentDisposal => Some(TEXT_TONS),
-            Self::ProfileSludgeTreatmentTransportDistance => Some(TEXT_KILOMETERS),
-            Self::ProfileSludgeTreatmentDigesterCount => None,
+            Self::ProfileSideStreamTotalNitrogen => Some(TEXT_TONS),
+            Self::ProfileSludgeBagsAreOpen => None,
+            Self::ProfileSludgeStorageContainersAreOpen => None,
+            Self::ProfileSludgeDisposal => Some(TEXT_TONS),
+            Self::ProfileSludgeTransportDistance => Some(TEXT_KILOMETERS),
+            Self::ProfileSludgeDigesterCount => None,
             Self::ProfileOperatingMaterialFeCl3
             | Self::ProfileOperatingMaterialFeClSO4
             | Self::ProfileOperatingMaterialCaOH2

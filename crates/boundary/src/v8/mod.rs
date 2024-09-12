@@ -100,7 +100,7 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::milligrams_per_liter),
             ),
             (
-                Id::ProfileSideStreamTreatmentTotalNitrogen,
+                Id::ProfileSideStreamTotalNitrogen,
                 from.plant_profile
                     .side_stream_treatment
                     .total_nitrogen
@@ -184,7 +184,7 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::percent),
             ),
             (
-                Id::ProfileSludgeTreatmentBagsAreOpen,
+                Id::ProfileSludgeBagsAreOpen,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .sludge_bags_are_closed
@@ -192,7 +192,7 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::ProfileSludgeTreatmentStorageContainersAreOpen,
+                Id::ProfileSludgeStorageContainersAreOpen,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .sludge_storage_containers_are_closed
@@ -200,21 +200,21 @@ impl From<JsonFormData> for HashMap<domain::InputValueId, Value> {
                     .map(V::bool),
             ),
             (
-                Id::ProfileSludgeTreatmentDisposal,
+                Id::ProfileSludgeDisposal,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .sewage_sludge_for_disposal
                     .map(V::tons),
             ),
             (
-                Id::ProfileSludgeTreatmentTransportDistance,
+                Id::ProfileSludgeTransportDistance,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .transport_distance
                     .map(V::kilometers),
             ),
             (
-                Id::ProfileSludgeTreatmentDigesterCount,
+                Id::ProfileSludgeDigesterCount,
                 from.plant_profile
                     .sewage_sludge_treatment
                     .digester_count
@@ -443,7 +443,7 @@ impl JsonFormData {
                     .map(V::as_milligrams_per_liter_unchecked)
                     .map(Into::into);
             }
-            Id::ProfileSideStreamTreatmentTotalNitrogen => {
+            Id::ProfileSideStreamTotalNitrogen => {
                 self.plant_profile.side_stream_treatment.total_nitrogen =
                     value.map(V::as_tons_unchecked).map(Into::into);
             }
@@ -509,29 +509,29 @@ impl JsonFormData {
                     .emission_factor_sludge_storage_containers =
                     value.map(V::as_percent_unchecked).map(Into::into);
             }
-            Id::ProfileSludgeTreatmentBagsAreOpen => {
+            Id::ProfileSludgeBagsAreOpen => {
                 let closed = value.map(V::as_bool_unchecked).map(|v| !v); // open => closed
                 self.plant_profile
                     .sewage_sludge_treatment
                     .sludge_bags_are_closed = closed;
             }
-            Id::ProfileSludgeTreatmentStorageContainersAreOpen => {
+            Id::ProfileSludgeStorageContainersAreOpen => {
                 let closed = value.map(V::as_bool_unchecked).map(|v| !v); // open => closed
                 self.plant_profile
                     .sewage_sludge_treatment
                     .sludge_storage_containers_are_closed = closed;
             }
-            Id::ProfileSludgeTreatmentDisposal => {
+            Id::ProfileSludgeDisposal => {
                 self.plant_profile
                     .sewage_sludge_treatment
                     .sewage_sludge_for_disposal = value.map(V::as_tons_unchecked).map(Into::into);
             }
-            Id::ProfileSludgeTreatmentTransportDistance => {
+            Id::ProfileSludgeTransportDistance => {
                 self.plant_profile
                     .sewage_sludge_treatment
                     .transport_distance = value.map(V::as_kilometers_unchecked).map(Into::into);
             }
-            Id::ProfileSludgeTreatmentDigesterCount => {
+            Id::ProfileSludgeDigesterCount => {
                 self.plant_profile.sewage_sludge_treatment.digester_count =
                     value.map(V::as_count_unchecked).map(Into::into);
             }

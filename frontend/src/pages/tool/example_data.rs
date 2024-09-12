@@ -43,17 +43,11 @@ pub fn example_form_data() -> FormData {
             Id::ProfileEmissionFactorElectricityMix,
             Value::grams_per_kilowatthour(420.0),
         ),
-        (Id::ProfileSludgeTreatmentBagsAreOpen, Value::bool(true)),
-        (
-            Id::ProfileSludgeTreatmentStorageContainersAreOpen,
-            Value::bool(true),
-        ),
-        (Id::ProfileSludgeTreatmentDisposal, Value::tons(3016.5)),
-        (
-            Id::ProfileSludgeTreatmentTransportDistance,
-            Value::kilometers(150.0),
-        ),
-        (Id::ProfileSludgeTreatmentDigesterCount, Value::count(1)),
+        (Id::ProfileSludgeBagsAreOpen, Value::bool(true)),
+        (Id::ProfileSludgeStorageContainersAreOpen, Value::bool(true)),
+        (Id::ProfileSludgeDisposal, Value::tons(3016.5)),
+        (Id::ProfileSludgeTransportDistance, Value::kilometers(150.0)),
+        (Id::ProfileSludgeDigesterCount, Value::count(1)),
         (Id::ProfileOperatingMaterialFeCl3, Value::tons(310.5)),
         (
             Id::ProfileOperatingMaterialSyntheticPolymers,

@@ -18,11 +18,8 @@ use klick_domain::{
     InputValueId as In, Value,
 };
 use klick_presenter as presenter;
-use time::OffsetDateTime;
 
-use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
-
-use crate::current_lang;
+use crate::{api::AuthorizedApi, current_lang, SECTION_ID_TOOL_HOME};
 
 mod breadcrumbs;
 mod example_data;
@@ -132,16 +129,16 @@ pub fn Tool(
             In::ProfileOnSitePowerGeneration,
             In::ProfileEmissionFactorElectricityMix,
             In::ProfileHeatingOil,
-            In::ProfileSideStreamTreatmentTotalNitrogen,
+            In::ProfileSideStreamTotalNitrogen,
             In::ProfileOperatingMaterialFeCl3,
             In::ProfileOperatingMaterialFeClSO4,
             In::ProfileOperatingMaterialCaOH2,
             In::ProfileOperatingMaterialSyntheticPolymers,
-            In::ProfileSludgeTreatmentBagsAreOpen,
-            In::ProfileSludgeTreatmentStorageContainersAreOpen,
-            In::ProfileSludgeTreatmentDisposal,
-            In::ProfileSludgeTreatmentTransportDistance,
-            In::ProfileSludgeTreatmentDigesterCount,
+            In::ProfileSludgeBagsAreOpen,
+            In::ProfileSludgeStorageContainersAreOpen,
+            In::ProfileSludgeDisposal,
+            In::ProfileSludgeTransportDistance,
+            In::ProfileSludgeDigesterCount,
         ];
 
         let profile_ids: HashSet<_> = PROFILE_IDS.iter().copied().map(Id::from).collect();
@@ -191,16 +188,16 @@ pub fn Tool(
             In::ProfileOnSitePowerGeneration,
             In::ProfileEmissionFactorElectricityMix,
             In::ProfileHeatingOil,
-            In::ProfileSideStreamTreatmentTotalNitrogen,
+            In::ProfileSideStreamTotalNitrogen,
             In::ProfileOperatingMaterialFeCl3,
             In::ProfileOperatingMaterialFeClSO4,
             In::ProfileOperatingMaterialCaOH2,
             In::ProfileOperatingMaterialSyntheticPolymers,
-            In::ProfileSludgeTreatmentBagsAreOpen,
-            In::ProfileSludgeTreatmentStorageContainersAreOpen,
-            In::ProfileSludgeTreatmentDisposal,
-            In::ProfileSludgeTreatmentTransportDistance,
-            In::ProfileSludgeTreatmentDigesterCount,
+            In::ProfileSludgeBagsAreOpen,
+            In::ProfileSludgeStorageContainersAreOpen,
+            In::ProfileSludgeDisposal,
+            In::ProfileSludgeTransportDistance,
+            In::ProfileSludgeDigesterCount,
             In::SensitivityN2OCalculationMethod,
             In::SensitivityCH4ChpCalculationMethod,
             In::SensitivityN2OCustomFactor,
@@ -256,16 +253,16 @@ pub fn Tool(
             In::ProfileOnSitePowerGeneration,
             In::ProfileEmissionFactorElectricityMix,
             In::ProfileHeatingOil,
-            In::ProfileSideStreamTreatmentTotalNitrogen,
+            In::ProfileSideStreamTotalNitrogen,
             In::ProfileOperatingMaterialFeCl3,
             In::ProfileOperatingMaterialFeClSO4,
             In::ProfileOperatingMaterialCaOH2,
             In::ProfileOperatingMaterialSyntheticPolymers,
-            In::ProfileSludgeTreatmentBagsAreOpen,
-            In::ProfileSludgeTreatmentStorageContainersAreOpen,
-            In::ProfileSludgeTreatmentDisposal,
-            In::ProfileSludgeTreatmentTransportDistance,
-            In::ProfileSludgeTreatmentDigesterCount,
+            In::ProfileSludgeBagsAreOpen,
+            In::ProfileSludgeStorageContainersAreOpen,
+            In::ProfileSludgeDisposal,
+            In::ProfileSludgeTransportDistance,
+            In::ProfileSludgeDigesterCount,
             In::SensitivityN2OCalculationMethod,
             In::SensitivityCH4ChpCalculationMethod,
             In::SensitivityN2OCustomFactor,
@@ -298,8 +295,7 @@ pub fn Tool(
 
     let show_side_stream_controls = Memo::new(move |_| {
         form_data.with(|d| {
-            optional_in!(In::ProfileSideStreamTreatmentTotalNitrogen, d)
-                .is_some_and(|v| v > Tons::zero())
+            optional_in!(In::ProfileSideStreamTotalNitrogen, d).is_some_and(|v| v > Tons::zero())
         })
     });
 

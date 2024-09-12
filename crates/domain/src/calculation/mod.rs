@@ -161,22 +161,22 @@ fn emissions_factors_and_methods(
 
     let sludge_bags_are_open_recommendation =
         required!(In::RecommendationSludgeBagsAreOpen, &from)?;
-    let sludge_bags_are_open_profile = required!(In::ProfileSludgeTreatmentBagsAreOpen, &from)?;
+    let sludge_bags_are_open_profile = required!(In::ProfileSludgeBagsAreOpen, &from)?;
 
     let sludge_bags_factor = optional!(In::SensitivitySludgeBagsCustomFactor, &from);
 
     let sludge_storage_containers_are_open_recommendation =
         required!(In::RecommendationSludgeStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_are_open_profile =
-        required!(In::ProfileSludgeTreatmentStorageContainersAreOpen, &from)?;
+        required!(In::ProfileSludgeStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_factor =
         optional!(In::SensitivitySludgeStorageCustomFactor, &from);
-    let sewage_sludge_for_disposal = required!(In::ProfileSludgeTreatmentDisposal, &from)?;
-    let transport_distance = required!(In::ProfileSludgeTreatmentTransportDistance, &from)?;
-    let digester_count = required!(In::ProfileSludgeTreatmentDigesterCount, &from)?;
+    let sewage_sludge_for_disposal = required!(In::ProfileSludgeDisposal, &from)?;
+    let transport_distance = required!(In::ProfileSludgeTransportDistance, &from)?;
+    let digester_count = required!(In::ProfileSludgeDigesterCount, &from)?;
 
     let side_stream_treatment_total_nitrogen =
-        required!(In::ProfileSideStreamTreatmentTotalNitrogen, &from)?;
+        required!(In::ProfileSideStreamTotalNitrogen, &from)?;
     let total_nitrogen = side_stream_treatment_total_nitrogen;
 
     let side_stream_cover_is_open = required!(In::RecommendationN2OSideStreamCoverIsOpen, &from)?;
