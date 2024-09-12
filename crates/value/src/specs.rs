@@ -97,8 +97,10 @@ spec! {
         },
         ProfileEmissionFactorElectricityMix {
             unit = GramsPerKilowatthour;
+            optional;
             min = 0.0;
             max = 2500.0;
+            default = 485.0;
         },
         ProfileHeatingOil {
             unit = Liters;

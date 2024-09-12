@@ -134,7 +134,7 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
         (
             Id::ProfileEmissionFactorElectricityMix,
             M {
-                placeholder: P::text("emission-factor-electricity-mix"),
+                placeholder: P::default_value(),
                 description: "description-emission-factor-electricity-mix",
             },
         ),
@@ -169,7 +169,7 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
         (
             Id::ProfileMethaneFraction,
             M {
-                placeholder: P::text("methane-percentage"),
+                placeholder: P::default_value(),
                 description: "description-methane-percentage",
             },
         ),

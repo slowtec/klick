@@ -4,7 +4,7 @@ use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
 use klick_domain::{units::*, InputValueId as Id, Value, ValueType};
 use klick_presenter::{
-    metadata_of, FieldMetaData, InputValueFieldType, InputValueFieldTypeHint, Placeholder,
+    metadata_of, FieldMetaData, InputValueFieldType, InputValueFieldTypeHint, Lng, Placeholder,
 };
 
 use crate::{current_lang, label_signal};
@@ -45,7 +45,11 @@ fn format_default_value(id: Id) -> Option<Signal<String>> {
     let default_value = id.default_value()?;
     Some(Signal::derive(move || {
         let lang = current_lang().get();
-        lang.format_value(&default_value)
+        let default_text = match lang {
+            Lng::De => "Standardwert",
+            Lng::En => "default value",
+        };
+        format!("{} ({})", lang.format_value(&default_value), default_text)
     }))
 }
 
