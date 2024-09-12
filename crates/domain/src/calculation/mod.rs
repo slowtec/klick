@@ -159,14 +159,15 @@ fn emissions_factors_and_methods(
     let gas_supply = required!(In::ProfileGasSupply, &from)?;
     let purchase_of_biogas = required!(In::ProfilePurchaseOfBiogas, &from)?;
 
-    let sludge_bags_are_open_ = required!(In::RecommendationSludgeBagsAreOpen, &from)?;
-    let sludge_bags_are_open = required!(In::ProfileSludgeTreatmentBagsAreOpen, &from)?;
+    let sludge_bags_are_open_recommendation =
+        required!(In::RecommendationSludgeBagsAreOpen, &from)?;
+    let sludge_bags_are_open_profile = required!(In::ProfileSludgeTreatmentBagsAreOpen, &from)?;
 
     let sludge_bags_factor = optional!(In::SensitivitySludgeBagsCustomFactor, &from);
 
-    let sludge_storage_containers_are_open_ =
+    let sludge_storage_containers_are_open_recommendation =
         required!(In::RecommendationSludgeStorageContainersAreOpen, &from)?;
-    let sludge_storage_containers_are_open =
+    let sludge_storage_containers_are_open_profile =
         required!(In::ProfileSludgeTreatmentStorageContainersAreOpen, &from)?;
     let sludge_storage_containers_factor =
         optional!(In::SensitivitySludgeStorageCustomFactor, &from);
@@ -247,22 +248,24 @@ fn emissions_factors_and_methods(
 
     let ch4_water = chemical_oxygen_demand_effluent * wastewater * EMISSION_FACTOR_CH4_WATER;
 
-    let ch4_slippage_sludge_bags = if sludge_bags_are_open && sludge_bags_are_open_ {
-        calculate_ch4_slippage_sludge_bags(digester_count, methane_fraction, sludge_bags_factor)
-    } else {
-        Tons::zero()
-    };
-
-    let ch4_slippage_sludge_storage =
-        if sludge_storage_containers_are_open && sludge_storage_containers_are_open_ {
-            calculate_ch4_slippage_sludge_storage(
-                sewage_gas_produced,
-                methane_fraction,
-                sludge_storage_containers_factor,
-            )
+    let ch4_slippage_sludge_bags =
+        if sludge_bags_are_open_recommendation && sludge_bags_are_open_profile {
+            calculate_ch4_slippage_sludge_bags(digester_count, methane_fraction, sludge_bags_factor)
         } else {
             Tons::zero()
         };
+
+    let ch4_slippage_sludge_storage = if sludge_storage_containers_are_open_recommendation
+        && sludge_storage_containers_are_open_profile
+    {
+        calculate_ch4_slippage_sludge_storage(
+            sewage_gas_produced,
+            methane_fraction,
+            sludge_storage_containers_factor,
+        )
+    } else {
+        Tons::zero()
+    };
 
     let n2o_plant = n2o_plant * GWP_N2O;
     let n2o_water = n2o_water * GWP_N2O;
