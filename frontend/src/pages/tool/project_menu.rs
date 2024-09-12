@@ -145,10 +145,10 @@ pub fn ProjectMenu(
                 </div>
               </Show>
             </div>
+            <div style = move || if show_upload_input.get() { Some("cursor: pointer;") } else { Some("display:none;") } class="flex items-center justify-end gap-x-6">
             <input
                 class = "block text-sm bg-gray-50 rounded-md shadow-sm file:bg-primary file:rounded-md file:border-0 file:mr-4 file:py-1 file:px-2 file:font-semibold"
                 type="file"
-                style = move || if show_upload_input.get() { None } else { Some("display:none;") }
                 accept="application/json"
                 node_ref=upload_input
                 on:change = move |ev| {
@@ -166,6 +166,14 @@ pub fn ProjectMenu(
                   show_upload_input.set(false);
                 }
             />
+            <button type="button" on:click = move |_| show_upload_input.set(false) class="inline-flex rounded-md bg-yellow p-1.5 text-black-500 hover:bg-white-100 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-yellow-50">
+            <span class="sr-only">Dismiss</span>
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            </svg>
+            </button>
+
+            </div>
             // Hidden download anchor
             <a style="display:none;" node_ref=download_link></a>
           </div>
