@@ -276,7 +276,7 @@ where
         node_width,
     );
 
-    let nodes_to_svg = node_positions
+    let (svg_nodes, svg_labels): (Vec<_>, Vec<_>) = node_positions
         .iter()
         .map(|(id, node_position)| {
             let x = node_position.x;
@@ -293,7 +293,7 @@ where
 
             let fill: Color = sankey_data.nodes[id].color.unwrap_or(Color::new("magenta"));
 
-            view! {
+            let node = view! {
               <rect
                 x = format!("{x:.10}")
                 y = format!("{y:.10}")
@@ -306,6 +306,9 @@ where
                 stroke-width=1
                 stroke-dashoffset=0
               />
+            };
+
+            let label = view! {
               <text
                 class = "label"
                 x = x + node_width + font_size/2.0
@@ -318,11 +321,13 @@ where
               >
                 { label }
               </text>
-            }
-        })
-        .collect::<Vec<_>>();
+            };
 
-    let edges_to_svg = edge_positions
+            (node, label)
+        })
+        .unzip();
+
+    let svg_edges = edge_positions
         .iter()
         .map(|(from_top, from_bottom, to_top, to_bottom, edge_color)| {
             let d = edge_path(from_top, from_bottom, to_top, to_bottom);
@@ -353,8 +358,15 @@ where
           font-weight: bold;
         }"
       </style>
-      { edges_to_svg }
-      { nodes_to_svg }
+      <g>
+        { svg_edges }
+      </g>
+      <g>
+        { svg_nodes }
+      </g>
+      <g>
+        { svg_labels }
+      </g>
     }
 }
 
