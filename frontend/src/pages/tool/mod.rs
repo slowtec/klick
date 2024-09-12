@@ -18,6 +18,7 @@ use klick_domain::{
     InputValueId as In, Value,
 };
 use klick_presenter as presenter;
+use time::OffsetDateTime;
 
 use crate::{api::AuthorizedApi, SECTION_ID_TOOL_HOME};
 
@@ -614,6 +615,18 @@ pub fn Tool(
         ),
     ];
 
+    let project_name: Signal<String> = Signal::derive(move || {
+        form_data.with(|d| {
+            let project_name = d
+                .get(&In::ProjectName)
+                .cloned()
+                .map(Value::as_text_unchecked)
+                .map(|n| format!("-{n}"))
+                .unwrap_or_else(String::new);
+            format!("klimabilanzklaeranlage{project_name}.json")
+        })
+    });
+
     view! {
       <div class="space-y-10" >
         <div class="flex center-items justify-between">
@@ -630,6 +643,7 @@ pub fn Tool(
             export_csv
             upload_action
             show_csv_export
+            project_name
           />
           { move || save_result_message.get().map(|res| match res {
             Ok(msg) => view!{ <SuccessMessage message = msg /> }.into_view(),

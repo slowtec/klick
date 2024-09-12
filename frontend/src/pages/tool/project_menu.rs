@@ -6,7 +6,6 @@ use klick_app_components::icons;
 
 use crate::Page;
 
-const EXPORT_FILE_NAME_JSON: &str = "klimabilanzklaeranlage.json";
 const EXPORT_FILE_NAME_CSV: &str = "klimabilanzklaeranlage.csv";
 
 #[allow(clippy::too_many_lines)] // TODO
@@ -20,6 +19,7 @@ pub fn ProjectMenu(
     #[prop(into)] export_csv: Callback<(), Option<ObjectUrl>>,
     upload_action: Action<File, ()>,
     show_csv_export: Signal<bool>,
+    project_name: Signal<String>,
 ) -> impl IntoView {
     let is_open = RwSignal::new(false);
 
@@ -89,7 +89,7 @@ pub fn ProjectMenu(
                         let object_url = download.call(());
                         let link = download_link.get().expect("<a> to exist");
                         link.set_attribute("href", &object_url).unwrap();
-                        link.set_attribute("download", EXPORT_FILE_NAME_JSON).unwrap();
+                        link.set_attribute("download", &project_name.get()).unwrap();
                         link.click();
                         link.remove_attribute("href").unwrap();
                         is_open.set(false);
