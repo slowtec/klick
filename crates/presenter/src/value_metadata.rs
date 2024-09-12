@@ -50,10 +50,13 @@ impl Placeholder {
     }
 }
 
-fn metadata() -> [(Id, FieldMetaData); 43] {
+fn metadata() -> [(Id, FieldMetaData); 48] {
     use FieldMetaData as M;
     use Placeholder as P;
     [
+        // ------    ------ //
+        //      Project     //
+        // ------    ------ //
         (
             Id::ProjectName,
             M {
@@ -61,6 +64,9 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
                 description: "description-project-name",
             },
         ),
+        // ------    ------ //
+        //      Profile     //
+        // ------    ------ //
         (
             Id::ProfilePlantName,
             M {
@@ -243,6 +249,9 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
                 description: "description-synthetic-polymers",
             },
         ),
+        // ------    ------ //
+        //    Sensitivity   //
+        // ------    ------ //
         (
             Id::SensitivitySludgeBagsCustomFactor,
             M {
@@ -285,6 +294,23 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
                 description: "description-sensitivity-N2O-side-stream-factor",
             },
         ),
+        (
+            Id::SensitivityN2OCalculationMethod,
+            M {
+                placeholder: P::none(),
+                description: "description-sensitivity-N2O-calculation-method",
+            },
+        ),
+        (
+            Id::SensitivityCH4ChpCalculationMethod,
+            M {
+                placeholder: P::none(),
+                description: "description-sensitivity-ch4-chp-calculation-method",
+            },
+        ),
+        // ------    ------ //
+        //  Recommendation  //
+        // ------    ------ //
         (
             Id::RecommendationDistrictHeating,
             M {
@@ -355,6 +381,29 @@ fn metadata() -> [(Id, FieldMetaData); 43] {
                 description: "description-additional-custom-emissions",
             },
         ),
+        (
+            Id::RecommendationSludgeBagsAreOpen,
+            M {
+                placeholder: P::none(),
+                description: "description-recommendation-sludge-treatment-bags-are-open",
+            },
+        ),
+        (
+            Id::RecommendationSludgeStorageContainersAreOpen,
+            M {
+                placeholder: P::none(),
+                description:
+                    "description-recommendation-sludge-treatment-storage-containers-are-open",
+            },
+        ),
+        (
+            Id::RecommendationN2OSideStreamCoverIsOpen,
+            M {
+                placeholder: P::none(),
+                description:
+                    "description-recommendation-recommendation-n2o-side-stream-cover-is-open",
+            },
+        ),
     ]
 }
 
@@ -373,20 +422,38 @@ impl FieldMetaData {
 #[test]
 fn validate_fluent_file() {
     use super::*;
+    use colored::*;
 
     for lang in [Lng::De.id(), Lng::En.id()] {
         for (
-            _,
+            id,
             FieldMetaData {
                 placeholder,
                 description,
             },
         ) in metadata()
         {
-            assert!(!LOCALES.lookup(&lang, description).is_empty());
+            let desc_txt = LOCALES.lookup(&lang, description);
+            assert!(!desc_txt.is_empty());
+            assert_ne!(desc_txt, description);
+            assert!(
+                !desc_txt.contains("Unknown localization"),
+                "No description {lang} translation found for {id} (key = {key})",
+                id = format!("{id:?}").yellow(),
+                lang = lang.to_string().to_uppercase().yellow().bold(),
+                key = description.yellow().bold()
+            );
             match placeholder {
                 Placeholder::Text(key) => {
-                    assert!(!LOCALES.lookup(&lang, key).is_empty());
+                    let placeholder_txt = LOCALES.lookup(&lang, key);
+                    assert!(!placeholder_txt.is_empty());
+                    assert!(
+                        !placeholder_txt.contains("Unknown localization"),
+                        "No placeholder {lang} translation found for {id} (key = {key})",
+                        id = format!("{id:?}").yellow(),
+                        lang = lang.to_string().to_uppercase().yellow().bold(),
+                        key = key.yellow().bold()
+                    );
                 }
                 _ => {
                     continue;
@@ -394,4 +461,20 @@ fn validate_fluent_file() {
             }
         }
     }
+}
+
+#[test]
+fn all_input_value_id_meta_data_are_defined() {
+    use colored::*;
+    use strum::IntoEnumIterator;
+
+    let d = metadata();
+
+    for id in Id::iter() {
+        if !d.iter().any(|(field_id, _)| *field_id == id) {
+            let variant = format!("{id:?}").yellow().bold();
+            panic!("Metadata of {variant} was not defined");
+        }
+    }
+    assert_eq!(Id::iter().count(), metadata().len());
 }
