@@ -8,7 +8,7 @@ use klick_domain::{
 
 use crate::{
     co2_equivalents_as_table, plant_profile_as_table, sensitivity_parameters_as_table, Formatting,
-    Lng,
+    Lng, TableRow,
 };
 
 #[must_use]
@@ -41,19 +41,26 @@ pub fn calculation_outcome_as_csv(out: &CalculationOutcome, lang: Lng) -> String
             let rows = section
                 .rows
                 .into_iter()
-                .map(|(name, value, unit)| {
-                    [
-                        name,
-                        value
-                            .map(|v|
+                .map(
+                    |TableRow {
+                         label: name,
+                         value,
+                         unit,
+                         id: _,
+                     }| {
+                        [
+                            name,
+                            value
+                                .map(|v|
                               // NOTE: this is required because 
                               // German values can contain ','
                               format!("\"{v}\""))
-                            .unwrap_or_default(),
-                        unit.unwrap_or_default().to_string(),
-                    ]
-                    .join(",")
-                })
+                                .unwrap_or_default(),
+                            unit.unwrap_or_default().to_string(),
+                        ]
+                        .join(",")
+                    },
+                )
                 .collect::<Vec<_>>()
                 .join("\n");
             format!("## {}\n\n{rows}", section.title)

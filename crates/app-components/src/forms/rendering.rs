@@ -225,6 +225,19 @@ pub fn render_field(
           />
         }
         .into_view(),
+
+        FieldType::DropDown {
+            initial_value: _, // TODO
+            options,
+            on_change,
+            input: _, // TODO
+        } => view! {
+           <SelectInput
+              options
+              on_change
+           />
+        }
+        .into_view(),
     }
 }
 
@@ -644,5 +657,32 @@ fn BoolInput(
           <p class="text-gray-500">{ description }</p>
         </div>
       </div>
+    }
+}
+
+#[component]
+fn SelectInput(
+    options: Vec<String>,
+    #[prop(into)]
+    #[allow(unused)] // FIXME
+    on_change: Callback<Option<usize>, ()>,
+) -> impl IntoView {
+    let options = options
+        .into_iter()
+        .enumerate()
+        .map(|(n, label)| {
+            view! {
+                <option value = n>
+                  { label }
+                </option>
+            }
+        })
+        .collect::<Vec<_>>();
+
+    view! {
+      <select>
+        <option>"- please select -"</option>
+        { options }
+      </select>
     }
 }

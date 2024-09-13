@@ -42,7 +42,16 @@ pub struct Table {
 #[derive(Serialize)]
 pub struct TableSection {
     pub title: String,
-    pub rows: Vec<(String, Option<String>, Option<String>)>,
+    pub rows: Vec<TableRow>,
+}
+
+#[derive(Serialize)]
+pub struct TableRow {
+    #[serde(skip_serializing)]
+    pub id: Id,
+    pub label: String,
+    pub value: Option<String>,
+    pub unit: Option<String>,
 }
 
 #[must_use]
@@ -176,19 +185,34 @@ pub fn plant_profile_as_table(
         rows: ids
             .into_iter()
             .map(|id| {
-                (
-                    match id {
-                        Id::Custom(ref id) => id.clone(),
-                        Id::In(id) => formatting.fmt_label(id, lang).to_string(),
-                        Id::Out(id) => formatting.fmt_label(id, lang).to_string(),
-                    },
-                    data.get(&id).as_ref().map(|v| lang.format_value(v)),
-                    match id {
-                        Id::Custom(_) => Some("t".to_string()), // FIXME @markus
-                        Id::In(id) => formatting.fmt(id).map(std::string::ToString::to_string),
-                        Id::Out(id) => formatting.fmt(id).map(std::string::ToString::to_string),
-                    },
-                )
+                let label = match id {
+                    Id::Custom(ref id) => id.clone(),
+                    Id::In(id) => formatting.fmt_label(id, lang).to_string(),
+                    Id::Out(id) => formatting.fmt_label(id, lang).to_string(),
+                };
+                let value = {
+                    let mut value = data.get(&id).cloned();
+                    if value.is_none() {
+                        match id {
+                            Id::In(id) => {
+                                value = id.default_value();
+                            }
+                            _ => {}
+                        };
+                    }
+                    value.as_ref().map(|v| lang.format_value(v))
+                };
+                let unit = match id {
+                    Id::Custom(_) => Some("t".to_string()), // FIXME @markus
+                    Id::In(id) => formatting.fmt(id).map(std::string::ToString::to_string),
+                    Id::Out(id) => formatting.fmt(id).map(std::string::ToString::to_string),
+                };
+                TableRow {
+                    id,
+                    label,
+                    value,
+                    unit,
+                }
             })
             .collect(),
     })
@@ -205,11 +229,9 @@ pub fn sensitivity_parameters_as_table(
 ) -> Table {
     let sections = vec![
         (
-            {
-                match lang {
-                    Lng::De => "Lachgasemissionen",
-                    Lng::En => "Nitrous oxide emissions",
-                }
+            match lang {
+                Lng::De => "Lachgasemissionen",
+                Lng::En => "Nitrous oxide emissions",
             },
             vec![
                 In::SensitivityN2OCalculationMethod,
@@ -218,11 +240,9 @@ pub fn sensitivity_parameters_as_table(
             ],
         ),
         (
-            {
-                match lang {
-                    Lng::De => "Methanemissionen aus Blockheizkraftwerken (BHKW)",
-                    Lng::En => "Methane emissions from combined heat and power plants (CHP)",
-                }
+            match lang {
+                Lng::De => "Methanemissionen aus Blockheizkraftwerken (BHKW)",
+                Lng::En => "Methane emissions from combined heat and power plants (CHP)",
             },
             vec![
                 In::SensitivityCH4ChpCalculationMethod,
@@ -230,13 +250,9 @@ pub fn sensitivity_parameters_as_table(
             ],
         ),
         (
-            {
-                match lang {
-                    Lng::De => {
-                        "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung"
-                    }
-                    Lng::En => "Methane emissions from open digestion towers and sludge storage",
-                }
+            match lang {
+                Lng::De => "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung",
+                Lng::En => "Methane emissions from open digestion towers and sludge storage",
             },
             vec![
                 In::SensitivitySludgeBagsCustomFactor,
@@ -263,11 +279,24 @@ pub fn sensitivity_parameters_as_table(
         rows: sections
             .into_iter()
             .map(|id| {
-                (
-                    formatting.fmt_label(id, lang).to_string(),
-                    data.get(&id.into()).as_ref().map(|v| lang.format_value(v)),
-                    formatting.fmt(id).map(Into::into),
-                )
+                let label = formatting.fmt_label(id, lang).to_string();
+                //let value = data.get(&id.into()).as_ref().map(|v| lang.format_value(v));
+                let value = {
+                    let mut value = data.get(&id.into()).cloned();
+                    if value.is_none() {
+                        value = id.default_value();
+                    }
+                    value.as_ref().map(|v| lang.format_value(v))
+                };
+                let unit = formatting.fmt(id).map(Into::into);
+                let id = Id::from(id);
+
+                TableRow {
+                    id,
+                    label,
+                    value,
+                    unit,
+                }
             })
             .collect(),
     })
@@ -296,13 +325,19 @@ pub fn co2_equivalents_as_table(
                 .map(|tons| (id, tons))
         })
         .map(|(id, value)| {
-            let label = match id {
+            let label = match &id {
                 Id::Custom(id) => id.clone(),
                 Id::Out(id) => id.label(lang).to_string(),
                 Id::In(id) => id.label(lang).to_string(),
             };
-            let formatted_value = lang.format_number(f64::from(value));
-            (label, Some(formatted_value), Some("t".to_string()))
+            let value = Some(lang.format_number(f64::from(value)));
+            let unit = Some("t".to_string());
+            TableRow {
+                id,
+                label,
+                value,
+                unit,
+            }
         })
         .collect();
 

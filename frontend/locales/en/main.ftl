@@ -184,3 +184,4 @@ project-save-to-file = File export
 project-export-csv = Export to CSV-file
 project-load-from-online = Load from cloud
 project-save-to-online = Save to cloud
+back-to-table = back to overview

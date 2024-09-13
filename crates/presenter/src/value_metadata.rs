@@ -190,14 +190,14 @@ fn metadata() -> [(Id, FieldMetaData); 48] {
             Id::ProfileSludgeBagsAreOpen,
             M {
                 placeholder: P::none(),
-                description: "description-sludge-treatment-bags-are-open",
+                description: "description-sludge-bags-are-open",
             },
         ),
         (
             Id::ProfileSludgeStorageContainersAreOpen,
             M {
                 placeholder: P::none(),
-                description: "description-sludge-treatment-storage-containers-are-open",
+                description: "description-sludge-storage-containers-are-open",
             },
         ),
         (
@@ -385,15 +385,14 @@ fn metadata() -> [(Id, FieldMetaData); 48] {
             Id::RecommendationSludgeBagsAreOpen,
             M {
                 placeholder: P::none(),
-                description: "description-recommendation-sludge-treatment-bags-are-open",
+                description: "description-recommendation-sludge-bags-are-open",
             },
         ),
         (
             Id::RecommendationSludgeStorageContainersAreOpen,
             M {
                 placeholder: P::none(),
-                description:
-                    "description-recommendation-sludge-treatment-storage-containers-are-open",
+                description: "description-recommendation-sludge-storage-containers-are-open",
             },
         ),
         (

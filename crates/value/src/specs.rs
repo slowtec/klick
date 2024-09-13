@@ -175,8 +175,7 @@ spec! {
             optional;
             min = 0.0;
             max = 100.0;
-            default = 2.0;
-            default = constants::EMISSION_FACTOR_N2O_DEFAULT;
+            default = constants::EMISSION_FACTOR_N2O_DEFAULT.into();
         },
         SensitivityN2OSideStreamFactor {
             unit = Percent;

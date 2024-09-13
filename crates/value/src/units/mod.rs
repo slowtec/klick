@@ -1131,7 +1131,7 @@ values! {
             Count, u64;
         }
         enums {
-            #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr)]
+            #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr, strum_macros::EnumIter)]
             N2oEmissionFactorCalcMethod {
               TuWien2016,
               Optimistic,
@@ -1140,7 +1140,7 @@ values! {
               Ipcc2019,
               Custom,
             }
-            #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr)]
+            #[derive(Default, FromPrimitive, ToPrimitive, AsRefStr, strum_macros::EnumIter)]
             Ch4ChpEmissionFactorCalcMethod {
                 MicroGasTurbines,
                 #[default]

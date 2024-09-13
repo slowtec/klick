@@ -90,4 +90,10 @@ pub enum FieldType {
         on_change: Callback<bool, ()>,
         input: Signal<bool>,
     },
+    DropDown {
+        initial_value: Option<usize>,
+        options: Vec<String>,
+        on_change: Callback<Option<usize>, ()>,
+        input: Signal<Option<usize>>,
+    },
 }

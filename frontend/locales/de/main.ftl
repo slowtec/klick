@@ -195,3 +195,4 @@ project-save-to-file = Datei speichern
 project-export-csv = CSV-Datei exportieren
 project-load-from-online = Projekt aus Online-Speicher laden
 project-save-to-online = Projekt online speichern
+back-to-table = zurück zur Übersicht

@@ -593,7 +593,7 @@ pub fn Tool(
               sensitivity_outcome = sensitivity_outcome.into()
               show_side_stream_controls = show_side_stream_controls.into()
               accessibility_always_show_option
-              lang = current_lang().get()
+              lang = current_lang()
             />
         }
         .into_view(),

@@ -66,5 +66,14 @@ https://github.com/lipis/flag-icons/blob/v6.6.6/css/flag-icons.css
 }
 
 .CodeMirror {
-  border: 1px solid #aaa;
+    border: 1px solid #aaa;
+}
+
+.form-data-edit-button {
+  opacity: 0.1;
+  transition: opacity 0.3s ease;
+}
+
+dd:hover .form-data-edit-button {
+  opacity: 1.0;
 }

@@ -1,5 +1,8 @@
 use leptos::*;
 
+use num_traits::ToPrimitive;
+use strum::IntoEnumIterator;
+
 use klick_app_components::forms::{self, *};
 use klick_boundary::FormData;
 use klick_domain::{units::*, InputValueId as Id, Value, ValueType};
@@ -177,6 +180,49 @@ pub fn create_field_type(
                 hint => panic!("Invalid field type hint {hint:?} for text value"),
             }
         }
-        ValueType::Enum(_) => todo!(),
+        ValueType::Enum(enum_kind) => {
+            let on_change = match enum_kind {
+                EnumType::N2oEmissionFactorCalcMethod => Callback::new(move |_: Option<usize>| {}),
+                EnumType::Ch4ChpEmissionFactorCalcMethod => {
+                    Callback::new(move |_: Option<usize>| {})
+                }
+            };
+
+            let input = match enum_kind {
+                EnumType::N2oEmissionFactorCalcMethod => Signal::derive(move || {
+                    read.with(|d| {
+                        d.get(&id)
+                            .cloned()
+                            .map(Value::as_n2o_emission_factor_calc_method_unchecked)
+                            .and_then(|v| v.to_usize())
+                    })
+                }),
+                EnumType::Ch4ChpEmissionFactorCalcMethod => Signal::derive(move || {
+                    read.with(|d| {
+                        d.get(&id)
+                            .cloned()
+                            .map(Value::as_ch4_chp_emission_factor_calc_method_unchecked)
+                            .and_then(|v| v.to_usize())
+                    })
+                }),
+            };
+
+            let options = match enum_kind {
+                EnumType::N2oEmissionFactorCalcMethod => N2oEmissionFactorCalcMethod::iter()
+                    .map(|c| format!("{c:?}"))
+                    .collect(),
+
+                EnumType::Ch4ChpEmissionFactorCalcMethod => Ch4ChpEmissionFactorCalcMethod::iter()
+                    .map(|c| format!("{c:?}"))
+                    .collect(),
+            };
+
+            FieldType::DropDown {
+                options,
+                initial_value: None, // TODO
+                on_change,
+                input,
+            }
+        }
     }
 }

@@ -5,8 +5,7 @@ use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{InputValueId as Id, Value};
 
-use crate::pages::tool::fields::create_field;
-use crate::Lng;
+use crate::{pages::tool::fields::create_field, Lng};
 
 #[allow(clippy::too_many_lines)]
 pub fn field_sets(form_data: RwSignal<FormData>, lang: Lng) -> Vec<FieldSet> {
