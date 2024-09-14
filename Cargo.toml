@@ -20,7 +20,7 @@ members = [
   "crates/domain",
   "crates/presenter",
   "crates/value",
-  "crates/value-spec",
+  "crates/value-spec-proc-macro",
 ]
 exclude = ["frontend"]
 resolver = "2"
@@ -35,20 +35,20 @@ description = "Calculate the carbon footprints for wastewater treatment plants"
 
 [patch.crates-io]
 # Local paths to library crates in workspace
-klick-app-api              = { path = "crates/app-api"              }
-klick-app-charts           = { path = "crates/app-charts"           }
-klick-app-components       = { path = "crates/app-components"       }
-klick-application          = { path = "crates/application"          }
-klick-backend              = { path = "crates/backend"              }
-klick-boundary             = { path = "crates/boundary"             }
-klick-codemirror           = { path = "crates/codemirror"           }
-klick-db-sqlite            = { path = "crates/db-sqlite"            }
-klick-domain               = { path = "crates/domain"               }
-klick-pdf-export           = { path = "crates/pdf-export"           }
-klick-presenter            = { path = "crates/presenter"            }
-klick-value                = { path = "crates/value"                }
-klick-value-spec           = { path = "crates/value-spec"           }
-klick-custom-values-parser = { path = "crates/custom-values-parser" }
+klick-app-api               = { path = "crates/app-api"               }
+klick-app-charts            = { path = "crates/app-charts"            }
+klick-app-components        = { path = "crates/app-components"        }
+klick-application           = { path = "crates/application"           }
+klick-backend               = { path = "crates/backend"               }
+klick-boundary              = { path = "crates/boundary"              }
+klick-codemirror            = { path = "crates/codemirror"            }
+klick-db-sqlite             = { path = "crates/db-sqlite"             }
+klick-domain                = { path = "crates/domain"                }
+klick-pdf-export            = { path = "crates/pdf-export"            }
+klick-presenter             = { path = "crates/presenter"             }
+klick-value                 = { path = "crates/value"                 }
+klick-value-spec-proc-macro = { path = "crates/value-spec-proc-macro" }
+klick-custom-values-parser  = { path = "crates/custom-values-parser"  }
 
 [package]
 name = "klick"

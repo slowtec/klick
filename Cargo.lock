@@ -1849,7 +1849,7 @@ name = "klick-value"
 version = "0.0.0"
 dependencies = [
  "derive_more",
- "klick-value-spec",
+ "klick-value-spec-proc-macro",
  "num-derive",
  "num-traits",
  "paste",
@@ -1858,7 +1858,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "klick-value-spec"
+name = "klick-value-spec-proc-macro"
 version = "0.0.0"
 dependencies = [
  "itertools 0.13.0",

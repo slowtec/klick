@@ -1,5 +1,6 @@
+use klick_value_spec_proc_macro::value_spec as spec;
+
 use crate::{constants, units::*};
-use klick_value_spec::value_spec as spec;
 
 spec! {
     Value : InputValueId {
