@@ -4,7 +4,7 @@ use time::OffsetDateTime;
 use klick_domain::{Account, EmailAddress, Password};
 use klick_interfaces::{AccountRecord, AccountRepo, AccountTokenRepo, NotificationGateway};
 
-use crate::usecases;
+use crate::send_confirmation_email;
 
 pub fn create_account<R, N>(
     repo: &R,
@@ -20,7 +20,7 @@ where
         return if account.email_confirmed {
             Err(Error::AlreadyExists)
         } else {
-            Ok(usecases::send_confirmation_email(
+            Ok(send_confirmation_email(
                 repo,
                 notification_gateway,
                 email_address,
@@ -36,7 +36,7 @@ where
     let password = password.to_hashed();
     let record = AccountRecord { account, password };
     repo.save_account(&record)?;
-    usecases::send_confirmation_email(repo, notification_gateway, email_address)?;
+    send_confirmation_email(repo, notification_gateway, email_address)?;
     Ok(())
 }
 

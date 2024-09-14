@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use klick_application::CalculationOutcome;
 use klick_domain::{
     units::{Factor, Percent, RatioExt},
     OutputValueId as Out,
 };
+use klick_usecases::CalculationOutcome;
 
 use crate::{
     co2_equivalents_as_table, plant_profile_as_table, sensitivity_parameters_as_table, Formatting,

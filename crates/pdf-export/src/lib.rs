@@ -15,7 +15,6 @@ use tera::{Context, Tera};
 use time::{format_description::FormatItem, macros::format_description, OffsetDateTime, UtcOffset};
 
 use klick_app_charts as charts;
-use klick_application::CalculationOutcome;
 use klick_boundary as boundary;
 use klick_domain::{
     self as domain, optional_output_value_id as optional, required_output_value_id as required,
@@ -23,6 +22,7 @@ use klick_domain::{
     InputValueId as In, OutputValueId as Out, Value, ValueId as Id,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
+use klick_usecases::CalculationOutcome;
 
 const MARKDOWN_TEMPLATE: &str = include_str!("../templates/report.md.template");
 const MARKDOWN_TEMPLATE_NAME: &str = "report.md";
@@ -42,7 +42,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
     log::debug!("Create PDF report");
     let lang = Lng::De;
     let date = current_date_as_string()?;
-    let outcome = klick_application::calculate_emissions(form_data, None, vec![]); // FIXME make this static, not another evaluation of all models
+    let outcome = klick_usecases::calculate_emissions(form_data, None, vec![]); // FIXME make this static, not another evaluation of all models
 
     let mut n2o_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
     let mut ch4_chp_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;

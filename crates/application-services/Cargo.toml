@@ -1,5 +1,5 @@
 [package]
-name = "klick-application"
+name = "klick-application-services"
 version = "0.0.0"
 authors.workspace = true
 edition.workspace = true
@@ -8,7 +8,7 @@ publish = false
 
 [dependencies]
 klick-domain = { path = "../domain" }
-klick-interfaces = { version = "0.0.0", path = "../interfaces" }
+klick-interfaces = "=0.0.0"
 
 anyhow = "1.0.86"
 log = "0.4.22"

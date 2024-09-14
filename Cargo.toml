@@ -2,6 +2,7 @@
 members = [
   # core crates
   "crates/domain",
+  "crates/usecases",
   "crates/value-spec-proc-macro",
 
   # frontent crates
@@ -11,18 +12,18 @@ members = [
   "crates/app-components",
   "crates/codemirror",
   "crates/codemirror/examples/*",
+  "crates/custom-values-parser",
 
   # backend crates
+  "crates/application-services",
   "crates/backend",
   "crates/db-sqlite",
   "crates/pdf-export",
+  "crates/interfaces",
 
   # shared crates
-  "crates/application",
   "crates/boundary",
-  "crates/custom-values-parser",
   "crates/presenter",
-  "crates/interfaces",
 ]
 exclude = ["frontend"]
 resolver = "2"
@@ -40,17 +41,18 @@ description = "Calculate the carbon footprints for wastewater treatment plants"
 klick-app-api               = { path = "crates/app-api"               }
 klick-app-charts            = { path = "crates/app-charts"            }
 klick-app-components        = { path = "crates/app-components"        }
-klick-application           = { path = "crates/application"           }
+klick-application-services  = { path = "crates/application-services"  }
 klick-backend               = { path = "crates/backend"               }
 klick-boundary              = { path = "crates/boundary"              }
 klick-codemirror            = { path = "crates/codemirror"            }
+klick-custom-values-parser  = { path = "crates/custom-values-parser"  }
 klick-db-sqlite             = { path = "crates/db-sqlite"             }
 klick-domain                = { path = "crates/domain"                }
 klick-interfaces            = { path = "crates/interfaces"            }
 klick-pdf-export            = { path = "crates/pdf-export"            }
 klick-presenter             = { path = "crates/presenter"             }
+klick-usecases              = { path = "crates/usecases"              }
 klick-value-spec-proc-macro = { path = "crates/value-spec-proc-macro" }
-klick-custom-values-parser  = { path = "crates/custom-values-parser"  }
 
 [package]
 name = "klick"

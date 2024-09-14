@@ -1,7 +1,7 @@
 use klick_domain::{EmailAddress, Password};
 use klick_interfaces::{AccountRepo, AccountTokenRepo, NotificationGateway};
 
-use crate::usecases;
+use crate::{login, send_confirmation_email, LoginError};
 
 pub fn resend_confirmation_email<R, N>(
     repo: &R,
@@ -13,22 +13,22 @@ where
     R: AccountRepo + AccountTokenRepo,
     N: NotificationGateway,
 {
-    match usecases::login(repo, &email, password) {
+    match login(repo, &email, password) {
         Ok(_) => {
             log::warn!("Unexpected state: user already confirmed his email address ({email})");
             return Ok(());
         }
-        Err(usecases::LoginError::Credentials) => {
+        Err(LoginError::Credentials) => {
             // ignore this request
             return Ok(());
         }
-        Err(usecases::LoginError::Repo(err)) => {
+        Err(LoginError::Repo(err)) => {
             return Err(err);
         }
-        Err(usecases::LoginError::EmailNotConfirmed) => {
+        Err(LoginError::EmailNotConfirmed) => {
             // yes, it's a valid request now
         }
     }
-    usecases::send_confirmation_email(repo, notification_gateway, email)?;
+    send_confirmation_email(repo, notification_gateway, email)?;
     Ok(())
 }

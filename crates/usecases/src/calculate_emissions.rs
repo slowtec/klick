@@ -1,16 +1,14 @@
 use std::{collections::HashMap, hash::BuildHasher};
 
-#[cfg(test)]
-mod tests;
-
-#[allow(clippy::wildcard_imports)]
 use klick_domain::{
     constants::*, optional_input_value_id as optional, required_input_value_id as required,
     units::*, InputValueId as In, OutputValueId as Out, Value as V, ValueId as Id,
 };
 
-mod emission_groups;
-pub use self::emission_groups::*;
+use crate::{
+    calculate_all_ch4_chp_emission_factor_scenarios, calculate_all_n2o_emission_factor_scenarios,
+    calculate_ch4_chp,
+};
 
 pub type Edge = (Id, Id);
 pub type Edges = Vec<Edge>;
@@ -104,6 +102,7 @@ pub fn calculate_emissions(
     }
 }
 
+// TODO: rename function
 pub fn calculate(
     values: &Values,
     custom_edges: Option<&[Edge]>,
@@ -120,7 +119,8 @@ pub fn calculate(
 
     let graph = emission_graph(custom_edges);
 
-    let co2_equivalents = calculate_emission_groups(all_emission_values, &graph);
+    let co2_equivalents =
+        crate::emission_groups::calculate_emission_groups(all_emission_values, &graph);
 
     let co2_values = co2_equivalents
         .into_iter()
@@ -165,7 +165,7 @@ pub fn sort_and_filter_nodes(edges: Vec<(Id, Id)>, target: Id) -> Vec<(Id, Id)> 
 
 #[must_use]
 fn emission_graph(custom_edges: Option<&[Edge]>) -> Edges {
-    let mut edges = emission_groups::SANKEY_EDGES
+    let mut edges = crate::emission_groups::SANKEY_EDGES
         .iter()
         .map(|(from, to)| (Id::from(*from), Id::from(*to)))
         .collect::<Vec<_>>();
@@ -722,119 +722,4 @@ pub fn calculate_oil_gas_savings(
     fossil_energy_savings: Percent,
 ) -> Tons {
     (oil_emissions + gas_emissions) * fossil_energy_savings
-}
-
-pub fn calculate_all_n2o_emission_factor_scenarios(
-    values: &HashMap<Id, Value>,
-    custom_edges: Option<&[Edge]>,
-) -> anyhow::Result<Vec<(N2oEmissionFactorCalcMethod, (Values, Edges))>> {
-    let mut values = values.clone();
-    let id = In::SensitivityN2OCalculationMethod;
-
-    // TuWien2016
-    let n2o = N2oEmissionFactorCalcMethod::TuWien2016;
-    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate(&values, custom_edges)?;
-    let tuwien2016_result = (n2o, result);
-
-    // Optimistic
-    let n2o = N2oEmissionFactorCalcMethod::Optimistic;
-    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate(&values, custom_edges)?;
-    let optimistc_result = (n2o, result);
-
-    // Pesimistic
-    let n2o = N2oEmissionFactorCalcMethod::Pesimistic;
-    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate(&values, custom_edges)?;
-    let pesimistic_result = (n2o, result);
-
-    // Ipcc2019
-    let n2o = N2oEmissionFactorCalcMethod::Ipcc2019;
-    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate(&values, custom_edges)?;
-    let ipcc2019_result = (n2o, result);
-
-    let mut results = vec![
-        tuwien2016_result,
-        optimistc_result,
-        pesimistic_result,
-        ipcc2019_result,
-    ];
-
-    // #306 sync custom defined scenarios between N2O and CH4, "on" by default
-    // if !values.contains_key(&In::SensitivityN2OCustomFactor.into()) {
-    //     return Ok(results);
-    // };
-
-    // Custom
-    let n2o = N2oEmissionFactorCalcMethod::Custom;
-    values.insert(id.into(), V::n2o_emission_factor_calc_method(n2o));
-    let result = calculate(&values, custom_edges)?;
-    let custom_result = (n2o, result);
-    results.push(custom_result);
-
-    Ok(results)
-}
-
-#[must_use]
-#[allow(clippy::missing_panics_doc)]
-pub fn calculate_ch4_chp(
-    calculation_method: Option<Ch4ChpEmissionFactorCalcMethod>,
-    custom_factor: Option<Percent>,
-    sewage_gas_produced: Qubicmeters,
-    methane_fraction: Percent,
-) -> (Tons, Factor) {
-    let ch4_emission_factor = match calculation_method {
-        Some(Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines) => Factor::new(0.01),
-        Some(Ch4ChpEmissionFactorCalcMethod::GasolineEngine) | None => Factor::new(0.015), // FIXME None is a hack and it seems to not use the default value from units.rs
-        Some(Ch4ChpEmissionFactorCalcMethod::JetEngine) => Factor::new(0.025),
-        Some(Ch4ChpEmissionFactorCalcMethod::Custom) => {
-            custom_factor.expect("custom CH4 EF").into()
-        }
-    };
-
-    let volume = sewage_gas_produced * methane_fraction * ch4_emission_factor;
-    let mass = volume * CONVERSION_FACTOR_CH4_M3_TO_KG;
-    let ch4_chp = mass.convert_to::<Tons>();
-
-    (ch4_chp * GWP_CH4, ch4_emission_factor)
-}
-
-const CH4_CHP_CALC_METHODS: [Ch4ChpEmissionFactorCalcMethod; 3] = [
-    Ch4ChpEmissionFactorCalcMethod::MicroGasTurbines,
-    Ch4ChpEmissionFactorCalcMethod::GasolineEngine,
-    Ch4ChpEmissionFactorCalcMethod::JetEngine,
-];
-
-#[must_use]
-pub fn calculate_all_ch4_chp_emission_factor_scenarios(
-    sewage_gas_produced: Qubicmeters,
-    methane_fraction: Percent,
-    custom_factor: Option<Percent>,
-) -> Vec<(Ch4ChpEmissionFactorCalcMethod, Tons, Factor)> {
-    let mut results = CH4_CHP_CALC_METHODS
-        .into_iter()
-        .map(|method| {
-            let (result, factor) =
-                calculate_ch4_chp(Some(method), None, sewage_gas_produced, methane_fraction);
-            (method, result, factor)
-        })
-        .collect();
-
-    let Some(factor) = custom_factor else {
-        return results;
-    };
-
-    // Custom
-    let method = Ch4ChpEmissionFactorCalcMethod::Custom;
-    let (result, factor) = calculate_ch4_chp(
-        Some(method),
-        Some(factor),
-        sewage_gas_produced,
-        methane_fraction,
-    );
-    results.push((method, result, factor));
-
-    results
 }

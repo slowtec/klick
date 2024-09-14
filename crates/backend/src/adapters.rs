@@ -4,7 +4,7 @@ use axum::{
 };
 use thiserror::Error;
 
-use klick_application::usecases;
+use klick_application_services as services;
 use klick_boundary::json_api;
 use klick_domain::{
     EmailAddress, EmailAddressParseError, EmailNonceDecodingError, Password, PasswordParseError,
@@ -15,13 +15,13 @@ use klick_domain::{
 #[non_exhaustive]
 pub enum ApiError {
     #[error(transparent)]
-    CreateAccount(#[from] usecases::CreateAccountError),
+    CreateAccount(#[from] services::CreateAccountError),
     #[error(transparent)]
     CreateAccountEmail(EmailAddressParseError),
     #[error(transparent)]
     CreateAccountPassword(PasswordParseError),
     #[error(transparent)]
-    Login(#[from] usecases::LoginError),
+    Login(#[from] services::LoginError),
     #[error(transparent)]
     LoginEmail(EmailAddressParseError),
     #[error(transparent)]
@@ -33,9 +33,9 @@ pub enum ApiError {
     #[error(transparent)]
     EmailNonce(#[from] EmailNonceDecodingError),
     #[error(transparent)]
-    ConfirmEmail(#[from] usecases::ConfirmEmailAddressError),
+    ConfirmEmail(#[from] services::ConfirmEmailAddressError),
     #[error(transparent)]
-    ResetPassword(#[from] usecases::ResetPasswordError),
+    ResetPassword(#[from] services::ResetPasswordError),
     #[error("internal server error")]
     InternalServerError,
     #[error(transparent)]
@@ -95,7 +95,7 @@ impl IntoResponse for ApiError {
         use json_api::Error as E;
         match self {
             Self::CreateAccount(err) => match err {
-                usecases::CreateAccountError::AlreadyExists => {
+                services::CreateAccountError::AlreadyExists => {
                     let message = Some(err.to_string());
                     let status = StatusCode::BAD_REQUEST;
                     let details = Some(json_api::register::Error::AlreadyExists);
@@ -106,20 +106,20 @@ impl IntoResponse for ApiError {
                     }
                     .into_response()
                 }
-                usecases::CreateAccountError::Repo(_) => internal(),
+                services::CreateAccountError::Repo(_) => internal(),
             },
             Self::CreateAccountEmail(err) => bad_request(err),
             Self::CreateAccountPassword(err) => bad_request(err),
             Self::Login(err) => match err {
-                usecases::LoginError::Credentials => E::bad_request()
+                services::LoginError::Credentials => E::bad_request()
                     .details(json_api::login::Error::Credentials)
                     .message(err)
                     .into_response(),
-                usecases::LoginError::EmailNotConfirmed => E::unauthorized()
+                services::LoginError::EmailNotConfirmed => E::unauthorized()
                     .details(json_api::login::Error::EmailNotConfirmed)
                     .message(err)
                     .into_response(),
-                usecases::LoginError::Repo(_) => internal(),
+                services::LoginError::Repo(_) => internal(),
             },
             Self::LoginEmail(_) | Self::LoginPassword(_) => E::<()>::bad_request()
                 .message("invalid email or password")
@@ -129,9 +129,9 @@ impl IntoResponse for ApiError {
             Self::EmailNonce(err) => bad_request(err).into_response(),
             Self::ConfirmEmail(err) => bad_request(err).into_response(),
             Self::ResetPassword(err) => match err {
-                usecases::ResetPasswordError::InvalidToken
-                | usecases::ResetPasswordError::NotFound => bad_request(err),
-                usecases::ResetPasswordError::Repo(_) => internal(),
+                services::ResetPasswordError::InvalidToken
+                | services::ResetPasswordError::NotFound => bad_request(err),
+                services::ResetPasswordError::Repo(_) => internal(),
             },
             Self::InternalServerError => internal(),
             Self::Other(err) => bad_request(err),

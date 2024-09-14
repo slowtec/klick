@@ -3,14 +3,14 @@ use thiserror::Error;
 use klick_domain::EmailNonce;
 use klick_interfaces::{AccountRepo, AccountTokenRepo};
 
-use crate::usecases;
+use crate::consume_account_token;
 
 pub fn confirm_email_address<R>(repo: R, email_nonce: &EmailNonce) -> Result<(), Error>
 where
     R: AccountRepo + AccountTokenRepo,
 {
     // The token should be consumed only once, even if the following fails!
-    let token = usecases::consume_account_token(&repo, email_nonce).map_err(|err| {
+    let token = consume_account_token(&repo, email_nonce).map_err(|err| {
         log::warn!(
             "missing or invalid token to reset password for account '{:?}': {err}",
             email_nonce.email,

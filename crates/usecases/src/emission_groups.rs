@@ -1,14 +1,11 @@
 use std::{
     collections::{HashMap, HashSet},
-    hash::{BuildHasher, Hash},
+    hash::Hash,
     iter,
     ops::AddAssign,
 };
 
-use klick_domain::{
-    units::{Tons, Value},
-    OutputValueId as Out, OutputValueId,
-};
+use klick_domain::{OutputValueId as Out, OutputValueId};
 
 pub const SANKEY_EDGES: &[(Out, Out)] = &[
     (Out::Ch4SludgeBags, Out::Ch4Emissions),
@@ -35,21 +32,6 @@ pub const SANKEY_EDGES: &[(Out, Out)] = &[
     (Out::DirectEmissions, Out::TotalEmissions),
     (Out::IndirectEmissions, Out::TotalEmissions),
 ];
-
-pub fn extract_emission_groups<ID, S>(
-    values: &HashMap<ID, Value, S>,
-    edges: &[(ID, ID)],
-) -> HashMap<ID, Tons>
-where
-    ID: Eq + Hash + Clone,
-    S: BuildHasher,
-{
-    emission_group_ids(edges)
-        .into_iter()
-        .filter_map(|id| values.get(&id).cloned().map(|v| (id, v)))
-        .filter_map(|(id, v)| v.as_tons().map(|v| (id, v)))
-        .collect()
-}
 
 pub fn emission_group_ids<ID>(edges: &[(ID, ID)]) -> HashSet<ID>
 where

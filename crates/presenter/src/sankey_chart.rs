@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use derive_more::From;
 
-use klick_application as application;
 use klick_domain::{
     required_output_value_id as required,
     units::{Percent, RatioExt, Tons},
@@ -97,7 +96,7 @@ pub fn create_sankey_chart_data(
     graph: &[(Id, Id)],
     lang: Lng,
 ) -> (Nodes, Vec<(usize, usize)>) {
-    let node_ids = application::emission_group_ids(graph);
+    let node_ids = klick_usecases::emission_group_ids(graph);
 
     let nodes = node_ids
         .iter()

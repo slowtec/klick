@@ -8,7 +8,6 @@ use leptos::*;
 use leptos_fluent::*;
 
 use klick_app_components::message::*;
-use klick_application::{calculate_emissions, get_all_internal_nodes, CalculationOutcome};
 use klick_boundary::{
     self as boundary, export_to_vec_pretty, import_from_slice, FormData, JsonFormData, Project,
     ProjectId, SavedProject, UnsavedProject,
@@ -18,6 +17,7 @@ use klick_domain::{
     optional_input_value_id as optional_in, units::Tons, InputValueId as In, Value, ValueId as Id,
 };
 use klick_presenter as presenter;
+use klick_usecases::{calculate_emissions, get_all_internal_nodes, CalculationOutcome};
 
 use crate::{api::AuthorizedApi, current_lang, SECTION_ID_TOOL_HOME};
 

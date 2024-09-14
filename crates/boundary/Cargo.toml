@@ -20,9 +20,6 @@ uuid = { version = "1.10.0", features = ["serde"] }
 [dependencies.klick-domain]
 path = "../domain"
 
-[dependencies.klick-application]
-path = "../application"
-
 [dependencies.axum]
 version = "0.7.5"
 default-features = false

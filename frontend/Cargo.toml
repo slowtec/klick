@@ -7,7 +7,6 @@ rust-version = "1.80"
 
 [dependencies]
 # Project dependencies
-klick-application = "=0.0.0"
 klick-app-api = "=0.0.0"
 klick-app-charts = "=0.0.0"
 klick-app-components = "=0.0.0"
@@ -16,6 +15,7 @@ klick-codemirror = "=0.0.0"
 klick-custom-values-parser = "=0.0.0"
 klick-domain = { path = "../crates/domain" }
 klick-presenter = "=0.0.0"
+klick-usecases = "=0.0.0"
 
 # External dependencies
 anyhow = "1.0.86"
@@ -39,16 +39,17 @@ time = { version = "0.3.36", features = ["macros", "formatting"] }
 
 [patch.crates-io]
 # Local paths to library crates in workspace
-klick-application           = { path = "../crates/application"           }
+klick-application-services  = { path = "../crates/application-services"  }
 klick-app-api               = { path = "../crates/app-api"               }
 klick-app-components        = { path = "../crates/app-components"        }
 klick-app-charts            = { path = "../crates/app-charts"            }
 klick-boundary              = { path = "../crates/boundary"              }
 klick-codemirror            = { path = "../crates/codemirror"            }
+klick-custom-values-parser  = { path = "../crates/custom-values-parser"  }
 klick-domain                = { path = "../crates/domain"                }
 klick-presenter             = { path = "../crates/presenter"             }
+klick-usecases              = { path = "../crates/usecases"              }
 klick-value-spec-proc-macro = { path = "../crates/value-spec-proc-macro" }
-klick-custom-values-parser  = { path = "../crates/custom-values-parser"  }
 
 [profile.release]
 lto = true

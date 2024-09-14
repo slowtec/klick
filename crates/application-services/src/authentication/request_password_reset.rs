@@ -3,7 +3,7 @@ use anyhow::bail;
 use klick_domain::EmailAddress;
 use klick_interfaces::{AccountRepo, AccountTokenRepo, NotificationEvent, NotificationGateway};
 
-use crate::usecases;
+use crate::refresh_account_token;
 
 pub fn request_password_reset<R, N>(
     repo: &R,
@@ -20,7 +20,7 @@ where
     if !record.account.email_confirmed {
         bail!("uncofirmed email address");
     };
-    let email_nonce = usecases::refresh_account_token(repo, email_address)?;
+    let email_nonce = refresh_account_token(repo, email_address)?;
     let event = NotificationEvent::AccountResetPasswordRequested { email_nonce };
     notification_gateway.notify(event);
     Ok(())

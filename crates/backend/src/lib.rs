@@ -19,7 +19,7 @@ use tower_http::cors::{Any, CorsLayer};
 use url::Url;
 use uuid::Uuid;
 
-use klick_application::usecases;
+use klick_application_services as services;
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
 use klick_domain::{self as domain, Account, EmailAddress, EmailNonce, Password, ProjectId};
@@ -173,7 +173,7 @@ async fn create_account(
     let password = password
         .parse::<Password>()
         .map_err(ApiError::CreateAccountPassword)?;
-    usecases::create_account(&state.db, &state.notification_gw, email, &password)?;
+    services::create_account(&state.db, &state.notification_gw, email, &password)?;
     Ok(Json(()))
 }
 
@@ -183,7 +183,7 @@ async fn login(
 ) -> Result<json_api::ApiToken> {
     let adapters::Credentials { email, password } = credentials.try_into()?;
     log::debug!("{email} tries to login");
-    let account = usecases::login(&state.db, &email, &password)?;
+    let account = services::login(&state.db, &email, &password)?;
     debug_assert_eq!(account.email_address, email);
     let token = Uuid::new_v4();
     state.tokens.write().insert(token, account);
@@ -220,7 +220,7 @@ async fn confirm_email_address(
 ) -> Result<()> {
     let json_api::ConfirmEmailAddress { token } = data;
     let email_nonce = EmailNonce::decode_from_str(&token)?;
-    usecases::confirm_email_address(state.db, &email_nonce)?;
+    services::confirm_email_address(state.db, &email_nonce)?;
     Ok(Json(()))
 }
 
@@ -230,7 +230,7 @@ async fn resent_confirmation_email(
 ) -> Result<()> {
     let adapters::Credentials { email, password } = credentials.try_into()?;
     log::debug!("{email} requests a new email to confirm");
-    usecases::resend_confirmation_email(&state.db, &state.notification_gw, email, &password)
+    services::resend_confirmation_email(&state.db, &state.notification_gw, email, &password)
         .map_err(|err| {
             log::warn!("Unable to resent confirmation email: {err}");
             ApiError::InternalServerError
@@ -246,7 +246,7 @@ async fn request_password_reset(
     let email = email
         .parse::<EmailAddress>()
         .map_err(ApiError::LoginEmail)?;
-    if let Err(err) = usecases::request_password_reset(&state.db, &state.notification_gw, email) {
+    if let Err(err) = services::request_password_reset(&state.db, &state.notification_gw, email) {
         // We do not report any error to the user here,
         // but we create a log statement.
         log::warn!("Unable to request password reset: {err}");
@@ -267,7 +267,7 @@ async fn reset_password(
         .map(|pw| pw.to_hashed())
         .map_err(ApiError::LoginPassword)?;
     let email_nonce = EmailNonce::decode_from_str(&token)?;
-    usecases::reset_password(state.db, email_nonce, password)?;
+    services::reset_password(state.db, email_nonce, password)?;
     Ok(Json(()))
 }
 
@@ -277,7 +277,7 @@ async fn new_project(
     Json(data): Json<boundary::JsonFormData>,
 ) -> Result<boundary::ProjectId> {
     let account = account_from_token(&state, &auth)?;
-    let id = usecases::create_new_project(&state.db, &account, data)?;
+    let id = services::create_new_project(&state.db, &account, data)?;
     let id = boundary::ProjectId::from(id);
     Ok(Json(id))
 }
@@ -289,7 +289,7 @@ async fn update_project(
 ) -> Result<()> {
     let account = account_from_token(&state, &auth)?;
     let id = ProjectId::from(updated.id);
-    usecases::update_project(&state.db, &account, &id, updated.form_data)?;
+    services::update_project(&state.db, &account, &id, updated.form_data)?;
     Ok(Json(()))
 }
 
@@ -300,7 +300,7 @@ async fn get_project(
 ) -> Result<boundary::SavedProject> {
     account_from_token(&state, &auth)?;
     let id = ProjectId::from_uuid(uuid);
-    let project = usecases::read_project(&state.db, id)?;
+    let project = services::read_project(&state.db, id)?;
     Ok(Json(project.into()))
 }
 
@@ -412,7 +412,7 @@ async fn get_all_projects(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<Vec<boundary::SavedProject>> {
     let account = account_from_token(&state, &auth)?;
-    let projects = usecases::read_all_projects(&state.db, &account)?
+    let projects = services::read_all_projects(&state.db, &account)?
         .into_iter()
         .map(Into::into)
         .collect();
@@ -426,7 +426,7 @@ async fn delete_project(
 ) -> Result<()> {
     account_from_token(&state, &auth)?;
     let id = ProjectId::from_uuid(uuid);
-    usecases::delete_project(&state.db, id)?;
+    services::delete_project(&state.db, id)?;
     Ok(Json(()))
 }
 

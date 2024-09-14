@@ -959,18 +959,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "klick-application"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "klick-domain",
- "klick-interfaces",
- "log",
- "thiserror",
- "time",
-]
-
-[[package]]
 name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
@@ -978,7 +966,6 @@ dependencies = [
  "derive_more",
  "http",
  "http-serde",
- "klick-application",
  "klick-domain",
  "log",
  "serde",
@@ -1042,12 +1029,12 @@ dependencies = [
  "klick-app-api",
  "klick-app-charts",
  "klick-app-components",
- "klick-application",
  "klick-boundary",
  "klick-codemirror",
  "klick-custom-values-parser",
  "klick-domain",
  "klick-presenter",
+ "klick-usecases",
  "leptos",
  "leptos-fluent",
  "leptos_hotkeys",
@@ -1063,25 +1050,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "klick-interfaces"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "klick-domain",
- "time",
-]
-
-[[package]]
 name = "klick-presenter"
 version = "0.0.0"
 dependencies = [
  "anyhow",
  "derive_more",
  "fluent-templates",
- "klick-application",
  "klick-boundary",
  "klick-domain",
+ "klick-usecases",
  "serde",
+]
+
+[[package]]
+name = "klick-usecases"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "klick-domain",
+ "log",
 ]
 
 [[package]]
@@ -2590,3 +2577,7 @@ name = "zeroize"
 version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ced3678a2879b30306d323f4542626697a464a97c0a07c9aebf7ebca65cd4dde"
+
+[[patch.unused]]
+name = "klick-application-services"
+version = "0.0.0"
