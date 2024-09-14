@@ -77,6 +77,7 @@ spec! {
         ProfileGasSupply {
             unit = Qubicmeters;
             optional;
+            min = 0.0;
             default = 0.0;
         },
         ProfilePurchaseOfBiogas {
@@ -106,31 +107,37 @@ spec! {
         ProfileHeatingOil {
             unit = Liters;
             optional;
+            min = 0.0;
             default = 0.0;
         },
         ProfileSideStreamTotalNitrogen {
             unit = Tons;
             optional;
+            min = 0.0;
             default = 0.0;
         },
         ProfileOperatingMaterialFeCl3 {
             unit = Tons;
+            min = 0.0;
             max = 500_000.0;
         },
         ProfileOperatingMaterialFeClSO4 {
             unit = Tons;
             optional;
+            min = 0.0;
             max = 100_000.0;
             default = 0.0;
         },
         ProfileOperatingMaterialCaOH2 {
             unit = Tons;
             optional;
+            min = 0.0;
             max = 500_000.0;
             default = 0.0;
         },
         ProfileOperatingMaterialSyntheticPolymers {
             unit = Tons;
+            min = 0.0;
             max = 50000.0;
         },
         ProfileSludgeBagsAreOpen{
@@ -145,6 +152,7 @@ spec! {
         },
         ProfileSludgeDisposal {
             unit = Tons;
+            min = 0.0;
             max = 500_000.0;
         },
         ProfileSludgeTransportDistance {
@@ -259,11 +267,13 @@ spec! {
         RecommendationDistrictHeating {
             unit = Kilowatthours;
             optional;
+            min = 0.0;
             default = 0.0;
         },
         RecommendationPhotovoltaicEnergyExpansion {
             unit = Kilowatthours;
             optional;
+            min = 0.0;
             default = 0.0;
         },
         RecommendationEstimatedSelfPhotovolaticUsage {
@@ -276,6 +286,7 @@ spec! {
         RecommendationWindEnergyExpansion {
             unit = Kilowatthours;
             optional;
+            min = 0.0;
             default = 0.0;
         },
         RecommendationEstimatedSelfWindEnergyUsage {
@@ -288,6 +299,7 @@ spec! {
         RecommendationWaterEnergyExpansion {
             unit = Kilowatthours;
             optional;
+            min = 0.0;
             default = 0.0;
         },
         RecommendationEstimatedSelfWaterEnergyUsage {
