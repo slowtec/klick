@@ -6,7 +6,7 @@ use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
 use klick_domain::{
-    output_value::required,
+    required_output_value_id as required,
     units::{Ch4ChpEmissionFactorCalcMethod, Tons},
     InputValueId as Id, OutputValueId as Out, Value,
 };

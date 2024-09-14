@@ -3,7 +3,9 @@ use leptos_fluent::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::{output_value::required, InputValueId as Id, OutputValueId as Out, Value};
+use klick_domain::{
+    required_output_value_id as required, InputValueId as Id, OutputValueId as Out, Value,
+};
 use klick_presenter::{Lng, ValueLabel};
 
 use crate::{

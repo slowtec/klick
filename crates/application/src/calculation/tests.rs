@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use klick_domain::{
     constants::*,
-    output_value::required as out,
+    required_output_value_id as out,
     units::{Value as V, *},
     InputValueId as In, OutputValueId as Out, *,
 };

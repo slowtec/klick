@@ -6,7 +6,9 @@ use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_
 use klick_application as application;
 use klick_boundary::FormData;
 use klick_codemirror::CodeMirror;
-use klick_domain::{output_value::required, InputValueId as In, OutputValueId as Out, Value};
+use klick_domain::{
+    required_output_value_id as required, InputValueId as In, OutputValueId as Out, Value,
+};
 use klick_presenter::{Lng, ValueLabel};
 
 #[component]

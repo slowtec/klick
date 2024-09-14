@@ -17,8 +17,7 @@ use time::{format_description::FormatItem, macros::format_description, OffsetDat
 use klick_app_charts as charts;
 use klick_boundary as boundary;
 use klick_domain::{
-    self as domain,
-    output_value::*,
+    self as domain, optional_output_value_id as optional, required_output_value_id as required,
     units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
     Id, InputValueId as In, OutputValueId as Out, Value,
 };

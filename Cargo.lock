@@ -1806,9 +1806,14 @@ dependencies = [
  "bcrypt",
  "bs58",
  "derive_more",
- "klick-value",
+ "klick-value-spec-proc-macro",
  "log",
  "mailparse",
+ "num-derive",
+ "num-traits",
+ "paste",
+ "strum",
+ "strum_macros",
  "thiserror",
  "time",
  "uuid",
@@ -1844,19 +1849,6 @@ dependencies = [
  "klick-domain",
  "serde",
  "strum",
-]
-
-[[package]]
-name = "klick-value"
-version = "0.0.0"
-dependencies = [
- "derive_more",
- "klick-value-spec-proc-macro",
- "num-derive",
- "num-traits",
- "paste",
- "strum",
- "strum_macros",
 ]
 
 [[package]]

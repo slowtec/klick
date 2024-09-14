@@ -5,10 +5,8 @@ mod tests;
 
 #[allow(clippy::wildcard_imports)]
 use klick_domain::{
-    constants::*,
-    input_value::{optional, required},
-    units::*,
-    Id, InputValueId as In, OutputValueId as Out, Value as V,
+    constants::*, optional_input_value_id as optional, required_input_value_id as required,
+    units::*, Id, InputValueId as In, OutputValueId as Out, Value as V,
 };
 
 mod emission_groups;

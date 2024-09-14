@@ -4,7 +4,7 @@ use derive_more::From;
 
 use klick_application as application;
 use klick_domain::{
-    output_value::*,
+    required_output_value_id as required,
     units::{Percent, RatioExt, Tons},
     Id, InputValueId as In, OutputValueId as Out, Value,
 };

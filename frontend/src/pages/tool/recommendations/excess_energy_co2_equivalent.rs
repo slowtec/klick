@@ -3,7 +3,9 @@ use leptos_fluent::*;
 
 use klick_app_components::forms::*;
 use klick_boundary::FormData;
-use klick_domain::{output_value::required, units::*, InputValueId as Id, OutputValueId as Out};
+use klick_domain::{
+    required_output_value_id as required, units::*, InputValueId as Id, OutputValueId as Out,
+};
 
 use crate::pages::tool::{fields::create_field, CalculationOutcome, Card};
 use klick_presenter::{Lng, ValueLabel};

@@ -1,30 +1,17 @@
 use derive_more::From;
 
 mod project;
+mod specs;
 
 pub mod authentication;
+pub mod constants;
+pub mod units;
 
-pub use self::project::{Id as ProjectId, IdParseError as ProjectIdParseError, Project};
-
-pub use klick_value::{
-    constants,
+pub use self::{
+    project::{Id as ProjectId, IdParseError as ProjectIdParseError, Project},
     specs::{InputValueId, OutputValueId},
-    units::{self, Value, ValueType},
+    units::{Value, ValueType},
 };
-
-pub mod input_value {
-    pub use klick_value::{
-        extract_optional_with_input_value_id as optional,
-        extract_required_with_input_value_id as required, specs::InputValueId,
-    };
-}
-
-pub mod output_value {
-    pub use klick_value::{
-        extract_optional_with_output_value_id as optional,
-        extract_required_with_output_value_id as required, specs::OutputValueId,
-    };
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, From)]
 pub enum Id {

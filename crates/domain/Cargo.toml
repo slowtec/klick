@@ -8,7 +8,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-klick-value = "=0.0.0"
+klick-value-spec-proc-macro = "=0.0.0"
 
 anyhow = "1.0.86"
 bcrypt = "0.15.1"
@@ -16,6 +16,11 @@ bs58 = "0.5.1"
 derive_more = { version = "1.0.0", features = ["from"] }
 log = "0.4.22"
 mailparse = "0.15.0"
+num-derive = "0.4.2"
+num-traits = "0.2.19"
+paste = "1.0.15"
+strum = { version = "0.26.3", features = ["derive"] }
+strum_macros = "0.26.4"
 thiserror = "1.0.63"
 time = "0.3.36"
 uuid = { version = "1.10.0", features = ["v4"] }

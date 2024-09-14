@@ -169,15 +169,15 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
         .collect::<Vec<_>>();
 
     let snake_case_ident = to_snake_case(ident.to_string().as_str());
-    let extract_required_macro_name = format_ident!("extract_required_with_{}", snake_case_ident);
-    let extract_optional_macro_name = format_ident!("extract_optional_with_{}", snake_case_ident);
+    let required_macro_name = format_ident!("required_{}", snake_case_ident);
+    let optional_macro_name = format_ident!("optional_{}", snake_case_ident);
 
     let opt_macro = if optional_extractors.is_empty() {
         quote! {}
     } else {
         quote! {
             #[macro_export]
-            macro_rules! #extract_optional_macro_name {
+            macro_rules! #optional_macro_name {
                 #(#optional_extractors)*
             }
         }
@@ -228,7 +228,7 @@ pub fn value_spec(input: TokenStream) -> TokenStream {
         }
 
         #[macro_export]
-        macro_rules! #extract_required_macro_name {
+        macro_rules! #required_macro_name {
             #(#required_extractors)*
         }
 
