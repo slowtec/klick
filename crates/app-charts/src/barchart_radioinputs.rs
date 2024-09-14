@@ -167,7 +167,6 @@ fn Bar(
     let gap = width * 0.01;
     let transparent_dx = (gap / 2.0) + ((bar_width + gap) * i as f64);
     let hovered_color = move || if hovered.get() { Some("grey") } else { None };
-
     view! {
       <g class="bar"
         on:mouseenter = on_mouse_enter
@@ -206,8 +205,8 @@ fn Bar(
           />
           // co2_value
           <text
-            x = { bar_width/2.0 }
-            y = { -10.0 }
+            x = bar_width/2.0
+            y = if bar_height < 35.0 {bar_height - 45.0} else {-10.0}
             text-anchor = "middle"
             font-size = move || 18.0 + font_size.get()
             font-weight = move || font_weight.get()
