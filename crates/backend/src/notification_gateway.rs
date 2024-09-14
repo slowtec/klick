@@ -9,8 +9,8 @@ use lettre::{
 use parking_lot::RwLock;
 use url::Url;
 
-use klick_interfaces::{NotificationEvent, NotificationGateway};
 use klick_domain::EmailNonce;
+use klick_interfaces::{NotificationEvent, NotificationGateway};
 
 use klick_app_components::links::DATENSCHUTZ;
 

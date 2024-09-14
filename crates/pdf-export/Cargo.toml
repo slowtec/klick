@@ -8,6 +8,7 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+klick-application = "=0.0.0"
 klick-app-charts = { version = "=0.0.0", features = ["ssr"] }
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = { path = "../domain" }

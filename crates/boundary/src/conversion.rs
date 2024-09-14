@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use klick_domain::{self as domain};
 
 use crate::*;

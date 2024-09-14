@@ -4,11 +4,11 @@ use reqwest::header;
 use serde_json::{json, Value};
 use tokio::net::TcpListener;
 
-use klick_interfaces::{AccountRepo as _, AccountTokenRepo};
 use klick_backend::Config;
 use klick_boundary as boundary;
 use klick_db_sqlite::Connection;
 use klick_domain::{EmailAddress, EmailNonce, Nonce};
+use klick_interfaces::{AccountRepo as _, AccountTokenRepo};
 
 async fn run_server() -> (SocketAddr, Connection) {
     run_server_with_default_test_config().await

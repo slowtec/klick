@@ -1,9 +1,9 @@
 use time::{Duration, OffsetDateTime};
 
-use klick_interfaces::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
 use klick_boundary::JsonFormData;
 use klick_db_sqlite::Connection;
 use klick_domain::{Account, AccountToken, EmailNonce, Nonce, Password, Project, ProjectId};
+use klick_interfaces::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
 
 #[test]
 fn delete_outdated_unconfirmed_accounts() {

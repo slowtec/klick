@@ -1,10 +1,3 @@
-use std::collections::HashMap;
-
-use klick_domain::{
-    self as domain,
-    units::{Factor, Tons},
-};
-
 mod export;
 mod import;
 
@@ -18,11 +11,9 @@ mod v7;
 mod v8;
 mod v9;
 
-mod calculation;
 pub mod json_api;
 
 pub use self::{
-    calculation::calculate,
     export::{export_to_string, export_to_string_pretty, export_to_vec_pretty},
     import::{import_from_slice, import_from_str, Error as ImportError},
     v9::*,
@@ -32,21 +23,3 @@ pub use self::{
 mod conversion;
 
 pub const CURRENT_VERSION: u32 = 9;
-
-type Values = HashMap<domain::ValueId, domain::Value>;
-type Graph = Vec<(domain::ValueId, domain::ValueId)>;
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct CalculationOutcome {
-    pub input: Values,
-    pub output: Option<Values>,
-    pub graph: Option<Graph>,
-
-    // Used to create bar chart input
-    pub sensitivity_n2o_calculations:
-        Option<Vec<(domain::units::N2oEmissionFactorCalcMethod, Values)>>,
-
-    // Used to create bar chart input
-    pub sensitivity_ch4_chp_calculations:
-        Option<Vec<(domain::units::Ch4ChpEmissionFactorCalcMethod, Tons, Factor)>>,
-}

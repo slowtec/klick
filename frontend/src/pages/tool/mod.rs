@@ -8,10 +8,10 @@ use leptos::*;
 use leptos_fluent::*;
 
 use klick_app_components::message::*;
-use klick_application::get_all_internal_nodes;
+use klick_application::{calculate_emissions, get_all_internal_nodes, CalculationOutcome};
 use klick_boundary::{
-    self as boundary, calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome,
-    FormData, JsonFormData, Project, ProjectId, SavedProject, UnsavedProject,
+    self as boundary, export_to_vec_pretty, import_from_slice, FormData, JsonFormData, Project,
+    ProjectId, SavedProject, UnsavedProject,
 };
 use klick_custom_values_parser::{self as custom_emission_parser, CustomEmission};
 use klick_domain::{
@@ -148,7 +148,7 @@ pub fn Tool(
             .filter(|(i, _)| profile_ids.contains(i))
             .collect();
 
-        calculate(&values, custom_edges, custom_leafs)
+        calculate_emissions(&values, custom_edges, custom_leafs)
     });
 
     let sensitivity_outcome = Memo::new(move |_| {
@@ -213,7 +213,7 @@ pub fn Tool(
             .filter(|(i, _)| profile_ids.contains(i) || i.is_custom())
             .collect();
 
-        calculate(&values, custom_edges, leafs)
+        calculate_emissions(&values, custom_edges, leafs)
     });
 
     let recommendation_outcome = Memo::new(move |_| {
@@ -290,7 +290,7 @@ pub fn Tool(
             .filter(|(i, _)| profile_ids.contains(i) || i.is_custom())
             .collect();
 
-        calculate(&values, custom_edges, leafs)
+        calculate_emissions(&values, custom_edges, leafs)
     });
 
     let show_side_stream_controls = Memo::new(move |_| {

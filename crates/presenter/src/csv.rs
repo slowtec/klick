@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use klick_boundary::CalculationOutcome;
+use klick_application::CalculationOutcome;
 use klick_domain::{
     units::{Factor, Percent, RatioExt},
     OutputValueId as Out,

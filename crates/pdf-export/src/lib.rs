@@ -15,6 +15,7 @@ use tera::{Context, Tera};
 use time::{format_description::FormatItem, macros::format_description, OffsetDateTime, UtcOffset};
 
 use klick_app_charts as charts;
+use klick_application::CalculationOutcome;
 use klick_boundary as boundary;
 use klick_domain::{
     self as domain, optional_output_value_id as optional, required_output_value_id as required,
@@ -41,7 +42,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
     log::debug!("Create PDF report");
     let lang = Lng::De;
     let date = current_date_as_string()?;
-    let outcome = boundary::calculate(form_data, None, vec![]); // FIXME make this static, not another evaluation of all models
+    let outcome = klick_application::calculate_emissions(form_data, None, vec![]); // FIXME make this static, not another evaluation of all models
 
     let mut n2o_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
     let mut ch4_chp_scenarios_svg_file = tempfile::Builder::new().suffix(".svg").tempfile()?;
@@ -203,7 +204,7 @@ pub fn export_to_pdf(form_data: &HashMap<Id, Value>) -> anyhow::Result<Vec<u8>> 
 
 fn render_markdown_template(
     date: String,
-    outcome: boundary::CalculationOutcome,
+    outcome: CalculationOutcome,
     plant_profile_sankey_svg_file_path: Option<String>,
     sensitivity_sankey_svg_file_path: Option<String>,
     sensitivity_barchart_svg_file_path: Option<String>,

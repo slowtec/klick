@@ -4,7 +4,8 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 use klick_app_charts::BarChartRadioInput;
 use klick_app_components::forms::*;
-use klick_boundary::{CalculationOutcome, FormData};
+use klick_application::CalculationOutcome;
+use klick_boundary::FormData;
 use klick_domain::{
     required_output_value_id as required, units::N2oEmissionFactorCalcMethod, InputValueId as In,
     OutputValueId as Out, Value,
