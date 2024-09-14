@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use gloo_file::{Blob, File, ObjectUrl};
 use gloo_storage::{SessionStorage, Storage as _};
@@ -17,7 +17,7 @@ use klick_domain::{
     optional_input_value_id as optional_in, units::Tons, InputValueId as In, Value, ValueId as Id,
 };
 use klick_presenter as presenter;
-use klick_usecases::{calculate_emissions, get_all_internal_nodes, CalculationOutcome};
+use klick_usecases::{get_all_internal_nodes, CalculationOutcome};
 
 use crate::{api::AuthorizedApi, current_lang, SECTION_ID_TOOL_HOME};
 
@@ -100,61 +100,10 @@ pub fn Tool(
         }
     }
 
-    let profile_outcome = Memo::new(move |_| {
-        // FIXME apply filter for what should be in
-        let values: HashMap<_, _> = form_data
-            .get()
-            .into_iter()
-            .map(|(id, value)| (Id::from(id), value))
-            .collect();
-
-        let custom_leafs = vec![];
-        let custom_edges = None;
-
-        const PROFILE_IDS: &[In] = &[
-            In::ProjectName,
-            In::ProfilePlantName,
-            In::ProfilePopulationEquivalent,
-            In::ProfileWastewater,
-            In::ProfileInfluentNitrogen,
-            In::ProfileInfluentChemicalOxygenDemand,
-            In::ProfileInfluentTotalOrganicCarbohydrates,
-            In::ProfileEffluentNitrogen,
-            In::ProfileEffluentChemicalOxygenDemand,
-            In::ProfileSewageGasProduced,
-            In::ProfileMethaneFraction,
-            In::ProfileGasSupply,
-            In::ProfilePurchaseOfBiogas,
-            In::ProfileTotalPowerConsumption,
-            In::ProfileOnSitePowerGeneration,
-            In::ProfileEmissionFactorElectricityMix,
-            In::ProfileHeatingOil,
-            In::ProfileSideStreamTotalNitrogen,
-            In::ProfileOperatingMaterialFeCl3,
-            In::ProfileOperatingMaterialFeClSO4,
-            In::ProfileOperatingMaterialCaOH2,
-            In::ProfileOperatingMaterialSyntheticPolymers,
-            In::ProfileSludgeBagsAreOpen,
-            In::ProfileSludgeStorageContainersAreOpen,
-            In::ProfileSludgeDisposal,
-            In::ProfileSludgeTransportDistance,
-            In::ProfileSludgeDigesterCount,
-        ];
-
-        let profile_ids: HashSet<_> = PROFILE_IDS.iter().copied().map(Id::from).collect();
-
-        let values: HashMap<_, _> = values
-            .into_iter()
-            .filter(|(i, _)| profile_ids.contains(i))
-            .collect();
-
-        calculate_emissions(&values, custom_edges, custom_leafs)
-    });
+    let profile_outcome = Memo::new(move |_| klick_usecases::calculate_profile(form_data.get()));
 
     let sensitivity_outcome = Memo::new(move |_| {
-        // FIXME apply filter for what should be in
         let custom_values = custom_values.get().into_iter();
-
         let values: HashMap<_, _> = form_data
             .get()
             .into_iter()
@@ -169,64 +118,17 @@ pub fn Tool(
         } else {
             Some(&*edges)
         };
-
-        const SENSITIVITY_IDS: &[In] = &[
-            In::ProjectName,
-            In::ProfilePlantName,
-            In::ProfilePopulationEquivalent,
-            In::ProfileWastewater,
-            In::ProfileInfluentNitrogen,
-            In::ProfileInfluentChemicalOxygenDemand,
-            In::ProfileInfluentTotalOrganicCarbohydrates,
-            In::ProfileEffluentNitrogen,
-            In::ProfileEffluentChemicalOxygenDemand,
-            In::ProfileSewageGasProduced,
-            In::ProfileMethaneFraction,
-            In::ProfileGasSupply,
-            In::ProfilePurchaseOfBiogas,
-            In::ProfileTotalPowerConsumption,
-            In::ProfileOnSitePowerGeneration,
-            In::ProfileEmissionFactorElectricityMix,
-            In::ProfileHeatingOil,
-            In::ProfileSideStreamTotalNitrogen,
-            In::ProfileOperatingMaterialFeCl3,
-            In::ProfileOperatingMaterialFeClSO4,
-            In::ProfileOperatingMaterialCaOH2,
-            In::ProfileOperatingMaterialSyntheticPolymers,
-            In::ProfileSludgeBagsAreOpen,
-            In::ProfileSludgeStorageContainersAreOpen,
-            In::ProfileSludgeDisposal,
-            In::ProfileSludgeTransportDistance,
-            In::ProfileSludgeDigesterCount,
-            In::SensitivityN2OCalculationMethod,
-            In::SensitivityCH4ChpCalculationMethod,
-            In::SensitivityN2OCustomFactor,
-            In::SensitivityN2OSideStreamFactor,
-            In::SensitivityCH4ChpCustomFactor,
-            In::SensitivityCO2FossilCustomFactor,
-            In::SensitivitySludgeBagsCustomFactor,
-            In::SensitivitySludgeStorageCustomFactor,
-        ];
-        let profile_ids: HashSet<_> = SENSITIVITY_IDS.iter().copied().map(Id::from).collect();
-        let values = values
-            .into_iter()
-            .filter(|(i, _)| profile_ids.contains(i) || i.is_custom())
-            .collect();
-
-        calculate_emissions(&values, custom_edges, leafs)
+        klick_usecases::calculate_sensitivity(values, custom_edges, leafs)
     });
 
     let recommendation_outcome = Memo::new(move |_| {
-        // FIXME apply filter for what should be in
         let custom_values = custom_values.get().into_iter();
-
         let values: HashMap<_, _> = form_data
             .get()
             .into_iter()
             .map(|(id, value)| (Id::from(id), value))
             .chain(custom_values)
             .collect();
-
         let edges = custom_edges.get();
         let leafs = custom_leafs.get();
         let custom_edges = if edges.is_empty() {
@@ -234,63 +136,7 @@ pub fn Tool(
         } else {
             Some(&*edges)
         };
-
-        const RECOMMENDATION_IDS: &[In] = &[
-            In::ProjectName,
-            In::ProfilePlantName,
-            In::ProfilePopulationEquivalent,
-            In::ProfileWastewater,
-            In::ProfileInfluentNitrogen,
-            In::ProfileInfluentChemicalOxygenDemand,
-            In::ProfileInfluentTotalOrganicCarbohydrates,
-            In::ProfileEffluentNitrogen,
-            In::ProfileEffluentChemicalOxygenDemand,
-            In::ProfileSewageGasProduced,
-            In::ProfileMethaneFraction,
-            In::ProfileGasSupply,
-            In::ProfilePurchaseOfBiogas,
-            In::ProfileTotalPowerConsumption,
-            In::ProfileOnSitePowerGeneration,
-            In::ProfileEmissionFactorElectricityMix,
-            In::ProfileHeatingOil,
-            In::ProfileSideStreamTotalNitrogen,
-            In::ProfileOperatingMaterialFeCl3,
-            In::ProfileOperatingMaterialFeClSO4,
-            In::ProfileOperatingMaterialCaOH2,
-            In::ProfileOperatingMaterialSyntheticPolymers,
-            In::ProfileSludgeBagsAreOpen,
-            In::ProfileSludgeStorageContainersAreOpen,
-            In::ProfileSludgeDisposal,
-            In::ProfileSludgeTransportDistance,
-            In::ProfileSludgeDigesterCount,
-            In::SensitivityN2OCalculationMethod,
-            In::SensitivityCH4ChpCalculationMethod,
-            In::SensitivityN2OCustomFactor,
-            In::SensitivityN2OSideStreamFactor,
-            In::SensitivityCH4ChpCustomFactor,
-            In::SensitivityCO2FossilCustomFactor,
-            In::SensitivitySludgeBagsCustomFactor,
-            In::SensitivitySludgeStorageCustomFactor,
-            In::RecommendationSludgeBagsAreOpen,
-            In::RecommendationSludgeStorageContainersAreOpen,
-            In::RecommendationN2OSideStreamCoverIsOpen,
-            In::RecommendationProcessEnergySaving,
-            In::RecommendationFossilEnergySaving,
-            In::RecommendationDistrictHeating,
-            In::RecommendationPhotovoltaicEnergyExpansion,
-            In::RecommendationEstimatedSelfPhotovolaticUsage,
-            In::RecommendationWindEnergyExpansion,
-            In::RecommendationEstimatedSelfWindEnergyUsage,
-            In::RecommendationWaterEnergyExpansion,
-            In::RecommendationEstimatedSelfWaterEnergyUsage,
-        ];
-        let profile_ids: HashSet<_> = RECOMMENDATION_IDS.iter().copied().map(Id::from).collect();
-        let values = values
-            .into_iter()
-            .filter(|(i, _)| profile_ids.contains(i) || i.is_custom())
-            .collect();
-
-        calculate_emissions(&values, custom_edges, leafs)
+        klick_usecases::calculate_recommendation(values, custom_edges, leafs)
     });
 
     let show_side_stream_controls = Memo::new(move |_| {
