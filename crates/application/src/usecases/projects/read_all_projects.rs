@@ -1,6 +1,5 @@
 use klick_domain::{Account, Project};
-
-use crate::ProjectRepo;
+use klick_interfaces::ProjectRepo;
 
 pub fn read_all_projects<R, D>(repo: &R, account: &Account) -> anyhow::Result<Vec<Project<D>>>
 where

@@ -1,8 +1,7 @@
 use anyhow::anyhow;
 
 use klick_domain::{Project, ProjectId};
-
-use crate::ProjectRepo;
+use klick_interfaces::ProjectRepo;
 
 pub fn read_project<R, D>(repo: &R, id: ProjectId) -> anyhow::Result<Project<D>>
 where

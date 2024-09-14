@@ -1,8 +1,7 @@
 use thiserror::Error;
 
 use klick_domain::{Account, EmailAddress, Password};
-
-use crate::AccountRepo;
+use klick_interfaces::AccountRepo;
 
 pub fn login<R>(repo: &R, email: &EmailAddress, password: &Password) -> Result<Account, Error>
 where

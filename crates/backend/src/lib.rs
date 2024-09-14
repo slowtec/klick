@@ -19,7 +19,8 @@ use tower_http::cors::{Any, CorsLayer};
 use url::Url;
 use uuid::Uuid;
 
-use klick_application::{usecases, AccountRepo as _, ProjectRepo};
+use klick_application::usecases;
+use klick_interfaces::{AccountRepo as _, ProjectRepo};
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
 use klick_domain::{self as domain, Account, EmailAddress, EmailNonce, Password, ProjectId};

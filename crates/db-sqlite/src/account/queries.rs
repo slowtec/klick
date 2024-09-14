@@ -1,8 +1,8 @@
 use diesel::{prelude::*, sqlite::SqliteConnection};
 use time::OffsetDateTime;
 
-use klick_application::AccountRecord;
 use klick_domain::EmailAddress;
+use klick_interfaces::AccountRecord;
 
 use crate::{account::models, schema};
 

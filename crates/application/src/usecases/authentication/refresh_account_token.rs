@@ -1,8 +1,7 @@
 use time::{Duration, OffsetDateTime};
 
 use klick_domain::{AccountToken, EmailAddress, EmailNonce, Nonce};
-
-use crate::AccountTokenRepo;
+use klick_interfaces::AccountTokenRepo;
 
 const DEFAULT_EXPIRY_DURATION: Duration = Duration::days(1);
 

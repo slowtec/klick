@@ -1,8 +1,9 @@
 use thiserror::Error;
 
 use klick_domain::{EmailNonce, HashedPassword};
+use klick_interfaces::{AccountRepo, AccountTokenRepo};
 
-use crate::{usecases, AccountRepo, AccountTokenRepo};
+use crate::usecases;
 
 pub fn reset_password<R>(
     repo: R,

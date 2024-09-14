@@ -1,6 +1,6 @@
 use time::OffsetDateTime;
 
-use crate::AccountTokenRepo;
+use klick_interfaces::AccountTokenRepo;
 
 pub fn delete_expired_account_tokens<R>(repo: &R) -> anyhow::Result<usize>
 where

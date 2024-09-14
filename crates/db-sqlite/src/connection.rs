@@ -7,9 +7,9 @@ use parking_lot::Mutex;
 use thiserror::Error;
 use time::OffsetDateTime;
 
-use klick_application::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
 use klick_boundary as boundary;
 use klick_domain::{self as domain, AccountToken, EmailAddress, EmailNonce, ProjectId};
+use klick_interfaces::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
 
 use crate::{account, account_token, project};
 

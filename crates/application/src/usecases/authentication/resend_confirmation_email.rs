@@ -1,6 +1,7 @@
 use klick_domain::{EmailAddress, Password};
+use klick_interfaces::{AccountRepo, AccountTokenRepo, NotificationGateway};
 
-use crate::{usecases, AccountRepo, AccountTokenRepo, NotificationGateway};
+use crate::usecases;
 
 pub fn resend_confirmation_email<R, N>(
     repo: &R,

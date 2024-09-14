@@ -2,8 +2,7 @@ use anyhow::anyhow;
 use time::OffsetDateTime;
 
 use klick_domain::{Account, ProjectId};
-
-use crate::ProjectRepo;
+use klick_interfaces::ProjectRepo;
 
 pub fn update_project<R, D>(
     repo: &R,

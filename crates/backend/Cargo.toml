@@ -13,6 +13,7 @@ klick-app-charts = "=0.0.0"
 klick-boundary = { version = "=0.0.0", features = ["axum"] }
 klick-db-sqlite = "=0.0.0"
 klick-domain = { path = "../domain" }
+klick-interfaces = "=0.0.0"
 klick-pdf-export = "=0.0.0"
 
 # External dependencies

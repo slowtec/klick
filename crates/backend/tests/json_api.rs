@@ -4,7 +4,7 @@ use reqwest::header;
 use serde_json::{json, Value};
 use tokio::net::TcpListener;
 
-use klick_application::{AccountRepo as _, AccountTokenRepo};
+use klick_interfaces::{AccountRepo as _, AccountTokenRepo};
 use klick_backend::Config;
 use klick_boundary as boundary;
 use klick_db_sqlite::Connection;

@@ -1,8 +1,9 @@
 use anyhow::bail;
 
 use klick_domain::EmailAddress;
+use klick_interfaces::{AccountRepo, AccountTokenRepo, NotificationEvent, NotificationGateway};
 
-use crate::{usecases, AccountRepo, AccountTokenRepo, NotificationEvent, NotificationGateway};
+use crate::usecases;
 
 pub fn request_password_reset<R, N>(
     repo: &R,

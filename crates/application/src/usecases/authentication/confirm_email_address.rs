@@ -1,8 +1,9 @@
 use thiserror::Error;
 
 use klick_domain::EmailNonce;
+use klick_interfaces::{AccountRepo, AccountTokenRepo};
 
-use crate::{usecases, AccountRepo, AccountTokenRepo};
+use crate::usecases;
 
 pub fn confirm_email_address<R>(repo: R, email_nonce: &EmailNonce) -> Result<(), Error>
 where

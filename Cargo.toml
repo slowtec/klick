@@ -1,5 +1,9 @@
 [workspace]
 members = [
+  # core crates
+  "crates/domain",
+  "crates/value-spec-proc-macro",
+
   # frontent crates
   "crates/app-api",
   "crates/app-charts",
@@ -17,9 +21,8 @@ members = [
   "crates/application",
   "crates/boundary",
   "crates/custom-values-parser",
-  "crates/domain",
   "crates/presenter",
-  "crates/value-spec-proc-macro",
+  "crates/interfaces",
 ]
 exclude = ["frontend"]
 resolver = "2"
@@ -43,6 +46,7 @@ klick-boundary              = { path = "crates/boundary"              }
 klick-codemirror            = { path = "crates/codemirror"            }
 klick-db-sqlite             = { path = "crates/db-sqlite"             }
 klick-domain                = { path = "crates/domain"                }
+klick-interfaces            = { path = "crates/interfaces"            }
 klick-pdf-export            = { path = "crates/pdf-export"            }
 klick-presenter             = { path = "crates/presenter"             }
 klick-value-spec-proc-macro = { path = "crates/value-spec-proc-macro" }

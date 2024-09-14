@@ -1,8 +1,8 @@
 use diesel::prelude::*;
 use time::OffsetDateTime;
 
-use klick_application as app;
 use klick_domain::{Account, EmailAddress, HashedPassword};
+use klick_interfaces::AccountRecord;
 
 use crate::schema;
 
@@ -26,7 +26,7 @@ pub struct AccountChangeset<'a> {
     pub created_at: i64,
 }
 
-impl TryFrom<AccountQuery> for app::AccountRecord {
+impl TryFrom<AccountQuery> for AccountRecord {
     type Error = anyhow::Error;
 
     fn try_from(from: AccountQuery) -> Result<Self, Self::Error> {
@@ -49,11 +49,11 @@ impl TryFrom<AccountQuery> for app::AccountRecord {
     }
 }
 
-impl<'a> TryFrom<&'a app::AccountRecord> for AccountChangeset<'a> {
+impl<'a> TryFrom<&'a AccountRecord> for AccountChangeset<'a> {
     type Error = anyhow::Error;
 
-    fn try_from(record: &'a app::AccountRecord) -> Result<Self, Self::Error> {
-        let app::AccountRecord { account, password } = record;
+    fn try_from(record: &'a AccountRecord) -> Result<Self, Self::Error> {
+        let AccountRecord { account, password } = record;
         let Account {
             email_address,
             email_confirmed,

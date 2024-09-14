@@ -1,6 +1,6 @@
 use time::{Duration, OffsetDateTime};
 
-use klick_application::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
+use klick_interfaces::{AccountRecord, AccountRepo, AccountTokenRepo, ProjectRepo};
 use klick_boundary::JsonFormData;
 use klick_db_sqlite::Connection;
 use klick_domain::{Account, AccountToken, EmailNonce, Nonce, Password, Project, ProjectId};

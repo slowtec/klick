@@ -2,8 +2,9 @@ use thiserror::Error;
 use time::OffsetDateTime;
 
 use klick_domain::{Account, EmailAddress, Password};
+use klick_interfaces::{AccountRecord, AccountRepo, AccountTokenRepo, NotificationGateway};
 
-use crate::{usecases, AccountRecord, AccountRepo, AccountTokenRepo, NotificationGateway};
+use crate::usecases;
 
 pub fn create_account<R, N>(
     repo: &R,

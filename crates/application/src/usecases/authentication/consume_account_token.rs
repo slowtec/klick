@@ -2,8 +2,7 @@ use thiserror::Error;
 use time::OffsetDateTime;
 
 use klick_domain::{AccountToken, EmailNonce};
-
-use crate::AccountTokenRepo;
+use klick_interfaces::AccountTokenRepo;
 
 pub fn consume_account_token<R>(repo: &R, email_nonce: &EmailNonce) -> Result<AccountToken, Error>
 where
