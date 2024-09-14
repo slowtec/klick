@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use serde::Serialize;
 
-use klick_domain::{self as domain, Id, InputValueId as In, Value};
+use klick_application as application;
+use klick_domain::{Id, InputValueId as In, Value};
 
 use crate::{Lng, ValueLabel, ValueUnit};
 
@@ -312,7 +313,7 @@ pub fn co2_equivalents_as_table(
     // TODO: use as parameger
     let lang = Lng::De;
 
-    let ids = domain::emission_group_ids(graph);
+    let ids = application::emission_group_ids(graph);
 
     // TODO: insert missing values with `Tons::zero()`
 

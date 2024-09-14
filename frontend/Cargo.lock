@@ -959,6 +959,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-application"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "klick-domain",
+ "log",
+ "thiserror",
+ "time",
+]
+
+[[package]]
 name = "klick-boundary"
 version = "0.0.0"
 dependencies = [
@@ -966,6 +977,7 @@ dependencies = [
  "derive_more",
  "http",
  "http-serde",
+ "klick-application",
  "klick-domain",
  "log",
  "serde",
@@ -1025,6 +1037,7 @@ dependencies = [
  "klick-app-api",
  "klick-app-charts",
  "klick-app-components",
+ "klick-application",
  "klick-boundary",
  "klick-codemirror",
  "klick-custom-values-parser",
@@ -1051,6 +1064,7 @@ dependencies = [
  "anyhow",
  "derive_more",
  "fluent-templates",
+ "klick-application",
  "klick-boundary",
  "klick-domain",
  "serde",

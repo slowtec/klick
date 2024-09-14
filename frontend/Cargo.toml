@@ -7,6 +7,7 @@ rust-version = "1.80"
 
 [dependencies]
 # Project dependencies
+klick-application = "=0.0.0"
 klick-app-api = "=0.0.0"
 klick-app-charts = "=0.0.0"
 klick-app-components = "=0.0.0"
@@ -38,6 +39,7 @@ time = { version = "0.3.36", features = ["macros", "formatting"] }
 
 [patch.crates-io]
 # Local paths to library crates in workspace
+klick-application           = { path = "../crates/application"           }
 klick-app-api               = { path = "../crates/app-api"               }
 klick-app-components        = { path = "../crates/app-components"        }
 klick-app-charts            = { path = "../crates/app-charts"            }

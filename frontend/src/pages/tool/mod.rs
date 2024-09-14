@@ -8,14 +8,14 @@ use leptos::*;
 use leptos_fluent::*;
 
 use klick_app_components::message::*;
+use klick_application::get_all_internal_nodes;
 use klick_boundary::{
     self as boundary, calculate, export_to_vec_pretty, import_from_slice, CalculationOutcome,
     FormData, JsonFormData, Project, ProjectId, SavedProject, UnsavedProject,
 };
 use klick_custom_values_parser::{self as custom_emission_parser, CustomEmission};
 use klick_domain::{
-    get_all_internal_nodes, input_value::optional as optional_in, units::Tons, Id,
-    InputValueId as In, Value,
+    input_value::optional as optional_in, units::Tons, Id, InputValueId as In, Value,
 };
 use klick_presenter as presenter;
 

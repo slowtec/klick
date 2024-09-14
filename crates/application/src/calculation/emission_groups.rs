@@ -5,12 +5,10 @@ use std::{
     ops::AddAssign,
 };
 
-use klick_value::{
-    specs::OutputValueId as Out,
+use klick_domain::{
     units::{Tons, Value},
+    OutputValueId as Out, OutputValueId,
 };
-
-use crate::OutputValueId;
 
 pub const SANKEY_EDGES: &[(Out, Out)] = &[
     (Out::Ch4SludgeBags, Out::Ch4Emissions),

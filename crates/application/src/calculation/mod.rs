@@ -4,13 +4,11 @@ use std::{collections::HashMap, hash::BuildHasher};
 mod tests;
 
 #[allow(clippy::wildcard_imports)]
-use crate::{Id, Value as V};
-use klick_value::{
+use klick_domain::{
     constants::*,
-    extract_optional_with_input_value_id as optional,
-    extract_required_with_input_value_id as required,
-    specs::{InputValueId as In, OutputValueId as Out},
+    input_value::{optional, required},
     units::*,
+    Id, InputValueId as In, OutputValueId as Out, Value as V,
 };
 
 mod emission_groups;

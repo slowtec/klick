@@ -11,6 +11,7 @@ publish = false
 workspace = true
 
 [dependencies]
+klick-application = { version = "0.0.0", path = "../application" }
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = { path = "../domain" }
 

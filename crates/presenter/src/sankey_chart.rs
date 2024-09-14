@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use derive_more::From;
 
+use klick_application as application;
 use klick_domain::{
-    self as domain,
     output_value::*,
     units::{Percent, RatioExt, Tons},
     Id, InputValueId as In, OutputValueId as Out, Value,
@@ -97,7 +97,7 @@ pub fn create_sankey_chart_data(
     graph: &[(Id, Id)],
     lang: Lng,
 ) -> (Nodes, Vec<(usize, usize)>) {
-    let node_ids = domain::emission_group_ids(graph);
+    let node_ids = application::emission_group_ids(graph);
 
     let nodes = node_ids
         .iter()

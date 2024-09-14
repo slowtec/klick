@@ -3,11 +3,10 @@ use leptos_fluent::*;
 
 use crate::pages::tool::{CalculationOutcome, Card, Cite, InfoBox, DWA_MERKBLATT_URL};
 
+use klick_application as application;
 use klick_boundary::FormData;
 use klick_codemirror::CodeMirror;
-use klick_domain::{
-    self as domain, output_value::required, InputValueId as In, OutputValueId as Out, Value,
-};
+use klick_domain::{output_value::required, InputValueId as In, OutputValueId as Out, Value};
 use klick_presenter::{Lng, ValueLabel};
 
 #[component]
@@ -125,7 +124,7 @@ pub fn AdditionalCustomEmissions(
 }
 
 fn get_all_internal_nodes_names() -> String {
-    domain::get_all_internal_nodes()
+    application::get_all_internal_nodes()
         .iter()
         .fold(String::new(), |mut acc, entry| {
             let sep = if acc.is_empty() { "" } else { ", " };

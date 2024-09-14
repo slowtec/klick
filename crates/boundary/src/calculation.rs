@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use klick_application as application;
 use klick_domain::{
     self as domain,
     input_value::{optional, required},
@@ -19,7 +20,7 @@ pub fn calculate(
 ) -> CalculationOutcome {
     log::debug!("Calculate");
 
-    let mut calc_output = domain::calculate(input, custom_edges)
+    let mut calc_output = application::calculate(input, custom_edges)
         .map_err(|err| log::warn!("{err}"))
         .ok();
 
@@ -47,7 +48,7 @@ pub fn calculate(
     let maybe_graph = calc_output.clone().map(|(_, graph)| graph).clone();
 
     let sensitivity_n2o_calculations =
-        domain::calculate_all_n2o_emission_factor_scenarios(input, maybe_graph.as_deref())
+        application::calculate_all_n2o_emission_factor_scenarios(input, maybe_graph.as_deref())
             .ok()
             .map(|results| {
                 results
@@ -62,7 +63,7 @@ pub fn calculate(
         let sewage_gas_produced = required!(In::ProfileSewageGasProduced, &input).unwrap();
         let methane_fraction = required!(In::ProfileMethaneFraction, &input).unwrap();
         let custom_ch4_chp_emission_factor = optional!(In::SensitivityCH4ChpCustomFactor, &input);
-        let results = domain::calculate_all_ch4_chp_emission_factor_scenarios(
+        let results = application::calculate_all_ch4_chp_emission_factor_scenarios(
             sewage_gas_produced,
             methane_fraction,
             custom_ch4_chp_emission_factor,
