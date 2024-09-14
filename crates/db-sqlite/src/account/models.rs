@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use time::OffsetDateTime;
 
 use klick_application as app;
-use klick_domain::authentication::{Account, EmailAddress, HashedPassword};
+use klick_domain::{Account, EmailAddress, HashedPassword};
 
 use crate::schema;
 

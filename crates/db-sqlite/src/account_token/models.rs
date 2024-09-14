@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 use time::OffsetDateTime;
 
-use klick_domain::authentication::{AccountToken, EmailAddress, EmailNonce, Nonce};
+use klick_domain::{AccountToken, EmailAddress, EmailNonce, Nonce};
 
 use crate::schema;
 

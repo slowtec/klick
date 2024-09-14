@@ -1,7 +1,7 @@
 use diesel::{prelude::*, sqlite::SqliteConnection};
 use time::OffsetDateTime;
 
-use klick_domain::authentication::{AccountToken, EmailAddress, EmailNonce};
+use klick_domain::{AccountToken, EmailAddress, EmailNonce};
 
 use crate::{account, account_token::models, schema};
 

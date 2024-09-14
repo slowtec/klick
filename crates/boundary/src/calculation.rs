@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use klick_application as application;
 use klick_domain::{
     self as domain, optional_input_value_id as optional, required_input_value_id as required,
-    units::Tons, Id, InputValueId as In, OutputValueId as Out, Value,
+    units::Tons, InputValueId as In, OutputValueId as Out, Value, ValueId as Id,
 };
 
 use crate::CalculationOutcome;

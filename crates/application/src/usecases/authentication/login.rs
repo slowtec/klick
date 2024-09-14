@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use klick_domain::authentication::{Account, EmailAddress, Password};
+use klick_domain::{Account, EmailAddress, Password};
 
 use crate::AccountRepo;
 

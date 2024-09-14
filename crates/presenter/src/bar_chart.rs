@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use klick_domain::{
     units::{Percent, RatioExt, Tons},
-    Id, OutputValueId as Out, Value,
+    OutputValueId as Out, Value, ValueId as Id,
 };
 
 use crate::{Lng, ValueLabel};

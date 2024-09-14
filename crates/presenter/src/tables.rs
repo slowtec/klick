@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::Serialize;
 
 use klick_application as application;
-use klick_domain::{Id, InputValueId as In, Value};
+use klick_domain::{InputValueId as In, Value, ValueId as Id};
 
 use crate::{Lng, ValueLabel, ValueUnit};
 

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs::File, io::prelude::*};
 
-use klick_domain::{Id, InputValueId as In, Value};
+use klick_domain::{InputValueId as In, Value, ValueId as Id};
 
 use klick_pdf_export::export_to_pdf;
 

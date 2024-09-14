@@ -4,7 +4,7 @@ use klick_domain::{
     constants::*,
     required_output_value_id as out,
     units::{Value as V, *},
-    InputValueId as In, OutputValueId as Out, *,
+    InputValueId as In, OutputValueId as Out, ValueId as Id,
 };
 
 use crate::*;

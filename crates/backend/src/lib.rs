@@ -22,11 +22,7 @@ use uuid::Uuid;
 use klick_application::{usecases, AccountRepo as _, ProjectRepo};
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
-use klick_domain::{
-    self as domain,
-    authentication::{Account, EmailAddress, EmailNonce, Password},
-    ProjectId,
-};
+use klick_domain::{self as domain, Account, EmailAddress, EmailNonce, Password, ProjectId};
 use klick_pdf_export::export_to_pdf;
 
 mod adapters;

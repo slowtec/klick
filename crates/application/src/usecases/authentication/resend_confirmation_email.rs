@@ -1,4 +1,4 @@
-use klick_domain::authentication::{EmailAddress, Password};
+use klick_domain::{EmailAddress, Password};
 
 use crate::{usecases, AccountRepo, AccountTokenRepo, NotificationGateway};
 

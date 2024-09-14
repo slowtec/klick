@@ -33,8 +33,8 @@ mod conversion;
 
 pub const CURRENT_VERSION: u32 = 9;
 
-type Values = HashMap<domain::Id, domain::Value>;
-type Graph = Vec<(domain::Id, domain::Id)>;
+type Values = HashMap<domain::ValueId, domain::Value>;
+type Graph = Vec<(domain::ValueId, domain::ValueId)>;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct CalculationOutcome {

@@ -8,7 +8,7 @@ use klick_application::{AccountRepo as _, AccountTokenRepo};
 use klick_backend::Config;
 use klick_boundary as boundary;
 use klick_db_sqlite::Connection;
-use klick_domain::authentication::{EmailAddress, EmailNonce, Nonce};
+use klick_domain::{EmailAddress, EmailNonce, Nonce};
 
 async fn run_server() -> (SocketAddr, Connection) {
     run_server_with_default_test_config().await

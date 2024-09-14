@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use leptos::*;
 
-use klick_domain::{Id, Value};
+use klick_domain::{Value, ValueId as Id};
 use klick_presenter as presenter;
 
 use klick_app_charts::{Color, SankeyChart, SankeyData};

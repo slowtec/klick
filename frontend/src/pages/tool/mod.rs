@@ -15,7 +15,7 @@ use klick_boundary::{
 };
 use klick_custom_values_parser::{self as custom_emission_parser, CustomEmission};
 use klick_domain::{
-    optional_input_value_id as optional_in, units::Tons, Id, InputValueId as In, Value,
+    optional_input_value_id as optional_in, units::Tons, InputValueId as In, Value, ValueId as Id,
 };
 use klick_presenter as presenter;
 

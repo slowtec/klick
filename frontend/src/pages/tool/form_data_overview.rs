@@ -8,7 +8,7 @@ use klick_app_components::{
     forms::{dom_node_id, render_field},
     icons,
 };
-use klick_domain::{Id, InputValueId as In, Value, ValueType};
+use klick_domain::{InputValueId as In, Value, ValueId as Id, ValueType};
 use klick_presenter::{
     plant_profile_as_table, sensitivity_parameters_as_table, Formatting, Lng, TableRow,
 };

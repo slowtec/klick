@@ -1,4 +1,4 @@
-use klick_domain::{authentication::EmailAddress, Project, ProjectId};
+use klick_domain::{EmailAddress, Project, ProjectId};
 
 pub trait Repo<T> {
     fn find_project(&self, id: &ProjectId) -> anyhow::Result<Option<Project<T>>>;

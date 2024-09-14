@@ -6,7 +6,7 @@ use klick_application as application;
 use klick_domain::{
     required_output_value_id as required,
     units::{Percent, RatioExt, Tons},
-    Id, InputValueId as In, OutputValueId as Out, Value,
+    InputValueId as In, OutputValueId as Out, Value, ValueId as Id,
 };
 
 use crate::{Formatting, Lng, ValueColor, ValueLabel};
