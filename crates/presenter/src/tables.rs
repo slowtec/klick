@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use serde::Serialize;
 
 use klick_domain::{InputValueId as In, Value, ValueId as Id};
-use klick_interfaces::{self as interfaces, ValueGroupId, ValueGroupPresenter as _};
+use klick_interfaces::{
+    self as interfaces, TablePresenter as _, ValueGroupId, ValueGroupPresenter as _,
+};
 
 use crate::{Lng, ValueLabel, ValueUnit};
 
@@ -32,6 +34,56 @@ impl Formatting {
             Self::Text => id.label(lang),
             Self::LaTeX => id.label_latex(lang),
         }
+    }
+}
+
+pub struct TablePresenter {
+    lang: Lng,
+    formatting: Formatting,
+}
+
+impl interfaces::TablePresenter for TablePresenter {
+    fn present_table(
+        &self,
+        data: HashMap<Id, Value>,
+        sections: Vec<(String, Vec<Id>)>,
+    ) -> interfaces::Table {
+        let sections = sections
+            .into_iter()
+            .map(|(title, sections)| interfaces::TableSection {
+                title,
+                rows: sections
+                    .into_iter()
+                    .map(|id| {
+                        let label = self.formatting.fmt_label(id.clone(), self.lang).to_string();
+                        let value = {
+                            let mut value = data.get(&id).cloned();
+                            if value.is_none() {
+                                match &id {
+                                    Id::In(id) => {
+                                        value = id.default_value();
+                                    }
+                                    Id::Out(id) => {
+                                        value = id.default_value();
+                                    }
+                                    Id::Custom(_) => {}
+                                }
+                            }
+                            value.as_ref().map(|v| self.lang.format_value(v))
+                        };
+                        let unit = self.formatting.fmt(id.clone()).map(Into::into);
+
+                        interfaces::TableRow {
+                            id,
+                            label,
+                            value,
+                            unit,
+                        }
+                    })
+                    .collect(),
+            })
+            .collect();
+        interfaces::Table { sections }
     }
 }
 
@@ -176,17 +228,20 @@ impl interfaces::ValueGroupPresenter for ValueGroupPresenter {
     }
 }
 
+// TODO: #[deprecated]
 #[derive(Default, Serialize)]
 pub struct Table {
     pub sections: Vec<TableSection>,
 }
 
+// TODO: #[deprecated]
 #[derive(Serialize)]
 pub struct TableSection {
     pub title: String,
     pub rows: Vec<TableRow>,
 }
 
+// TODO: #[deprecated]
 #[derive(Serialize)]
 pub struct TableRow {
     #[serde(skip_serializing)]
@@ -194,6 +249,39 @@ pub struct TableRow {
     pub label: String,
     pub value: Option<String>,
     pub unit: Option<String>,
+}
+
+impl From<interfaces::Table> for Table {
+    fn from(from: interfaces::Table) -> Self {
+        let sections = from.sections.into_iter().map(Into::into).collect();
+        Self { sections }
+    }
+}
+
+impl From<interfaces::TableRow> for TableRow {
+    fn from(from: interfaces::TableRow) -> Self {
+        let interfaces::TableRow {
+            id,
+            label,
+            value,
+            unit,
+        } = from;
+        Self {
+            id,
+            label,
+            value,
+            unit,
+        }
+    }
+}
+
+impl From<interfaces::TableSection> for TableSection {
+    fn from(from: interfaces::TableSection) -> Self {
+        let interfaces::TableSection { title, rows } = from;
+        let rows = rows.into_iter().map(Into::into).collect();
+
+        Self { title, rows }
+    }
 }
 
 #[must_use]
@@ -237,40 +325,11 @@ pub fn plant_profile_as_table(
     .into_iter()
     .map(|id| presenter.present_value_group(id))
     .chain(custom_emissions)
-    .map(|(title, ids)| TableSection {
-        title: title.to_string(),
-        rows: ids
-            .into_iter()
-            .map(|id| {
-                let label = formatting.fmt_label(id.clone(), lang).to_string();
-                let value = {
-                    let mut value = data.get(&id).cloned();
-                    if value.is_none() {
-                        match &id {
-                            Id::In(id) => {
-                                value = id.default_value();
-                            }
-                            Id::Out(id) => {
-                                value = id.default_value();
-                            }
-                            Id::Custom(_) => {}
-                        };
-                    }
-                    value.as_ref().map(|v| lang.format_value(v))
-                };
-                let unit = formatting.fmt(id.clone()).map(Into::into);
-                TableRow {
-                    id,
-                    label,
-                    value,
-                    unit,
-                }
-            })
-            .collect(),
-    })
     .collect();
 
-    Table { sections }
+    let table_presenter = TablePresenter { lang, formatting };
+    let table: interfaces::Table = table_presenter.present_table(data.clone(), sections);
+    Table::from(table)
 }
 
 #[must_use]
@@ -288,39 +347,11 @@ pub fn sensitivity_parameters_as_table(
     ]
     .into_iter()
     .map(|id| presenter.present_value_group(id))
-    .map(|(title, sections)| TableSection {
-        title,
-        rows: sections
-            .into_iter()
-            .map(|id| {
-                let label = formatting.fmt_label(id.clone(), lang).to_string();
-                let value = {
-                    let mut value = data.get(&id).cloned();
-                    if value.is_none() {
-                        match &id {
-                            Id::In(id) => {
-                                value = id.default_value();
-                            }
-                            Id::Out(id) => {
-                                value = id.default_value();
-                            }
-                            Id::Custom(_) => {}
-                        }
-                    }
-                    value.as_ref().map(|v| lang.format_value(v))
-                };
-                let unit = formatting.fmt(id.clone()).map(Into::into);
-                TableRow {
-                    id,
-                    label,
-                    value,
-                    unit,
-                }
-            })
-            .collect(),
-    })
     .collect();
-    Table { sections }
+
+    let table_presenter = TablePresenter { lang, formatting };
+    let table: interfaces::Table = table_presenter.present_table(data.clone(), sections);
+    Table::from(table)
 }
 
 #[must_use]
