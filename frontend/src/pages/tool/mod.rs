@@ -14,10 +14,11 @@ use klick_boundary::{
 };
 use klick_custom_values_parser::{self as custom_emission_parser, CustomEmission};
 use klick_domain::{
-    optional_input_value_id as optional_in, units::Tons, InputValueId as In, Value, ValueId as Id,
+    optional_input_value_id as optional_in, units::Tons, CalculationOutcome, InputValueId as In,
+    Value, ValueId as Id,
 };
 use klick_presenter as presenter;
-use klick_usecases::{get_all_internal_nodes, CalculationOutcome};
+use klick_usecases::get_all_internal_nodes;
 
 use crate::{api::AuthorizedApi, current_lang, SECTION_ID_TOOL_HOME};
 

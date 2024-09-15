@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use klick_domain::{units::*, InputValueId as In, Value as V, ValueId as Id};
+use klick_domain::{units::*, Edge, Edges, InputValueId as In, Value as V, ValueId as Id, Values};
 
-use crate::{calculate, Edge, Edges, Values};
+use crate::calculate;
 
 pub fn calculate_all_n2o_emission_factor_scenarios(
     values: &HashMap<Id, Value>,

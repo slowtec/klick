@@ -2,9 +2,9 @@
 
 use fluent_templates::Loader;
 
-use klick_domain as domain;
+use klick_domain::{self as domain, InputValueId, OutputValueId};
 
-use crate::{InputValueId, Lng, OutputValueId, LOCALES};
+use crate::{Lng, LOCALES};
 
 pub trait ValueLabel {
     fn label(&self, lng: Lng) -> String;

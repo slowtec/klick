@@ -1,6 +1,4 @@
-use klick_domain::OutputValueId;
-
-use crate::InputValueId;
+use klick_domain::{InputValueId, OutputValueId};
 
 // TODO:
 // Actually, we should derive the units directly from the domain layer

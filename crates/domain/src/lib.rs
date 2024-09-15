@@ -12,6 +12,6 @@ pub use self::{
         constants,
         specs::{InputValueId, OutputValueId},
         units::{self, Value, ValueType},
-        ValueId,
+        CalculationOutcome, Edge, Edges, ValueId, Values,
     },
 };

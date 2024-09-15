@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
-use klick_domain::{InputValueId as In, Value, ValueId as Id};
+use klick_domain::{CalculationOutcome, InputValueId as In, Value, ValueId as Id};
 
-use crate::{calculate_emissions, CalculationOutcome};
+use crate::calculate_emissions;
 
 const PROFILE_IDS: &[In] = &[
     In::ProjectName,

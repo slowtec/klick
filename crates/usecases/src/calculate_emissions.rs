@@ -2,31 +2,14 @@ use std::{collections::HashMap, hash::BuildHasher};
 
 use klick_domain::{
     constants::*, optional_input_value_id as optional, required_input_value_id as required,
-    units::*, InputValueId as In, OutputValueId as Out, Value as V, ValueId as Id,
+    units::*, CalculationOutcome, Edge, Edges, InputValueId as In, OutputValueId as Out,
+    Value as V, ValueId as Id, Values,
 };
 
 use crate::{
     calculate_all_ch4_chp_emission_factor_scenarios, calculate_all_n2o_emission_factor_scenarios,
     calculate_ch4_chp,
 };
-
-pub type Edge = (Id, Id);
-pub type Edges = Vec<Edge>;
-pub type Values = HashMap<Id, Value>;
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct CalculationOutcome {
-    pub input: Values,
-    pub output: Option<Values>,
-    pub graph: Option<Edges>,
-
-    // Used to create bar chart input
-    pub sensitivity_n2o_calculations: Option<Vec<(N2oEmissionFactorCalcMethod, Values)>>,
-
-    // Used to create bar chart input
-    pub sensitivity_ch4_chp_calculations:
-        Option<Vec<(Ch4ChpEmissionFactorCalcMethod, Tons, Factor)>>,
-}
 
 #[must_use]
 pub fn calculate_emissions(

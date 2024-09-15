@@ -19,10 +19,9 @@ use klick_boundary as boundary;
 use klick_domain::{
     self as domain, optional_output_value_id as optional, required_output_value_id as required,
     units::{Ch4ChpEmissionFactorCalcMethod, Factor, N2oEmissionFactorCalcMethod, Tons},
-    InputValueId as In, OutputValueId as Out, Value, ValueId as Id,
+    CalculationOutcome, InputValueId as In, OutputValueId as Out, Value, ValueId as Id,
 };
 use klick_presenter::{self as presenter, Formatting, Lng, ValueLabel};
-use klick_usecases::CalculationOutcome;
 
 const MARKDOWN_TEMPLATE: &str = include_str!("../templates/report.md.template");
 const MARKDOWN_TEMPLATE_NAME: &str = "report.md";
