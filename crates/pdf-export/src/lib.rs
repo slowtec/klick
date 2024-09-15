@@ -359,8 +359,12 @@ fn render_svg_sankey_chart(
     charts::ssr::sankey_chart(sankey, 1200.0, 800.0, number_format, 16.0, None)
 }
 
-fn render_pdf(markdown: String) -> anyhow::Result<Vec<u8>> {
+fn render_pdf(mut markdown: String) -> anyhow::Result<Vec<u8>> {
     log::debug!("Render PDF");
+    markdown = markdown.replace("N₂O", "$N_2O$");
+    markdown = markdown.replace("CO₂", "$CO_2$");
+    markdown = markdown.replace("CH₄","$CH_4$");
+
     let mut child = Command::new("pandoc")
         .args(["-o", "-", "-f", "markdown", "-t", "pdf"])
         .stdin(Stdio::piped())

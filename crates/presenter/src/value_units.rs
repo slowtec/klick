@@ -131,4 +131,12 @@ impl ValueUnit for ValueId {
             ValueId::Out(id) => id.unit_as_text(),
         }
     }
+
+    fn unit_as_latex(&self) -> Option<&'static str> {
+        match self {
+            ValueId::Custom(_) => Some(LATEX_TONS), // Currently only tons are allowed
+            ValueId::In(id) => id.unit_as_latex(),
+            ValueId::Out(id) => id.unit_as_latex(),
+        }
+    }
 }
