@@ -47,6 +47,7 @@ klick-boundary              = { path = "../crates/boundary"              }
 klick-codemirror            = { path = "../crates/codemirror"            }
 klick-custom-values-parser  = { path = "../crates/custom-values-parser"  }
 klick-domain                = { path = "../crates/domain"                }
+klick-interfaces            = { path = "../crates/interfaces"            }
 klick-presenter             = { path = "../crates/presenter"             }
 klick-usecases              = { path = "../crates/usecases"              }
 klick-value-spec-proc-macro = { path = "../crates/value-spec-proc-macro" }

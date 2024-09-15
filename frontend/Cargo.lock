@@ -1050,6 +1050,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "klick-interfaces"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "klick-domain",
+ "time",
+]
+
+[[package]]
 name = "klick-presenter"
 version = "0.0.0"
 dependencies = [
@@ -1058,6 +1067,7 @@ dependencies = [
  "fluent-templates",
  "klick-boundary",
  "klick-domain",
+ "klick-interfaces",
  "klick-usecases",
  "serde",
 ]

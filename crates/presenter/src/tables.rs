@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use serde::Serialize;
 
 use klick_domain::{InputValueId as In, Value, ValueId as Id};
+use klick_interfaces::{self as interfaces, ValueGroupId, ValueGroupPresenter as _};
 
 use crate::{Lng, ValueLabel, ValueUnit};
 
@@ -34,6 +35,147 @@ impl Formatting {
     }
 }
 
+pub struct ValueGroupPresenter {
+    lang: Lng,
+    formatting: Formatting,
+}
+
+impl interfaces::ValueGroupPresenter for ValueGroupPresenter {
+    fn present_value_group(&self, id: ValueGroupId) -> (String, Vec<Id>) {
+        use ValueGroupId as G;
+
+        let (label, ids) = match id {
+            G::PlantDetails => (
+                match self.lang {
+                    Lng::De => "Angaben zur Kläranlage",
+                    Lng::En => "Sewage treatment plant details",
+                },
+                vec![
+                    In::ProfilePlantName,
+                    In::ProfilePopulationEquivalent,
+                    In::ProfileWastewater,
+                ],
+            ),
+            G::InfluentParameters => (
+                match self.lang {
+                    Lng::De => "Zulauf-Parameter (Jahresmittelwerte)",
+                    Lng::En => "Inflow parameters (annual averages)",
+                },
+                vec![
+                    In::ProfileInfluentNitrogen,
+                    In::ProfileInfluentChemicalOxygenDemand,
+                    In::ProfileInfluentTotalOrganicCarbohydrates,
+                ],
+            ),
+            G::EffluentParameters => (
+                match self.lang {
+                    Lng::De => "Ablauf-Parameter (Jahresmittelwerte)",
+                    Lng::En => "Outflow parameters (annual averages)",
+                },
+                vec![
+                    In::ProfileEffluentNitrogen,
+                    In::ProfileEffluentChemicalOxygenDemand,
+                ],
+            ),
+            G::EnergyConsumption => (
+                match self.lang {
+                    Lng::De => "Energiebedarf",
+                    Lng::En => "Energy requirements",
+                },
+                vec![
+                    In::ProfileTotalPowerConsumption,
+                    In::ProfileOnSitePowerGeneration,
+                    In::ProfileEmissionFactorElectricityMix,
+                    In::ProfileGasSupply,
+                    In::ProfilePurchaseOfBiogas,
+                    In::ProfileHeatingOil,
+                    In::ProfileSewageGasProduced,
+                    In::ProfileMethaneFraction,
+                ],
+            ),
+            G::SludgeTreatment => (
+                match self.lang {
+                    Lng::De => "Klärschlammbehandlung",
+                    Lng::En => "Sewage sludge treatment",
+                },
+                vec![
+                    In::ProfileSludgeDigesterCount,
+                    In::ProfileSludgeDisposal,
+                    In::ProfileSludgeTransportDistance,
+                    In::ProfileSludgeBagsAreOpen,
+                    In::ProfileSludgeStorageContainersAreOpen,
+                ],
+            ),
+            G::SideStreamTreatment => (
+                match self.lang {
+                    Lng::De => "Prozesswasserbehandlung",
+                    Lng::En => "Process water treatment",
+                },
+                vec![In::ProfileSideStreamTotalNitrogen],
+            ),
+            G::OperatingMaterials => (
+                match self.lang {
+                    Lng::De => "Eingesetzte Betriebsstoffe",
+                    Lng::En => "Operating materials used",
+                },
+                vec![
+                    In::ProfileOperatingMaterialFeCl3,
+                    In::ProfileOperatingMaterialFeClSO4,
+                    In::ProfileOperatingMaterialCaOH2,
+                    In::ProfileOperatingMaterialSyntheticPolymers,
+                ],
+            ),
+            G::N2OEmissions => (
+                match self.lang {
+                    Lng::De => "Lachgasemissionen",
+                    Lng::En => "Nitrous oxide emissions",
+                },
+                vec![
+                    In::SensitivityN2OCalculationMethod,
+                    In::SensitivityN2OCustomFactor,
+                    In::SensitivityN2OSideStreamFactor,
+                ],
+            ),
+            G::CH4ChpEmissions => (
+                match self.lang {
+                    Lng::De => "Methanemissionen aus Blockheizkraftwerken (BHKW)",
+                    Lng::En => "Methane emissions from combined heat and power plants (CHP)",
+                },
+                vec![
+                    In::SensitivityCH4ChpCalculationMethod,
+                    In::SensitivityCH4ChpCustomFactor,
+                ],
+            ),
+            G::CH4SludgeEmissions => (
+                match self.lang {
+                    Lng::De => {
+                        "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung"
+                    }
+                    Lng::En => "Methane emissions from open digestion towers and sludge storage",
+                },
+                vec![
+                    In::SensitivitySludgeBagsCustomFactor,
+                    In::SensitivitySludgeStorageCustomFactor,
+                ],
+            ),
+            G::FossilCO2Emissions => (
+                match self.formatting {
+                    Formatting::Text => match self.lang {
+                        Lng::De => "Fossile CO₂-Emissionen aus Abwasser",
+                        Lng::En => "Fossil CO₂ emissions from wastewater",
+                    },
+                    Formatting::LaTeX => match self.lang {
+                        Lng::De => "Fossile $CO_2$-Emissionen aus Abwasser",
+                        Lng::En => "Fossil $CO_2$ emissions from wastewater",
+                    },
+                },
+                vec![In::SensitivityCO2FossilCustomFactor],
+            ),
+        };
+        (label.to_string(), ids.into_iter().map(Id::from).collect())
+    }
+}
+
 #[derive(Default, Serialize)]
 pub struct Table {
     pub sections: Vec<TableSection>,
@@ -60,13 +202,14 @@ pub fn plant_profile_as_table(
     formatting: Formatting,
     lang: Lng,
 ) -> Table {
-    let custom_emissions: Option<(&str, Vec<_>)> = if data.iter().any(|(id, _)| id.is_custom()) {
+    let custom_emissions: Option<(_, Vec<_>)> = if data.iter().any(|(id, _)| id.is_custom()) {
         Some((
             {
                 match lang {
                     Lng::De => "Benutzerdefinierte Emissionen",
                     Lng::En => "Custom defined emissions",
                 }
+                .to_string()
             },
             data.iter()
                 .filter_map(|(id, _)| {
@@ -81,132 +224,41 @@ pub fn plant_profile_as_table(
     } else {
         None
     };
+    let presenter = ValueGroupPresenter { lang, formatting };
     let sections = [
-        (
-            {
-                match lang {
-                    Lng::De => "Angaben zur Kläranlage",
-                    Lng::En => "Sewage treatment plant details",
-                }
-            },
-            vec![
-                In::ProfilePlantName,
-                In::ProfilePopulationEquivalent,
-                In::ProfileWastewater,
-            ],
-        ),
-        (
-            {
-                match lang {
-                    Lng::De => "Zulauf-Parameter (Jahresmittelwerte)",
-                    Lng::En => "Inflow parameters (annual averages)",
-                }
-            },
-            vec![
-                In::ProfileInfluentNitrogen,
-                In::ProfileInfluentChemicalOxygenDemand,
-                In::ProfileInfluentTotalOrganicCarbohydrates,
-            ],
-        ),
-        (
-            {
-                match lang {
-                    Lng::De => "Ablauf-Parameter (Jahresmittelwerte)",
-                    Lng::En => "Outflow parameters (annual averages)",
-                }
-            },
-            vec![
-                In::ProfileEffluentNitrogen,
-                In::ProfileEffluentChemicalOxygenDemand,
-            ],
-        ),
-        (
-            {
-                match lang {
-                    Lng::De => "Energiebedarf",
-                    Lng::En => "Energy requirements",
-                }
-            },
-            vec![
-                In::ProfileTotalPowerConsumption,
-                In::ProfileOnSitePowerGeneration,
-                In::ProfileEmissionFactorElectricityMix,
-                In::ProfileGasSupply,
-                In::ProfilePurchaseOfBiogas,
-                In::ProfileHeatingOil,
-                In::ProfileSewageGasProduced,
-                In::ProfileMethaneFraction,
-            ],
-        ),
-        (
-            {
-                match lang {
-                    Lng::De => "Klärschlammbehandlung",
-                    Lng::En => "Sewage sludge treatment",
-                }
-            },
-            vec![
-                In::ProfileSludgeDigesterCount,
-                In::ProfileSludgeDisposal,
-                In::ProfileSludgeTransportDistance,
-                In::ProfileSludgeBagsAreOpen,
-                In::ProfileSludgeStorageContainersAreOpen,
-            ],
-        ),
-        (
-            {
-                match lang {
-                    Lng::De => "Prozesswasserbehandlung",
-                    Lng::En => "Process water treatment",
-                }
-            },
-            vec![In::ProfileSideStreamTotalNitrogen],
-        ),
-        (
-            {
-                match lang {
-                    Lng::De => "Eingesetzte Betriebsstoffe",
-                    Lng::En => "Operating materials used",
-                }
-            },
-            vec![
-                In::ProfileOperatingMaterialFeCl3,
-                In::ProfileOperatingMaterialFeClSO4,
-                In::ProfileOperatingMaterialCaOH2,
-                In::ProfileOperatingMaterialSyntheticPolymers,
-            ],
-        ),
+        ValueGroupId::PlantDetails,
+        ValueGroupId::InfluentParameters,
+        ValueGroupId::EffluentParameters,
+        ValueGroupId::EnergyConsumption,
+        ValueGroupId::SludgeTreatment,
+        ValueGroupId::SideStreamTreatment,
+        ValueGroupId::OperatingMaterials,
     ]
     .into_iter()
-    .map(|(title, ids)| (title, ids.into_iter().map(Id::In).collect()))
+    .map(|id| presenter.present_value_group(id))
     .chain(custom_emissions)
     .map(|(title, ids)| TableSection {
         title: title.to_string(),
         rows: ids
             .into_iter()
             .map(|id| {
-                let label = match id {
-                    Id::Custom(ref id) => id.clone(),
-                    Id::In(id) => formatting.fmt_label(id, lang).to_string(),
-                    Id::Out(id) => formatting.fmt_label(id, lang).to_string(),
-                };
+                let label = formatting.fmt_label(id.clone(), lang).to_string();
                 let value = {
                     let mut value = data.get(&id).cloned();
                     if value.is_none() {
-                        match id {
+                        match &id {
                             Id::In(id) => {
                                 value = id.default_value();
                             }
-                            _ => {}
+                            Id::Out(id) => {
+                                value = id.default_value();
+                            }
+                            Id::Custom(_) => {}
                         };
                     }
                     value.as_ref().map(|v| lang.format_value(v))
                 };
-                let unit = match id {
-                    Id::Custom(_) => Some("t".to_string()), // FIXME @markus
-                    Id::In(id) => formatting.fmt(id).map(std::string::ToString::to_string),
-                    Id::Out(id) => formatting.fmt(id).map(std::string::ToString::to_string),
-                };
+                let unit = formatting.fmt(id.clone()).map(Into::into);
                 TableRow {
                     id,
                     label,
@@ -227,70 +279,37 @@ pub fn sensitivity_parameters_as_table(
     formatting: Formatting,
     lang: Lng,
 ) -> Table {
-    let sections = vec![
-        (
-            match lang {
-                Lng::De => "Lachgasemissionen",
-                Lng::En => "Nitrous oxide emissions",
-            },
-            vec![
-                In::SensitivityN2OCalculationMethod,
-                In::SensitivityN2OCustomFactor,
-                In::SensitivityN2OSideStreamFactor,
-            ],
-        ),
-        (
-            match lang {
-                Lng::De => "Methanemissionen aus Blockheizkraftwerken (BHKW)",
-                Lng::En => "Methane emissions from combined heat and power plants (CHP)",
-            },
-            vec![
-                In::SensitivityCH4ChpCalculationMethod,
-                In::SensitivityCH4ChpCustomFactor,
-            ],
-        ),
-        (
-            match lang {
-                Lng::De => "Methanemissionen aus offenen Faultürmen und bei der Schlammlagerung",
-                Lng::En => "Methane emissions from open digestion towers and sludge storage",
-            },
-            vec![
-                In::SensitivitySludgeBagsCustomFactor,
-                In::SensitivitySludgeStorageCustomFactor,
-            ],
-        ),
-        (
-            match formatting {
-                Formatting::Text => match lang {
-                    Lng::De => "Fossile CO₂-Emissionen aus Abwasser",
-                    Lng::En => "Fossil CO₂ emissions from wastewater",
-                },
-                Formatting::LaTeX => match lang {
-                    Lng::De => "Fossile $CO_2$-Emissionen aus Abwasser",
-                    Lng::En => "Fossil $CO_2$ emissions from wastewater",
-                },
-            },
-            vec![In::SensitivityCO2FossilCustomFactor],
-        ),
+    let presenter = ValueGroupPresenter { lang, formatting };
+    let sections = [
+        ValueGroupId::N2OEmissions,
+        ValueGroupId::CH4ChpEmissions,
+        ValueGroupId::CH4SludgeEmissions,
+        ValueGroupId::FossilCO2Emissions,
     ]
     .into_iter()
+    .map(|id| presenter.present_value_group(id))
     .map(|(title, sections)| TableSection {
-        title: title.to_string(),
+        title,
         rows: sections
             .into_iter()
             .map(|id| {
-                let label = formatting.fmt_label(id, lang).to_string();
-                //let value = data.get(&id.into()).as_ref().map(|v| lang.format_value(v));
+                let label = formatting.fmt_label(id.clone(), lang).to_string();
                 let value = {
-                    let mut value = data.get(&id.into()).cloned();
+                    let mut value = data.get(&id).cloned();
                     if value.is_none() {
-                        value = id.default_value();
+                        match &id {
+                            Id::In(id) => {
+                                value = id.default_value();
+                            }
+                            Id::Out(id) => {
+                                value = id.default_value();
+                            }
+                            Id::Custom(_) => {}
+                        }
                     }
                     value.as_ref().map(|v| lang.format_value(v))
                 };
-                let unit = formatting.fmt(id).map(Into::into);
-                let id = Id::from(id);
-
+                let unit = formatting.fmt(id.clone()).map(Into::into);
                 TableRow {
                     id,
                     label,

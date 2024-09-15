@@ -13,6 +13,7 @@ workspace = true
 [dependencies]
 klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = { path = "../domain" }
+klick-interfaces = "=0.0.0"
 klick-usecases = "=0.0.0"
 
 anyhow = "1.0.86"
