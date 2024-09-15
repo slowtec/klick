@@ -4,8 +4,6 @@ use std::{
     hash::Hash,
 };
 
-use leptos::*;
-
 #[cfg(test)]
 mod tests;
 
@@ -204,51 +202,47 @@ fn count_nodes(deps: &HashMap<NodeId, Dependencies>, node: &NodeId) -> u64 {
         .unwrap_or(0)
 }
 
-#[component]
-pub fn SankeyChart<F>(
+pub fn sankey_chart<F>(
     sankey_data: SankeyData,
     width: f64,
     height: f64,
     number_format: F,
     font_size: f64,
     aria_label: Option<String>,
-) -> impl IntoView
+) -> ::svg::Document
 where
     F: Fn(f64) -> String,
 {
     let margin_x = width * 0.1;
     let margin_y = height * 0.05;
 
-    view! {
-      <svg
-        width = format!("{width}px")
-        height = format!("{height}px")
-        viewBox = format!("0.0 0.0 {width} {height}")
-        role = "img"
-        aria_label = aria_label
-      >
-        <g
-          transform = format!("translate(0.0,{margin_y})")
-        >
-          <InnerChart sankey_data
-            width = width - margin_x * 2.0
-            height = height - margin_y * 2.0
-            number_format
-            font_size = font_size
-          />
-        </g>
-      </svg>
+    let inner_chart = inner_chart(
+        sankey_data,
+        width - margin_x * 2.0,
+        height - margin_y * 2.0,
+        number_format,
+        font_size,
+    );
+
+    let mut doc = ::svg::Document::new()
+        .set("width", format!("{width}px"))
+        .set("height", format!("{height}px"))
+        .set("viewBox", (0.0, 0.0, width, height))
+        .set("role", "img");
+
+    if let Some(label) = aria_label {
+        doc = doc.set("aria_label", label);
     }
+    doc.add(inner_chart.set("transform", format!("translate(0.0,{margin_y})")))
 }
 
-#[component]
-fn InnerChart<F>(
+fn inner_chart<F>(
     mut sankey_data: SankeyData,
     width: f64,
     height: f64,
     number_format: F,
     font_size: f64,
-) -> impl IntoView
+) -> ::svg::node::element::Group
 where
     F: Fn(f64) -> String,
 {
@@ -283,46 +277,38 @@ where
             let y = node_position.y;
             let node_height = node_position.height;
             let value = sankey_data.nodes[id].value;
-            let label = sankey_data.nodes[id].label.as_ref().map(|label| {
-                view! {
-                  <tspan>
-                    { label } " " { number_format(value) }
-                  </tspan>
-                }
+            let label_tspan = sankey_data.nodes[id].label.as_ref().map(|label| {
+                ::svg::node::element::TSpan::new(format!("{label} { }", number_format(value)))
             });
 
             let fill: Color = sankey_data.nodes[id].color.unwrap_or(Color::new("magenta"));
 
-            let node = view! {
-              <rect
-                x = format!("{x:.10}")
-                y = format!("{y:.10}")
-                width = format!("{node_width:.10}")
-                height = format!("{node_height:.10}")
-                fill = fill.as_str()
-                stroke = fill.as_str()
-                stroke-miterlimit = 0
-                stroke-opacity=1
-                stroke-width=1
-                stroke-dashoffset=0
-              />
-            };
+            let node = ::svg::node::element::Rectangle::new()
+                .set("x", format!("{x:.10}"))
+                .set("y", format!("{y:.10}"))
+                .set("width", format!("{node_width:.10}"))
+                .set("height", format!("{node_height:.10}"))
+                .set("fill", fill.as_str())
+                .set("stroke", fill.as_str())
+                .set("stroke-miterlimit", 0)
+                .set("stroke-opacity", 1)
+                .set("stroke-width", 1)
+                .set("stroke-dashoffset", 0);
 
-            let label = view! {
-              <text
-                class = "label"
-                x = x + node_width + font_size/2.0
-                y = y + node_height /2.0
-                fill = "#111"
-                text-anchor = "start"
-                font-family = "sans-serif"
-                font-size = font_size
-                dominant-baseline = "middle"
-              >
-                { label }
-              </text>
-            };
-
+            let mut label = ::svg::node::element::Text::new("");
+            label.get_children_mut().clear();
+            if let Some(label_tspan) = label_tspan {
+                label = label.add(label_tspan)
+            }
+            label = label
+                .set("class", "label")
+                .set("x", x + node_width + font_size / 2.0)
+                .set("y", y + node_height / 2.0)
+                .set("fill", "#111")
+                .set("text-anchor", "start")
+                .set("font-family", "sans-serif")
+                .set("font-size", font_size)
+                .set("dominant-baseline", "middle");
             (node, label)
         })
         .unzip();
@@ -335,39 +321,43 @@ where
             // TODO: use gradient
             let fill = edge_color.unwrap_or(Color::new("purple"));
 
-            view! {
-              <path
-                d = {d}
-                fill = fill.as_str()
-                stroke = fill.as_str()
-                stroke-miterlimit = 0
-                stroke-opacity=1
-                stroke-width=1
-                stroke-dashoffset=0
-              />
-            }
+            ::svg::node::element::Path::new()
+                .set("d", d)
+                .set("fill", fill.as_str())
+                .set("stroke", fill.as_str())
+                .set("stroke-miterlimit", 0)
+                .set("stroke-opacity", 1)
+                .set("stroke-width", 1)
+                .set("stroke-dashoffset", 0)
         })
         .collect::<Vec<_>>();
 
-    view! {
-      <style>
-        "text.label {
-          cursor: pointer;
-        }
-        text.label:hover {
-          font-weight: bold;
-        }"
-      </style>
-      <g>
-        { svg_edges }
-      </g>
-      <g>
-        { svg_nodes }
-      </g>
-      <g>
-        { svg_labels }
-      </g>
+    let mut edges = ::svg::node::element::Group::new();
+    let mut nodes = ::svg::node::element::Group::new();
+    let mut labels = ::svg::node::element::Group::new();
+
+    for c in svg_edges {
+        edges = edges.add(c);
     }
+    for c in svg_nodes {
+        nodes = nodes.add(c);
+    }
+    for c in svg_labels {
+        labels = labels.add(c);
+    }
+    let style = ::svg::node::element::Style::new(
+        "text.label {
+           cursor: pointer;
+         }
+         text.label:hover {
+           font-weight: bold;
+         }",
+    );
+    ::svg::node::element::Group::new()
+        .add(style)
+        .add(edges)
+        .add(nodes)
+        .add(labels)
 }
 
 fn edge_path(from_top: &Point, from_bottom: &Point, to_top: &Point, to_bottom: &Point) -> String {

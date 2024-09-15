@@ -1,6 +1,6 @@
 use leptos::*;
 
-use klick_app_charts::{Color, SankeyChart, SankeyData};
+use klick_app_charts::{sankey_chart, Color, SankeyData};
 
 #[component]
 fn MySankeyChart() -> impl IntoView {
@@ -128,40 +128,44 @@ fn MySankeyChart() -> impl IntoView {
     short_sankey_w.insert_edge(b, c);
     short_sankey_w.insert_edge(a, c);
 
+    let s0 = sankey_chart(sankey, 800.0, 300.0, |n| format!("{n:.1}"), 16.0, None).to_string();
+
+    let s1 = sankey_chart(
+        other_sankey,
+        800.0,
+        300.0,
+        |n| format!("{n:.0}"),
+        16.0,
+        None,
+    )
+    .to_string();
+
+    let s2 = sankey_chart(
+        short_sankey,
+        800.0,
+        300.0,
+        |n| format!("{n:.0}"),
+        16.0,
+        None,
+    )
+    .to_string();
+
+    let s3 = sankey_chart(
+        short_sankey_w,
+        800.0,
+        300.0,
+        |n| format!("{n:.0}"),
+        16.0,
+        None,
+    )
+    .to_string();
+
     view! {
       <h1>"Sankey Chart Example"</h1>
-      <SankeyChart
-        sankey_data = { sankey }
-        width = 800.0
-        height = 300.0
-        number_format = |n| format!("{n:.1}")
-        font_size = 16.0
-        aria_label = None
-      />
-      <SankeyChart
-        sankey_data = { other_sankey }
-        width = 800.0
-        height = 300.0
-        number_format = |n| format!("{n:.0}")
-        font_size = 16.0
-        aria_label = None
-      />
-      <SankeyChart
-        sankey_data = { short_sankey }
-        width = 800.0
-        height = 300.0
-        number_format = |n| format!("{n:.0}")
-        font_size = 16.0
-        aria_label = None
-      />
-      <SankeyChart
-        sankey_data = { short_sankey_w }
-        width = 800.0
-        height = 300.0
-        number_format = |n| format!("{n:.0}")
-        font_size = 16.0
-        aria_label = None
-      />
+      <div inner_html = s0></div>
+      <div inner_html = s1></div>
+      <div inner_html = s2></div>
+      <div inner_html = s3></div>
     }
 }
 

@@ -2,8 +2,7 @@
 use leptos::*;
 
 use crate::{
-    BarChart, BarChartArguments, BarChartRadioInput, BarChartRadioInputArguments, SankeyChart,
-    SankeyData,
+    BarChart, BarChartArguments, BarChartRadioInput, BarChartRadioInputArguments, SankeyData,
 };
 
 use klick_presenter::Lng;
@@ -66,18 +65,15 @@ pub fn sankey_chart<F>(
 where
     F: Fn(f64) -> String + 'static,
 {
-    render_view_as_svg(move || {
-        view! {
-          <SankeyChart
-            sankey_data
-            width
-            height
-            number_format
-            font_size
-            aria_label
-          />
-        }
-    })
+    crate::sankey_chart(
+        sankey_data,
+        width,
+        height,
+        number_format,
+        font_size,
+        aria_label,
+    )
+    .to_string()
 }
 
 fn render_view_as_svg<F, V>(view: F) -> String

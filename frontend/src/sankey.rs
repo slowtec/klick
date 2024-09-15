@@ -5,7 +5,7 @@ use leptos::*;
 use klick_domain::{Value, ValueId as Id};
 use klick_presenter as presenter;
 
-use klick_app_charts::{Color, SankeyChart, SankeyData};
+use klick_app_charts::{sankey_chart, Color, SankeyData};
 
 #[allow(clippy::too_many_lines, clippy::needless_pass_by_value)]
 #[component]
@@ -39,14 +39,20 @@ pub fn Sankey(
         sankey_data.insert_edge(from, to);
     }
 
-    view! {
-        <SankeyChart
-            sankey_data = { sankey_data }
-            width = 1200.0
-            height = 800.0
-            number_format = |value| lang.format_number_with_fixed_precision(value, 0)
-            font_size = 16.0
-            aria_label = Some("Die ausgewerteten Eingabedaten werden in einem Sankey-Diagramm dargestellt. Das Diagramm zeigt die bilanzierten Treibhausgasemissionen als CO2-Äquivalente in Tonnen pro Jahr für die einzelnen Entstehungsorte / Quellen. Das Diagramm hat seitlich angeordnete 4 Ebenen die die Flusspfade des Diagramms verbinden und die sich wie folgt gliedern: bullet point ganz rechts sind die Gesamtemissionen als ein Balken zusammengefasst; bullet point mittig-recht sind drei Balken zu sehen, die direkte, indirekten und weitere indirekte Emissionen wiedergeben; bullet point mittig-link werden einige der direkten, indirekten und weiteren indirekten Emissionen, nochmals näher beschrieben als Lachgas- und Methan-basierte Emissionen als direkte Emission und Betriebsstoffe als weitere indirekte Emission. bullet point ganz links im Bild findet sich die Balken der einzelnen Emissionen wieder wie: N2O Anlage, N2O Gewässer, CH₄ Schlupf Schlammtasche, CH₄ Schlupf Schlammlagerung, CH₄ BHKW, CH₄ Gewässer, CO₂ Emissionen, Fossile CO₂-Emissionen, Strommix, Eisendreichloridlösung, Synthetische Polymere, Klärschlammtransport.".to_string())
-        />
-    }
+    let aria_label = Some("Die ausgewerteten Eingabedaten werden in einem Sankey-Diagramm dargestellt. Das Diagramm zeigt die bilanzierten Treibhausgasemissionen als CO2-Äquivalente in Tonnen pro Jahr für die einzelnen Entstehungsorte / Quellen. Das Diagramm hat seitlich angeordnete 4 Ebenen die die Flusspfade des Diagramms verbinden und die sich wie folgt gliedern: bullet point ganz rechts sind die Gesamtemissionen als ein Balken zusammengefasst; bullet point mittig-recht sind drei Balken zu sehen, die direkte, indirekten und weitere indirekte Emissionen wiedergeben; bullet point mittig-link werden einige der direkten, indirekten und weiteren indirekten Emissionen, nochmals näher beschrieben als Lachgas- und Methan-basierte Emissionen als direkte Emission und Betriebsstoffe als weitere indirekte Emission. bullet point ganz links im Bild findet sich die Balken der einzelnen Emissionen wieder wie: N2O Anlage, N2O Gewässer, CH₄ Schlupf Schlammtasche, CH₄ Schlupf Schlammlagerung, CH₄ BHKW, CH₄ Gewässer, CO₂ Emissionen, Fossile CO₂-Emissionen, Strommix, Eisendreichloridlösung, Synthetische Polymere, Klärschlammtransport.".to_string());
+
+    let number_format = |value| lang.format_number_with_fixed_precision(value, 0);
+    let font_size = 16.0;
+
+    let chart = sankey_chart(
+        sankey_data,
+        1200.0,
+        800.0,
+        number_format,
+        font_size,
+        aria_label,
+    )
+    .to_string();
+
+    view! { <div inner_html = chart></div> }
 }
