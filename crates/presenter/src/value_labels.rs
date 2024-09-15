@@ -2,7 +2,7 @@
 
 use fluent_templates::Loader;
 
-use klick_domain::{self as domain, InputValueId, OutputValueId};
+use klick_domain::{self as domain, InputValueId, OutputValueId, ValueId};
 
 use crate::{Lng, LOCALES};
 
@@ -50,5 +50,15 @@ impl ValueLabel for domain::units::Ch4ChpEmissionFactorCalcMethod {
 impl ValueLabel for OutputValueId {
     fn label(&self, lng: Lng) -> String {
         LOCALES.lookup(&lng.id(), self.as_ref())
+    }
+}
+
+impl ValueLabel for ValueId {
+    fn label(&self, lng: Lng) -> String {
+        match self {
+            ValueId::Custom(name) => name.clone(),
+            ValueId::In(id) => id.label(lng),
+            ValueId::Out(id) => id.label(lng),
+        }
     }
 }

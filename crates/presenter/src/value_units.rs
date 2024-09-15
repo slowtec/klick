@@ -1,4 +1,4 @@
-use klick_domain::{InputValueId, OutputValueId};
+use klick_domain::{InputValueId, OutputValueId, ValueId};
 
 // TODO:
 // Actually, we should derive the units directly from the domain layer
@@ -119,6 +119,16 @@ impl ValueUnit for InputValueId {
             Self::SensitivitySludgeBagsCustomFactor => Some(TEXT_QUBICMETERS_PER_HOUR),
             // FIXME
             _ => None,
+        }
+    }
+}
+
+impl ValueUnit for ValueId {
+    fn unit_as_text(&self) -> Option<&'static str> {
+        match self {
+            ValueId::Custom(_) => Some("t"), // Currently only tons are allowed
+            ValueId::In(id) => id.unit_as_text(),
+            ValueId::Out(id) => id.unit_as_text(),
         }
     }
 }
