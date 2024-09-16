@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use leptos::*;
 use leptos_fluent::*;
 use leptos_hotkeys::use_hotkeys;
+use js_sys::wasm_bindgen::JsCast;
 
 use klick_app_components::{
     forms::{dom_node_id, render_field},
@@ -122,6 +123,7 @@ fn ModalInput(
         lang,
         accessibility_always_show_option,
     );
+
     use_hotkeys!(("Escape") => move |()| {
       log::info!("exit");
       close.call(());
@@ -131,8 +133,34 @@ fn ModalInput(
       close.call(());
     });
 
+    let node_ref: NodeRef<leptos::html::Div> = NodeRef::default();
+    node_ref.on_load(move|div| {
+        let _ = div.on_mount(move|div| {
+            let id: String = format!("#{}", dom_node_id);
+            let query = document().query_selector(&id);
+            match query {
+                Ok(query_result) => {
+                    match query_result {
+                        Some(query_element) => {
+                            let element: web_sys::HtmlInputElement = query_element.unchecked_into();
+                            let _ = element.focus();
+                        }
+                        None => {
+                            log::error!("Element to focus on not found in DOM tree.");
+                        }
+                    }
+                }
+                Err(_) => {
+                    log::error!(
+                        "Query selector failed, so element to focus on 'not found' in DOM tree."
+                    );
+                }
+            }
+            let _ = div.focus();
+        });
+    });
     view! {
-      <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div node_ref=node_ref class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
