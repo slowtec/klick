@@ -77,3 +77,11 @@ https://github.com/lipis/flag-icons/blob/v6.6.6/css/flag-icons.css
 dd:hover .form-data-edit-button {
   opacity: 1.0;
 }
+
+dd:focus .form-data-edit-button {
+  opacity: 1.0;
+}
+
+dd:focus-within .form-data-edit-button {
+  opacity: 1.0;
+}

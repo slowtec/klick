@@ -363,7 +363,7 @@ fn render_pdf(mut markdown: String) -> anyhow::Result<Vec<u8>> {
     log::debug!("Render PDF");
     markdown = markdown.replace("N₂O", "$N_2O$");
     markdown = markdown.replace("CO₂", "$CO_2$");
-    markdown = markdown.replace("CH₄","$CH_4$");
+    markdown = markdown.replace("CH₄", "$CH_4$");
 
     let mut child = Command::new("pandoc")
         .args(["-o", "-", "-f", "markdown", "-t", "pdf"])

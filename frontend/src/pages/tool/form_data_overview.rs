@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
+use crate::wasm_bindgen::closure::Closure;
+use js_sys::wasm_bindgen::JsCast;
 use leptos::*;
 use leptos_fluent::*;
 use leptos_hotkeys::use_hotkeys;
-use js_sys::wasm_bindgen::JsCast;
 
 use klick_app_components::{
     forms::{dom_node_id, render_field},
@@ -128,28 +129,34 @@ fn ModalInput(
       log::info!("exit");
       close.call(());
     });
-    use_hotkeys!(("Enter") => move |()| {
-      log::info!("exit");
-      close.call(());
-    });
 
     let node_ref: NodeRef<leptos::html::Div> = NodeRef::default();
-    node_ref.on_load(move|div| {
-        let _ = div.on_mount(move|div| {
+    node_ref.on_load(move |div| {
+        let _ = div.on_mount(move |div| {
             let id: String = format!("#{}", dom_node_id);
             let query = document().query_selector(&id);
             match query {
-                Ok(query_result) => {
-                    match query_result {
-                        Some(query_element) => {
-                            let element: web_sys::HtmlInputElement = query_element.unchecked_into();
-                            let _ = element.focus();
-                        }
-                        None => {
-                            log::error!("Element to focus on not found in DOM tree.");
-                        }
+                Ok(query_result) => match query_result {
+                    Some(query_element) => {
+                        let element: web_sys::HtmlInputElement = query_element.unchecked_into();
+                        let _ = element.focus();
+                        let a = Closure::<dyn FnMut(web_sys::KeyboardEvent)>::new(
+                            move |event: web_sys::KeyboardEvent| {
+                                if event.key() == "Enter" {
+                                    close.call(());
+                                }
+                            },
+                        );
+                        let _ = element.add_event_listener_with_callback(
+                            "keydown",
+                            a.as_ref().unchecked_ref(),
+                        );
+                        a.forget();
                     }
-                }
+                    None => {
+                        log::error!("Element to focus on not found in DOM tree.");
+                    }
+                },
                 Err(_) => {
                     log::error!(
                         "Query selector failed, so element to focus on 'not found' in DOM tree."
@@ -159,6 +166,7 @@ fn ModalInput(
             let _ = div.focus();
         });
     });
+
     view! {
       <div node_ref=node_ref class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -175,6 +183,7 @@ fn ModalInput(
                   on:click = move |_| {
                       close.call(());
                   }
+
                   type="button"
                   class="inline-flex w-full justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
