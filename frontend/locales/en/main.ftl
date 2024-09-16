@@ -78,6 +78,9 @@ sensitivity-ch4-chp-infobox-1-text = CHP plants have different methane slips dep
 sensitivity-ch4-chp-infobox-1-cite-source = Extract from DWA leaflet 230-1 (2022, p. 25)
 sensitivity-ch4-chp-infobox-1-cite = Process-related methane emissions also arise during gas utilization: CHP engines operate according to the four-stroke principle. In this case, both the inlet and outlet valves are (partially) opened for a short time during the transition from the fourth (exhaust) to the first (intake) stroke to allow gas exchange. This overlap can potentially cause small amounts of unburned digester gas to enter the exhaust gas stream. Gasoline engines have a methane slip in the range of 1% to 2%. Pilot jet engines (not relevant for digester gas) are higher, in the order of 2% to 3%. Micro gas turbines (typical power class from 30 kW to 65 kW), on the other hand, can achieve a methane slip of < 1% (STMWI 2016).
 
+chp_custom_factor-warning-title = Warning
+chp_custom_factor-warning-text = The custom CH₄ value you specified is currently not used as scenario!
+
 sensitivity-ch4-chp-p-1 = By selecting or entering your own emission factor (EF) for the CHP plant of your wastewater treatment plant, your carbon footprint with regard to methane emissions can be estimated in more detail:
 sensitivity-ch4-chp-scenario = The scenario
 sensitivity-ch4-chp-scenario-2 = is selected [in t CO₂ equivalents/year]. A different scenario can be selected by clicking.
@@ -108,6 +111,8 @@ ch4_emissions_open_sludge_storage_1-cite-text = Even when operated properly, aer
 sensitivity-n2o = Nitrous oxide emissions
 n2o_emissions-h3-1 = Nitrous oxide emissions during the biological treatment stage
 n2o_emissions-p-1 = Nitrous oxide emissions contribute significantly to the overall greenhouse gas potential of sewage treatment plants. The first estimate of this potential during data collection is made using an emission factor for nitrous oxide (N₂O-EF) according to Parravicini et al. (2016, TU Vienna), see the first bar in the diagram below.
+n2o_custom_factor-warning-title = Warning
+n2o_custom_factor-warning-text = The custom N₂O value you specified is currently not used as scenario!
 n2o_emissions-p-2 = Since the occurrence of N₂O emissions is usually plant-specific <b> [N₂O plant] </b>, the KlicK tool offers further evaluation scenarios for nitrous oxide emissions. These are shown in the following bar chart, including the resulting nitrous oxide emissions [as CO₂ equivalents].
 n2o_emissions-p-3 = By clicking on the individual bars in the diagram, the respective scenario is used for the overall balance below (in the Sankey diagram).
 n2o_emissions-p-4-1 = The scenario

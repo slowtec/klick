@@ -107,6 +107,22 @@ pub fn N2OEmissionsSensitivity(
             })
         })
     };
+    let n2o_custom_factor_warning_view = move || {
+        let n2o_custom_factor =
+            form_data.with(|values| values.get(&In::SensitivityN2OCustomFactor).cloned());
+        if n2o_custom_factor.is_some()
+            && selected_scenario.get() != Some(N2oEmissionFactorCalcMethod::Custom)
+        {
+            Some(view!{
+          <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+          <p class="font-bold">{move_tr!("n2o_custom_factor-warning-title") }</p>
+            { move_tr!("n2o_custom_factor-warning-text") }
+          </div>
+        }.into_view())
+        } else {
+            None
+        }
+    };
 
     view! {
       <Card id = "sensitivity-n2o" title = move_tr!("sensitivity-n2o").get() bg_color="bg-blue" accessibility_always_show_option>
@@ -139,6 +155,7 @@ pub fn N2OEmissionsSensitivity(
           </p>
 
           { n2o_custom_factor_view }
+          { n2o_custom_factor_warning_view }
 
           <div class = move || { if show_side_stream_controls.get() { None } else { Some("hidden") } } >
 

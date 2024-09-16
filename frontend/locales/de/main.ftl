@@ -84,6 +84,9 @@ sensitivity-ch4-chp-infobox-1-text = BHKW weisen je nach Modell und Alter unters
 sensitivity-ch4-chp-infobox-1-cite-source = Auszug aus dem DWA-Merkblatt 230-1 (2022, S. 25)
 sensitivity-ch4-chp-infobox-1-cite = Auch bei der Gasverwertung entstehen prozessbedingte Methan-Emissionen: BHKW-Motoren arbeiten nach dem Vier-Takt-Prinzip. Dabei sind zum Gasaustausch für eine kurze Zeit beim Übergang vom vierten (Ausstoßen) in den ersten (Ansaugen) Takt sowohl das Einlass- als auch das Auslassventil (teilweise) geöffnet. Durch diese Überschneidung können unter Umständen geringe Mengen unverbrannten Faulgases in den Abgasstrom gelangen. Ottomotoren haben dabei einen Methanschlupf im Bereich von 1 % bis 2 % Zündstrahlmotoren (sind für Faulgas nicht relevant) liegen höher in der Größenordnung von 2 % bis 3 %. Mikrogasturbinen (typische Leistungsklasse von 30 kW bis 65 kW) können dagegen einen Methanschlupf < 1 % erreichen (STMWI 2016).
 
+chp_custom_factor-warning-title = Achtung
+chp_custom_factor-warning-text = Der benutzerdefinierte CH₄-Wert wird derzeit nicht zur Berechnung verwendet!
+
 sensitivity-ch4-chp-p-1 = Mit der folgenden Auswahl bzw. Eingabe eines eigenen Emissionsfaktors (EF) für das BHKW Ihrer Kläranlage kann Ihre Klimabilanz bezüglich der Methanemissionen verfeinert abgeschätzt werden:
 sensitivity-ch4-chp-scenario = Es ist das Szenario
 sensitivity-ch4-chp-scenario-2 = ist ausgewählt [in t CO₂ Äquivalente/Jahr]. Durch Anklicken kann ein anderes Szenario ausgewählt werden.
@@ -114,6 +117,8 @@ ch4_emissions_open_sludge_storage_1-cite-text = Auch bei ordnungsgemäßem Betri
 sensitivity-n2o = Lachgasemissionen
 n2o_emissions-h3-1 = Lachgasemissionen bei der biologischen Reinigungsstufe
 n2o_emissions-p-1 = Lachgasemissionen tragen wesentlich zum gesamten Treibhausgaspotenzial von Kläranlagen bei. Die erste Abschätzung dieses Potenzials bei der Datenerhebung erfolgt mit einem Emissionsfaktor für Lachgas (N₂O-EF) nach Parravicini et al. (2016, TU Wien), Wert siehe erster Balken im untenstehenden Diagramm.
+n2o_custom_factor-warning-title = Achtung
+n2o_custom_factor-warning-text = Der benutzerdefinierte N₂O-Wert wird derzeit nicht zur Berechnung verwendet!
 n2o_emissions-p-2 = Da das Auftreten von N₂O-Emissionen in der Regel anlagenspezifisch ist  <b> [N₂O Anlage] </b>, bietet das KlicK-Tool weitere Auswertungsszenarien für Lachgasemissionen an. Diese sind im folgenden Balkendiagramm dargestellt, einschließlich der daraus resultierenden Lachgasemissionen [als CO₂-Äquivalente].
 n2o_emissions-p-3 = Durch Anklicken der einzelnen Balken im Diagramm wird das jeweilige Szenario für die untenstehende Gesamtbilanz (im Sankey-Diagramm) verwendet.
 

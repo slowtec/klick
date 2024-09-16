@@ -112,6 +112,22 @@ pub fn CH4EmissionsCHP(
             })
         })
     };
+    let chp_custom_factor_warning_view = move || {
+        let chp_custom_factor =
+            form_data.with(|values| values.get(&Id::SensitivityCH4ChpCustomFactor).cloned());
+        if chp_custom_factor.is_some()
+            && selected_scenario.get() != Some(Ch4ChpEmissionFactorCalcMethod::Custom)
+        {
+            Some(view!{
+          <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+          <p class="font-bold">{move_tr!("chp_custom_factor-warning-title") }</p>
+            { move_tr!("chp_custom_factor-warning-text") }
+          </div>
+        }.into_view())
+        } else {
+            None
+        }
+    };
 
     view! {
       <div class = move ||{ if show_ch4_chp.get() { None } else { Some("hidden") } } >
@@ -147,6 +163,7 @@ pub fn CH4EmissionsCHP(
           </InfoBox>
 
           { chp_view }
+          { chp_custom_factor_warning_view }
 
             <div class="border-t pt-3 mt-4 border-gray-900/10">
               { move ||
