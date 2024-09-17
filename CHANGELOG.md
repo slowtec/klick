@@ -1,11 +1,36 @@
 # Changelog
 
+## v0.5.0 (unreleased)
+
+- Added
+  - English version #67
+  - Support custom emissions #247
+  - Values in overview table are now editable #74
+  - Open FAQ page in external tab #293
+
+- Changed
+  - Warn if a user-defined EF is specified but the respective scenario isn't selected #333
+  - Accessibility improvements and instant focus on edited fields #335
+  - F1 now shows/hides additional form information #281
+  - Refactor number formatting and access values via IDs
+  - Refactored different crates for cleaner architecture
+  - Update dependencies / MRSV 1.80
+
+- Fixed
+  - Fixed Sankey label rendering #316
+  - Calculation panic #187
+  - Jumping to a required field #252
+  - Handling of empty required integer fields #275
+  - Optional fields and node reference bug #280
+  - Issues with PDF export
+  - Several small issues
+
 ## v0.4.13 (2024-09-06)
 
 - Changed
-  - #287 Lachgasemissionen [n2o anlage] statt [gesammtemissionen]  
+  - #287 Lachgasemissionen [n2o anlage] statt [gesammtemissionen]
   - #281 F1 now hides the (i) button in the handlungsempfehlungen
-  - #187 N-Eliminationsrate Formel hängt sich auf  
+  - #187 N-Eliminationsrate Formel hängt sich auf
 
 ## v0.4.12 (2024-08-24)
 
@@ -13,7 +38,7 @@
   - #268 accessibility enhancements
   - #267 #260 #270 CI/CD / FAQ / Datenschutz
   - #272 Adjust footer layout
-  - Refactor: Access form data via IDs 
+  - Refactor: Access form data via IDs
 - Fixed
   - #252 clicking required field jumps to somewhere!
   - #185 sankey drawing fixed
