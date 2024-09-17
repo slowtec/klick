@@ -41,7 +41,13 @@ pub fn ProjectList(
 
             projects.into_iter().rev().map(|project|view!{
               <li class="flex items-center justify-between gap-x-6 py-5">
-                <Project api project load = on_load on_delete_success on_download_pdf />
+                <Project
+                  api
+                  project
+                  load = on_load
+                  on_delete_success
+                  on_download_pdf
+                />
               </li>
             }).collect::<Vec<_>>()
           }
@@ -141,9 +147,7 @@ fn Project(
 fn Menu(
     #[prop(into)] load: Callback<(), ()>,
     #[prop(into)] delete: Callback<(), ()>,
-    #[allow(unused)]
-    #[prop(into)]
-    download_pdf: Callback<(), ()>,
+    #[prop(into)] download_pdf: Callback<(), ()>,
 ) -> impl IntoView {
     let menu_is_open = RwSignal::new(false);
 

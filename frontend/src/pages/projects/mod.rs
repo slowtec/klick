@@ -1,9 +1,16 @@
+use std::time::Duration;
+
+use gloo_timers::future::TimeoutFuture;
 use leptos::*;
 use leptos_router::NavigateOptions;
+use web_time::Instant;
 
-use klick_boundary::{Project, ProjectId, SavedProject};
+use klick_boundary::{
+    json_api::{DownloadId, DownloadStatus},
+    Project, ProjectId, SavedProject,
+};
 
-use crate::{api::AuthorizedApi, Page};
+use crate::{api::AuthorizedApi, Modal, Page};
 
 mod new_project;
 mod project_list;
@@ -70,21 +77,17 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
         }
     });
 
-    let download_link: NodeRef<leptos::html::A> = create_node_ref();
+    let current_download = RwSignal::new(Option::<DownloadId>::None);
 
     let download_pdf = Action::new(move |id: &ProjectId| {
         let id = *id;
         let api = api.get();
-        let link = download_link.get().expect("<a> to exist");
         async move {
             let result = api.download_pdf_report(&id.into()).await;
             match result {
                 Ok(response) => {
-                    log::debug!("{}", &response.download_url);
-                    link.set_attribute("href", &response.download_url).unwrap();
-                    link.set_attribute("download", "klimabilanz.pdf").unwrap();
-                    link.click();
-                    link.remove_attribute("href").unwrap();
+                    log::debug!("{:?}", &response.download_id);
+                    current_download.set(Some(response.download_id));
                 }
                 Err(err) => {
                     log::warn!("Unable to download PDF report: {err}");
@@ -146,7 +149,83 @@ fn Authorized(api: AuthorizedApi, current_project: RwSignal<Option<Project>>) ->
           on_download_pdf
         />
       </div>
-      // Hidden download anchor
-      <a style="display:none;" node_ref=download_link></a>
+      { move ||
+        current_download.get().map(|download_id| {
+          let download_status = RwSignal::new(Option::<Result<DownloadStatus, String>>::None);
+
+          const TIMEOUT: Duration = Duration::from_secs(5);
+          const INTERVAL: Duration = Duration::from_millis(500);
+
+          spawn_local(async move {
+              let start = Instant::now();
+              loop {
+                TimeoutFuture::new(INTERVAL.as_millis() as u32).await;
+                if start.elapsed() > TIMEOUT {
+                    log::warn!("Download timed out");
+                    break;
+                }
+                let status: Result<_,String> = api.get().download_status(&download_id).await.map_err(|err|err.to_string());
+                if status.is_err() {
+                    download_status.set(Some(status));
+                    break;
+                } else {
+                    download_status.set(Some(status));
+                }
+              }
+          });
+          view!{
+            <DownloadDialog
+              status = download_status.into()
+              current_download
+            />
+          }
+        })
+      }
+    }
+}
+
+#[component]
+fn DownloadDialog(
+    status: Signal<Option<Result<DownloadStatus, String>>>,
+    current_download: RwSignal<Option<DownloadId>>,
+) -> impl IntoView {
+    view! {
+      <Modal>
+        <h3 class="my-2 text-gray-900 font-semibold">"Download is being prepared"</h3>
+        <div class="my-3 text-center">
+        { move || match status.get() {
+            Some(Ok(DownloadStatus::Failed(err))) | Some(Err(err))  => {
+              view!{
+                <p class="text-red">
+                  "failed to download: "
+                  { err }
+                </p>
+              }.into_view()
+            }
+            Some(Ok(DownloadStatus::Completed(url))) => {
+              view!{
+                <p class="button rounded bg-primary px-2 py-1 text-sm font-semibold text-black shadow-sm">
+                  <a
+                    target="_black"
+                    download
+                    href={url}
+                    on:click = move |_| {
+                      current_download.set(None);
+                    }
+                  >
+                    "download"
+                  </a>
+                </p>
+              }.into_view()
+            }
+            Some(Ok(DownloadStatus::Pending)) | None => {
+              view!{
+                <p class="text-blue">"waiting..."</p>
+              }.into_view()
+            }
+          }
+        }
+        </div>
+      </Modal>
     }
 }

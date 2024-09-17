@@ -1,5 +1,6 @@
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[cfg(feature = "axum")]
 mod axum;
@@ -98,7 +99,17 @@ pub struct ResetPassword {
     pub new_password: String,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct DownloadId(pub Uuid);
+
 #[derive(Clone, Serialize, Deserialize)]
 pub struct DownloadRequestResponse {
-    pub download_url: String,
+    pub download_id: DownloadId,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub enum DownloadStatus {
+    Pending,
+    Completed(String),
+    Failed(String),
 }

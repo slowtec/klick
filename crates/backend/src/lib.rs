@@ -1,6 +1,11 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    path::{self, PathBuf},
+    sync::Arc,
+    thread,
+};
 
-use anyhow::anyhow;
+use anyhow::{anyhow, bail};
 use axum::{
     extract::{Path, Query, State},
     http::{header, Method, StatusCode, Uri},
@@ -22,7 +27,7 @@ use uuid::Uuid;
 use klick_application_services as services;
 use klick_boundary::{self as boundary, json_api};
 use klick_db_sqlite::Connection;
-use klick_domain::{self as domain, Account, EmailAddress, EmailNonce, Password, ProjectId};
+use klick_domain::{Account, EmailAddress, EmailNonce, Password, ProjectId};
 use klick_interfaces::{AccountRepo as _, ProjectRepo};
 use klick_pdf_export::export_to_pdf;
 
@@ -91,7 +96,8 @@ pub fn create_router(db: Connection, config: &Config) -> anyhow::Result<Router> 
         .route("/project/:id", get(get_project))
         .route("/project/:id", delete(delete_project))
         .route("/project/:id/export", get(get_export))
-        .route("/download/:id/:filename", get(get_download))
+        .route("/download/:download-id", get(get_download))
+        .route("/download/:download-id/status", get(get_download_status))
         .route_layer(cors_layer)
         .with_state(shared_state);
 
@@ -138,9 +144,26 @@ pub struct AppState {
     base_url: Url,
 }
 
-enum Download {
-    PdfReport { project_id: ProjectId },
-    JsonProject { project_id: ProjectId },
+#[derive(Debug)]
+struct Download {
+    project_id: ProjectId,
+    file_name: PathBuf,
+    export_format: ExportFormat,
+    status: DownloadStatus,
+}
+
+#[derive(Default, Debug)]
+enum DownloadStatus {
+    #[default]
+    Pending,
+    Completed(Vec<u8>),
+    Failed(anyhow::Error),
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ExportFormat {
+    Pdf,
+    Json,
 }
 
 impl AppState {
@@ -307,6 +330,8 @@ async fn get_project(
 #[derive(Deserialize)]
 struct Export {
     format: Format,
+    #[serde(rename = "file-name")]
+    file_name: Option<PathBuf>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -323,39 +348,60 @@ async fn get_export(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<json_api::DownloadRequestResponse> {
     let account = account_from_token(&state, &auth)?;
-    let id = ProjectId::from_uuid(uuid);
+    let project_id = ProjectId::from_uuid(uuid);
     log::debug!(
-        "{} requested an {:?} export of project {id}",
+        "{} requested an {:?} export of project {project_id}",
         account.email_address,
         params.format
     );
-    if state.db.find_project(&id)?.is_none() {
-        let err = anyhow!("project {id} not found");
+    if state.db.find_project(&project_id)?.is_none() {
+        let err = anyhow!("project {project_id} not found");
         log::warn!("{err}");
         return Err(ApiError::from(err));
     };
-    let file_name = match params.format {
-        Format::Json => "klimabilanz.json",
-        Format::Pdf => "klimabilanz.pdf",
+    let extension = match params.format {
+        Format::Json => "json",
+        Format::Pdf => "pdf",
     };
-    let download = match params.format {
-        Format::Pdf => Download::PdfReport { project_id: id },
-        Format::Json => Download::JsonProject { project_id: id },
+    let file_name = if let Some(file_name) = params.file_name {
+        let Some(ext) = file_name.extension() else {
+            let err = anyhow!("File name has no extension");
+            return Err(ApiError::from(err));
+        };
+        if ext != extension {
+            let err = anyhow!(
+                "Invalid file extension ({}) expected: {extension}",
+                ext.to_string_lossy()
+            );
+            return Err(ApiError::from(err));
+        }
+        file_name
+    } else {
+        path::Path::new("klimabilanz").with_extension(extension)
     };
+    let export_format = match params.format {
+        Format::Pdf => ExportFormat::Pdf,
+        Format::Json => ExportFormat::Json,
+    };
+
+    let download = Download {
+        project_id,
+        file_name,
+        export_format,
+        status: DownloadStatus::default(),
+    };
+
     let download_id = Uuid::new_v4();
     state.downloads.write().insert(download_id, download);
-    let download_url = state
-        .base_url
-        .join(&format!("/api/download/{download_id}/{file_name}"))
-        .unwrap()
-        .to_string();
 
-    Ok(Json(json_api::DownloadRequestResponse { download_url }))
+    start_background_download_task(download_id, state.clone());
+    let download_id = json_api::DownloadId(download_id);
+    Ok(Json(json_api::DownloadRequestResponse { download_id }))
 }
 
 async fn get_download(
     State(state): State<AppState>,
-    Path((download_id, filename)): Path<(Uuid, std::path::PathBuf)>,
+    Path(download_id): Path<Uuid>,
 ) -> std::result::Result<Response, ApiError> {
     log::debug!("Download {download_id}");
     let Some(download) = state.downloads.write().remove(&download_id) else {
@@ -363,48 +409,59 @@ async fn get_download(
         log::warn!("{err}");
         return Err(ApiError::from(err));
     };
-    let project_id = match download {
-        Download::PdfReport { project_id } | Download::JsonProject { project_id } => project_id,
-    };
-    let Some(project) = state.db.find_project(&project_id)? else {
-        let err = anyhow!("project {project_id} not found");
-        log::warn!("{err}");
-        return Err(ApiError::from(err));
-    };
-    let project = boundary::Project::from(project);
-
-    match download {
-        Download::PdfReport { .. } => {
-            let form_data = project.into_form_data();
-            // FIXME: check if pdf was already made
-            let values: HashMap<domain::InputValueId, domain::Value> = form_data.try_into()?;
-            let values = values
-                .into_iter()
-                .map(|(id, value)| (id.into(), value))
-                .collect();
-            // FIXME set lang from here
-            let bytes = export_to_pdf(&values)?;
-            let headers = [
-                (header::CONTENT_TYPE, "application/pdf"),
-                (
-                    header::CONTENT_DISPOSITION,
-                    &format!("attachment; filename={}", filename.display()),
-                ),
-            ];
+    match download.status {
+        DownloadStatus::Pending => {
+            let err = anyhow!("Download {download_id} was not ready.");
+            Err(ApiError::from(err))
+        }
+        DownloadStatus::Failed(err) => {
+            let err = anyhow!("Download {download_id} failed: {err}");
+            Err(ApiError::from(err))
+        }
+        DownloadStatus::Completed(bytes) => {
+            let headers = match download.export_format {
+                ExportFormat::Pdf => [
+                    (header::CONTENT_TYPE, "application/pdf"),
+                    (
+                        header::CONTENT_DISPOSITION,
+                        &format!("attachment; filename={}", download.file_name.display()),
+                    ),
+                ],
+                ExportFormat::Json => [
+                    (header::CONTENT_TYPE, "application/json; charset=utf-8"),
+                    (
+                        header::CONTENT_DISPOSITION,
+                        &format!("attachment; filename={}", download.file_name.display()),
+                    ),
+                ],
+            };
             Ok((headers, bytes).into_response())
         }
-        Download::JsonProject { .. } => {
-            let json_string = boundary::export_to_string_pretty(&project);
-            let headers = [
-                (header::CONTENT_TYPE, "application/json; charset=utf-8"),
-                (
-                    header::CONTENT_DISPOSITION,
-                    "attachment; filename=report.json",
-                ),
-            ];
-            Ok((headers, json_string).into_response())
-        }
     }
+}
+
+async fn get_download_status(
+    State(state): State<AppState>,
+    Path(download_id): Path<Uuid>,
+) -> Result<json_api::DownloadStatus> {
+    let read_lock = state.downloads.read();
+    let Some(download) = read_lock.get(&download_id) else {
+        let err = anyhow!("Download {download_id} not found");
+        return Err(ApiError::from(err));
+    };
+    let status = match &download.status {
+        DownloadStatus::Pending => json_api::DownloadStatus::Pending,
+        DownloadStatus::Failed(err) => json_api::DownloadStatus::Failed(err.to_string()),
+        DownloadStatus::Completed(_) => {
+            let download_url = state
+                .base_url
+                .join(&format!("/api/download/{download_id}"))
+                .unwrap()
+                .to_string();
+            json_api::DownloadStatus::Completed(download_url)
+        }
+    };
+    Ok(Json(status))
 }
 
 async fn get_all_projects(
@@ -460,4 +517,59 @@ fn account_from_token(
         return Err(AuthError::EmailNotConfirmed.into());
     }
     Ok(account)
+}
+
+fn start_background_download_task(download_id: Uuid, state: AppState) {
+    thread::spawn(move || {
+        let (project_id, export_format): (ProjectId, ExportFormat) = {
+            let read_lock = state.downloads.read();
+            let Some(download) = read_lock.get(&download_id) else {
+                log::warn!("Download {download_id} not found: exit download task");
+                return;
+            };
+            (download.project_id, download.export_format)
+        };
+
+        let result = download_task(project_id, export_format, &state.db);
+
+        let mut write_lock = state.downloads.write();
+        let Some(download) = write_lock.get_mut(&download_id) else {
+            log::warn!("Download {download_id} not found: exit download task");
+            return;
+        };
+        match result {
+            Ok(bytes) => {
+                download.status = DownloadStatus::Completed(bytes);
+            }
+            Err(err) => {
+                download.status = DownloadStatus::Failed(err);
+            }
+        }
+    });
+}
+
+fn download_task(
+    project_id: ProjectId,
+    format: ExportFormat,
+    db: &Connection,
+) -> anyhow::Result<Vec<u8>> {
+    let Some(project) = db.find_project(&project_id)? else {
+        bail!("Project {project_id} not found");
+    };
+    let project = boundary::Project::from(project);
+
+    match format {
+        ExportFormat::Pdf => {
+            let form_data: HashMap<_, _> = project.into_form_data().try_into()?;
+            let values = form_data
+                .into_iter()
+                .map(|(id, value)| (id.into(), value))
+                .collect();
+            export_to_pdf(&values)
+        }
+        ExportFormat::Json => {
+            let json_string = boundary::export_to_string_pretty(&project);
+            Ok(json_string.into_bytes())
+        }
+    }
 }

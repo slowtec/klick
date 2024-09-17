@@ -8,8 +8,8 @@ use thiserror::Error;
 use klick_boundary::{
     self as boundary,
     json_api::{
-        self, ApiToken, ConfirmEmailAddress, Credentials, DownloadRequestResponse,
-        RequestPasswordReset, ResetPassword, UserInfo,
+        self, ApiToken, ConfirmEmailAddress, Credentials, DownloadId, DownloadRequestResponse,
+        DownloadStatus, RequestPasswordReset, ResetPassword, UserInfo,
     },
     FormData, JsonFormData, SavedProject,
 };
@@ -189,6 +189,11 @@ impl AuthorizedApi {
         id: &ProjectId,
     ) -> Result<DownloadRequestResponse, Value> {
         let url = format!("{}/project/{id}/export?format=pdf", self.url);
+        self.send(Request::get(&url)).await
+    }
+
+    pub async fn download_status(&self, download_id: &DownloadId) -> Result<DownloadStatus, Value> {
+        let url = format!("{}/download/{}/status", self.url, download_id.0);
         self.send(Request::get(&url)).await
     }
 }

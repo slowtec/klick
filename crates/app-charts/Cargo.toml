@@ -15,7 +15,7 @@ log = "0.4.22"
 svg = "0.17.0"
 
 [features]
-ssr = []
+ssr = ["leptos/ssr"]
 
 [lints]
 workspace = true
