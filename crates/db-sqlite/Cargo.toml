@@ -12,7 +12,7 @@ klick-boundary = { version = "=0.0.0", features = ["conversion"] }
 klick-domain = { path = "../domain" }
 klick-interfaces = "=0.0.0"
 
-anyhow = "1.0.86"
+anyhow = "1.0.89"
 diesel = { version = "2.2.4", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = { version = "2.2.0", features = ["sqlite"] }
 # Bundle SQLite code to prevent dynamic linking.

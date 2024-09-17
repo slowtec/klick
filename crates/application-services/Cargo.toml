@@ -10,7 +10,7 @@ publish = false
 klick-domain = { path = "../domain" }
 klick-interfaces = "=0.0.0"
 
-anyhow = "1.0.86"
+anyhow = "1.0.89"
 log = "0.4.22"
 thiserror = "1.0.63"
 time = "0.3.36"

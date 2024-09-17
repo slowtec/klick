@@ -12,7 +12,7 @@ description.workspace = true
 [dependencies]
 klick-domain = { path = "../domain" }
 
-anyhow = "1.0.88"
+anyhow = "1.0.89"
 time = "0.3.36"
 
 [lints]

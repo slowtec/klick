@@ -11,7 +11,7 @@ publish = false
 klick-presenter = "=0.0.0"
 
 derive_more = { version = "1.0.0", features = ["display"] }
-leptos = { version = "0.6.14" }
+leptos = { version = "0.6.15" }
 log = "0.4.22"
 thiserror = "1.0.63"
 

@@ -6,7 +6,7 @@ edition.workspace = true
 [dependencies]
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
-leptos = { version = "0.6.14", features = ["csr"] }
+leptos = { version = "0.6.15", features = ["csr"] }
 klick-codemirror = { path = "../.." }
 log = "0.4.22"
 

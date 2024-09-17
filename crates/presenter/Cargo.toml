@@ -16,9 +16,9 @@ klick-domain = { path = "../domain" }
 klick-interfaces = "=0.0.0"
 klick-usecases = "=0.0.0"
 
-anyhow = "1.0.86"
+anyhow = "1.0.89"
 derive_more = "1.0.0"
-serde = { version = "1.0.209", features = ["derive"] }
+serde = { version = "1.0.210", features = ["derive"] }
 fluent-templates = "0.10.1"
 
 [dev-dependencies]

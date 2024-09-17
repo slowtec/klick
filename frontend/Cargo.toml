@@ -18,7 +18,7 @@ klick-presenter = "=0.0.0"
 klick-usecases = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.86"
+anyhow = "1.0.89"
 console_error_panic_hook = "0.1.7"
 console_log = { version = "1.0.0", features = ["color"] }
 fluent-templates = { version = "0.10.1",  features = ["macros", "walkdir"] }
@@ -28,11 +28,11 @@ gloo-storage = "0.3.0"
 gloo-timers = { version = "0.3.0", features = ["futures"] }
 gloo-utils = "0.2.0"
 js-sys = "0.3.70"
-leptos = { version = "0.6.14", features = ["csr"] }
+leptos = { version = "0.6.15", features = ["csr"] }
 leptos-fluent = { version = "0.1.21", default-features = false }
 leptos_hotkeys = "0.2.2"
-leptos_meta = { version = "0.6.14", features = ["csr"] }
-leptos_router = { version = "0.6.14", features = ["csr"] }
+leptos_meta = { version = "0.6.15", features = ["csr"] }
+leptos_router = { version = "0.6.15", features = ["csr"] }
 log = "0.4.22"
 num-traits = "0.2.19"
 strum = "0.26.3"
@@ -83,7 +83,7 @@ empty_docs = "allow"
 wildcard_imports = "allow"
 
 [build-dependencies]
-pulldown-cmark = "0.12.0"
+pulldown-cmark = "0.12.1"
 toml = "0.8.19"
 walkdir = "2.5.0"
 

@@ -10,7 +10,7 @@ publish = false
 [dependencies]
 klick-presenter = "=0.0.0"
 
-leptos = "0.6.14"
+leptos = "0.6.15"
 log = "0.4.22"
 svg = "0.17.0"
 

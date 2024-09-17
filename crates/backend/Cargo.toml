@@ -17,27 +17,27 @@ klick-interfaces = "=0.0.0"
 klick-pdf-export = "=0.0.0"
 
 # External dependencies
-anyhow = "1.0.86"
+anyhow = "1.0.89"
 axum = "0.7.5"
 axum-extra = { version = "0.9.3", features = ["typed-header"] }
 headers = "0.4.0"
-lettre = { version = "0.11.8", default-features = false, features = ["rustls-tls", "builder", "smtp-transport", "pool"] }
+lettre = { version = "0.11.9", default-features = false, features = ["rustls-tls", "builder", "smtp-transport", "pool"] }
 log = "0.4.22"
 mime_guess = "2.0.5"
 parking_lot = "0.12.3"
 rust-embed = { version = "8.5.0", features = ["axum"] }
-serde = { version = "1.0.209", features = ["derive"] }
+serde = { version = "1.0.210", features = ["derive"] }
 thiserror = "1.0.63"
 tokio = { version = "1.40.0", features = ["net"] }
 toml = "0.8.19"
 tower-http = { version = "0.5.2", features = ["cors"] }
 url = { version = "2.5.2", features = ["serde"] }
 uuid = { version = "1.10.0", features = ["v4"] }
-serde_json = "1.0.127"
+serde_json = "1.0.128"
 time = "0.3.36"
 
 [dev-dependencies]
-serde_json = "1.0.127"
+serde_json = "1.0.128"
 klick-boundary = { version = "=0.0.0", features = ["axum"] }
 
 [dev-dependencies.reqwest]

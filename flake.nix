@@ -29,19 +29,21 @@
         in
         with pkgs;
         rec {
-          packages.mytrunk = pkgs.callPackage ./trunk/default.nix {
+          trunk = pkgs.callPackage ./trunk.nix {
             inherit (darwin.apple_sdk.frameworks) CoreServices Security SystemConfiguration;
           };
           devShells.default = mkShell {
             buildInputs = [
               rust
               cargo-zigbuild           # required for static musl builds
-              packages.mytrunk
+              trunk                    # required to bundle the frontend
+              binaryen                 # required to minify WASM files with wasm-opt
+              wasm-bindgen-cli         # required to generate JS files to bootstrap WASM in the browser
               git
               tig
               pkg-config
               just                     # task runner
-              nodePackages.tailwindcss # build CSS files
+              tailwindcss              # build CSS files
               nodejs                   # required to install tailwind plugins
               pandoc                   # required to process markdown files
               texliveMedium            # required to generate PDF reports
