@@ -44,6 +44,10 @@ css-release: frontend-install-npm-packages
 build: frontend
   cargo build
 
+# Serve playground
+serve-playground:
+  cd frontend && trunk serve
+
 # Build the server in release mode (musl)
 build-release: fmt-check test frontend-release
   cargo zigbuild --release --target x86_64-unknown-linux-musl
