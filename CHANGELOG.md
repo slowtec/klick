@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.0 (unreleased)
+## v0.5.0 (2024-09-19)
 
 - Added
   - English version #67
@@ -25,14 +25,14 @@
   - Issues with PDF export
   - Several small issues
 
-## v0.4.13 (2024-09-06)
+## v0.4.13 (2024-08-06)
 
 - Changed
   - #287 Lachgasemissionen [n2o anlage] statt [gesammtemissionen]
   - #281 F1 now hides the (i) button in the handlungsempfehlungen
   - #187 N-Eliminationsrate Formel hängt sich auf
 
-## v0.4.12 (2024-08-24)
+## v0.4.12 (2024-08-02)
 
 - Changed
   - #268 accessibility enhancements
